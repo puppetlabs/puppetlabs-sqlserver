@@ -1,10 +1,8 @@
 require 'puppet'
 require 'facter'
+
 describe Puppet::Type.type(:mssql_install) do
 
-  before(:each) do
-    include_context 'init_args'
-  end
   shared_context 'init_args' do
     @arguments = {
         :name => 'WildName',
@@ -42,21 +40,24 @@ describe Puppet::Type.type(:mssql_install) do
   end
 
   describe 'should require sql_svc_password when local sql_svc_account' do
+    include_context 'init_args'
     it_should_behave_like 'validate', @arguments, true, nil
   end
 
   describe 'should fail when agt_svc_account is domain user and has no password' do
-
+    include_context 'init_args'
     @arguments.delete(:agt_svc_password)
     it_should_behave_like 'validate', @arguments, false, 'agt_svc_password required when using domain account'
   end
 
   describe 'should fail when is_svc_password is empty and is_svc_account is domain user' do
+    include_context 'init_args'
     @arguments.delete(:is_svc_password)
     it_should_behave_like 'validate', @arguments, false, 'is_svc_password required when using domain account'
   end
 
   describe 'should fail when rs_svc_account contains an invalid character' do
+    include_context 'init_args'
     %w(/ \ [ ] : ; | = , + * ? < > ).each do |v|
       @arguments[:rs_svc_account] = "crazy#{v}User"
       it_should_behave_like 'validate', @arguments, false, 'rs_svc_account can not contain any of the special characters,'
