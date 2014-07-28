@@ -1,6 +1,6 @@
 module PuppetX
   module Mssql
-    class Helper
+    class ServerHelper
       @features_hash = {
           :SQLEngine => 'Database Engine Services',
           :Replication => 'SQL Server Replication',
@@ -12,34 +12,28 @@ module PuppetX
           :Conn => 'Client Tools Connectivity',
           :SDK => 'Client Tools SDK'
       }
+      @super_feature_hash = {
+          :SQL => [:DQ, :FullText, :Replication, :SQLEngine],
+          :Tools => [:SSMS, :ADV_SSMS, :Conn]
+      }
 
-      def self.is_domain_user?(user, hostname)
-        if /(^(((nt (authority|service))|#{hostname})\\\w+)$)|^(\w+)$/i.match(user)
-          false
-        else
-          true
-        end
-      end
-
-      def self.create_sqlcmd_query(query)
-        query_array = ['-Q',
-                       "#{query}",
-                       '-d', 'master',
-                       '-U', 'access_db',
-                       '-P', "Pupp3t1@",
-                       '-h-1',
-                       '-W',
-                       '-s', ',']
-      end
 
       def self.translate_features(features)
         translated = []
         Array.new(features).each do |feature|
           if @features_hash.has_value?(feature)
-            translated << @features_hash.key(feature)
+            translated << @features_hash.key(feature).to_s
           end
         end
-        translated.sort
+        translated
+      end
+
+      def self.get_sub_features(super_feature)
+        @super_feature_hash[super_feature.to_sym]
+      end
+
+      def self.is_super_feature(feature)
+        @super_feature_hash.has_key?(feature.to_sym)
       end
     end
   end

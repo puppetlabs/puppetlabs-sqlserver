@@ -1,13 +1,10 @@
-require 'spec_helper'
-require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', '..', 'lib/puppet_x/mssql/helper'))
+require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'lib/puppet_x/mssql/helper'))
 
-describe PuppetX::Mssql::Helper do
-  let(:subject) { PuppetX::Mssql::Helper }
-
+describe 'mssql_is_domain_user' do
   shared_examples 'when calling with' do |user, should_be_bool|
     it "with #{user} should return #{should_be_bool}" do
-      subject.stubs(:lookupvar).with('hostname').returns('mybox')
-      subject.is_domain_user?(user, 'mybox').should(eq(should_be_bool))
+      Facter.stubs(:value).with(:hostname).returns('mybox')
+      should run.with_params(user).and_return(should_be_bool)
     end
   end
 
