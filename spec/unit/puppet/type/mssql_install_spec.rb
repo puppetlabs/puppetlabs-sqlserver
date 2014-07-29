@@ -30,12 +30,15 @@ describe Puppet::Type.type(:mssql_install) do
 
         @subject.stubs(:lookupvar).with('hostname').returns('machineCrazyName')
       else
-        expect {
-          Puppet::Type.type(:mssql_install).new(args)
-        }.to raise_error(Puppet::ResourceError, /#{message}/)
-
 
       end
+    end
+  end
+  shared_examples 'fail validation' do |args, message = 'must be set'|
+    it 'should fail with' do
+      expect {
+        Puppet::Type.type(:mssql_install).new(args)
+      }.to raise_error(Puppet::ResourceError, /#{message}/)
     end
   end
 
@@ -62,6 +65,11 @@ describe Puppet::Type.type(:mssql_install) do
       @arguments[:rs_svc_account] = "crazy#{v}User"
       it_should_behave_like 'validate', @arguments, false, 'rs_svc_account can not contain any of the special characters,'
     end
+  end
+  describe 'should fail rs_svc_password being short' do
+    include_context 'init_args'
+    @arguments[:rs_svc_password] = 'Sh0rt^'
+    it_should_behave_like 'fail validation', @arguments, 'must be at least 8 characters long'
   end
 
 end

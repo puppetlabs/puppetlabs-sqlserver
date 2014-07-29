@@ -8,6 +8,19 @@ Puppet::Type::newtype(:mssql_login) do
     end
   end
 
+  newparam(:instance_name) do
+    validate do |value|
+      if (value != nil && value.length > 1)
+        fail ArgumentError, "instance_name is require"
+      end
+    end
+  end
+
+  newparam(:manage_password) do
+    newvalues(:true, :false)
+    # default(:true)
+  end
+
   # http://msdn.microsoft.com/en-us/library/microsoft.sqlserver.management.smo.logintype.aspx
   # keeping in the same form as we can easily put to String to specify login type during command line
   # Microsoft.SqlServer.Management.Smo.LoginType enum
