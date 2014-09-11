@@ -19,8 +19,8 @@ RSpec.describe provider_class do
                   "/ACTION=install",
                   '/Q',
                   '/IACCEPTSQLSERVERLICENSETERMS',
-                  "/FEATURES=#{execute_args[:features].join(',')}",
-                  "/INSTANCENAME=#{execute_args[:name]}",]
+                  "/INSTANCENAME=#{execute_args[:name]}",
+                  "/FEATURES=#{execute_args[:features].join(',')}",]
       (execute_args.keys - %i(ensure loglevel features name source sql_sysadmin_accounts sql_security_mode)).sort.collect do |key|
         cmd_args << "/#{key.to_s.gsub(/_/, '').upcase}=\"#{@resource[key]}\""
       end

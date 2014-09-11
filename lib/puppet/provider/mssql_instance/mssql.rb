@@ -57,13 +57,13 @@ Puppet::Type::type(:mssql_instance).provide(:mssql, :parent => Puppet::Provider:
     execute(cmd_args.compact)
   end
 
-  def basic_cmd_args(action, features)
+  def basic_cmd_args(action, features = [])
     cmd_args = ["#{@resource[:source]}/setup.exe",
                 "/ACTION=#{action}",
                 '/Q',
                 '/IACCEPTSQLSERVERLICENSETERMS',
-                "/FEATURES=#{features.join(',')}",
                 "/INSTANCENAME=#{@resource[:name]}"]
+    cmd_args << "/FEATURES=#{features.join(',')}" unless features.empty?
   end
 
   def build_cmd_args(features, action="install")
@@ -82,11 +82,7 @@ Puppet::Type::type(:mssql_instance).provide(:mssql, :parent => Puppet::Provider:
   end
 
   def destroy
-    cmd_args = ["#{@resource[:source]}/setup.exe",
-                "/ACTION=uninstall",
-                '/Q',
-                '/IACCEPTSQLSERVERLICENSETERMS',
-                "/INSTANCENAME=#{@resource[:name]}"]
+    cmd_args = basic_cmd_args(uninstall)
     execute(cmd_args.compact)
     @property_hash.clear
     exists? ? (return false) : (return true)
