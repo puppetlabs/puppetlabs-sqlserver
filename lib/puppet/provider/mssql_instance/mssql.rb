@@ -43,7 +43,7 @@ Puppet::Type::type(:mssql_instance).provide(:mssql, :parent => Puppet::Provider:
   def add_features(features)
     debug "Installing features #{features}"
     cmd_args = build_cmd_args(features)
-    exeucte(cmd_args.compact)
+    execute(cmd_args.compact)
   end
 
   def installNet35
@@ -68,7 +68,8 @@ Puppet::Type::type(:mssql_instance).provide(:mssql, :parent => Puppet::Provider:
 
   def build_cmd_args(features, action="install")
     cmd_args = basic_cmd_args(action, features)
-    (@resource.parameters.keys - %i(ensure loglevel features name provider source sql_sysadmin_accounts sql_security_mode)).sort.collect do |key|
+    (@resource.parameters.keys -
+        %i(ensure loglevel features name provider source sql_sysadmin_accounts sql_security_mode)).sort.collect do |key|
       cmd_args << "/#{key.to_s.gsub(/_/, '').upcase}=\"#{@resource[key]}\""
     end
     if  !@resource[:sql_sysadmin_accounts].nil? && !@resource[:sql_sysadmin_accounts].empty?

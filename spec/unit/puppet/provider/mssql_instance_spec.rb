@@ -24,6 +24,9 @@ RSpec.describe provider_class do
       (execute_args.keys - %i(ensure loglevel features name source sql_sysadmin_accounts sql_security_mode)).sort.collect do |key|
         cmd_args << "/#{key.to_s.gsub(/_/, '').upcase}=\"#{@resource[key]}\""
       end
+      if execute_args[:sql_security_mode]
+        cmd_args << "/SECURITYMODE=SQL"
+      end
       cmd_args << "/SQLSYSADMINACCOUNTS=#{ Array.new(@resource[:sql_sysadmin_accounts]).collect { |account| "\"#{account}\"" }.join(' ')}"
       Puppet::Util::Execution.stubs(:execute).with(cmd_args.compact).returns(0)
       @provider.create

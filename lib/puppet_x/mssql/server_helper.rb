@@ -2,6 +2,8 @@ module PuppetX
   module Mssql
     class ServerHelper
       @features_hash = {
+          :AS => 'Analysis Services',
+          :RS => 'Reporting Services - Native',
           :SQLEngine => 'Database Engine Services',
           :Replication => 'SQL Server Replication',
           :FullText => 'Full-Text and Semantic Extractions for Search',
@@ -10,7 +12,8 @@ module PuppetX
           :SSMS => 'Management Tools - Basic',
           :ADV_SSMS => 'Management Tools - Complete',
           :Conn => 'Client Tools Connectivity',
-          :SDK => 'Client Tools SDK'
+          :SDK => 'Client Tools SDK',
+          :IS => 'Integration Services',
       }
       @super_feature_hash = {
           :SQL => [:DQ, :FullText, :Replication, :SQLEngine],

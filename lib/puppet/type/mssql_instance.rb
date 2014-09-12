@@ -24,7 +24,7 @@ Puppet::Type::newtype(:mssql_instance) do
           SQL, AS, RS, IS, MDS, and Tools. The SQL feature will install the Database Engine, Replication,
           Full-Text, and Data Quality Services (DQS) server. The Tools feature will install Management
           Tools, Books online components, SQL Server Data Tools, and other shared components.'
-    newvalues(:SQL, :SQLEngine, :Replication, :FullText, :DQ, :AS, :RS, :IS, :MDS)
+    newvalues(:SQL, :SQLEngine, :Replication, :FullText, :DQ, :AS, :RS, :MDS)
     munge do |value|
       if PuppetX::Mssql::ServerHelper.is_super_feature(value)
         PuppetX::Mssql::ServerHelper.get_sub_features(value).collect { |v| v.to_s }
@@ -34,13 +34,7 @@ Puppet::Type::newtype(:mssql_instance) do
     end
   end
 
-
-  newparam(:sql_security_mode) do
-    newvalues(:true, :false)
-    defaultto(:false)
-  end
-
-  newparam(:sa_password) do
+  newparam(:sa_pwd) do
     desc 'Required when :sql_security_mode => :true'
 
   end
@@ -88,8 +82,6 @@ Puppet::Type::newtype(:mssql_instance) do
 
   newparam(:is_svc_account, :parent => Puppet::Property::MssqlLogin) do
     desc 'Either domain user name or system account. Defaults to "NT AUTHORITY\NETWORK SERVICE"'
-    defaultto('NT AUTHORITY\NETWORK SERVICE')
-
   end
 
   newparam(:is_svc_password) do
@@ -130,6 +122,7 @@ Puppet::Type::newtype(:mssql_instance) do
     desc 'Specifies the security mode for SQL Server.
           If this parameter is not supplied, then Windows-only authentication mode is supported.
           Supported value: SQL'
+    newvalues('SQL')
   end
 
 
@@ -141,16 +134,13 @@ Puppet::Type::newtype(:mssql_instance) do
       self[:features] = (self[:features].flatten).sort
     end
 
-    # IS_SVC_ACCOUNT validation
-    if set?(:features) && self[:features].include?("IS")
-      validate_user_password_required(:is_svc_account, :is_svc_password)
-    end
-    # RS Must have Strong Password
-    if set?(:features) && self[:features].include?("RS")
-      is_strong_password?(:rs_svc_password)
-    end
-    if self[:sql_security_mode]
-      is_strong_password?(:sa_password)
+
+    # # RS Must have Strong Password
+    # if set?(:features) && self[:features].include?("RS")
+    #   is_strong_password?(:rs_svc_password)
+    # end
+    if self[:security_mode] == 'SQL'
+      is_strong_password?(:sa_pwd)
     end
 
   end
