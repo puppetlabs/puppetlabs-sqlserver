@@ -83,8 +83,8 @@ Puppet::Type::type(:mssql_instance).provide(:mssql, :parent => Puppet::Provider:
   end
 
   def destroy
-    cmd_args = basic_cmd_args(uninstall)
-    execute(cmd_args.compact)
+    cmd_args = basic_cmd_args("uninstall",@property_hash[:features])
+    execute(cmd_args)
     @property_hash.clear
     exists? ? (return false) : (return true)
   end
