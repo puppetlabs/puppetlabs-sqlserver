@@ -15,8 +15,15 @@ Puppet::Type::newtype(:mssql_features) do
 
   end
 
-  newparam(:is_svc_account)
-  newparam(:is_svc_password)
+  newparam(:is_svc_account, :parent => Puppet::Property::MssqlLogin) do
+    desc 'Either domain user name or system account. Defaults to "NT AUTHORITY\NETWORK SERVICE"'
+
+  end
+
+  newparam(:is_svc_password) do
+    desc 'Password for domain user.'
+
+  end
 
   newproperty(:features, :array_matching => :all) do
     desc 'Specifies features to install, uninstall, or upgrade. The list of top-level features include

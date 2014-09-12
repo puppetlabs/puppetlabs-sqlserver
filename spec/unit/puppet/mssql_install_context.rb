@@ -8,8 +8,6 @@ RSpec.shared_context 'install_arguments' do
       :agt_svc_password => 'P@ssword1',
       :as_svc_account => 'analysisAccount',
       :as_svc_password => 'CrazySimpleP@ssword',
-      :is_svc_account => 'nexus\isUserAccount',
-      :is_svc_password => 'isPassword@',
       :rs_svc_account => 'reportUserAccount', #always local user
       :rs_svc_password => 'reportP@ssword1',
       :sql_svc_account => 'NT Service\MSSQLSERVER',

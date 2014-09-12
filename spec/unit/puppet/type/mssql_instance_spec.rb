@@ -29,7 +29,7 @@ RSpec.describe Puppet::Type.type(:mssql_instance) do
     end
   end
 
-  [:agt_svc_password, :is_svc_password].each do |property|
+  [:agt_svc_password].each do |property|
     context "#{property} required when using domain account" do
       include_context 'install_arguments'
       @install_args.delete(property)

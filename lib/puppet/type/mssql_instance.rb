@@ -80,15 +80,6 @@ Puppet::Type::newtype(:mssql_instance) do
 
   end
 
-  newparam(:is_svc_account, :parent => Puppet::Property::MssqlLogin) do
-    desc 'Either domain user name or system account. Defaults to "NT AUTHORITY\NETWORK SERVICE"'
-  end
-
-  newparam(:is_svc_password) do
-    desc 'Password for domain user.'
-
-  end
-
   newparam(:as_sysadmin_accounts, :array_matching => :all) do
     desc 'Specifies the list of administrator accounts to provision.'
   end
@@ -135,10 +126,10 @@ Puppet::Type::newtype(:mssql_instance) do
     end
 
 
-    # # RS Must have Strong Password
-    # if set?(:features) && self[:features].include?("RS")
-    #   is_strong_password?(:rs_svc_password)
-    # end
+    # RS Must have Strong Password
+    if set?(:rs_svc_password) && self[:features].include?("RS")
+      is_strong_password?(:rs_svc_password)
+    end
     if self[:security_mode] == 'SQL'
       is_strong_password?(:sa_pwd)
     end
