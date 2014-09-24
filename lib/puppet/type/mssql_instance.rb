@@ -1,16 +1,20 @@
 require 'puppet/property/login'
 require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'puppet_x/mssql/helper'))
+require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'puppet_x/mssql/server_helper'))
 
-Puppet::Type::newtype(:mssql_install) do
-
-  newparam(:name) do
-    isnamevar
+Puppet::Type::newtype(:mssql_instance) do
+  ensurable
+  newparam(:name, :namevar => true) do
+    munge do |value|
+      value.upcase
+    end
   end
+
   newparam(:source) do
 
   end
 
-  newproperty(:pid) do
+  newparam(:pid) do
     desc 'Specify the SQL Server product key to configure which edition you would like to use.'
 
   end
@@ -20,53 +24,67 @@ Puppet::Type::newtype(:mssql_install) do
           SQL, AS, RS, IS, MDS, and Tools. The SQL feature will install the Database Engine, Replication,
           Full-Text, and Data Quality Services (DQS) server. The Tools feature will install Management
           Tools, Books online components, SQL Server Data Tools, and other shared components.'
+    newvalues(:SQL, :SQLEngine, :Replication, :FullText, :DQ, :AS, :RS, :MDS)
+    munge do |value|
+      if PuppetX::Mssql::ServerHelper.is_super_feature(value)
+        PuppetX::Mssql::ServerHelper.get_sub_features(value).collect { |v| v.to_s }
+      else
+        value
+      end
+    end
   end
 
-  newproperty(:instance_name) do
-    desc 'Specify a default or named instance. MSSQLSERVER  is the default instance for non-Express
-          editions and SQLExpress for Express editions. This parameter is required when installing
-          the SQL Server Database Engine (SQL), Analysis Services (AS), or Reporting Services (RS).'
-    defaultto('MSSQLSERVER')
+  newparam(:sa_pwd) do
+    desc 'Required when :sql_security_mode => :true'
+
   end
 
-  newproperty(:sql_svc_account, :parent => Puppet::Property::MssqlLogin) do
+  newparam(:service_ensure) do
+    desc 'Automatic will ensure running if stopped, Manual will set to manual and take no action on current state, :diable will stop and change to service disabled'
+    newvalues(:automatic, :manual, :disable)
+  end
+
+  newparam(:sql_svc_account, :parent => Puppet::Property::MssqlLogin) do
     desc 'Account for SQL Server service: Domain\User or system account.'
+    # Default to "NT Service\SQLAGENT$#{instance_name}"
 
   end
 
-  newproperty(:sql_svc_password) do
+  newparam(:sql_svc_password) do
     desc 'A SQL Server service password is required only for a domain account.'
-    # validate do |value|
-    #   if !mssql_is_domain_user(self[:sql_svc_account]) && value.empty?
-    #     fail('sql_svc_password required when not using domain account')
-    #   end
-    # end
+
   end
 
-  newproperty(:sql_sysadmin_accounts, :array_matching => :all) do
+  newparam(:sql_sysadmin_accounts, :array_matching => :all) do
     desc 'Windows account(s) to provision as SQL Server system administrators.'
 
   end
 
-  newproperty(:agt_svc_account, :parent => Puppet::Property::MssqlLogin) do
+  newparam(:agt_svc_account, :parent => Puppet::Property::MssqlLogin) do
     desc 'Either domain user name or system account'
 
   end
 
-  newproperty(:agt_svc_password) do
+  newparam(:agt_svc_password) do
     desc 'Password for domain user name. Not required for system account'
 
   end
 
-  newproperty(:as_svc_account, :parent => Puppet::Property::MssqlLogin) do
+  newparam(:as_svc_account, :parent => Puppet::Property::MssqlLogin) do
     desc 'The account used by the Analysis Services service.'
 
   end
-  newproperty(:as_svc_password) do
+
+  newparam(:as_svc_password) do
     desc 'The password for the Analysis Services service account.'
 
   end
-  newproperty(:rs_svc_account, :parent => Puppet::Property::MssqlLogin) do
+
+  newparam(:as_sysadmin_accounts, :array_matching => :all) do
+    desc 'Specifies the list of administrator accounts to provision.'
+  end
+
+  newparam(:rs_svc_account, :parent => Puppet::Property::MssqlLogin) do
     desc 'Specify the service account of the report server. This value is required.
           If you omit this value, Setup will use the default built-in account for
           the current operating system (either NetworkService or LocalSystem).
@@ -81,7 +99,8 @@ Puppet::Type::newtype(:mssql_install) do
       end
     end
   end
-  newproperty(:rs_svc_password) do
+
+  newparam(:rs_svc_password) do
     desc 'Specify a strong password for the account. A strong password is at least 8 characters and
           includes a combination of upper and lower case alphanumeric characters and at least one symbol
           character. Avoid spelling an actual word or name that might be listed in a dictionary.'
@@ -90,33 +109,41 @@ Puppet::Type::newtype(:mssql_install) do
     end
   end
 
-
-  newproperty(:is_svc_account, :parent => Puppet::Property::MssqlLogin) do
-    desc 'Either domain user name or system account.'
-
-  end
-  newproperty(:is_svc_password) do
-    desc 'Password for domain user.'
-
+  newparam(:security_mode) do
+    desc 'Specifies the security mode for SQL Server.
+          If this parameter is not supplied, then Windows-only authentication mode is supported.
+          Supported value: SQL'
+    newvalues('SQL')
   end
 
-  newproperty(:as_sysadmin_accounts, :array_matching => :all) do
-    desc 'Specifies the list of administrator accounts to provision.'
-  end
 
   def validate
-    # AGT_SVC_ACCOUNT Validation
-    validate_user_password_required(:agt_svc_account, :agt_svc_password)
-    # IS_SVC_ACCOUNT validation
-    validate_user_password_required(:is_svc_account, :is_svc_password)
-    #
-    if self[:features].include? 'RS'
+    if set?(:agt_svc_account)
+      validate_user_password_required(:agt_svc_account, :agt_svc_password)
+    end
+    if set?(:features)
+      self[:features] = (self[:features].flatten).sort
+    end
+
+
+    # RS Must have Strong Password
+    if set?(:rs_svc_password) && self[:features].include?("RS")
       is_strong_password?(:rs_svc_password)
     end
+    if self[:security_mode] == 'SQL'
+      is_strong_password?(:sa_pwd)
+    end
+
   end
 
+  def set?(key)
+    !self[key].nil? && !self[key].empty?
+  end
 
   def validate_user_password_required(account, pass)
+    if !(set?(account))
+      fail("User #{account} is required")
+    end
     if is_domain_user?(self[account]) && self[pass].nil?
       fail("#{pass} required when using domain account")
     end
@@ -134,13 +161,13 @@ Puppet::Type::newtype(:mssql_install) do
     message_start = "Password for #{key} is not strong"
     failures = []
     if password.length < 8
-      failures << 'must be at least 8 characters long'
+      failures << "must be at least 8 characters long"
     end
     if !(password.match(/[a-z]/))
-      failures << 'must contain lowercase letters'
+      failures << "must contain lowercase letters"
     end
     if !(password.match(/[A-Z]/))
-      failures << 'must contain uppercase letters'
+      failures << "must contain uppercase letters"
     end
     if !(password.match(/\d/))
       failures << 'must contain numbers'
@@ -151,6 +178,6 @@ Puppet::Type::newtype(:mssql_install) do
     if failures.count > 0
       fail("#{message_start}:\n#{failures.join("\n")}")
     end
+    true
   end
-
 end

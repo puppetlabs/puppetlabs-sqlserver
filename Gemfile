@@ -1,6 +1,7 @@
 source ENV['GEM_SOURCE'] || 'https://rubygems.org'
 
 group :development, :test do
+  gem 'nokogiri'
   gem 'mime-types', '<2.0',     :require => false
   gem 'rake',                   :require => false
   gem 'rspec-puppet',           :require => false
@@ -9,6 +10,7 @@ group :development, :test do
   gem 'simplecov',              :require => false
   gem 'rspec', '~> 2.14.0',     :require => false
   gem 'beaker-rspec',           :require => false
+	gem 'pry'
 end
 
 if puppetversion = ENV['PUPPET_GEM_VERSION']

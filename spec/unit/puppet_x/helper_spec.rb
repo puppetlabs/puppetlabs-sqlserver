@@ -26,5 +26,4 @@ describe PuppetX::Mssql::Helper do
   describe 'when calling with a domain account' do
     it_should_behave_like 'when calling with', 'nexus\user', true
   end
-
 end
