@@ -9,4 +9,24 @@
 # Learn more about module testing here:
 # http://docs.puppetlabs.com/guides/tests_smoke.html
 #
-include pe_mssql
+$sapwd = 'Pupp3t1@'
+$instance_name = 'MSSQLSERVER'
+
+mssql_instance{ $instance_name:
+  source                => 'E:/',
+  security_mode         => 'SQL',
+  sa_pwd                => $sapwd,
+  features              => ['SQL'],
+  sql_sysadmin_accounts => ['vagrant'],
+}
+
+mssql::config{ 'MSSQLSERVER':
+  admin_user => 'sa',
+  admin_pass => 'Pupp3t1@',
+  require    => Mssql_instance[$instance_name],
+}
+mssql::login{ 'padmin':
+  password      => 'PadminP@ssw0rd1',
+  instance_name => $instance_name,
+  require       => Mssql::Config[$instance_name],
+}
