@@ -1,0 +1,7 @@
+$json = cat '<%= @sql_instance_config %>' | ConvertFrom-Json
+$env:SQLCMDUSER = $json.admin
+$env:SQLCMDPASSWORD = $json.pass
+if($json.instance -ne 'MSSQLSERVER'){
+$env:SQLCMDSERVER = "localhost\${json.instance}"
+}
+sqlcmd.exe -i '<%= input_file %>' -h-1 -W -s ','

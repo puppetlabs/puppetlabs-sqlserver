@@ -5,33 +5,50 @@ Puppet::Type::type(:mssql_login).provide(:mssql, :parent => Puppet::Provider::Ms
 
   def self.instances
     instances = []
-    users = sqlcmd(create_sqlcmd_query(
-                       'SELECT name,type,type_desc,is_disabled,default_database_name, default_language_name, is_policy_checked, is_expiration_checked, password_hash FROM sys.sql_logins',
-                       {:admin_user => 'sa',
-                        :admin_pass => "'P@ssword1'",
-                        :default_database => 'master'}
-                   )
-    ).split("\n")
-    return [] if users.nil?
-    users.each do |user|
-      debug "Parsing user #{user}"
-      name, login_type, type_desc, is_disabled,
-          default_db, default_lang, policy_check, expire_check,
-          password_hash =
-          user.split(',', 9)
-      if !(name.nil?)
-        create = {
-            :ensure => :present,
-            :name => name,
-            :login_type => login_type == "S" ? :SqlLogin : :WindowsUser,
-            :default_database => default_db,
-            :check_expiration => expire_check == 1 ? :ON : :OFF,
-            :check_policy => policy_check == 1 ? :ON : :OFF
-        }
-        debug "Creating user object #{create}"
-        instances << new(create)
+    #need to exec with files and temp files to lookup based on templates
+    Dir.glob("C:/Program Files/Microsoft SQL Server/.puppet/*.cfg", File::FNM_DOTMATCH).each { |config|
+      debug("Parsing for logins in #{config}")
+      instance = /.puppet\/\.(?<instance>.+)\.cfg$/.match(config)
+      debug("Running against #{instance['instance']}")
+      output = run_authenticated_sqlcmd(
+          "SELECT name,
+            type,
+            type_desc,
+            is_disabled,
+            default_database_name,
+            default_language_name,
+            is_policy_checked,
+            is_expiration_checked,
+            password_hash
+            FROM sys.sql_logins",
+          {:instance_name => instance['instance']}
+      )
+
+      debug("Output from run_authenticated_sqlcmd = #{output}")
+
+      users = output.split("/n")
+
+      return [] if users.nil?
+      users.each do |user|
+        debug "Parsing user #{user}"
+        name, login_type, type_desc, is_disabled,
+            default_db, default_lang, policy_check, expire_check,
+            password_hash =
+            user.split(',', 9)
+        if !(name.nil?)
+          create = {
+              :ensure => :present,
+              :name => name,
+              :login_type => login_type == "S" ? :SqlLogin : :WindowsUser,
+              :default_database => default_db,
+              :check_expiration => expire_check == 1 ? :ON : :OFF,
+              :check_policy => policy_check == 1 ? :ON : :OFF
+          }
+          debug "Creating user object #{create}"
+          instances << new(create)
+        end
       end
-    end
+    }
     instances
   end
 
@@ -88,27 +105,8 @@ Puppet::Type::type(:mssql_login).provide(:mssql, :parent => Puppet::Provider::Ms
 
   end
 
-  def run_create_query(query, opts = {})
-    run_query(Puppet::Provider::Mssql.create_sqlcmd_query(query, opts))
-  end
-
-  def run_select_query(query, opts={})
-    run_query(Puppet::Provider::Mssql.select_sqlcmd_query(query, opts))
-  end
-
-  def run_query(queryarray)
-    return sqlcmd(queryarray)
-  end
-
   def exists?
     debug "Testing exists is #{@property_hash[:ensure] == :present}"
-    user =
-        run_select_query(
-            # change to sys.server_principals
-            "SELECT name,type,type_desc,is_disabled,default_database_name, default_language_name, is_policy_checked, is_expiration_checked, password_hash FROM sys.sql_logins WHERE name = '#{resource[:name]}'",
-            query_opts(resource)
-        ).split("\n")
-    user.nil?
   end
 
 end

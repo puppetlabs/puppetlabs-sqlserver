@@ -1,4 +1,1 @@
-#############################################################################################
-############## Puppet Config for Managing MSSQL Server <%= @instance_name %>   ###############
-#############################################################################################
-:Connect localhost\<%= @instance_name %> -U <%= @admin_user %> <% if @admin_pass != '' %> -P <%= @admin_pass %> <% end %>
+{ 'instance': '<%= @instance_name %>','admin':'<%= @admin_user %>','pass':'<%= @admin_pass %>' }
