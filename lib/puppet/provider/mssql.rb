@@ -91,7 +91,9 @@ class Puppet::Provider::Mssql < Puppet::Provider
         temp_ps1.write(ps1.result(b))
         temp_ps1.flush
         temp_ps1.close
-        result = powershell(['-noprofile', '-executionpolicy', 'unrestricted', temp_ps1.path])
+        result = Puppet::Util::Execution.execute(['powershell.exe', '-noprofile', '-executionpolicy', 'unrestricted', temp_ps1.path], {:failonfail => false})
+        debug("Return result #{result.exitstatus}")
+        return result
       ensure
         temp_ps1.close
         temp_ps1.unlink

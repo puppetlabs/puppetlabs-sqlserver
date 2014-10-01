@@ -21,11 +21,6 @@ IF NOT EXISTS(
 	    is_expiration_checked = @check_expiration
         )
 BEGIN
-	BEGIN TRY
-		THROW 51000, 'ERROR The record does not exists', 10
-	END TRY
-	BEGIN CATCH
-		THROW;
-	END CATCH
+    THROW 51000, 'ERROR The record does not exists', 10
 END;
 GO

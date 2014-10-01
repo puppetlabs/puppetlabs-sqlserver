@@ -31,29 +31,21 @@ Puppet::Type::newtype(:mssql_tsql) do
     def check(value)
       begin
         output = provider.run(value)
-      rescue Timeout::Error
-        err "Check #{value.inspect} exceeded timeout"
-        return false
       end
-
-      output.split(/\n/).each { |line|
-        self.debug(line)
-      }
-
-      output.exitstatus == 0
+      debug("OnlyIf returned exitstatus of #{output.exitstatus}")
+      output.exitstatus != 0
     end
   end
 
   def check_all_attributes(refreshing = false)
-    self.class.checks.each { |check|
-      if @parameters.include?(check)
-        val = @parameters[check].value
-        val = [val] unless val.is_a? Array
-        val.each do |value|
-          return false unless @parameters[check].check(value)
-        end
+    check = :onlyif
+    if @parameters.include?(check)
+      val = @parameters[check].value
+      val = [val] unless val.is_a? Array
+      val.each do |value|
+        return false unless @parameters[check].check(value)
       end
-    }
+    end
     true
   end
 
@@ -108,11 +100,9 @@ Puppet::Type::newtype(:mssql_tsql) do
       begin
         @output = provider.run_update
       end
-
       unless @output.exitstatus.to_s == "0"
         self.fail("#{self.resource[:command]} returned #{@output.exitstatus} instead of one of [#{self.should.join(",")}]")
       end
-
       event
     end
   end

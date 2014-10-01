@@ -9,11 +9,13 @@ Puppet::Type::type(:mssql_tsql).provide(:mssql, :parent => Puppet::Provider::Mss
   end
 
   def run_check
-    self.run(resource[:onlyif])
+    result = self.run(resource[:onlyif])
+    return result
   end
 
   def run_update
-    self.run(resource[:command])
+    result = self.run(resource[:command])
+    return result
   end
 
 end
