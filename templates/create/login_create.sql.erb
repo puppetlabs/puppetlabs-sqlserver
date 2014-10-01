@@ -30,6 +30,7 @@ BEGIN
 	<% end %>
 	    DEFAULT_LANGUAGE = [<%= @default_language %>],
 		DEFAULT_DATABASE = [<%= @default_database %>];
+	EXECUTE xp_grantlogin @loginame = [<%= @login %>];
 END
 GO
 
