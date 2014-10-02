@@ -4,4 +4,15 @@ $env:SQLCMDPASSWORD = $json.pass
 if($json.instance -ne 'MSSQLSERVER'){
 $env:SQLCMDSERVER = "localhost\${json.instance}"
 }
-sqlcmd.exe -i '<%= input_file %>' -h-1 -W -s ','
+try {
+$result = sqlcmd.exe -i '<%= input_file %>' -h-1 -W -s ','
+    if($result -match "ERROR"){
+        Write-Error -Message ($result | where {$_ -match "ERROR"} | select -First 1)
+		exit(10)
+    }
+}
+catch{
+	Write-Host $_
+    exit(20)
+}
+exit(0)
