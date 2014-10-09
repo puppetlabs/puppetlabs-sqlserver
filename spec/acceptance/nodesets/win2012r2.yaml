@@ -1,0 +1,23 @@
+HOSTS:
+  master:
+    roles:
+      - master
+      - database
+      - agent
+      - dashboard
+    platform: el-6-i386
+    hypervisor: vcloud
+    template: Delivery/Quality Assurance/Templates/vCloud/redhat-6-i386
+  agent-2012r2-x86_64:
+    roles:
+      - agent
+    platform: windows-2012r2-64
+    hypervisor: vcloud
+    template: Delivery/Quality Assurance/Templates/vCloud/win-2012r2-x86_64
+CONFIG:
+  filecount: 12
+  datastore: instance0
+  resourcepool: delivery/Quality Assurance/Enterprise/Dynamic
+  folder: Delivery/Quality Assurance/Enterprise/Dynamic
+  pooling_api: http://vcloud.delivery.puppetlabs.net/
+  pe_dir: http://pe-releases.puppetlabs.lan/3.3.0/
