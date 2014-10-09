@@ -1,0 +1,37 @@
+Use master
+GO
+DECLARE
+	@login as varchar(255) = '<%= @login %>',
+	@is_disabled as tinyint = <%= @disable ? 1 : 0 %>;
+IF exists(select * from sys.sql_logins where name = '<%= @login %>')
+BEGIN
+    IF @is_disabled = 0	ALTER LOGIN [<%= @login %>] ENABLE
+    ELSE				ALTER LOGIN [<%= @login %>] DISABLE
+
+	ALTER LOGIN [<%= @login %>] WITH
+	<% if @type != 'WINDOWS' %>
+		CHECK_EXPIRATION = <% if @check_expiration %>ON<% else %>OFF<% end %>,
+		CHECK_POLICY	 = <% if @check_policy %>ON<% else %>OFF<% end %>,
+	<% end %>
+		DEFAULT_LANGUAGE = [<%= @default_language %>],
+		DEFAULT_DATABASE = [<%= @default_database %>];
+END
+ELSE
+BEGIN
+
+	CREATE LOGIN [<%= @login %>]
+	 <% if @type != 'WINDOWS' %>
+	  WITH
+		PASSWORD = 'Pupp3t1@',
+		CHECK_EXPIRATION = <% if @check_expiration %>ON<% else %>OFF<% end %>,
+		CHECK_POLICY	 = <% if @check_policy %>ON<% else %>OFF<% end %>,
+	<% else %>
+	    FROM WINDOWS WITH
+	<% end %>
+	    DEFAULT_LANGUAGE = [<%= @default_language %>],
+		DEFAULT_DATABASE = [<%= @default_database %>];
+	EXECUTE xp_grantlogin @loginame = [<%= @login %>];
+END
+GO
+
+

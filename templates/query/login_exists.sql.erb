@@ -1,0 +1,26 @@
+Use master
+GO
+DECLARE
+	@login as varchar(255) = '<%= @login %>',
+	@is_disabled as tinyint = <%= @disabled ? 1 : 0 %>,
+	@check_expiration as tinyint = <%= @check_expiration ? 1 : 0 %>,
+	@check_policy as tinyint = <%= @check_policy ? 1 : 0 %>,
+	@type_desc as varchar(50) = '<%= @type_desc %>',
+	@default_db as varchar(255) = '<%= @default_database %>',
+	@default_lang as varchar(50) = '<%= @default_language %>'
+
+IF NOT EXISTS(
+    SELECT name FROM sys.sql_logins
+    WHERE
+	    name = @login AND
+	    type_desc = @type_desc AND
+	    is_disabled = @is_disabled AND
+	    default_database_name = @default_db AND
+	    default_language_name = @default_lang AND
+	    is_policy_checked = @check_policy AND
+	    is_expiration_checked = @check_expiration
+        )
+BEGIN
+    THROW 51000, 'ERROR The record does not exists', 10
+END;
+GO

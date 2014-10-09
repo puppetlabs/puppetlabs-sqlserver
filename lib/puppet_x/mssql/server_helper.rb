@@ -38,6 +38,8 @@ module PuppetX
       def self.is_super_feature(feature)
         @super_feature_hash.has_key?(feature.to_sym)
       end
+
+
     end
   end
 end
