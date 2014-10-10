@@ -149,7 +149,7 @@ Puppet::Type::newtype(:mssql_instance) do
   end
 
   def is_domain_user?(user)
-    PuppetX::Mssql::Helper.is_domain_user?(user, Facter.value(:hostname))
+    PuppetX::Mssql::ServerHelper.is_domain_user?(user, Facter.value(:hostname))
   end
 
   def is_strong_password?(key)

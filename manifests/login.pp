@@ -1,7 +1,9 @@
 define mssql::login (
   $login = $title,
-  $password,
-  $instance_name,
+  $instance,
+  $ensure = 'present',
+  $password = undef,
+  $svrroles = { },
   $login_type = "SqlLogin",
   $default_database = 'master',
   $default_language = 'us_english',
@@ -9,14 +11,22 @@ define mssql::login (
   $check_policy = true,
   $disabled = false) {
 
+  mssql_validate_instance_name($instance)
 
   $type_desc = $login_type ? {
     'SQLLogin' => 'SQL_LOGIN',
   }
+  mssql_validate_instance_name($instance)
 
-  mssql_tsql{ "mssql::login-$instance_name-$login":
-    instance      => $instance_name,
-    command       => template('mssql/create/login_create.sql.erb'),
+  $create_delete = $ensure ? {
+    present => 'create',
+    absent  => 'delete',
+  }
+
+  mssql_tsql{ "mssql::login-$instance-$login":
+    instance      => $instance,
+    command       => template("mssql/$create_delete/login.sql.erb"),
     onlyif        => template('mssql/query/login_exists.sql.erb'),
+    require       => Mssql_instance[$instance]
   }
 }

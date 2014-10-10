@@ -1,4 +1,4 @@
-Use master
+
 GO
 DECLARE
 	@login as varchar(255) = '<%= @login %>',
@@ -8,8 +8,11 @@ DECLARE
 	@type_desc as varchar(50) = '<%= @type_desc %>',
 	@default_db as varchar(255) = '<%= @default_database %>',
 	@default_lang as varchar(50) = '<%= @default_language %>'
+IF <% if @ensure == 'present' %>NOT<% end %> EXISTS(
+    SELECT name FROM sys.sql_logins
+    WHERE  name = '<%= @login %>') THROW 5100, 'ERROR: the login is not <%= @ensure %>', 10
 
-IF NOT EXISTS(
+IF <% if @ensure == 'present' %>NOT<% end %> EXISTS(
     SELECT name FROM sys.sql_logins
     WHERE
 	    name = @login AND
@@ -23,4 +26,13 @@ IF NOT EXISTS(
 BEGIN
     THROW 51000, 'ERROR The record does not exists', 10
 END;
+<% if @ensure == 'present' %>
+ELSE
+BEGIN
+    /* If it does exist check for each role is in the correct state */
+    <% @svrroles.each do |role, enable_bit| %>
+        IF IS_SRVROLEMEMBER('<%= role %>','<%= @login %>') != <%= enable_bit %> THROW 51000, 'ERROR: a role is not correct for <%= role %>', 10
+    <% end %>
+END
+<% end %>
 GO
