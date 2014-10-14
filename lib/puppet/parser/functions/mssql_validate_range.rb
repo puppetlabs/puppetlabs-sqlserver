@@ -7,8 +7,11 @@ module Puppet::Parser::Functions
 
     msg = msg || "validate_range(): #{args[0].inspect} is not between #{args[1].inspect} and #{args[2].inspect}"
 
-    # We're using a flattened array here because we can't call String#any? in
-    # Ruby 1.9 like we can in Ruby 1.8
-    raise(Puppet::ParseError, msg) unless Integer(value).between?(Integer(lower), Integer(upper))
+    if /^\d+(|\.\d+)$/.match(value)
+      raise(Puppet::ParseError, msg) unless Float(value).between?(Float(lower), Float(upper))
+    else
+      value.strip!
+      raise(Puppet::ParseError, msg) unless value.length >= Integer(lower) && value.length <= Integer(upper)
+    end
   end
 end

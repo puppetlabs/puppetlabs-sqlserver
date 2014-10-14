@@ -45,27 +45,45 @@ define mssql::database (
   if $filespec_size {
     mssql_validate_size($filespec_size)
   }
-  if $filespec_maxsize and $filespec_maxsize != 'UNLIMITED'{
+  if $filespec_maxsize and $filespec_maxsize != 'UNLIMITED' {
     mssql_validate_size($filespec_maxsize)
   }
-
+  if $filespec_filename {
+    mssql_validate_range($filespec_name, 1, 128, "$log_name can not be more than 128 characters and must be at least 1 character in length")
+    validate_absolute_path($filespec_filename)
+  }
+  if $log_filename {
+    mssql_validate_range($log_name, 1, 128, "$log_name can not be more than 128 characters and must be at least 1 character in length")
+    validate_absolute_path($log_filename)
+  }
   if $log_size { mssql_validate_size($log_size) }
   if $log_maxsize { mssql_validate_size($log_maxsize) }
 
-  mssql_validate_instance_name($instance)
-
-  mssql_validate_range($two_digit_year_cutoff,1753,9999,"Two digit year cutoff must be between 1753 and 9999, you provided $two_digit_year_cutoff")
-
-/* Validate ON\OFF switches */
-  if $db_chaining { mssql_validate_on_off($db_chaining) }
-  if $nested_triggers { mssql_validate_on_off($nested_triggers) }
-  if $transform_noise_words { mssql_validate_on_off($transform_noise_words) }
-  if $trustworthy { mssql_validate_on_off($trustworthy) }
+/* VALIDATE FILESTREAM */
   if $filestream_non_transacted_access {
-    validate_re($filestream_non_transacted_access,'^(OFF|READ_ONLY|FULL)$',
+    validate_re($filestream_non_transacted_access, '^(OFF|READ_ONLY|FULL)$',
       "filestream_non_transacted_access can be OFF|READ_ONLY|FULL only, you provided $filestream_non_transacted_access")
 
   }
+  if $filestream_directory_name {
+    validate_absolute_path($filestream_directory_name)
+  }
+
+  mssql_validate_instance_name($instance)
+
+
+
+/* Validate PARTIAL required variables switches */
+  if $containment == 'PARTIAL' {
+    if $db_chaining { mssql_validate_on_off($db_chaining) }
+    if $nested_triggers { mssql_validate_on_off($nested_triggers) }
+    if $transform_noise_words { mssql_validate_on_off($transform_noise_words) }
+    if $trustworthy { mssql_validate_on_off($trustworthy) }
+    mssql_validate_range($two_digit_year_cutoff, 1753, 9999,
+      "Two digit year cutoff must be between 1753 and 9999, you provided $two_digit_year_cutoff")
+  }
+
+
   validate_re($ensure,['^present$','^absent$'],"Ensure must be either present or absent, you provided $ensure")
 
   $create_delete = $ensure ? {
