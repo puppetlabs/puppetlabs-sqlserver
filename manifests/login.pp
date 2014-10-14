@@ -4,7 +4,7 @@ define mssql::login (
   $ensure = 'present',
   $password = undef,
   $svrroles = { },
-  $login_type = "SqlLogin",
+  $login_type = "SQL_LOGIN",
   $default_database = 'master',
   $default_language = 'us_english',
   $check_expiration = false,
@@ -13,10 +13,7 @@ define mssql::login (
 
   mssql_validate_instance_name($instance)
 
-  $type_desc = $login_type ? {
-    'SQLLogin' => 'SQL_LOGIN',
-  }
-  mssql_validate_instance_name($instance)
+  validate_re($login_type,['^(SQL_LOGIN|WINDOWS_LOGIN)$'])
 
   $create_delete = $ensure ? {
     present => 'create',
