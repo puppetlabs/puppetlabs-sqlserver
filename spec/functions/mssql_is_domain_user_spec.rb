@@ -1,8 +1,9 @@
-require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'lib/puppet_x/mssql/helper'))
+require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'lib/puppet_x/mssql/server_helper'))
 
 describe 'mssql_is_domain_user' do
   shared_examples 'when calling with' do |user, should_be_bool|
     it "with #{user} should return #{should_be_bool}" do
+      Facter.stubs(:value).with(anything())
       Facter.stubs(:value).with(:hostname).returns('mybox')
       should run.with_params(user).and_return(should_be_bool)
     end

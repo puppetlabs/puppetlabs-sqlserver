@@ -1,0 +1,31 @@
+-- QUICK CHECK before most costly query
+IF <% if @ensure == 'present' %>NOT<% end %> EXISTS(SELECT name from sys.databases WHERE name = '<%= @db_name %>')
+BEGIN
+    THROW 5100, 'ERROR The database does not exist', 10
+END
+
+IF <% if @ensure == 'present' %>NOT<% end %> EXISTS(
+SELECT
+	d.name AS [DB Name],
+	mf.physical_name AS [DB File],
+	mf.growth AS [DB Growth],
+	mf.max_size AS [DB MaxSize],
+	lf.physical_name AS [LogFile],
+	lf.growth AS [Log Growth],
+	lf.max_size AS [Log MaxSize],
+	fs.non_transacted_access AS [Filestream Access],
+	fs.non_transacted_access_desc AS [Filestream Access Desc],
+	fs.directory_name AS [Filestream Directory],
+	mf.*,lf.* from sys.sysdatabases d
+LEFT JOIN sys.database_filestream_options fs ON d.dbid = fs.database_id
+LEFT JOIN sys.master_files mf ON mf.database_id = d.dbid
+LEFT JOIN sys.master_files lf ON lf.database_id = d.dbid
+WHERE mf.type_desc ='ROWS' AND lf.type_desc ='LOG' AND d.name = '<%= @db_name %>'            )
+BEGIN
+   BEGIN TRY
+		THROW 51000, 'ERROR The database does not exists', 10
+	END TRY
+	BEGIN CATCH
+		THROW;
+	END CATCH
+END
