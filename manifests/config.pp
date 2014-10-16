@@ -3,8 +3,10 @@ define mssql::config ($instance_name = $title, $admin_user, $admin_pass) {
   $install_dir ='C:/Program Files/Microsoft SQL Server'
   $config_dir = "${install_dir}/.puppet"
   $config_file = "${config_dir}/.${instance_name}.cfg"
-  file{ $config_dir:
-    ensure => directory
+  if !defined(File[$config_dir]){
+    file{ $config_dir:
+      ensure => directory
+    }
   }
   file{ $config_file:
     content => template("mssql/instance_config.erb"),

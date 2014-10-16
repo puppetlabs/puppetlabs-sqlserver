@@ -1,0 +1,8 @@
+USE master
+GO
+IF exists(select * from sys.sql_logins where name = '<%= @login %>')
+BEGIN
+    -- need to add logic to kill all possible connections if any exists,
+    -- possible force flag to prevent from happening during transaction if user would prefer to wait
+    execute sp_droplogin @loginame = [<%= @login %>]
+END
