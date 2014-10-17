@@ -10,7 +10,7 @@ group :development, :test do
   gem 'simplecov',              :require => false
   gem 'rspec', '~> 2.14.0',     :require => false
   gem 'beaker-rspec',           :require => false
-	gem 'pry'
+  gem 'yard'
 end
 
 if puppetversion = ENV['PUPPET_GEM_VERSION']
