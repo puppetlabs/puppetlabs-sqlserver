@@ -1,14 +1,38 @@
-##
+#
+# == Define Resource Type: mssql::database
 #
 #
 #
 #
-##
+# === Requirement/Dependencies:
+#
+# Requires defined type {mssql::config} in order to execute against the SQL Server instance
+#
+#
+# === Parameters
+# [db_name]
+#   The SQL or Windows login you would like to manage
+#
+# [instance]
+#   The name of the instance which to connect to, instance names can not be longer than 16 characters
+#
+# [ensure]
+#   Defaults to 'present', valid values are 'present' | 'absent'
+#
+# [compatability]
+#   Numberic representation of what SQL Server version you want the database to be compatabible with.
+#
+#
+#
+#
+#
+# @see http://msdn.microsoft.com/en-us/library/ms176061.aspx CREATE DATABASE TSQL
+# @see http://msdn.microsoft.com/en-us/library/ms174269.aspx ALTER DATABASE TSQL
 define mssql::database (
   $db_name = $title,
   $instance,
   $ensure = present,
-  $compatability = 100,
+  $compatibility = 100,
   $collation_name = undef,
   $filestream_non_transacted_access = undef,
   $filestream_directory_name = undef,

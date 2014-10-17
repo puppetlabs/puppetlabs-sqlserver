@@ -20,7 +20,8 @@ SELECT
 LEFT JOIN sys.database_filestream_options fs ON d.dbid = fs.database_id
 LEFT JOIN sys.master_files mf ON mf.database_id = d.dbid
 LEFT JOIN sys.master_files lf ON lf.database_id = d.dbid
-WHERE mf.type_desc ='ROWS' AND lf.type_desc ='LOG' AND d.name = '<%= @db_name %>'            )
+WHERE mf.type_desc ='ROWS' AND lf.type_desc ='LOG' AND d.name = '<%= @db_name %>'
+AND d.cmptlevel = <%= @compatibility %> )
 BEGIN
    BEGIN TRY
 		THROW 51000, 'ERROR The database does not exists', 10
