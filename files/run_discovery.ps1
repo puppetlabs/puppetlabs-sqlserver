@@ -8,7 +8,7 @@ if(Test-Path 'C:\Program Files\Microsoft SQL Server\120\Setup Bootstrap\SQLServe
     popd
 }
 
-$file = gci 'C:\Program Files\Microsoft SQL Server\*\Setup Bootstrap\Log\*\SqlDiscoveryReport.xml' | sort -Descending | select -First 1
+$file = gci 'C:\Program Files\Microsoft SQL Server\*\Setup Bootstrap\Log\*\SqlDiscoveryReport.xml' -ErrorAction Ignore | sort -Descending | select -First 1
 if($file -ne $null) {
     [xml] $xml = cat $file
     $json = $xml.ArrayOfDiscoveryInformation.DiscoveryInformation
