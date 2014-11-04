@@ -8,8 +8,8 @@ class Puppet::Provider::Mssql < Puppet::Provider
   commands :serverbootstrap =>
                if File.exists? 'C:\Program Files\Microsoft SQL Server\120\Setup Bootstrap\SQLServer2014\setup.exe'
                  'C:\Program Files\Microsoft SQL Server\120\Setup Bootstrap\SQLServer2014\setup.exe'
-               elsif File.exists? 'C:\Program Files\Microsoft SQL Server\120\Setup Bootstrap\SQLServer2014setup.exe'
-                 'C:\Program Files\Microsoft SQL Server\120\Setup Bootstrap\SQLServer2014setup.exe'
+               elsif File.exists? 'C:\Program Files\Microsoft SQL Server\110\Setup Bootstrap\SQLServer2014\setup.exe'
+                 'C:\Program Files\Microsoft SQL Server\110\Setup Bootstrap\SQLServer2014\setup.exe'
                end
 
   commands :sqlcmd =>
