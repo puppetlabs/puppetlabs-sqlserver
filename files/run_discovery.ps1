@@ -3,7 +3,7 @@ if(Test-Path 'C:\Program Files\Microsoft SQL Server\120\Setup Bootstrap\SQLServe
     Start-Process -FilePath .\setup.exe -ArgumentList @("/Action=RunDiscovery","/q") -Wait -WindowStyle Hidden
     popd
 }elseif(Test-Path 'C:\Program Files\Microsoft SQL Server\110\Setup Bootstrap\SQLServer2012\setup.exe'){
-    pushd 'C:\Program Files\Microsoft SQL Server\120\Setup Bootstrap\SQLServer2012\'
+    pushd 'C:\Program Files\Microsoft SQL Server\110\Setup Bootstrap\SQLServer2012\'
     Start-Process -FilePath .\setup.exe -ArgumentList @("/Action=RunDiscovery","/q") -Wait -WindowStyle Hidden
     popd
 }

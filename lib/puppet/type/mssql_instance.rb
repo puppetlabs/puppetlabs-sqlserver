@@ -34,7 +34,7 @@ Puppet::Type::newtype(:mssql_instance) do
   end
 
   newparam(:sa_pwd) do
-    desc 'Required when :sql_security_mode => :true'
+    desc 'Required when :security_mode => "SQL"'
 
   end
 
