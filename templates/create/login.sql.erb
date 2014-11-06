@@ -39,9 +39,6 @@ BEGIN
 	<% end -%>
 	    DEFAULT_LANGUAGE = [<%= @default_language %>],
 		DEFAULT_DATABASE = [<%= @default_database %>];
-	<% if @disable != 1 -%>
-	EXECUTE xp_grantlogin @loginame = [<%= @login %>];
-	<% end -%>
 	<% @svrroles.each do |role, enable_bit| -%>
 	    <% if enable_bit == '1' -%>
     ALTER SERVER ROLE <%= role %> ADD MEMBER [<%= @login %>];
