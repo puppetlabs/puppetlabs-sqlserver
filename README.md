@@ -43,7 +43,7 @@ To get started with the mssql module, include these settings in your manifest:
 
 ```
 mssql_instance{'MSSQLSERVER':
-	features 	=> ['SQL'],
+	features 	            => ['SQL'],
 	source 					=> 'E:/',
 	sql_sysadmin_accounts 	=> ['myuser'],
 }
@@ -73,7 +73,7 @@ mssql_features { 'Generic Features':
 
 ```
 mssql::database{ 'minviable':
-instance => ‘MSSQLSERVER’,
+    instance => ‘MSSQLSERVER’,
 }
 ```
 
@@ -136,14 +136,13 @@ mssql::login{'WIN-D95P1A3V103\localAccount':
 * `admin_password`: The password to access the server to be managed.
 
 ```
-mssql::config
-  {'MSSQLSERVER':
-  admin_user => 'sa',
+mssql::config{'MSSQLSERVER':
+  admin_user     => 'sa',
   admin_password => 'PuppetP@ssword1',
   }
 ```  
 
-#### `mssql::database`: Creates, destroys, or updates databases, but does not move or modify files. Requires defined type `mssql::config` for the database in which you want the database created.
+#### `mssql::database`: Creates, destroys, or updates databases, but does not move or modify files. Requires defined type `mssql::config` for the instance in which you want the database created.
 * `db_name`: The SQL or Windows login you want to manage. Accepts a string.
 * `instance`: The name of the instance to connect to. Instance names must be strings no longer than 16 characters.
 * `ensure`: Ensures that the resource is present. Valid values are 'present', 'absent'. Defaults to 'present'.
