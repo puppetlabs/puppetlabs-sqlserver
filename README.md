@@ -43,9 +43,9 @@ To get started with the mssql module, include these settings in your manifest:
 
 ```
 mssql_instance{'MSSQLSERVER':
-	features 	            => ['SQL'],
-	source 					=> 'E:/',
-	sql_sysadmin_accounts 	=> ['myuser'],
+    features                => ['SQL'],
+    source                  => 'E:/',
+    sql_sysadmin_accounts   => ['myuser'],
 }
 ```
 
