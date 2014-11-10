@@ -22,7 +22,7 @@ describe 'mssql::database', :type => :define do
   end
   context 'adding collation check' do
     it 'should compile and include collation name' do
-      params.merge!({:collation_name => 'SQL_Latin1_General_CP1_CI_'})
+      params.merge!({:collation_name => 'SQL_Latin1_General_CP1_CI_AS'})
       should contain_mssql_tsql('database-MSSQLSERVER-myTestDb').with_onlyif(/AND d\.collation_name = \'SQL_Latin1_General_CP1_CI_AS\'/)
     end
   end
