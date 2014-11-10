@@ -64,37 +64,43 @@ CREATE DATABASE [<%= @db_name %>]
           )
      <% end %>
 ALTER DATABASE [<%= @db_name %>] SET COMPATIBILITY_LEVEL = <%= @compatibility %>
+<% if -%>
+/* Alter Database collation */
+IF NOT EXISTS(SELECT count(name) FROM sys.databases WHERE name = '<%= @db_name %>' AND collation_name = '<%= @collation_name %>')
+ALTER DATABASE [<%= @db_name %>] COLLATE <%= @collation_name %>
+<% end -%>
 END
-
 ELSE
 BEGIN
-  IF NOT EXISTS(
-	SELECT name FROM sys.databases
-		WHERE compatibility_level = <%= @compatibility %>
-			AND name = '<%= @db_name %>'
-	)
-    BEGIN
+    IF NOT EXISTS(SELECT name FROM sys.databases WHERE name = '<%= @db_name %>' AND compatibility_level = <%= @compatibility %>)
         ALTER DATABASE [<%= @db_name %>] SET COMPATIBILITY_LEVEL = <%= @compatibility %>
-    END;
- <% if @containment == 'PARTIAL' %>
+    <% if @collation_name -%>
+    IF NOT EXISTS(SELECT count(name) FROM sys.databases WHERE name = '<%= @db_name %>' AND collation_name = '<%= @collation_name %>')
+        ALTER DATABASE [<%= @db_name %>] COLLATE <%= @collation_name %>
+    <% end -%>
+    <% if @containment == 'PARTIAL' %>
        /*
         Specifies the default language for all newly created logins. Language can be specified by providing the
         local id (lcid), the language name, or the language alias. For a list of acceptable language names and aliases, see
         sys.syslanguages (Transact-SQL). This option is allowable only when CONTAINMENT has been set to PARTIAL. If CONTAINMENT
         is set to NONE, errors will occur.
             */
-        <% if @default_language %>
-    ALTER DATABASE [<%= @db_name %>] SET DEFAULT_LANGUAGE = <%= @default_language %>
-        <% end %>
-        <% if @default_fulltext_langauge %>
-    ALTER DATABASE [<%= @db_name %>] SET DEFAULT_FULLTEXT_LANGAUGE = <%= @default_fulltext_langauge %>
-        <% end %>
-        <% if @nested_triggers %>
-    ALTER DATABASE [<%= @db_name %>] SET NESTED_TRIGGERS = <%= @nested_triggers %>
-        <% end %>
-        <% if @transform_noise_words %>
-    ALTER DATABASE [<%= @db_name %>] SET TRANSFORM_NOISE_WORDS = <%= @transform_noise_words %>
-        <% end %>
+        <% if @default_language -%>
+    IF NOT EXISTS(SELECT name FROM sys.databases WHERE name = '<%= @db_name %>' AND (DEFAULT_LANGUAGE_NAME = '<%= @default_language %>' OR DEFAULT_LANGUAGE_LCID = '<%= @default_language %>'))
+        ALTER DATABASE [<%= @db_name %>] SET DEFAULT_LANGUAGE = <%= @default_language %>
+        <% end -%>
+        <% if @default_fulltext_langauge -%>
+    IF NOT EXISTS(SELECT name FROM sys.databases WHERE name = '<%= @db_name %>' AND (DEFAULT_FULLTEXT_LANGAUGE_NAME = '<%= @default_language %>' OR DEFAULT_FULLTEXT_LANGAUGE_LCID  = '<%= @default_language %>'))
+        ALTER DATABASE [<%= @db_name %>] SET DEFAULT_FULLTEXT_LANGAUGE = <%= @default_fulltext_langauge %>
+        <% end -%>
+        <% if @nested_triggers -%>
+    IF NOT EXISTS(SELECT name FROM sys.databases WHERE name = '<%= @db_name %>' AND is_nested_triggers_on = <% @nested_triggers ? 1 : 0 %>
+        ALTER DATABASE [<%= @db_name %>] SET NESTED_TRIGGERS = <%= @nested_triggers %>
+        <% end -%>
+        <% if @transform_noise_words -%>
+    IF NOT EXISTS(SELECT name FROM sys.databases WHERE name = '<%= @db_name %>' AND is_transform_words_on = <% @transform_noise_words ? 1 : 0 %>
+        ALTER DATABASE [<%= @db_name %>] SET TRANSFORM_NOISE_WORDS = <%= @transform_noise_words %>
+        <% end -%>
  <% end %>
 END
 
