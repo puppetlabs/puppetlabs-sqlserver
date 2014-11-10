@@ -26,8 +26,7 @@ Puppet::Type::newtype(:mssql_features) do
 
   newproperty(:features, :array_matching => :all) do
     desc 'Specifies features to install, uninstall, or upgrade. The list of top-level features include
-          SQL, AS, RS, IS, MDS, and Tools. The SQL feature will install the Database Engine, Replication,
-          Full-Text, and Data Quality Services (DQS) server. The Tools feature will install Management
+         Tools, BC, BOL, Conn, SSMS, ADV_SSMS, SDK and IS. The Tools feature will install Management
           Tools, Books online components, SQL Server Data Tools, and other shared components.'
     newvalues(:Tools, :BC, :BOL, :Conn, :SSMS, :ADV_SSMS, :SDK, :IS)
     munge do |value|
