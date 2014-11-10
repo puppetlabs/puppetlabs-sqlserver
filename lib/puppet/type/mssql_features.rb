@@ -49,6 +49,15 @@ Puppet::Type::newtype(:mssql_features) do
     end
   end
 
+  def validate_user_password_required(account, pass)
+    if !(set?(account))
+      fail("User #{account} is required")
+    end
+    if is_domain_user?(self[account]) && self[pass].nil?
+      fail("#{pass} required when using domain account")
+    end
+  end
+
   def set?(key)
     !self[key].nil? && !self[key].empty?
   end
