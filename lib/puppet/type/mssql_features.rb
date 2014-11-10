@@ -49,6 +49,10 @@ Puppet::Type::newtype(:mssql_features) do
     end
   end
 
+  def is_domain_user?(user)
+    PuppetX::Mssql::ServerHelper.is_domain_user?(user, Facter.value(:hostname))
+  end
+
   def validate_user_password_required(account, pass)
     if !(set?(account))
       fail("User #{account} is required")
