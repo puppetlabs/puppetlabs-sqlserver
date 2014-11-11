@@ -44,7 +44,9 @@ Puppet::Type::newtype(:mssql_features) do
     end
     # IS_SVC_ACCOUNT validation
     if set?(:features) && self[:features].include?("IS")
-      validate_user_password_required(:is_svc_account, :is_svc_password)
+      if set?(:is_svc_account) || set?(:is_svc_password)
+        validate_user_password_required(:is_svc_account, :is_svc_password)
+      end
     end
   end
 

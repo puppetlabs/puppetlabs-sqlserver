@@ -1,11 +1,28 @@
 require 'spec_helper'
 
-require File.expand_path(File.join(File.dirname(__FILE__), '..', 'mssql_install_context.rb'))
+# require File.expand_path(File.join(File.dirname(__FILE__), '..', 'mssql_install_context.rb'))
 
 provider_class = Puppet::Type.type(:mssql_instance).provider(:mssql)
 
 RSpec.describe provider_class do
   subject { provider_class }
+
+  shared_context 'install_arguments' do
+    @install_args = {
+        :source => 'C:\myinstallexecs',
+        :pid => 'areallyCrazyLongPid',
+        :features => %w(SQL AS RS MDS),
+        :name => 'MYSQLSERVER_HOST',
+        :agt_svc_account => 'nexus\travis',
+        :agt_svc_password => 'P@ssword1',
+        :as_svc_account => 'analysisAccount',
+        :as_svc_password => 'CrazySimpleP@ssword',
+        :rs_svc_account => 'reportUserAccount', #always local user
+        :rs_svc_password => 'reportP@ssword1',
+        :sql_svc_account => 'NT Service\MSSQLSERVER',
+        :sql_sysadmin_accounts => ['localAdminAccount', 'nexus\domainUser']
+    }
+  end
 
   shared_examples 'run' do |args, munged_values = {}|
     it {
@@ -49,5 +66,6 @@ RSpec.describe provider_class do
     munged = {:features => %w(DQ FullText Replication SQLEngine)}
     it_should_behave_like 'run', @install_args, munged
   end
+
 
 end
