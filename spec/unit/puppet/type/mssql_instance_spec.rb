@@ -33,7 +33,7 @@ RSpec.describe Puppet::Type.type(:mssql_instance) do
     context "#{property} required when using domain account" do
       include_context 'install_arguments'
       @install_args.delete(property)
-      it_should_behave_like 'fail validation', @install_args, display_name
+      it_should_behave_like 'fail validation', @install_args, property.to_s
     end
   end
 
