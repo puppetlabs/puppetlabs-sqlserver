@@ -14,6 +14,7 @@ module PuppetX
           :Conn => 'Client Tools Connectivity',
           :SDK => 'Client Tools SDK',
           :IS => 'Integration Services',
+          :MDS => 'Master Data Services',
       }
       @super_feature_hash = {
           :SQL => [:DQ, :FullText, :Replication, :SQLEngine],

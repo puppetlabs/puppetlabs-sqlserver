@@ -20,9 +20,9 @@ Puppet::Type::newtype(:mssql_instance) do
 
   newproperty(:features, :array_matching => :all) do
     desc 'Specifies features to install, uninstall, or upgrade. The list of top-level features include
-          SQL, SQLEngine, Replication, FullText, DQ AS, RS, and MDS. The SQL feature will install the Database Engine,
+          SQL, SQLEngine, Replication, FullText, DQ AS, and RS. The SQL feature will install the Database Engine,
           Replication, Full-Text, and Data Quality Services (DQS) server.'
-    newvalues(:SQL, :SQLEngine, :Replication, :FullText, :DQ, :AS, :RS, :MDS)
+    newvalues(:SQL, :SQLEngine, :Replication, :FullText, :DQ, :AS, :RS)
     munge do |value|
       if PuppetX::Mssql::ServerHelper.is_super_feature(value)
         PuppetX::Mssql::ServerHelper.get_sub_features(value).collect { |v| v.to_s }
