@@ -172,6 +172,7 @@ define mssql::database (
     instance      => $instance,
     command       => template("mssql/$create_delete/database.sql.erb"),
     onlyif        => template('mssql/query/database_exists.sql.erb'),
+    require       => Mssql::Config[$instance],
   }
 
 

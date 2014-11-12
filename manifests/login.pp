@@ -71,6 +71,6 @@ define mssql::login (
     instance      => $instance,
     command       => template("mssql/$create_delete/login.sql.erb"),
     onlyif        => template('mssql/query/login_exists.sql.erb'),
-    require       => Mssql_instance[$instance]
+    require       => Mssql::Config[$instance]
   }
 }

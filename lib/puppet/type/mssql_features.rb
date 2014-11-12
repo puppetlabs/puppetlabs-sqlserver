@@ -5,7 +5,12 @@ Puppet::Type::newtype(:mssql_features) do
   ensurable
 
 
-  newparam(:name, :namevar => true)
+  newparam(:name, :namevar => true)  do
+    #Due to our prefetch and unaware of what name the user will provide we munge the value to meet our expecations.
+    munge do |value|
+      'Generic Features'
+    end
+  end
 
   newparam(:source)
 
