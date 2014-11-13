@@ -11,9 +11,18 @@ if (!(Get-Command 'sqlcmd.exe' -ErrorAction SilentlyContinue)){
 	}elseif(Test-Path 'C:\Program Files\Microsoft SQL Server\110\Tools\Binn\'){
     	$env:Path += ";C:\Program Files\Microsoft SQL Server\110\Tools\Binn\;"
 	}else{
-   		Write-Error -Message "Unable to find the sqlcmd.exe" -Category ResourceUnavailable
+   		$result = ls 'C:\Program Files\Microsoft SQL Server' -Filter sqlcmd.exe -Recurse | Select -First 1
+		if ($result -eq $null) {
+			Write-Error -Message "Unable to find the sqlcmd.exe" -Category ResourceUnavailable
+		}else{
+			$env:Path += ";{0}" -f $result.DirectoryName
+		}
+	}
+	if (!(Get-Command 'sqlcmd.exe')){
+	    Write-Error -Message "Unable to still find the sqlcmd.exe command" -Category ResourceUnavailable
 	}
 }
+
 $result = sqlcmd.exe -i '<%= input_file %>' -h-1 -W -s ',' <% if @instance != 'MSSQLSERVER' %>-S localhost\<%= @instance %><%end%>
     if($result -match "ERROR"){
         Write-Error -Message ($result | where {$_ -match "ERROR"} | select -First 1)
