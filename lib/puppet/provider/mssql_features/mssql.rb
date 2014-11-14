@@ -34,8 +34,8 @@ Puppet::Type::type(:mssql_features).provide(:mssql, :parent => Puppet::Provider:
     end
   end
 
-
   def remove_features(features)
+    features = [] if features.nil?
     debug "Removing features #{features}"
     modify_features('uninstall', features) unless features.empty?
   end
@@ -55,7 +55,7 @@ Puppet::Type::type(:mssql_features).provide(:mssql, :parent => Puppet::Provider:
     if !@resource[:pid].nil? && !@resource[:pid].empty? && action != 'uninstall'
       cmd_args << "/PID=#{@resource[:pid]}"
     end
-    execute(cmd_args.compact)
+    try_execute(cmd_args, "Unable to #{action} features (#{features.join(', ')})")
   end
 
   def installNet35
@@ -64,14 +64,19 @@ Puppet::Type::type(:mssql_features).provide(:mssql, :parent => Puppet::Provider:
   end
 
   def create
-    installNet35
-    debug "Installing features #{@resource[:features]}"
-    add_features(@resource[:features])
-    @property_hash[:features] = @resource[:features]
+    if @resource[:features].empty?
+      warn "Uninstalling all sql server features not tied into an instance because an empty array was passed, please use ensure absent instead."
+      destroy
+    else
+      installNet35
+      debug "Installing features #{@resource[:features]}"
+      add_features(@resource[:features])
+      @property_hash[:features] = @resource[:features]
+    end
   end
 
   def destroy
-    remove_features(@resource[:features])
+    remove_features(current_installed_features)
     @property_hash.clear
     exists? ? (return false) : (return true)
   end
@@ -80,6 +85,10 @@ Puppet::Type::type(:mssql_features).provide(:mssql, :parent => Puppet::Provider:
 
   def exists?
     return @property_hash[:ensure] == :present || false
+  end
+
+  def current_installed_features
+    @property_hash[:features]
   end
 
   def features=(new_features)
@@ -91,3 +100,4 @@ Puppet::Type::type(:mssql_features).provide(:mssql, :parent => Puppet::Provider:
     self.features
   end
 end
+

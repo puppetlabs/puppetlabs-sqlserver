@@ -35,15 +35,15 @@ Puppet::Type::type(:mssql_instance).provide(:mssql, :parent => Puppet::Provider:
 
   def remove_features(features)
     debug "Removing features #{features}"
-    if !(features.empty?)
-      execute(basic_cmd_args('uninstall', features).compact)
+    if !features.nil? and !(features.empty?)
+      try_execute(basic_cmd_args('uninstall', features), "Error trying to remove features (#{features.join(', ')}")
     end
   end
 
   def add_features(features)
     debug "Installing features #{features}"
     cmd_args = build_cmd_args(features)
-    execute(cmd_args.compact)
+    try_execute(cmd_args, "Error trying to add features (#{features.join(', ')}")
   end
 
   def installNet35
@@ -52,9 +52,14 @@ Puppet::Type::type(:mssql_instance).provide(:mssql, :parent => Puppet::Provider:
   end
 
   def create
-    installNet35
-    cmd_args = build_cmd_args(@resource[:features])
-    execute(cmd_args.compact)
+    if @resource[:features].empty?
+      warn "Uninstalling all features for instance #{@resource[:name]} because an empty array was passed, please use ensure absent instead."
+      destroy
+    else
+      installNet35
+      cmd_args = build_cmd_args(@resource[:features])
+      try_execute(cmd_args)
+    end
   end
 
   def basic_cmd_args(action, features = [])
@@ -68,8 +73,7 @@ Puppet::Type::type(:mssql_instance).provide(:mssql, :parent => Puppet::Provider:
 
   def build_cmd_args(features, action="install")
     cmd_args = basic_cmd_args(action, features)
-    (@resource.parameters.keys -
-        %i(ensure loglevel features name provider source sql_sysadmin_accounts sql_security_mode)).sort.collect do |key|
+    (@resource.parameters.keys - %i( ensure loglevel features name provider source sql_sysadmin_accounts sql_security_mode)).sort.collect do |key|
       cmd_args << "/#{key.to_s.gsub(/_/, '').upcase}=\"#{@resource[key]}\""
     end
     if  !@resource[:sql_sysadmin_accounts].nil? && !@resource[:sql_sysadmin_accounts].empty?
@@ -83,8 +87,8 @@ Puppet::Type::type(:mssql_instance).provide(:mssql, :parent => Puppet::Provider:
   end
 
   def destroy
-    cmd_args = basic_cmd_args("uninstall",@property_hash[:features])
-    execute(cmd_args)
+    cmd_args = basic_cmd_args("uninstall", current_installed_features)
+    try_execute(cmd_args, "Unable to uninstall instance #{@resource[:name]}")
     @property_hash.clear
     exists? ? (return false) : (return true)
   end
@@ -93,6 +97,10 @@ Puppet::Type::type(:mssql_instance).provide(:mssql, :parent => Puppet::Provider:
 
   def exists?
     return @property_hash[:ensure] == :present || false
+  end
+
+  def current_installed_features
+    @property_hash[:features]
   end
 
   def features=(new_features)
