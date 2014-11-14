@@ -100,7 +100,7 @@ mssql::login{'WIN-D95P1A3V103\localAccount':
 #### mssql_features
 
 * `ensure`: Ensures that the resource is present. Valid values are 'present', 'absent'.
-* `features`: Specifies features to install, uninstall, or upgrade. The list of top-level features include SQL, AS, RS, IS, MDS, and Tools. The Tools feature will install Management Tools, Books online components, SQL Server Data Tools, and other shared components. Valid values are 'Tools', 'BC', 'BOL', 'Conn', 'SSMS', 'ADV_SSMS', 'SDK', 'IS'.
+* `features`: Specifies features to install, uninstall, or upgrade. The list of top-level features include SQL, AS, RS, IS, MDS, and Tools. The Tools feature will install Management Tools, Books online components, SQL Server Data Tools, and other shared components. Valid values are 'Tools', 'BC', 'Conn', 'SSMS', 'ADV_SSMS', 'SDK', 'IS'.
 * `is_svc_account`: Either domain user name or system account. Defaults to 'NT AUTHORITY\NETWORK SERVICE'.
 * `is_svc_password`: Password for domain user.
 * `name`: 
