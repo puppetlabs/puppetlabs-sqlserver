@@ -2,7 +2,7 @@ RSpec.shared_context 'install_arguments' do
   @install_args = {
       :source => 'C:\myinstallexecs',
       :pid => 'areallyCrazyLongPid',
-      :features => %w(SQL AS RS MDS),
+      :features => %w(SQL AS RS),
       :name => 'MYSQLSERVER_HOST',
       :agt_svc_account => 'nexus\travis',
       :agt_svc_password => 'P@ssword1',
