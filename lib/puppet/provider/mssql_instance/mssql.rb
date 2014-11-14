@@ -36,7 +36,7 @@ Puppet::Type::type(:mssql_instance).provide(:mssql, :parent => Puppet::Provider:
   def remove_features(features)
     debug "Removing features #{features}"
     if !(features.empty?)
-      execute(baisc_cmd_args('uninstall', features).compact)
+      execute(basic_cmd_args('uninstall', features).compact)
     end
   end
 
