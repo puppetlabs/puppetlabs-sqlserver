@@ -4,8 +4,6 @@ BEGIN
     THROW 51000, 'ERROR The database does not exist', 10
 END
 
-DECLARE @cmptlevel as Int
-
 IF <% if @ensure == 'present' %>NOT<% end %> EXISTS(
 SELECT count(*)
     FROM sys.sysdatabases sd
