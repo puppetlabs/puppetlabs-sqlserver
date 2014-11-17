@@ -12,7 +12,7 @@ SELECT count(*)
 LEFT JOIN sys.databases d ON d.database_id = sd.dbid
 LEFT JOIN sys.database_filestream_options fs ON fs.database_id = sd.dbid
 WHERE d.name = '<%= @db_name %>'
-    AND d.cmptlevel = <%= @compatibility %> )
+    AND d.compatibility_level = <%= @compatibility %> )
     <% if @collation_name %>
     AND d.collation_name = '<%= @collation_name %>'
     <% end %>
