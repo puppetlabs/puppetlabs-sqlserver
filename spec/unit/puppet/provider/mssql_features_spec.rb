@@ -2,7 +2,7 @@ require 'spec_helper'
 require 'rspec'
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'mssql_spec_helper.rb'))
 
-require File.expand_path(File.join(File.dirname(__FILE__), '..', 'mssql_install_context.rb'))
+# require File.expand_path(File.join(File.dirname(__FILE__), '..', 'mssql_install_context.rb'))
 
 provider_class = Puppet::Type.type(:mssql_features).provider(:mssql)
 
