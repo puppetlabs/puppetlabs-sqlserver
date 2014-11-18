@@ -142,7 +142,7 @@ mssql::config{'MSSQLSERVER':
 ```  
 
 #### `mssql::database`: Creates, destroys, or updates databases, but does not move or modify files. Requires defined type `mssql::config` for the instance in which you want the database created.
-* `db_name`: The SQL or Windows login you want to manage. Accepts a string. Defaults to the name of the define.
+* `db_name`: The name of the database you want to manage. Accepts a string.
 * `instance`: The name of the instance to connect to. Instance names must be strings no longer than 16 characters.
 * `ensure`: Ensures that the resource is present. Valid values are 'present', 'absent'. Defaults to 'present'.
 * `compatibility`: Numeric representation of the SQL Server version with which the database should be compatible. For example, 100 = SQL Server 2008 through SQL Server 2012.  For a complete list of values, refer to [http://msdn.microsoft.com/en-us/library/bb510680.aspx](http://msdn.microsoft.com/en-us/library/bb510680.aspx).
