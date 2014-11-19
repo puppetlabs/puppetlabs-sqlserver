@@ -66,7 +66,7 @@ CREATE DATABASE [<%= @db_name %>]
 ALTER DATABASE [<%= @db_name %>] SET COMPATIBILITY_LEVEL = <%= @compatibility %>
 <% if @collation_name -%>
 /* Alter Database collation */
-IF NOT EXISTS(SELECT count(name) FROM sys.databases WHERE name = '<%= @db_name %>' AND collation_name = '<%= @collation_name %>')
+IF NOT EXISTS(SELECT name FROM sys.databases WHERE name = '<%= @db_name %>' AND collation_name = '<%= @collation_name %>')
 ALTER DATABASE [<%= @db_name %>] COLLATE <%= @collation_name %>
 <% end -%>
 END
@@ -75,7 +75,7 @@ BEGIN
     IF NOT EXISTS(SELECT name FROM sys.databases WHERE name = '<%= @db_name %>' AND compatibility_level = <%= @compatibility %>)
         ALTER DATABASE [<%= @db_name %>] SET COMPATIBILITY_LEVEL = <%= @compatibility %>
     <% if @collation_name -%>
-    IF NOT EXISTS(SELECT count(name) FROM sys.databases WHERE name = '<%= @db_name %>' AND collation_name = '<%= @collation_name %>')
+    IF NOT EXISTS(SELECT name FROM sys.databases WHERE name = '<%= @db_name %>' AND collation_name = '<%= @collation_name %>')
         ALTER DATABASE [<%= @db_name %>] COLLATE <%= @collation_name %>
     <% end -%>
     <% if @containment == 'PARTIAL' %>
