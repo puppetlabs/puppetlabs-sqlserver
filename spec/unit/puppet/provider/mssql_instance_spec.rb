@@ -1,44 +1,28 @@
 require 'spec_helper'
 
-# require File.expand_path(File.join(File.dirname(__FILE__), '..', 'mssql_install_context.rb'))
+require File.expand_path(File.join(File.dirname(__FILE__), '..', 'mssql_install_context.rb'))
 
 provider_class = Puppet::Type.type(:mssql_instance).provider(:mssql)
 
 RSpec.describe provider_class do
   subject { provider_class }
 
-  shared_context 'install_arguments' do
-    @install_args = {
-        :source => 'C:\myinstallexecs',
-        :pid => 'areallyCrazyLongPid',
-        :features => %w(SQL AS RS MDS),
-        :name => 'MYSQLSERVER_HOST',
-        :agt_svc_account => 'nexus\travis',
-        :agt_svc_password => 'P@ssword1',
-        :as_svc_account => 'analysisAccount',
-        :as_svc_password => 'CrazySimpleP@ssword',
-        :rs_svc_account => 'reportUserAccount', #always local user
-        :rs_svc_password => 'reportP@ssword1',
-        :sql_svc_account => 'NT Service\MSSQLSERVER',
-        :sql_sysadmin_accounts => ['localAdminAccount', 'nexus\domainUser']
-    }
-  end
-
   shared_examples 'run' do |args, munged_values = {}|
     it {
       execute_args = args.merge(munged_values)
       @resource = Puppet::Type::Mssql_instance.new(args)
       @provider = provider_class.new(@resource)
-      Puppet::Util.stubs(:which).with("#{args[:source]}/setup.exe").returns("#{args[:source]}/setup.exe")
-      Puppet::Util.stubs(:which).with('powershell.exe').returns('powershell.exe')
-      subject.expects(:powershell)
+
+      stub_powershell_call(subject)
+      stub_source_which_call args[:source]
+
       cmd_args = ["#{execute_args[:source]}/setup.exe",
                   "/ACTION=install",
                   '/Q',
                   '/IACCEPTSQLSERVERLICENSETERMS',
                   "/INSTANCENAME=#{execute_args[:name]}",
                   "/FEATURES=#{execute_args[:features].join(',')}",]
-      (execute_args.keys - %i(ensure loglevel features name source sql_sysadmin_accounts sql_security_mode)).sort.collect do |key|
+      (execute_args.keys - %i( ensure loglevel features name source sql_sysadmin_accounts sql_security_mode)).sort.collect do |key|
         cmd_args << "/#{key.to_s.gsub(/_/, '').upcase}=\"#{@resource[key]}\""
       end
       if execute_args[:sql_security_mode]

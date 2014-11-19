@@ -100,11 +100,10 @@ mssql::login{'WIN-D95P1A3V103\localAccount':
 #### mssql_features
 
 * `ensure`: Ensures that the resource is present. Valid values are 'present', 'absent'.
-* `features`: Specifies features to install, uninstall, or upgrade. The list of top-level features include SQL, AS, RS, IS, MDS, and Tools. The Tools feature will install Management Tools, Books online components, SQL Server Data Tools, and other shared components. Valid values are 'Tools', 'BC', 'BOL', 'Conn', 'SSMS', 'ADV_SSMS', 'SDK', 'IS'.
+* `features`: Specifies features to install or uninstall. The list of top-level features include IS, MDS, and Tools. The Tools feature will install Management Tools, SQL Server Data Tools, and other shared components. Valid values are 'Tools', 'BC', 'Conn', 'SSMS', 'ADV_SSMS', 'SDK', 'IS', 'MDS'.
 * `is_svc_account`: Either domain user name or system account. Defaults to 'NT AUTHORITY\NETWORK SERVICE'.
-* `is_svc_password`: Password for domain user.
-* `name`: 
-* `pid`: Specify the SQL Server product key to configure which edition you would like to use.
+* `is_svc_password`: Password for domain user. 
+* `pid`: Specify the SQL Server product key to configure which edition you would like to use. Can be left empty for evaluation versions.
 * `provider`: The specific backend to use for this `mssql_features` resource. You seldom need to specify this---Puppet will usually discover the appropriate provider for your platform. Available providers are: `mssql`, `source`.
   
 #### mssql_instance
@@ -115,7 +114,7 @@ mssql::login{'WIN-D95P1A3V103\localAccount':
 * `as_svc_password`: The password for the Analysis Services service account.
 * `as_sysadmin_accounts`: Specifies the list of administrator accounts to provision.
 * `ensure`: Ensure whether the resource is present. Valid values are `present`, `absent`.
-* `features`: Specifies features to install, uninstall, or upgrade. The list of top-level features include SQL, AS, RS, IS, MDS, and Tools. The SQL feature installs the Database Engine, Replication, Full-Text, and Data Quality Services (DQS) server. The Tools feature installs Management Tools, Books online components, SQL Server Data Tools, and other shared components. Valid values are 'SQL', 'SQLEngine', 'Replication', 'FullText', 'DQ', 'AS', 'RS', 'MDS'.
+* `features`: Specifies features to install, uninstall. The list of top-level features include SQL, AS, and RS. The SQL feature installs the Database Engine, Replication, Full-Text, and Data Quality Services (DQS) server.  Valid values are 'SQL', 'SQLEngine', 'Replication', 'FullText', 'DQ', 'AS', 'RS'.
 * `name`: The name for the instance.
 * `pid`: Specify the SQL Server product key to configure which edition you would like to use.
 * `rs_svc_account`: Specify the service account of the report server. This value is required. If you omit this value, Setup uses the default built-in account for the current operating system (either NetworkService or LocalSystem). If you specify a domain user account, the domain must be under 254 characters and the user name must be under 20 characters. The account name cannot contain the following characters: '"/ \ [ ] : ; | = , + * ? < >'.
@@ -131,7 +130,7 @@ mssql::login{'WIN-D95P1A3V103\localAccount':
 ### Defined Types
 
 #### `mssql::config`: Stores the config file that allows Puppet to access and modify the instance. 
-* `instance_name`: The instance name you want to manage.  Defaults to the $title.
+* `instance_name`: The instance name you want to manage.  Defaults to the name of the define.
 * `admin_user`: The SQL login with sysadmin rights on the server, can only be login of SQL_Login type. 
 * `admin_password`: The password to access the server to be managed.
 

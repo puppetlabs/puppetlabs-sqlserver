@@ -2,8 +2,6 @@ require 'spec_helper'
 require 'rspec'
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'mssql_spec_helper.rb'))
 
-require File.expand_path(File.join(File.dirname(__FILE__), '..', 'mssql_install_context.rb'))
-
 provider_class = Puppet::Type.type(:mssql_features).provider(:mssql)
 
 RSpec.describe provider_class do
@@ -107,5 +105,26 @@ RSpec.describe provider_class do
     @feature_params[:is_svc_account] = 'nexus/domainuser'
     # let(:feature_params) { @feature_params }
     it_should_behave_like 'fail on', @feature_params
+  end
+  describe 'it should call destroy on empty array' do
+    it {
+      feature_params = {
+          :name => 'Base features',
+          :source => 'C:\myinstallexecs',
+          :features => []
+      }
+      @resource = Puppet::Type::Mssql_features.new(feature_params)
+      @provider = provider_class.new(@resource)
+      @provider.stubs(:current_installed_features).returns(%w(SSMS ADV_SSMS Conn))
+      Puppet::Util.stubs(:which).with("#{feature_params[:source]}/setup.exe").returns("#{feature_params[:source]}/setup.exe")
+      Puppet::Util::Execution.expects(:execute).with(
+          ["#{feature_params[:source]}/setup.exe",
+           "/ACTION=uninstall",
+           '/Q',
+           '/IACCEPTSQLSERVERLICENSETERMS',
+           "/FEATURES=#{%w(SSMS ADV_SSMS Conn).join(',')}",
+          ]).returns(0)
+      @provider.create
+    }
   end
 end
