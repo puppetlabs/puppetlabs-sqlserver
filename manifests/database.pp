@@ -11,7 +11,7 @@
 #
 # === Parameters
 # @param db_name [String]
-#   The SQL or Windows login you would like to manage
+#   The database you would like to manage
 #
 # @param instance [String]
 #   The name of the instance which to connect to, instance names can not be longer than 16 characters
