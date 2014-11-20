@@ -45,7 +45,7 @@ Puppet::Type::newtype(:mssql_features) do
 
   def validate
     if set?(:features)
-      self[:features] = (self[:features].flatten).sort
+      self[:features] = self[:features].flatten.sort.uniq
     end
     # IS_SVC_ACCOUNT validation
     if set?(:features) && self[:features].include?("IS")
