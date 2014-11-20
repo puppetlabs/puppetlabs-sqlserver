@@ -132,12 +132,12 @@ mssql::login{'WIN-D95P1A3V103\localAccount':
 #### `mssql::config`: Stores the config file that allows Puppet to access and modify the instance. 
 * `instance_name`: The instance name you want to manage.  Defaults to the name of the define.
 * `admin_user`: The SQL login with sysadmin rights on the server, can only be login of SQL_Login type. 
-* `admin_password`: The password to access the server to be managed.
+* `admin_pass`: The password to access the server to be managed.
 
 ```
 mssql::config{'MSSQLSERVER':
-  admin_user     => 'sa',
-  admin_password => 'PuppetP@ssword1',
+  admin_user => 'sa',
+  admin_pass => 'PuppetP@ssword1',
   }
 ```  
 
