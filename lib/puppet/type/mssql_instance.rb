@@ -120,7 +120,7 @@ Puppet::Type::newtype(:mssql_instance) do
       validate_user_password_required(:agt_svc_account, :agt_svc_password)
     end
     if set?(:features)
-      self[:features] = (self[:features].flatten).sort
+      self[:features] = self[:features].flatten.sort.uniq
     end
 
 
