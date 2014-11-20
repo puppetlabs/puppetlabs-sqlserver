@@ -35,27 +35,27 @@ Puppet::Type::type(:mssql_features).provide(:mssql, :parent => Puppet::Provider:
   end
 
   def remove_features(features)
-    features = [] if features.nil?
-    debug "Removing features #{features}"
-    modify_features('uninstall', features) unless features.empty?
+    modify_features('uninstall', features)
   end
 
   def add_features(features)
-    debug "Adding features #{features}"
-    modify_features('install', features) unless features.empty?
+    modify_features('install', features)
   end
 
   def modify_features(action, features)
-    cmd_args = ["#{@resource[:source]}/setup.exe",
-                "/ACTION=#{action}",
-                '/Q',
-                '/IACCEPTSQLSERVERLICENSETERMS',
-                "/FEATURES=#{features.join(',')}"]
+    if not_nil_and_not_empty? features
+      debug "#{action.capitalize}ing features '#{features.join(',')}'"
+      cmd_args = ["#{@resource[:source]}/setup.exe",
+                  "/ACTION=#{action}",
+                  '/Q',
+                  '/IACCEPTSQLSERVERLICENSETERMS',
+                  "/FEATURES=#{features.join(',')}"]
 
-    if !@resource[:pid].nil? && !@resource[:pid].empty? && action != 'uninstall'
-      cmd_args << "/PID=#{@resource[:pid]}"
+      if not_nil_and_not_empty?(@resource[:pid]) && action != 'uninstall'
+        cmd_args << "/PID=#{@resource[:pid]}"
+      end
+      try_execute(cmd_args, "Unable to #{action} features (#{features.join(', ')})")
     end
-    try_execute(cmd_args, "Unable to #{action} features (#{features.join(', ')})")
   end
 
   def installNet35
@@ -99,5 +99,6 @@ Puppet::Type::type(:mssql_features).provide(:mssql, :parent => Puppet::Provider:
     @property_hash[:features] = new_features
     self.features
   end
+
 end
 

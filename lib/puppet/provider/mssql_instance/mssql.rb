@@ -34,16 +34,18 @@ Puppet::Type::type(:mssql_instance).provide(:mssql, :parent => Puppet::Provider:
   end
 
   def remove_features(features)
-    debug "Removing features #{features}"
-    if !features.nil? and !(features.empty?)
-      try_execute(basic_cmd_args('uninstall', features), "Error trying to remove features (#{features.join(', ')}")
-    end
+    modify_features(features, 'uninstall')
   end
 
   def add_features(features)
-    debug "Installing features #{features}"
-    cmd_args = build_cmd_args(features)
-    try_execute(cmd_args, "Error trying to add features (#{features.join(', ')}")
+    modify_features(features, 'install')
+  end
+
+  def modify_features(features, action)
+    if not_nil_and_not_empty? features
+      debug "#{action.capitalize}ing features '#{features.join(',')}'"
+      try_execute(build_cmd_args(features, action), "Error trying to #{action} features (#{features.join(', ')}")
+    end
   end
 
   def installNet35
@@ -76,7 +78,7 @@ Puppet::Type::type(:mssql_instance).provide(:mssql, :parent => Puppet::Provider:
     (@resource.parameters.keys - %i( ensure loglevel features name provider source sql_sysadmin_accounts sql_security_mode)).sort.collect do |key|
       cmd_args << "/#{key.to_s.gsub(/_/, '').upcase}=\"#{@resource[key]}\""
     end
-    if  !@resource[:sql_sysadmin_accounts].nil? && !@resource[:sql_sysadmin_accounts].empty?
+    if not_nil_and_not_empty? @resource[:sql_sysadmin_accounts]
       if @resource[:sql_sysadmin_accounts].kind_of?(Array)
         cmd_args << "/SQLSYSADMINACCOUNTS=#{ Array.new(@resource[:sql_sysadmin_accounts]).collect { |account| "\"#{account}\"" }.join(' ')}"
       else

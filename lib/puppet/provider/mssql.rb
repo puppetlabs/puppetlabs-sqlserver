@@ -72,4 +72,8 @@ class Puppet::Provider::Mssql < Puppet::Provider
   def self.template_path
     return File.expand_path('../../templates', __FILE__)
   end
+
+  def not_nil_and_not_empty?(obj)
+    !obj.nil? and !obj.empty?
+  end
 end
