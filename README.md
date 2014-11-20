@@ -185,7 +185,7 @@ mssql::config{'MSSQLSERVER':
 * `default_language`: Sets default language. Valid values are documented at http://msdn.microsoft.com/en-us/library/ms190303.aspx. Defaults to 'us_english'.
 * `check_expiration`: For SQL logins, checks to see if password has expired and user should be forced to change the password. Only applicable when Login_Type = 'SQL_LOGIN'. Valid values are 'true', 'false'. Default value is 'false'.
 * `check_policy`: Checks the password policy. Only applicable when Login_Type = 'SQL_LOGIN'. Valid values are 'true', 'false'. Defaults to 'true'. 
-* `is_disabled`: Valid values are 'true', 'false'. Defaults to 'false'. 
+* `disabled`: Valid values are 'true', 'false'. Defaults to 'false'. 
 
 **For more information about Microsoft SQL Server, please see:**
 * [Server Role Members](http://msdn.microsoft.com/en-us/library/ms186320.aspx)

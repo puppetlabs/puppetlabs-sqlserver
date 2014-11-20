@@ -38,7 +38,7 @@
 # [check_policy]
 #   Default value is false, possible values are true | false. Only applicable when Login_Type = 'SQL_LOGIN'.
 #
-# [is_disabled]
+# [disabled]
 #   Default value is false.  Accepts [Boolean] values of true or false.
 # @see Puppet::Parser::Fucntions#mssql_validate_instance_name
 # @see http://msdn.microsoft.com/en-us/library/ms186320(v=sql.110).aspx Server Role Members
