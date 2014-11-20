@@ -1,7 +1,7 @@
 GO
 DECLARE
 	@login as varchar(255) = '<%= @login %>',
-	@is_disabled as tinyint = <%= @disable ? 1 : 0 %>;
+	@is_disabled as tinyint = <%= @disabled ? 1 : 0 %>;
 IF exists(select * from sys.sql_logins where name = '<%= @login %>')
 BEGIN
     IF @is_disabled = 0	ALTER LOGIN [<%= @login %>] ENABLE
