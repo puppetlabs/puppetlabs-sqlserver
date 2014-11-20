@@ -9,13 +9,13 @@
 #   The instance name you want to manage.  Defaults to the $title when not defined explicitly.
 # [admin_user]
 #   A user/login who has sysadmin rights on the server, preferably a SQL_Login type
-# [admin_password]
+# [admin_pass]
 #   The password in order to access the server to be managed.
 #
 # @example
 #   mssql::config{'MSSQLSERVER':
 #     admin_user => 'sa',
-#     admin_password => 'PuppetP@ssword1',
+#     admin_pass => 'PuppetP@ssword1',
 #   }
 #
 define mssql::config ($instance_name = $title, $admin_user, $admin_pass) {
