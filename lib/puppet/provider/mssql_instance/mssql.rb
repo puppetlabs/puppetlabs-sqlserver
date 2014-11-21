@@ -64,7 +64,7 @@ Puppet::Type::type(:mssql_instance).provide(:mssql, :parent => Puppet::Provider:
     end
   end
 
-  def basic_cmd_args(action, features = [])
+  def basic_cmd_args(features, action)
     cmd_args = ["#{@resource[:source]}/setup.exe",
                 "/ACTION=#{action}",
                 '/Q',
@@ -74,15 +74,17 @@ Puppet::Type::type(:mssql_instance).provide(:mssql, :parent => Puppet::Provider:
   end
 
   def build_cmd_args(features, action="install")
-    cmd_args = basic_cmd_args(action, features)
-    (@resource.parameters.keys - %i( ensure loglevel features name provider source sql_sysadmin_accounts sql_security_mode)).sort.collect do |key|
-      cmd_args << "/#{key.to_s.gsub(/_/, '').upcase}=\"#{@resource[key]}\""
-    end
-    if not_nil_and_not_empty? @resource[:sql_sysadmin_accounts]
-      if @resource[:sql_sysadmin_accounts].kind_of?(Array)
-        cmd_args << "/SQLSYSADMINACCOUNTS=#{ Array.new(@resource[:sql_sysadmin_accounts]).collect { |account| "\"#{account}\"" }.join(' ')}"
-      else
-        cmd_args << "/SQLSYSADMINACCOUNTS=\"#{@resource[:sql_sysadmin_accounts]}\""
+    cmd_args = basic_cmd_args(features, action)
+    if action == 'install'
+      (@resource.parameters.keys - %i( ensure loglevel features name provider source sql_sysadmin_accounts sql_security_mode)).sort.collect do |key|
+        cmd_args << "/#{key.to_s.gsub(/_/, '').upcase}=\"#{@resource[key]}\""
+      end
+      if not_nil_and_not_empty? @resource[:sql_sysadmin_accounts]
+        if @resource[:sql_sysadmin_accounts].kind_of?(Array)
+          cmd_args << "/SQLSYSADMINACCOUNTS=#{ Array.new(@resource[:sql_sysadmin_accounts]).collect { |account| "\"#{account}\"" }.join(' ')}"
+        else
+          cmd_args << "/SQLSYSADMINACCOUNTS=\"#{@resource[:sql_sysadmin_accounts]}\""
+        end
       end
     end
     cmd_args
