@@ -20,7 +20,7 @@ class Puppet::Provider::Mssql < Puppet::Provider
       execute(command.compact)
     rescue Puppet::ExecutionFailure => error
       msg = "Failure occured when trying to install SQL Server #{@resource[:name]}" if msg.nil?
-      raise Puppet::Error, msg, error
+      raise Puppet::Error, "#{msg} \n #{error}"
     end
   end
 
