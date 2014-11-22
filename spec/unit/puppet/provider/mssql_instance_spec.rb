@@ -51,5 +51,42 @@ RSpec.describe provider_class do
     it_should_behave_like 'run', @install_args, munged
   end
 
+  shared_examples 'destroy' do |args, installed_features|
+    it {
+      @resource = Puppet::Type::Mssql_instance.new(args)
+      @provider = provider_class.new(@resource)
 
+      stub_source_which_call args[:source]
+      @provider.expects(:current_installed_features).returns(installed_features)
+      cmd_args = ["#{args[:source]}/setup.exe",
+                  "/ACTION=uninstall",
+                  '/Q',
+                  '/IACCEPTSQLSERVERLICENSETERMS',
+                  "/INSTANCENAME=#{args[:name]}",
+                  "/FEATURES=#{installed_features.join(',')}",]
+      Puppet::Util::Execution.stubs(:execute).with(cmd_args.compact).returns(0)
+      @provider.destroy
+    }
+  end
+
+  context 'it should uninstall' do
+    describe 'installed features' do
+      feature_params = {
+          :name => 'MYSQLSERVER',
+          :source => 'C:\myinstallexecs',
+          :features => []
+      }
+      installed_features = %w(SQLEngine Replication)
+      it_should_behave_like 'destroy', feature_params, installed_features
+    end
+    describe 'installed features even if provided features' do
+      feature_params = {
+          :name => 'MYSQLSERVER',
+          :source => 'C:\myinstallexecs',
+          :features => ['SQL']
+      }
+      installed_features = %w(SQLEngine Replication)
+      it_should_behave_like 'destroy', feature_params, installed_features
+    end
+  end
 end
