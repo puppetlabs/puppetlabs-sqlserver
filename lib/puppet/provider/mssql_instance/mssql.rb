@@ -91,7 +91,7 @@ Puppet::Type::type(:mssql_instance).provide(:mssql, :parent => Puppet::Provider:
   end
 
   def destroy
-    cmd_args = basic_cmd_args("uninstall", current_installed_features)
+    cmd_args = basic_cmd_args(current_installed_features, 'uninstall')
     try_execute(cmd_args, "Unable to uninstall instance #{@resource[:name]}")
     @property_hash.clear
     exists? ? (return false) : (return true)
