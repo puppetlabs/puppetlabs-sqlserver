@@ -50,14 +50,16 @@ Puppet::Type::type(:mssql_features).provide(:mssql, :parent => Puppet::Provider:
                   '/Q',
                   '/IACCEPTSQLSERVERLICENSETERMS',
                   "/FEATURES=#{features.join(',')}"]
-      if not_nil_and_not_empty?(@resource[:is_svc_account])
-        cmd_args << "/ISSVCACCOUNT=#{@resource[:is_svc_account]}"
-      end
-      if not_nil_and_not_empty?(@resource[:is_svc_password])
-        cmd_args << "/ISSVCPASSWORD=#{@resource[:is_svc_password]}"
-      end
-      if not_nil_and_not_empty?(@resource[:pid]) && action != 'uninstall'
-        cmd_args << "/PID=#{@resource[:pid]}"
+      if action == 'install'
+        if not_nil_and_not_empty?(@resource[:is_svc_account])
+          cmd_args << "/ISSVCACCOUNT=#{@resource[:is_svc_account]}"
+        end
+        if not_nil_and_not_empty?(@resource[:is_svc_password])
+          cmd_args << "/ISSVCPASSWORD=#{@resource[:is_svc_password]}"
+        end
+        if not_nil_and_not_empty?(@resource[:pid])
+          cmd_args << "/PID=#{@resource[:pid]}"
+        end
       end
       try_execute(cmd_args, "Unable to #{action} features (#{features.join(', ')})")
     end
