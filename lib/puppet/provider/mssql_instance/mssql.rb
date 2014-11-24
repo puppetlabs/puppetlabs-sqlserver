@@ -76,7 +76,7 @@ Puppet::Type::type(:mssql_instance).provide(:mssql, :parent => Puppet::Provider:
   def build_cmd_args(features, action="install")
     cmd_args = basic_cmd_args(features, action)
     if action == 'install'
-      (@resource.parameters.keys - %i( ensure loglevel features name provider source sql_sysadmin_accounts sql_security_mode)).sort.collect do |key|
+      (@resource.parameters.keys - %w(ensure loglevel features name provider source sql_sysadmin_accounts sql_security_mode).map(&:to_sym)).sort.collect do |key|
         cmd_args << "/#{key.to_s.gsub(/_/, '').upcase}=\"#{@resource[key]}\""
       end
       if not_nil_and_not_empty? @resource[:sql_sysadmin_accounts]
