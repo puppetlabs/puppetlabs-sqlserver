@@ -4,14 +4,15 @@
 
 1. [Overview](#overview)
 2. [Module Description - What the module does and why it is useful](#module-description)
-3. [Setup - The basics of getting started with mssql](#setup)
+3. [Getting Started](#getting-started)
+4. [Setup - The basics of getting started with mssql](#setup)
     * [What mssql affects](#what-mssql-affects)
     * [Setup requirements](#setup-requirements)
     * [Beginning with mssql](#beginning-with-mssql)
-4. [Usage - Configuration options and additional functionality](#usage)
-5. [Reference - An under-the-hood peek at what the module is doing and how](#reference)
-5. [Limitations - OS compatibility, etc.](#limitations)
-6. [Development - Guide for contributing to the module](#development)
+5. [Usage - Configuration options and additional functionality](#usage)
+6. [Reference - An under-the-hood peek at what the module is doing and how](#reference)
+7. [Limitations - OS compatibility, etc.](#limitations)
+8. [Development - Guide for contributing to the module](#development)
 
 ##Overview
 
@@ -20,6 +21,15 @@ The mssql module installs and manages MS SQL Server 2012 and 2014 on Windows sys
 ##Module Description
  
 The mssql module adds defined types to install and manage MS SQL Server 2012 and 2014 on Windows Server 2012. The module can install SQL Server clients, multiple instances, and SQL features, as well as create and manage new databases and logins. 
+
+##Getting Started
+Terminology
+* Instance - Instance is a term for an installed and running database service
+* Database - A database is a collection of information organized into related tables of data and definitions of data objects. The data within a database can be easily accessed and manipulated trough computer program.
+* Login - A Login is a user that has server level permissions to access and manage all or some of the database and principal login rights
+* User - Not to be confused with Login above, a user grants access to a single DATABASE and is typically mapped to a Login.
+* Server Roles - These are role that are predefined by SQL Server and may have nested permissions.
+* Table - A Table in RDBMS refers to data arranged in rows and columns, which defines a database entity.
 
 ##Setup
 
