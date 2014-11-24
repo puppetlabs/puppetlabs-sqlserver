@@ -15,14 +15,7 @@ RSpec.describe provider_class do
       stub_powershell_call(subject)
 
       executed_args = args.merge(munged_args)
-      Puppet::Util.stubs(:which).with("#{executed_args[:source]}/setup.exe").returns("#{executed_args[:source]}/setup.exe")
-      Puppet::Util::Execution.stubs(:execute).with(
-          ["#{executed_args[:source]}/setup.exe",
-           "/ACTION=install",
-           '/Q',
-           '/IACCEPTSQLSERVERLICENSETERMS',
-           "/FEATURES=#{executed_args[:features].join(',')}",
-          ]).returns(0)
+      stub_add_features(executed_args, executed_args[:features])
       @provider.create
     }
   end
@@ -56,13 +49,13 @@ RSpec.describe provider_class do
 
       stub_powershell_call(subject)
 
-      stub_source_which_call args[:source]
+      stub_source_which_call args
 
       if !feature_remove.empty?
-        stub_remove_features(args[:source], feature_remove)
+        stub_remove_features(args, feature_remove)
       end
       if !feature_add.empty?
-        stub_add_features(args[:source], feature_add)
+        stub_add_features(args, feature_add)
       end
 
       @provider.create
@@ -126,5 +119,14 @@ RSpec.describe provider_class do
           ]).returns(0)
       @provider.create
     }
+  end
+
+  describe 'it should pass the is_credentials' do
+    include_context 'features'
+    @feature_params[:is_svc_account] = 'nexus/Administrator'
+    @feature_params[:is_svc_password] = 'MycrazyStrongPassword'
+    @feature_params[:features] << 'IS'
+    let(:feature_add) { %w(BC IS SSMS) }
+    it_should_behave_like 'features=', @feature_params
   end
 end

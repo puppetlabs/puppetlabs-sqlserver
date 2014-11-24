@@ -10,6 +10,13 @@ module PuppetSpec
 end
 
 SimpleCov.start do
+  add_group "Functions", "lib/puppet/parser/functions"
+  add_group "Types", "lib/puppet/type/"
+  add_group "Provider", "lib/puppet/provider"
+  add_group "Manifests", "manifests"
+  add_group "PuppetX", "lib/puppet_x/"
   add_filter "/spec/"
+  # add_filter "/spec/.*/shared_examples.*"
+  # add_filter "/spec/.*/.*helper(s?).rb"
 end
 
