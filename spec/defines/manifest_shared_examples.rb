@@ -60,7 +60,6 @@ RSpec.shared_context 'manifests' do
     it {
       params.merge!(additional_params)
       expect { should compile }.to raise_error(error_class, convert_to_regexp(raise_error_check))
-
     }
   end
 end

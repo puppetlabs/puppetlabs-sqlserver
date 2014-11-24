@@ -47,7 +47,7 @@
 #
 define mssql::login (
   $login = $title,
-  $instance,
+  $instance = 'MSSQLSERVER',
   $ensure = 'present',
   $password = undef,
   $svrroles = { },
@@ -56,7 +56,8 @@ define mssql::login (
   $default_language = 'us_english',
   $check_expiration = false,
   $check_policy = true,
-  $disabled = false) {
+  $disabled = false,
+) {
 
   mssql_validate_instance_name($instance)
 
@@ -67,10 +68,10 @@ define mssql::login (
     absent  => 'delete',
   }
 
-  mssql_tsql{ "mssql::login-$instance-$login":
-    instance      => $instance,
-    command       => template("mssql/$create_delete/login.sql.erb"),
-    onlyif        => template('mssql/query/login_exists.sql.erb'),
-    require       => Mssql::Config[$instance]
+  mssql_tsql{ "mssql::login-${instance}-${login}":
+    instance => $instance,
+    command  => template("mssql/${create_delete}/login.sql.erb"),
+    onlyif   => template('mssql/query/login_exists.sql.erb'),
+    require  => Mssql::Config[$instance]
   }
 }

@@ -21,12 +21,12 @@ mssql_instance{ $instance_name:
 }
 
 mssql::config{ 'MSSQLSERVER':
-  admin_user  => 'sa',
-  admin_pass  => 'Pupp3t1@',
-  require     => Mssql_instance[$instance_name],
+  admin_user => 'sa',
+  admin_pass => 'Pupp3t1@',
+  require    => Mssql_instance[$instance_name],
 }
 mssql::login{ 'padmin':
-  password    => 'PadminP@ssw0rd1',
-  instance    => $instance_name,
-  require     => Mssql::Config[$instance_name],
+  password => 'PadminP@ssw0rd1',
+  instance => $instance_name,
+  require  => Mssql::Config[$instance_name],
 }

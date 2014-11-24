@@ -84,7 +84,7 @@
 #
 define mssql::database (
   $db_name = $title,
-  $instance,
+  $instance = 'MSSQLSERVER',
   $ensure = present,
   $compatibility = 100,
   $collation_name = undef,
@@ -109,16 +109,14 @@ define mssql::database (
   $two_digit_year_cutoff = 2049,
   $db_chaining = 'OFF',
   $trustworthy = 'OFF',
-)
-{
-/*
-  validate max size
-  Specifies that the file grows until the disk is full. In SQL Server, a log file specified with unlimited growth has
-  a maximum size of 2 TB, and a data file has a maximum size of 16 TB.
-  if filestream enabled it is until disk is full
-  validate filespec _size and _maxsize
-*/
-
+){
+##
+#  validate max size
+#  Specifies that the file grows until the disk is full. In SQL Server, a log file specified with unlimited growth has
+#  a maximum size of 2 TB, and a data file has a maximum size of 16 TB.
+#  if filestream enabled it is until disk is full
+#  validate filespec _size and _maxsize
+##
   if $filespec_size {
     mssql_validate_size($filespec_size)
   }
@@ -128,11 +126,11 @@ define mssql::database (
   if $filespec_filename or $filespec_name {
     validate_re($filespec_filename, '^.+$', 'filespec_filename must not be null if specifying filespec_name')
     validate_re($filespec_name, '^.+$', 'filespec_name must not be null if specifying filespec_filename')
-    mssql_validate_range($filespec_name, 1, 128, "filespec_name can not be more than 128 characters and must be at least 1 character in length")
+    mssql_validate_range($filespec_name, 1, 128, 'filespec_name can not be more than 128 characters and must be at least 1 character in length')
     validate_absolute_path($filespec_filename)
   }
   if $log_filename {
-    mssql_validate_range($log_name, 1, 128, "$log_name can not be more than 128 characters and must be at least 1 character in length")
+    mssql_validate_range($log_name, 1, 128, "${log_name} can not be more than 128 characters and must be at least 1 character in length")
     validate_absolute_path($log_filename)
   }
   if $log_size { mssql_validate_size($log_size) }
@@ -141,44 +139,44 @@ define mssql::database (
     mssql_validate_range($filespec_filename, 1, 128, 'filespec_name and filespec_filename must be specified when specifying any log attributes')
     validate_absolute_path($filespec_filename)
   }
-/* VALIDATE FILESTREAM */
+## VALIDATE FILESTREAM
   if $filestream_non_transacted_access {
     validate_re($filestream_non_transacted_access, '^(OFF|READ_ONLY|FULL)$',
-      "filestream_non_transacted_access can be OFF|READ_ONLY|FULL only, you provided $filestream_non_transacted_access")
+      "filestream_non_transacted_access can be OFF|READ_ONLY|FULL only, you provided ${filestream_non_transacted_access}")
 
   }
   if $filestream_directory_name {
     validate_re($filestream_directory_name,'^[\w|\s]+$',
-      "Filestream Directory Name should not be an absolute path but a directory name only, you provided $filestream_directory_name")
+      "Filestream Directory Name should not be an absolute path but a directory name only, you provided ${filestream_directory_name}")
   }
 
   mssql_validate_instance_name($instance)
 
-  validate_re($containment, '^(PARTIAL|NONE)$', "Containment must be either PARTIAL or NONE, you provided $containment")
+  validate_re($containment, '^(PARTIAL|NONE)$', "Containment must be either PARTIAL or NONE, you provided ${containment}")
 
-/* Validate PARTIAL required variables switches */
+## Validate PARTIAL required variables switches
   if $containment == 'PARTIAL' {
     if $db_chaining { mssql_validate_on_off($db_chaining) }
     if $nested_triggers { mssql_validate_on_off($nested_triggers) }
     if $transform_noise_words { mssql_validate_on_off($transform_noise_words) }
     if $trustworthy { mssql_validate_on_off($trustworthy) }
     mssql_validate_range($two_digit_year_cutoff, 1753, 9999,
-      "Two digit year cutoff must be between 1753 and 9999, you provided $two_digit_year_cutoff")
+      "Two digit year cutoff must be between 1753 and 9999, you provided ${two_digit_year_cutoff}")
   }
 
 
-  validate_re($ensure,['^present$','^absent$'],"Ensure must be either present or absent, you provided $ensure")
+  validate_re($ensure,['^present$','^absent$'],"Ensure must be either present or absent, you provided ${ensure}")
 
   $create_delete = $ensure ? {
     present => 'create',
     absent  => 'delete',
   }
 
-  mssql_tsql { "database-$instance-$db_name":
-    instance      => $instance,
-    command       => template("mssql/$create_delete/database.sql.erb"),
-    onlyif        => template('mssql/query/database_exists.sql.erb'),
-    require       => Mssql::Config[$instance],
+  mssql_tsql { "database-${instance}-${db_name}":
+    instance => $instance,
+    command  => template("mssql/${create_delete}/database.sql.erb"),
+    onlyif   => template('mssql/query/database_exists.sql.erb'),
+    require  => Mssql::Config[$instance],
   }
 
 

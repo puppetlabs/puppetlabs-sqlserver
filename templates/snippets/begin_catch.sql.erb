@@ -1,0 +1,5 @@
+BEGIN CATCH
+    DECLARE @msg as VARCHAR(max);
+    SELECT @msg = 'ERROR: ' + ERROR_MESSAGE();
+    THROW 51000, @msg, 10
+END CATCH
