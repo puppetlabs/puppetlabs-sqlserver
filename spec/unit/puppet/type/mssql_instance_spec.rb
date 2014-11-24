@@ -2,22 +2,24 @@ require 'spec_helper'
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'mssql_install_context.rb'))
 
 RSpec.describe Puppet::Type.type(:mssql_instance) do
+  let(:error_class) { Puppet::Error }
 
   # Passing validation examples
-  shared_examples 'validate' do |args|
-    it do
+  shared_examples 'validate' do
+    it {
       @subject = Puppet::Type.type(:mssql_instance).new(args)
       @subject.stubs(:lookupvar).with('hostname').returns('machineCrazyName')
-    end
+    }
   end
 
   describe 'should pass with all valid arguments' do
-    include_context 'install_arguments'
-    it_should_behave_like 'validate', @install_args
+    it_should_behave_like 'validate' do
+      let(:args) { get_basic_args }
+    end
   end
 
   # Failed validation examples
-  shared_examples 'fail validation' do |args, messages = ['must be set'], error_class = Puppet::Error|
+  shared_examples 'fail validation' do #|args, messages = ['must be set'], error_class = Puppet::Error|
     it 'should fail with' do
       expect {
         Puppet::Type.type(:mssql_instance).new(args)
@@ -29,41 +31,36 @@ RSpec.describe Puppet::Type.type(:mssql_instance) do
     end
   end
 
-  [:agt_svc_password].each do |property|
-    context "#{property} required when using domain account" do
-      include_context 'install_arguments'
-      @install_args.delete(property)
-      it_should_behave_like 'fail validation', @install_args, property.to_s
+  describe "agt_svc_password required when using domain account" do
+    it_should_behave_like 'fail validation' do
+      args = get_basic_args
+      args.delete(:agt_svc_password)
+      let(:args) { args }
+      let(:messages) { 'agt_svc_password' }
     end
   end
 
-  context 'should fail when rs_svc_account contains an invalid character' do
-    include_context 'install_arguments'
+
+  describe 'should fail when rs_svc_account contains an invalid character' do
     %w(/ \ [ ] : ; | = , + * ? < > ).each do |v|
-      @install_args[:rs_svc_account] = "crazy#{v}User"
-      it_should_behave_like 'fail validation', @install_args, 'rs_svc_account can not contain any of the special characters,'
+      it_should_behave_like 'fail validation' do
+        args = get_basic_args
+        args[:rs_svc_account] = "crazy#{v}User"
+        let(:args) { args }
+        let(:messages) { ['rs_svc_account can not contain any of the special characters,'] }
+      end
     end
   end
 
   context 'must be at least 8 characters long' do
-    include_context 'install_arguments'
-    @install_args[:rs_svc_password] = 'hrt'
-    it_should_behave_like 'fail validation', @install_args, ['must be at least 8 characters long', 'must contain uppercase letters',
-                                                             'must contain numbers',
-                                                             'must contain a special character']
+    it_behaves_like 'fail validation' do
+      args = get_basic_args
+      args[:rs_svc_password] = 'hrt'
+      let(:args) { args }
+      let(:messages) { ['must be at least 8 characters long', 'must contain uppercase letters',
+                        'must contain numbers',
+                        'must contain a special character'] }
+
+    end
   end
-
-  # describe 'should expand Super Values to full set' do
-  #   include_context 'install_arguments'
-  #   @install_args.delete(:features)
-  #   @install_args[:features] = %w(SQL)
-  #   subject = Puppet::Type.type(:mssql_instance).new(@install_args)
-  #   subject.stubs(:lookupvar).with('hostname').returns('machineCrazyName')
-  #   it do
-  #     subject[:features].include? "SQLENGINE"
-  #   end
-  #
-  # end
-
-
 end
