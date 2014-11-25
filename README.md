@@ -39,6 +39,8 @@ The mssql module requires the following:
 	
 ###Beginning with mssql
 
+
+
 To get started with the mssql module, include these settings in your manifest: 
 
 ```
@@ -52,6 +54,8 @@ mssql_instance{'MSSQLSERVER':
 This manifest installs MS SQL and creates an MS SQL instance named MSSQLSERVER. It installs the base SQL feature set (Data Quality, FullText, Replication, and SQLEngine), specifies the location of the setup.exe, and creates a new SQL-only sysadmin, 'myuser'.
 
 ##Usage
+
+Note: For clarification on Microsoft SQL Server terminology, please see [Windows SQL Server Terms](#windows-sql-server-terms) below.
 
 ###To install SQL Server tools and features not specific to a database instance:
 
@@ -92,6 +96,16 @@ mssql::login{'WIN-D95P1A3V103\localAccount':
 	login_type 	=> 'WINDOWS_LOGIN',
 }
 ```
+
+#### Windows SQL Server Terms
+
+Terminology differs somewhat between various database systems; please refer to this list of terms for clarification.
+
+* Instance: An instance is an installed and running database service.
+* Database: A database is a collection of information organized into related tables of data and definitions of data objects.
+* Login: A Login has server-level permissions to access and manage all or some of the database and principal login rights.
+* User: User grants access to a single DATABASE and is typically mapped to a Login.
+* Server Roles: Server-level permission groups that exist outside of databases. These are defined by SQL Server and might have nested permissions.
 
 ##Reference
 
