@@ -44,31 +44,29 @@ RSpec.describe provider_class do
     }
   end
   shared_examples 'create' do
-    describe {
-      it {
-        execute_args = args.merge(munged_values)
-        @resource = Puppet::Type::Mssql_instance.new(args)
-        @provider = provider_class.new(@resource)
+    it {
+      execute_args = args.merge(munged_values)
+      @resource = Puppet::Type::Mssql_instance.new(args)
+      @provider = provider_class.new(@resource)
 
-        stub_powershell_call(subject)
-        stub_source_which_call args[:source]
+      stub_powershell_call(subject)
+      stub_source_which_call args[:source]
 
-        cmd_args = ["#{execute_args[:source]}/setup.exe",
-                    "/ACTION=install",
-                    '/Q',
-                    '/IACCEPTSQLSERVERLICENSETERMS',
-                    "/INSTANCENAME=#{execute_args[:name]}",
-                    "/FEATURES=#{execute_args[:features].join(',')}",]
-        (execute_args.keys - %w( ensure loglevel features name source sql_sysadmin_accounts sql_security_mode).map(&:to_sym)).sort.collect do |key|
-          cmd_args << "/#{key.to_s.gsub(/_/, '').upcase}=\"#{@resource[key]}\""
-        end
-        if execute_args[:sql_security_mode]
-          cmd_args << "/SECURITYMODE=SQL"
-        end
-        cmd_args << "/SQLSYSADMINACCOUNTS=#{ Array.new(@resource[:sql_sysadmin_accounts]).collect { |account| "\"#{account}\"" }.join(' ')}"
-        Puppet::Util::Execution.stubs(:execute).with(cmd_args.compact).returns(0)
-        @provider.create
-      }
+      cmd_args = ["#{execute_args[:source]}/setup.exe",
+                  "/ACTION=install",
+                  '/Q',
+                  '/IACCEPTSQLSERVERLICENSETERMS',
+                  "/INSTANCENAME=#{execute_args[:name]}",
+                  "/FEATURES=#{execute_args[:features].join(',')}",]
+      (execute_args.keys - %w( ensure loglevel features name source sql_sysadmin_accounts sql_security_mode).map(&:to_sym)).sort.collect do |key|
+        cmd_args << "/#{key.to_s.gsub(/_/, '').upcase}=\"#{@resource[key]}\""
+      end
+      if execute_args[:sql_security_mode]
+        cmd_args << "/SECURITYMODE=SQL"
+      end
+      cmd_args << "/SQLSYSADMINACCOUNTS=#{ Array.new(@resource[:sql_sysadmin_accounts]).collect { |account| "\"#{account}\"" }.join(' ')}"
+      Puppet::Util::Execution.stubs(:execute).with(cmd_args.compact).returns(0)
+      @provider.create
     }
   end
 
@@ -86,16 +84,14 @@ RSpec.describe provider_class do
   end
 
   shared_examples 'destroy on create' do
-    describe {
-      it {
-        resource = Puppet::Type::Mssql_instance.new(args)
-        provider = provider_class.new(resource)
+    it {
+      resource = Puppet::Type::Mssql_instance.new(args)
+      provider = provider_class.new(resource)
 
-        stub_source_which_call args[:source]
-        provider.expects(:current_installed_features).returns(installed_features)
-        stub_uninstall args, installed_features
-        provider.create
-      }
+      stub_source_which_call args[:source]
+      provider.expects(:current_installed_features).returns(installed_features)
+      stub_uninstall args, installed_features
+      provider.create
     }
   end
   describe 'it should provide the correct command default command' do

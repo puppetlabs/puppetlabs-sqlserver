@@ -102,8 +102,8 @@ define mssql::database (
   $log_filegrowth = undef,
   $containment = 'NONE',
 #require Containment = 'PARTIAL' for the following params to be executed
-  $default_fulltext_language = 'SYSTEM',
-  $default_language = 'SYSTEM',
+  $default_fulltext_language = 'English',
+  $default_language = 'us_english',
   $nested_triggers = undef,
   $transform_noise_words = undef,
   $two_digit_year_cutoff = 2049,
@@ -125,8 +125,10 @@ define mssql::database (
   if $filespec_maxsize and $filespec_maxsize != 'UNLIMITED' {
     mssql_validate_size($filespec_maxsize)
   }
-  if $filespec_filename {
-    mssql_validate_range($filespec_name, 1, 128, "$log_name can not be more than 128 characters and must be at least 1 character in length")
+  if $filespec_filename or $filespec_name {
+    validate_re($filespec_filename, '^.+$', 'filespec_filename must not be null if specifying filespec_name')
+    validate_re($filespec_name, '^.+$', 'filespec_name must not be null if specifying filespec_filename')
+    mssql_validate_range($filespec_name, 1, 128, "filespec_name can not be more than 128 characters and must be at least 1 character in length")
     validate_absolute_path($filespec_filename)
   }
   if $log_filename {
@@ -135,7 +137,10 @@ define mssql::database (
   }
   if $log_size { mssql_validate_size($log_size) }
   if $log_maxsize { mssql_validate_size($log_maxsize) }
-
+  if $log_filename or $log_filegrowth or $log_maxsize or $log_name or $log_size {
+    mssql_validate_range($filespec_filename, 1, 128, 'filespec_name and filespec_filename must be specified when specifying any log attributes')
+    validate_absolute_path($filespec_filename)
+  }
 /* VALIDATE FILESTREAM */
   if $filestream_non_transacted_access {
     validate_re($filestream_non_transacted_access, '^(OFF|READ_ONLY|FULL)$',
@@ -143,12 +148,13 @@ define mssql::database (
 
   }
   if $filestream_directory_name {
-    validate_absolute_path($filestream_directory_name)
+    validate_re($filestream_directory_name,'^[\w|\s]+$',
+      "Filestream Directory Name should not be an absolute path but a directory name only, you provided $filestream_directory_name")
   }
 
   mssql_validate_instance_name($instance)
 
-
+  validate_re($containment, '^(PARTIAL|NONE)$', "Containment must be either PARTIAL or NONE, you provided $containment")
 
 /* Validate PARTIAL required variables switches */
   if $containment == 'PARTIAL' {

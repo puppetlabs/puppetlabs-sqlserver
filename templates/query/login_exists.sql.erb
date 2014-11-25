@@ -8,7 +8,8 @@ DECLARE
 	@type_desc as varchar(50) = '<%= @login_type %>',
 	@default_db as varchar(255) = '<%= @default_database %>',
 	@default_lang as varchar(50) = '<%= @default_language %>'
-IF <% if @ensure == 'present' %>NOT<% end %> EXISTS(SELECT name FROM sys.server_principals WHERE  name = '<%= @login %>') THROW 51000, 'ERROR: the login is not <%= @ensure %>', 10
+IF <% if @ensure == 'present' %>NOT<% end %> EXISTS(SELECT name FROM sys.server_principals WHERE  name = '<%= @login %>')
+    THROW 51000, 'ERROR: the login is not <%= @ensure %>', 10
 
 <% if @ensure == 'present' %>
 BEGIN

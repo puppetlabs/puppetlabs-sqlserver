@@ -1,25 +1,30 @@
+BEGIN TRY
 -- QUICK CHECK before most costly query
 IF <% if @ensure == 'present' %>NOT<% end %> EXISTS(SELECT name from sys.databases WHERE name = '<%= @db_name %>')
-BEGIN
-    THROW 51000, 'ERROR The database does not exist', 10
-END
-
-IF <% if @ensure == 'present' %>NOT<% end %> EXISTS(
-SELECT sd.name
-    FROM sys.sysdatabases sd
-LEFT JOIN sys.databases d ON d.database_id = sd.dbid
-LEFT JOIN sys.database_filestream_options fs ON fs.database_id = sd.dbid
-WHERE d.name = '<%= @db_name %>'
-    AND d.compatibility_level = <%= @compatibility %>
-    <% if @collation_name %>
-    AND d.collation_name = '<%= @collation_name %>'
-    <% end %>
-    )
-BEGIN
-   BEGIN TRY
-		THROW 51000, 'ERROR The database does not exists', 10
-	END TRY
-	BEGIN CATCH
-		THROW;
-	END CATCH
-END
+    THROW 51000, 'The database does <% if @ensure == 'present' %>not<% end %> exist', 10
+<% if @ensure == 'present'
+    checkTemplates = []
+   checkTemplates << 'containment'
+   checkTemplates << 'compatibility'
+   checkTemplates << 'collation' if @collation_name%>
+<%  if @containment == 'PARTIAL'
+        checkTemplates << 'default_fulltext_language' if @default_fulltext_language
+        checkTemplates << 'default_language' if @default_language
+        checkTemplates << 'nested_triggers' if @nested_triggers
+        checkTemplates << 'transform_noise_words' if @transform_noise_words
+        checkTemplates << 'trustworthy' if @trustworhty
+        checkTemplates << 'two_digit_year_cutoff' if @two_digit_year_cutoff
+    end -%>
+<%-checkTemplates.each do |check| -%>
+<%= scope.function_template(["mssql/snippets/database/#{check}_exists.sql.erb"]) %>
+    THROW 51000, 'Database property <%= check %> not in correct state', 10
+<%- end -%>
+<% end
+ #end ensure present section
+ -%>
+END TRY
+BEGIN CATCH
+    DECLARE @msg as VARCHAR(max);
+    SELECT @msg = 'ERROR: ' + ERROR_MESSAGE();
+    THROW 51000, @msg, 10
+END CATCH
