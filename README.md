@@ -104,7 +104,7 @@ Terminology differs somewhat between various database systems; please refer to t
 * Instance: An instance is an installed and running database service.
 * Database: A database is a collection of information organized into related tables of data and definitions of data objects.
 * Login: A Login has server-level permissions to access and manage all or some of the database and principal login rights.
-* User: User grants access to a single DATABASE and is typically mapped to a Login.
+* User: A User has database-level access to a single database and is typically mapped to a Login.
 * Server Roles: Server-level permission groups that exist outside of databases. These are defined by SQL Server and might have nested permissions.
 
 ##Reference
@@ -143,19 +143,25 @@ Terminology differs somewhat between various database systems; please refer to t
 
 ### Defined Types
 
-#### `mssql::config`: Stores the config file that allows Puppet to access and modify the instance. 
+#### `mssql::config`
+
+Stores the config file that allows Puppet to access and modify the instance. 
+
 * `instance_name`: The instance name you want to manage.  Defaults to the name of the define.
 * `admin_user`: The SQL login with sysadmin rights on the server, can only be login of SQL_Login type. 
 * `admin_pass`: The password to access the server to be managed.
 
-```
-mssql::config{'MSSQLSERVER':
-  admin_user => 'sa',
-  admin_pass => 'PuppetP@ssword1',
-  }
-```  
+  ```
+  mssql::config{'MSSQLSERVER':
+    admin_user => 'sa',
+    admin_pass => 'PuppetP@ssword1',
+    }
+  ```  
 
-#### `mssql::database`: Creates, destroys, or updates databases, but does not move or modify files. Requires defined type `mssql::config` for the instance in which you want the database created.
+#### `mssql::database`
+
+Creates, destroys, or updates databases, but does not move or modify files. Requires defined type `mssql::config` for the instance in which you want the database created.
+
 * `db_name`: The name of the database you want to manage. Accepts a string.
 * `instance`: The name of the instance to connect to. Instance names must be strings no longer than 16 characters.
 * `ensure`: Ensures that the resource is present. Valid values are 'present', 'absent'. Defaults to 'present'.
@@ -183,12 +189,16 @@ mssql::config{'MSSQLSERVER':
 * `trustworthy`: Whether database modules (such as views, user-defined functions, or stored procedures) that use an impersonation context can access resources outside the database. Only applicable if `containment` => ‘PARTIAL’. Valid values are 'ON', 'OFF'. Defaults to 'OFF'.
 
 **For more information about Microsoft SQL Server, please see:**
+
 * [Contained Databases](http://msdn.microsoft.com/en-us/library/ff929071.aspx)
 * [Create Database TSQL](http://msdn.microsoft.com/en-us/library/ms176061.aspx)
 * [Alter Database TSQL](http://msdn.microsoft.com/en-us/library/ms174269.aspx)
 * [System Languages](http://msdn.microsoft.com/en-us/library/ms190303.aspx)
 
-#### `mssql::login`: Requires defined type `mssql::config` in order to execute against the SQL Server instance
+#### `mssql::login`
+
+Requires defined type `mssql::config` in order to execute against the SQL Server instance.
+
 * `login`: The SQL or Windows login you want to manage.
 * `instance`: The name of the instance to connect to. Instance names can not be longer than 16 characters
 * `ensure`: Ensures that the resource is present. Valid values are 'present', 'absent'. Defaults to 'present'.
@@ -202,10 +212,10 @@ mssql::config{'MSSQLSERVER':
 * `disabled`: Valid values are 'true', 'false'. Defaults to 'false'. 
 
 **For more information about Microsoft SQL Server, please see:**
+
 * [Server Role Members](http://msdn.microsoft.com/en-us/library/ms186320.aspx)
 * [Create Login](http://technet.microsoft.com/en-us/library/ms189751.aspx) 
 * [Alter Login](http://technet.microsoft.com/en-us/library/ms189828.aspx)
-
 
 ##Limitations
 
