@@ -149,7 +149,8 @@ RSpec.describe 'mssql::database', :type => :define do
           /is_trustworthy_on = 1/,
           "IF NOT EXISTS(SELECT name FROM sys.databases WHERE name = 'myTestDb' AND is_trustworthy_on = 1)"] }
       let(:should_contain_onlyif) { [
-          "IF NOT EXISTS(SELECT name FROM sys.databases WHERE name = 'myTestDb' AND containment_desc = 'PARTIAL')"
+          "IF NOT EXISTS(SELECT name FROM sys.databases WHERE name = 'myTestDb' AND containment_desc = 'PARTIAL')",
+          "IF NOT EXISTS(SELECT name FROM sys.databases WHERE name = 'myTestDb' AND is_trustworthy_on = 1)"
       ] }
       it_behaves_like 'mssql_tsql command'
       it_behaves_like 'mssql_tsql onlyif'
