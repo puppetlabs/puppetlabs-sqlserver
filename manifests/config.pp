@@ -18,7 +18,11 @@
 #     admin_pass => 'PuppetP@ssword1',
 #   }
 #
-define mssql::config ($instance_name = $title, $admin_user, $admin_pass) {
+define mssql::config (
+  $admin_user,
+  $admin_pass,
+  $instance_name = $title,
+) {
 #possible future parameter if we do end up supporting different install directories
   $install_dir ='C:/Program Files/Microsoft SQL Server'
   $config_dir = "${install_dir}/.puppet"
@@ -29,16 +33,15 @@ define mssql::config ($instance_name = $title, $admin_user, $admin_pass) {
     }
   }
   file{ $config_file:
-    content => template("mssql/instance_config.erb"),
+    content => template('mssql/instance_config.erb'),
     require => File[$config_dir],
   }
 
+  $acl_permissions = [{ identity => 'Administrators', rights => ['full'] } ]
   acl{ $config_file:
     purge                      => true,
     inherit_parent_permissions => false,
-    permissions                => [
-      { identity => 'Administrators', rights => ['full'] }
-    ],
+    permissions                => $acl_permissions,
     require                    => File[$config_file]
   }
 }

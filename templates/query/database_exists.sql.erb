@@ -23,8 +23,4 @@ IF <% if @ensure == 'present' %>NOT<% end %> EXISTS(SELECT name from sys.databas
  #end ensure present section
  -%>
 END TRY
-BEGIN CATCH
-    DECLARE @msg as VARCHAR(max);
-    SELECT @msg = 'ERROR: ' + ERROR_MESSAGE();
-    THROW 51000, @msg, 10
-END CATCH
+<%= scope.function_template(['mssql/snippets/begin_catch.sql.erb']) %>
