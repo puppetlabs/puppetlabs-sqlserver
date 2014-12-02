@@ -46,7 +46,7 @@ define mssql::sp_configure (
   ensure_resource('service',$service_name)
 
   if $restart {
-    Mssql::Sp_Configure[$title] ~> Service[$service_name]
+    Mssql_tsql["sp_configure-${instance}-${config_name}"] ~> Service[$service_name]
   }
 
   mssql_tsql{ "sp_configure-${instance}-${config_name}":

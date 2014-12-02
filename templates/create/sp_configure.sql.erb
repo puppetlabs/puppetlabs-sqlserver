@@ -6,7 +6,6 @@ IF @return_value != 0
 <% if @reconfigure -%>
 ELSE
     RECONFIGURE <% if @with_override %>WITH OVERRIDE<% end %>
-END
 <% end -%>
 END TRY
 <%= scope.function_template(['mssql/snippets/begin_catch.sql.erb']) %>
