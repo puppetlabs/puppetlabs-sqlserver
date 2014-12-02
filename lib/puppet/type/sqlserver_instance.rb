@@ -142,13 +142,13 @@ Puppet::Type::newtype(:sqlserver_instance) do
     if !(set?(account))
       fail("User #{account} is required")
     end
-    if is_domain_user?(self[account]) && self[pass].nil?
+    if is_domain_or_local_user?(self[account]) && self[pass].nil?
       fail("#{pass} required when using domain account")
     end
   end
 
-  def is_domain_user?(user)
-    PuppetX::Mssql::ServerHelper.is_domain_user?(user, Facter.value(:hostname))
+  def is_domain_or_local_user?(user)
+    PuppetX::Mssql::ServerHelper.is_domain_or_local_user?(user, Facter.value(:hostname))
   end
 
   def is_strong_password?(key)

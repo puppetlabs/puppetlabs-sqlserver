@@ -21,7 +21,7 @@
 #   This pertains tot he `reconfigure` in which you would want to override or force the reconfigure, defaults to false
 #
 # [restart]
-#   Will ensure service resource and notify if changes occur for a restart
+#   Will ensure service resource and notify if changes occur for a restart, defaults to false
 #
 #  @see http://msdn.microsoft.com/en-us/library/ms176069.aspx Reconfigure Explanation
 #  @see http://msdn.microsoft.com/en-us/library/ms189631.aspx Server Configuration Options

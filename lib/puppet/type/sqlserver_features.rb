@@ -48,6 +48,7 @@ Puppet::Type::newtype(:sqlserver_features) do
       self[:features] = self[:features].flatten.sort.uniq
     end
     # IS_SVC_ACCOUNT validation
+
     if set?(:features) && self[:features].include?("IS")
       if set?(:is_svc_account) || set?(:is_svc_password)
         validate_user_password_required(:is_svc_account, :is_svc_password)
@@ -55,15 +56,15 @@ Puppet::Type::newtype(:sqlserver_features) do
     end
   end
 
-  def is_domain_user?(user)
-    PuppetX::Mssql::ServerHelper.is_domain_user?(user, Facter.value(:hostname))
+  def is_domain_or_local_user?(user)
+    PuppetX::Mssql::ServerHelper.is_domain_or_local_user?(user, Facter.value(:hostname))
   end
 
   def validate_user_password_required(account, pass)
     if !(set?(account))
       fail("User #{account} is required")
     end
-    if is_domain_user?(self[account]) && self[pass].nil?
+    if is_domain_or_local_user?(self[account]) && !set?(pass)
       fail("#{pass} required when using domain account")
     end
   end
