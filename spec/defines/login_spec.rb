@@ -1,8 +1,9 @@
 require 'spec_helper'
 require File.expand_path(File.join(File.dirname(__FILE__), 'manifest_shared_examples.rb'))
-RSpec.describe 'mssql::login', :type => :define do
+
+RSpec.describe 'sqlserver::login', :type => :define do
   include_context 'manifests' do
-    let(:mssql_tsql_title) { 'mssql::login-MSSQLSERVER-myTitle' }
+    let(:mssql_tsql_title) { 'login-MSSQLSERVER-myTitle' }
     let(:title) { 'myTitle' }
     let(:params) { {
         :login => 'myTitle',
@@ -12,7 +13,7 @@ RSpec.describe 'mssql::login', :type => :define do
 
   describe 'Minimal Params' do
     it 'it should compile' do
-      should contain_mssql_tsql('mssql::login-MSSQLSERVER-myTitle')
+      should contain_sqlserver_tsql('login-MSSQLSERVER-myTitle')
     end
   end
   describe 'parameter assignment' do

@@ -2,14 +2,14 @@ require 'spec_helper'
 require 'rspec'
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'mssql_spec_helper.rb'))
 
-provider_class = Puppet::Type.type(:mssql_features).provider(:mssql)
+provider_class = Puppet::Type.type(:sqlserver_features).provider(:mssql)
 
 RSpec.describe provider_class do
   subject { provider_class }
 
   shared_examples 'create' do |args, munged_args = {}|
     it {
-      @resource = Puppet::Type::Mssql_features.new(args)
+      @resource = Puppet::Type::Sqlserver_features.new(args)
       @provider = provider_class.new(@resource)
 
       stub_powershell_call(subject)
@@ -44,7 +44,7 @@ RSpec.describe provider_class do
 
   shared_examples 'features=' do |args|
     it {
-      @resource = Puppet::Type::Mssql_features.new(args)
+      @resource = Puppet::Type::Sqlserver_features.new(args)
       @provider = provider_class.new(@resource)
 
       stub_powershell_call(subject)
@@ -65,7 +65,7 @@ RSpec.describe provider_class do
   shared_examples 'fail on' do |feature_params|
     it {
       expect {
-        @resource = Puppet::Type::Mssql_features.new(feature_params)
+        @resource = Puppet::Type::Sqlserver_features.new(feature_params)
         @provider = provider_class.new(@resource)
 
         stub_powershell_call(subject)
@@ -106,7 +106,7 @@ RSpec.describe provider_class do
           :source => 'C:\myinstallexecs',
           :features => []
       }
-      @resource = Puppet::Type::Mssql_features.new(feature_params)
+      @resource = Puppet::Type::Sqlserver_features.new(feature_params)
       @provider = provider_class.new(@resource)
       @provider.stubs(:current_installed_features).returns(%w(SSMS ADV_SSMS Conn))
       Puppet::Util.stubs(:which).with("#{feature_params[:source]}/setup.exe").returns("#{feature_params[:source]}/setup.exe")

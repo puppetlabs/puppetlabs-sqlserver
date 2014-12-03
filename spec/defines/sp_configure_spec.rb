@@ -1,7 +1,7 @@
 require 'spec_helper'
 require File.expand_path(File.join(File.dirname(__FILE__), 'manifest_shared_examples.rb'))
 
-RSpec.describe 'mssql::sp_configure', :type => :define do
+RSpec.describe 'sqlserver::sp_configure', :type => :define do
   include_context 'manifests' do
     let(:title) { 'filestream access level' }
     let(:mssql_tsql_title) { 'sp_configure-MSSQLSERVER-filestream access level' }

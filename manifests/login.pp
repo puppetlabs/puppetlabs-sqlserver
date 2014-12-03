@@ -1,12 +1,12 @@
 #
-# == Define Resource Type: mssql::login
+# == Define Resource Type: sqlserver::login
 #
 #
 #
 #
 # === Requirement/Dependencies:
 #
-# Requires defined type {mssql::config} in order to execute against the SQL Server instance
+# Requires defined type {sqlserver::config} in order to execute against the SQL Server instance
 #
 #
 # === Parameters
@@ -45,7 +45,7 @@
 # @see http://technet.microsoft.com/en-us/library/ms189751(v=sql.110).aspx Create Login
 # @see http://technet.microsoft.com/en-us/library/ms189828(v=sql.110).aspx Alter Login
 #
-define mssql::login (
+define sqlserver::login (
   $login = $title,
   $instance = 'MSSQLSERVER',
   $ensure = 'present',
@@ -68,10 +68,10 @@ define mssql::login (
     absent  => 'delete',
   }
 
-  mssql_tsql{ "mssql::login-${instance}-${login}":
+  sqlserver_tsql{ "login-${instance}-${login}":
     instance => $instance,
-    command  => template("mssql/${create_delete}/login.sql.erb"),
-    onlyif   => template('mssql/query/login_exists.sql.erb'),
-    require  => Mssql::Config[$instance]
+    command  => template("sqlserver/${create_delete}/login.sql.erb"),
+    onlyif   => template('sqlserver/query/login_exists.sql.erb'),
+    require  => Sqlserver::Config[$instance]
   }
 }

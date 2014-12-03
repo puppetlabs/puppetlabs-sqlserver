@@ -19,7 +19,7 @@ RSpec.shared_context 'manifests' do
     it {
       params.merge!(additional_params)
       should_contain_onlyif.each do |check|
-        should contain_mssql_tsql(mssql_tsql_title).with_onlyif(convert_to_regexp(check))
+        should contain_sqlserver_tsql(mssql_tsql_title).with_onlyif(convert_to_regexp(check))
       end
     }
 
@@ -28,7 +28,7 @@ RSpec.shared_context 'manifests' do
     it {
       params.merge!(additional_params)
       should_not_contain_onlyif.each do |check|
-        should contain_mssql_tsql(mssql_tsql_title).with_onlyif(convert_to_regexp(check))
+        should contain_sqlserver_tsql(mssql_tsql_title).with_onlyif(convert_to_regexp(check))
       end
     }
   end
@@ -37,7 +37,7 @@ RSpec.shared_context 'manifests' do
     it {
       params.merge!(additional_params)
       should_contain_command.each do |check|
-        should contain_mssql_tsql(mssql_tsql_title).with_command(convert_to_regexp(check))
+        should contain_sqlserver_tsql(mssql_tsql_title).with_command(convert_to_regexp(check))
       end
     }
 
@@ -46,7 +46,7 @@ RSpec.shared_context 'manifests' do
     it {
       params.merge!(additional_params)
       should_not_contain_command.each do |check|
-        should_not contain_mssql_tsql(mssql_tsql_title).with_command(convert_to_regexp(check))
+        should_not contain_sqlserver_tsql(mssql_tsql_title).with_command(convert_to_regexp(check))
       end
     }
   end
