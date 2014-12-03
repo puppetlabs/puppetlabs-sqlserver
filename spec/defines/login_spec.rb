@@ -13,7 +13,7 @@ RSpec.describe 'ms_sql::login', :type => :define do
 
   describe 'Minimal Params' do
     it 'it should compile' do
-      should contain_mssql_tsql('login-MSSQLSERVER-myTitle')
+      should contain_ms_sql_tsql('login-MSSQLSERVER-myTitle')
     end
   end
   describe 'parameter assignment' do

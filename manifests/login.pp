@@ -1,12 +1,12 @@
 #
-# == Define Resource Type: mssql::login
+# == Define Resource Type: ms_sql::login
 #
 #
 #
 #
 # === Requirement/Dependencies:
 #
-# Requires defined type {mssql::config} in order to execute against the SQL Server instance
+# Requires defined type {ms_sql::config} in order to execute against the SQL Server instance
 #
 #
 # === Parameters
@@ -68,10 +68,10 @@ define ms_sql::login (
     absent  => 'delete',
   }
 
-  mssql_tsql{ "login-${instance}-${login}":
+  ms_sql_tsql{ "login-${instance}-${login}":
     instance => $instance,
     command  => template("ms_sql/${create_delete}/login.sql.erb"),
     onlyif   => template('ms_sql/query/login_exists.sql.erb'),
-    require  => Mssql::Config[$instance]
+    require  => Ms_sql::Config[$instance]
   }
 }

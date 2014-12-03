@@ -1,5 +1,5 @@
 #
-# == Define Resource Type: mssql::config
+# == Define Resource Type: ms_sql::config
 #
 # === Requirement/Dependencies:
 #
@@ -13,7 +13,7 @@
 #   The password in order to access the server to be managed.
 #
 # @example
-#   mssql::config{'MSSQLSERVER':
+#   ms_sql::config{'MSSQLSERVER':
 #     admin_user => 'sa',
 #     admin_pass => 'PuppetP@ssword1',
 #   }

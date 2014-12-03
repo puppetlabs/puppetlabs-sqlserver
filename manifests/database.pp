@@ -1,12 +1,12 @@
 #
-# == Define Resource Type: mssql::database
+# == Define Resource Type: ms_sql::database
 #
 #
 #
 #
 # === Requirement/Dependencies:
 #
-# Requires defined type {mssql::config} in order to execute against the SQL Server instance
+# Requires defined type {ms_sql::config} in order to execute against the SQL Server instance
 #
 #
 # === Parameters
@@ -172,11 +172,11 @@ define ms_sql::database (
     absent  => 'delete',
   }
 
-  mssql_tsql { "database-${instance}-${db_name}":
+  ms_sql_tsql { "database-${instance}-${db_name}":
     instance => $instance,
     command  => template("ms_sql/${create_delete}/database.sql.erb"),
     onlyif   => template('ms_sql/query/database_exists.sql.erb'),
-    require  => Mssql::Config[$instance],
+    require  => Ms_sql::Config[$instance],
   }
 
 

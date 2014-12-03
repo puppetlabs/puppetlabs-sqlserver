@@ -1,8 +1,8 @@
 ##
-# == Defined Resource Type: mssql::sp_configure
+# == Defined Resource Type: ms_sql::sp_configure
 #
 # == Required Dependencies:
-# Requires defined type {mssql::config} in order to execute against the SQL Server instance
+# Requires defined type {ms_sql::config} in order to execute against the SQL Server instance
 #
 # === Parameters
 # [config_name]
@@ -46,13 +46,13 @@ define ms_sql::sp_configure (
   ensure_resource('service',$service_name)
 
   if $restart {
-    Mssql_tsql["sp_configure-${instance}-${config_name}"] ~> Service[$service_name]
+    Ms_sql_tsql["sp_configure-${instance}-${config_name}"] ~> Service[$service_name]
   }
 
-  mssql_tsql{ "sp_configure-${instance}-${config_name}":
+  ms_sql_tsql{ "sp_configure-${instance}-${config_name}":
     instance => $instance,
     command  => template('ms_sql/create/sp_configure.sql.erb'),
     onlyif   => template('ms_sql/query/sp_configure.sql.erb'),
-    require  => Mssql::Config[$instance]
+    require  => Ms_sql::Config[$instance]
   }
 }

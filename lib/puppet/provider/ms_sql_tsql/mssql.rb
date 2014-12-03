@@ -1,6 +1,6 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'mssql'))
 
-Puppet::Type::type(:mssql_tsql).provide(:mssql, :parent => Puppet::Provider::Mssql) do
+Puppet::Type::type(:ms_sql_tsql).provide(:mssql, :parent => Puppet::Provider::Mssql) do
 
   def run(query)
     debug("Running resource #{query} against #{resource[:instance]}")
