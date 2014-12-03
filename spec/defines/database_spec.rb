@@ -155,5 +155,36 @@ RSpec.describe 'mssql::database', :type => :define do
       it_behaves_like 'mssql_tsql command'
       it_behaves_like 'mssql_tsql onlyif'
     end
+    describe 'db_chainging ON' do
+      let(:additional_params) { {:containment => 'PARTIAL', :db_chaining => 'ON'} }
+      let(:should_contain_command) { [
+          /CONTAINMENT\s=\sPARTIAL/,
+          /WITH\s*DB_CHAINING ON/,
+          /SET DB_CHAINING ON/,
+          /is_db_chaining_on = 1/,
+          "IF NOT EXISTS(SELECT name FROM sys.databases WHERE name = 'myTestDb' AND is_db_chaining_on = 1)",
+          "ALTER DATABASE [myTestDb] SET DB_CHAINING ON"] }
+      let(:should_contain_onlyif) { [
+          "IF NOT EXISTS(SELECT name FROM sys.databases WHERE name = 'myTestDb' AND containment_desc = 'PARTIAL')",
+          "IF NOT EXISTS(SELECT name FROM sys.databases WHERE name = 'myTestDb' AND is_db_chaining_on = 1)"
+      ] }
+      it_behaves_like 'mssql_tsql command'
+      it_behaves_like 'mssql_tsql onlyif'
+    end
+    describe 'db_chainging OFF' do
+      let(:additional_params) { {:containment => 'PARTIAL', :db_chaining => 'OFF'} }
+      let(:should_contain_command) { [
+          /CONTAINMENT\s=\sPARTIAL/,
+          /WITH\s*DB_CHAINING OFF/,
+          /SET DB_CHAINING OFF/,
+          "IF NOT EXISTS(SELECT name FROM sys.databases WHERE name = 'myTestDb' AND is_db_chaining_on = 0)",
+          "ALTER DATABASE [myTestDb] SET DB_CHAINING OFF"] }
+      let(:should_contain_onlyif) { [
+          "IF NOT EXISTS(SELECT name FROM sys.databases WHERE name = 'myTestDb' AND containment_desc = 'PARTIAL')",
+          "IF NOT EXISTS(SELECT name FROM sys.databases WHERE name = 'myTestDb' AND is_db_chaining_on = 0)"
+      ] }
+      it_behaves_like 'mssql_tsql command'
+      it_behaves_like 'mssql_tsql onlyif'
+    end
   end
 end

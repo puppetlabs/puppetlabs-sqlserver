@@ -10,6 +10,7 @@ IF <% if @ensure == 'present' %>NOT<% end %> EXISTS(SELECT name from sys.databas
 <%  if @containment == 'PARTIAL'
         checkTemplates << 'default_fulltext_language' if @default_fulltext_language
         checkTemplates << 'default_language' if @default_language
+        checkTemplates << 'db_chaining' if @db_chaining
         checkTemplates << 'nested_triggers' if @nested_triggers
         checkTemplates << 'transform_noise_words' if @transform_noise_words
         checkTemplates << 'trustworthy' if @trustworthy

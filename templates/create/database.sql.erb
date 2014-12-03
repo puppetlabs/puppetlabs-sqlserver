@@ -83,6 +83,10 @@ BEGIN
         sys.syslanguages (Transact-SQL). This option is allowable only when CONTAINMENT has been set to PARTIAL. If CONTAINMENT
         is set to NONE, errors will occur.
             */
+        <%- if @db_chaining -%>
+<%= scope.function_template(["mssql/snippets/database/db_chaining_exists.sql.erb"]) %>
+    ALTER DATABASE [<%= @db_name %>] SET DB_CHAINING <%= @db_chaining %>
+        <%- end -%>
         <%- if @default_fulltext_language -%>
 <%= scope.function_template(["mssql/snippets/database/default_fulltext_language_exists.sql.erb"]) %>
     ALTER DATABASE [<%= @db_name %>] SET DEFAULT_FULLTEXT_LANGUAGE = [<%= @default_fulltext_language %>]

@@ -1,0 +1,1 @@
+IF NOT EXISTS(SELECT name FROM sys.databases WHERE name = '<%= @db_name %>' AND is_db_chaining_on = <%= @db_chaining == 'ON' ? 1 : 0 %>)
