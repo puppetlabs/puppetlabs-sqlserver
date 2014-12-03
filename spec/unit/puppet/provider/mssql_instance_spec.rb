@@ -2,7 +2,7 @@ require 'spec_helper'
 
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'mssql_install_context.rb'))
 
-provider_class = Puppet::Type.type(:mssql_instance).provider(:mssql)
+provider_class = Puppet::Type.type(:ms_sql_instance).provider(:mssql)
 
 RSpec.describe provider_class do
   subject { provider_class }
@@ -20,7 +20,7 @@ RSpec.describe provider_class do
   shared_examples 'run' do |args, munged_values = {}|
     it {
       execute_args = args.merge(munged_values)
-      @resource = Puppet::Type::Mssql_instance.new(args)
+      @resource = Puppet::Type::Ms_sql_instance.new(args)
       @provider = provider_class.new(@resource)
 
       stub_powershell_call(subject)
@@ -46,7 +46,7 @@ RSpec.describe provider_class do
   shared_examples 'create' do
     it {
       execute_args = args.merge(munged_values)
-      @resource = Puppet::Type::Mssql_instance.new(args)
+      @resource = Puppet::Type::Ms_sql_instance.new(args)
       @provider = provider_class.new(@resource)
 
       stub_powershell_call(subject)
@@ -73,7 +73,7 @@ RSpec.describe provider_class do
 
   shared_examples 'destroy' do
     it {
-      @resource = Puppet::Type::Mssql_instance.new(args)
+      @resource = Puppet::Type::Ms_sql_instance.new(args)
       @provider = provider_class.new(@resource)
 
       stub_source_which_call args[:source]
@@ -85,7 +85,7 @@ RSpec.describe provider_class do
 
   shared_examples 'destroy on create' do
     it {
-      resource = Puppet::Type::Mssql_instance.new(args)
+      resource = Puppet::Type::Ms_sql_instance.new(args)
       provider = provider_class.new(resource)
 
       stub_source_which_call args[:source]

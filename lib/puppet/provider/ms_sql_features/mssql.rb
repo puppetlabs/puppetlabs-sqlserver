@@ -1,7 +1,7 @@
 require 'json'
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'mssql'))
 
-Puppet::Type::type(:mssql_features).provide(:mssql, :parent => Puppet::Provider::Mssql) do
+Puppet::Type::type(:ms_sql_features).provide(:mssql, :parent => Puppet::Provider::Mssql) do
 
   def self.instances
     instances = []

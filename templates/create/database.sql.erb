@@ -59,21 +59,21 @@ CREATE DATABASE [<%= @db_name %>]
             <%= partialParams.join(',')  %>
         <%- end -%>
      <%- end -%>
-<%= scope.function_template(['mssql/snippets/database/compatibility_exists.sql.erb']) -%>
+<%= scope.function_template(['ms_sql/snippets/database/compatibility_exists.sql.erb']) -%>
     ALTER DATABASE [<%= @db_name %>] SET COMPATIBILITY_LEVEL = <%= @compatibility %>
 <%- if @collation_name -%>
 /* Alter Database collation */
-<%= scope.function_template(['mssql/snippets/database/collation_exists.sql.erb']) -%>
+<%= scope.function_template(['ms_sql/snippets/database/collation_exists.sql.erb']) -%>
     ALTER DATABASE [<%= @db_name %>] COLLATE <%= @collation_name %>
 <%- end -%>
 END
 ELSE
 -- UPDATE SECTION
 BEGIN
-<%= scope.function_template(['mssql/snippets/database/compatibility_exists.sql.erb']) %>
+<%= scope.function_template(['ms_sql/snippets/database/compatibility_exists.sql.erb']) %>
     ALTER DATABASE [<%= @db_name %>] SET COMPATIBILITY_LEVEL = <%= @compatibility %>
     <%- if @collation_name -%>
-<%= scope.function_template(['mssql/snippets/database/collation_exists.sql.erb']) %>
+<%= scope.function_template(['ms_sql/snippets/database/collation_exists.sql.erb']) %>
     ALTER DATABASE [<%= @db_name %>] COLLATE <%= @collation_name %>
    <%- end -%>
     <%- if @containment == 'PARTIAL' %>
@@ -84,31 +84,31 @@ BEGIN
         is set to NONE, errors will occur.
             */
         <%- if @db_chaining -%>
-<%= scope.function_template(["mssql/snippets/database/db_chaining_exists.sql.erb"]) %>
+<%= scope.function_template(["ms_sql/snippets/database/db_chaining_exists.sql.erb"]) %>
     ALTER DATABASE [<%= @db_name %>] SET DB_CHAINING <%= @db_chaining %>
         <%- end -%>
         <%- if @default_fulltext_language -%>
-<%= scope.function_template(["mssql/snippets/database/default_fulltext_language_exists.sql.erb"]) %>
+<%= scope.function_template(["ms_sql/snippets/database/default_fulltext_language_exists.sql.erb"]) %>
     ALTER DATABASE [<%= @db_name %>] SET DEFAULT_FULLTEXT_LANGUAGE = [<%= @default_fulltext_language %>]
         <%- end -%>
         <%- if @default_language -%>
-<%= scope.function_template(["mssql/snippets/database/default_language_exists.sql.erb"]) %>
+<%= scope.function_template(["ms_sql/snippets/database/default_language_exists.sql.erb"]) %>
     ALTER DATABASE [<%= @db_name %>] SET DEFAULT_LANGUAGE = [<%= @default_language %>]
         <%- end -%>
         <%- if @nested_triggers -%>
-<%= scope.function_template(["mssql/snippets/database/nested_triggers_exists.sql.erb"]) %>
+<%= scope.function_template(["ms_sql/snippets/database/nested_triggers_exists.sql.erb"]) %>
     ALTER DATABASE [<%= @db_name %>] SET NESTED_TRIGGERS = <%= @nested_triggers %>
         <%- end -%>
         <%- if @transform_noise_words -%>
-<%= scope.function_template(["mssql/snippets/database/transform_noise_words_exists.sql.erb"]) %>
+<%= scope.function_template(["ms_sql/snippets/database/transform_noise_words_exists.sql.erb"]) %>
     ALTER DATABASE [<%= @db_name %>] SET TRANSFORM_NOISE_WORDS = <%= @transform_noise_words %>
         <%- end -%>
         <%- if @trustworthy -%>
-<%= scope.function_template(["mssql/snippets/database/trustworthy_exists.sql.erb"]) %>
+<%= scope.function_template(["ms_sql/snippets/database/trustworthy_exists.sql.erb"]) %>
     ALTER DATABASE [<%= @db_name %>] SET TRUSTWORTHY <%= @trustworthy %>
         <%- end -%>
         <%- if @two_digit_year_cutoff -%>
-<%= scope.function_template(["mssql/snippets/database/two_digit_year_cutoff_exists.sql.erb"]) %>
+<%= scope.function_template(["ms_sql/snippets/database/two_digit_year_cutoff_exists.sql.erb"]) %>
     ALTER DATABASE [<%= @db_name %>] SET TWO_DIGIT_YEAR_CUTOFF = <%= @two_digit_year_cutoff %>
         <%- end -%>
  <%- end -%>
@@ -117,4 +117,4 @@ END
 IF NOT EXISTS (select * from sys.databases WHERE name = '<%= @db_name %>')
     THROW 51000, 'DATABASE CREATION FAILED', 10
 END TRY
-<%= scope.function_template(['mssql/snippets/begin_catch.sql.erb']) %>
+<%= scope.function_template(['ms_sql/snippets/begin_catch.sql.erb']) %>

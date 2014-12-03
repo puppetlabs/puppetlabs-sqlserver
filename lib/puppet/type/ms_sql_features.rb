@@ -1,7 +1,7 @@
 require 'puppet/property/login'
 require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'puppet_x/mssql/server_helper'))
 
-Puppet::Type::newtype(:mssql_features) do
+Puppet::Type::newtype(:ms_sql_features) do
   ensurable
 
 

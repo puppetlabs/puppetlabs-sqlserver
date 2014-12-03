@@ -12,4 +12,4 @@ INSERT INTO @sp_conf EXECUTE sp_configure @configname = N'<%= @config_name %>'
 IF EXISTS(select * from @sp_conf where name = '<%= @config_name %>' AND run_value != <%= @value %>)
 	THROW 51000, 'sp_configure `<%= @config_name %>` is not in the correct state', 10
 END TRY
-<%= scope.function_template(['mssql/snippets/begin_catch.sql.erb']) %>
+<%= scope.function_template(['ms_sql/snippets/begin_catch.sql.erb']) %>

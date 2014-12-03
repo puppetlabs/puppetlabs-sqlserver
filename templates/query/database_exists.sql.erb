@@ -17,11 +17,11 @@ IF <% if @ensure == 'present' %>NOT<% end %> EXISTS(SELECT name from sys.databas
         checkTemplates << 'two_digit_year_cutoff' if @two_digit_year_cutoff
     end -%>
 <%-checkTemplates.each do |check| -%>
-<%= scope.function_template(["mssql/snippets/database/#{check}_exists.sql.erb"]) %>
+<%= scope.function_template(["ms_sql/snippets/database/#{check}_exists.sql.erb"]) %>
     THROW 51000, 'Database property <%= check %> not in correct state', 10
 <%- end -%>
 <% end
  #end ensure present section
  -%>
 END TRY
-<%= scope.function_template(['mssql/snippets/begin_catch.sql.erb']) %>
+<%= scope.function_template(['ms_sql/snippets/begin_catch.sql.erb']) %>
