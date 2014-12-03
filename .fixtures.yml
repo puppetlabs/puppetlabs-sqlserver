@@ -2,4 +2,4 @@ fixtures:
   forge_modules:
     stdlib: "puppetlabs/stdlib"
   symlinks:
-    "mssql": "#{source_dir}"
+    "ms_sql": "#{source_dir}"

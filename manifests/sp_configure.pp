@@ -26,7 +26,7 @@
 #  @see http://msdn.microsoft.com/en-us/library/ms176069.aspx Reconfigure Explanation
 #  @see http://msdn.microsoft.com/en-us/library/ms189631.aspx Server Configuration Options
 ##
-define mssql::sp_configure (
+define ms_sql::sp_configure (
   $value,
   $config_name   = $title,
   $instance      = 'MSSQLSERVER',
@@ -51,8 +51,8 @@ define mssql::sp_configure (
 
   mssql_tsql{ "sp_configure-${instance}-${config_name}":
     instance => $instance,
-    command  => template('mssql/create/sp_configure.sql.erb'),
-    onlyif   => template('mssql/query/sp_configure.sql.erb'),
+    command  => template('ms_sql/create/sp_configure.sql.erb'),
+    onlyif   => template('ms_sql/query/sp_configure.sql.erb'),
     require  => Mssql::Config[$instance]
   }
 }

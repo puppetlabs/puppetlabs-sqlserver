@@ -45,7 +45,7 @@
 # @see http://technet.microsoft.com/en-us/library/ms189751(v=sql.110).aspx Create Login
 # @see http://technet.microsoft.com/en-us/library/ms189828(v=sql.110).aspx Alter Login
 #
-define mssql::login (
+define ms_sql::login (
   $login = $title,
   $instance = 'MSSQLSERVER',
   $ensure = 'present',
@@ -68,10 +68,10 @@ define mssql::login (
     absent  => 'delete',
   }
 
-  mssql_tsql{ "mssql::login-${instance}-${login}":
+  mssql_tsql{ "login-${instance}-${login}":
     instance => $instance,
-    command  => template("mssql/${create_delete}/login.sql.erb"),
-    onlyif   => template('mssql/query/login_exists.sql.erb'),
+    command  => template("ms_sql/${create_delete}/login.sql.erb"),
+    onlyif   => template('ms_sql/query/login_exists.sql.erb'),
     require  => Mssql::Config[$instance]
   }
 }

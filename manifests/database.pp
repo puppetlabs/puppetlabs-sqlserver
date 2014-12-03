@@ -82,7 +82,7 @@
 # @see http://msdn.microsoft.com/en-us/library/ms174269.aspx ALTER DATABASE TSQL
 # @see http://msdn.microsoft.com/en-us/library/ms190303.aspx System Languages
 #
-define mssql::database (
+define ms_sql::database (
   $db_name = $title,
   $instance = 'MSSQLSERVER',
   $ensure = present,
@@ -174,8 +174,8 @@ define mssql::database (
 
   mssql_tsql { "database-${instance}-${db_name}":
     instance => $instance,
-    command  => template("mssql/${create_delete}/database.sql.erb"),
-    onlyif   => template('mssql/query/database_exists.sql.erb'),
+    command  => template("ms_sql/${create_delete}/database.sql.erb"),
+    onlyif   => template('ms_sql/query/database_exists.sql.erb'),
     require  => Mssql::Config[$instance],
   }
 

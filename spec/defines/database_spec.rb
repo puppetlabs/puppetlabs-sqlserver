@@ -1,7 +1,7 @@
 require 'spec_helper'
 require File.expand_path(File.join(File.dirname(__FILE__), 'manifest_shared_examples.rb'))
 
-RSpec.describe 'mssql::database', :type => :define do
+RSpec.describe 'ms_sql::database', :type => :define do
   include_context 'manifests' do
     let(:title) { 'myTitle' }
     let(:mssql_tsql_title) { 'database-MSSQLSERVER-myTestDb' }

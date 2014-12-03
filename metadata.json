@@ -1,5 +1,5 @@
 {
-  "name": "puppetlabs-mssql",
+  "name": "puppetlabs-ms_sql",
   "version": "1.0.0",
   "author": "puppetlabs",
   "summary": "The mssql module installs and manages MS SQL Server 2012 and 2014 on Windows systems.",
