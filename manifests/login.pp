@@ -63,6 +63,10 @@ define sqlserver::login (
 
   validate_re($login_type,['^(SQL_LOGIN|WINDOWS_LOGIN)$'])
 
+  if $check_expiration and !$check_policy {
+    fail ('Can not have check expiration enabled when check_policy is disabled')
+  }
+
   $create_delete = $ensure ? {
     present => 'create',
     absent  => 'delete',
