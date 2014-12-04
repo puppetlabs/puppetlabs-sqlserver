@@ -1,5 +1,5 @@
 #
-# == Define Resource Type: mssql::config
+# == Define Resource Type: sqlserver::config
 #
 # === Requirement/Dependencies:
 #
@@ -13,12 +13,12 @@
 #   The password in order to access the server to be managed.
 #
 # @example
-#   mssql::config{'MSSQLSERVER':
+#   sqlserver::config{'MSSQLSERVER':
 #     admin_user => 'sa',
 #     admin_pass => 'PuppetP@ssword1',
 #   }
 #
-define mssql::config (
+define sqlserver::config (
   $admin_user,
   $admin_pass,
   $instance_name = $title,
@@ -33,7 +33,7 @@ define mssql::config (
     }
   }
   file{ $config_file:
-    content => template('mssql/instance_config.erb'),
+    content => template('sqlserver/instance_config.erb'),
     require => File[$config_dir],
   }
 

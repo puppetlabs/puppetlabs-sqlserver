@@ -1,13 +1,13 @@
 require 'spec_helper'
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'mssql_install_context.rb'))
 
-RSpec.describe Puppet::Type.type(:mssql_instance) do
+RSpec.describe Puppet::Type.type(:sqlserver_instance) do
   let(:error_class) { Puppet::Error }
 
   # Passing validation examples
   shared_examples 'validate' do
     it {
-      @subject = Puppet::Type.type(:mssql_instance).new(args)
+      @subject = Puppet::Type.type(:sqlserver_instance).new(args)
       @subject.stubs(:lookupvar).with('hostname').returns('machineCrazyName')
     }
   end
@@ -22,7 +22,7 @@ RSpec.describe Puppet::Type.type(:mssql_instance) do
   shared_examples 'fail validation' do #|args, messages = ['must be set'], error_class = Puppet::Error|
     it 'should fail with' do
       expect {
-        Puppet::Type.type(:mssql_instance).new(args)
+        Puppet::Type.type(:sqlserver_instance).new(args)
       }.to raise_error(error_class) { |e|
         Array[messages].each do |message|
           /#{message}/.match(e.message)

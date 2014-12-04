@@ -1,7 +1,7 @@
 require 'puppet'
 require 'puppet/property/login'
 
-Puppet::Type::newtype(:mssql_tsql) do
+Puppet::Type::newtype(:sqlserver_tsql) do
   newparam :name, :namevar => true
 
   def self.newcheck(name, options = {}, &block)
@@ -15,12 +15,12 @@ Puppet::Type::newtype(:mssql_tsql) do
     @checks.keys
   end
 
-  desc 'command to run against an instance with the authenticated credentials used in mssql::config'
+  desc 'command to run against an instance with the authenticated credentials used in sqlserver::config'
   newparam(:command) do
 
   end
 
-  desc 'requires the usage of mssql::config with the user and password'
+  desc 'requires the usage of sqlserver::config with the user and password'
   newparam(:instance) do
 
   end

@@ -1,12 +1,12 @@
 #
-# == Define Resource Type: mssql::database
+# == Define Resource Type: sqlserver::database
 #
 #
 #
 #
 # === Requirement/Dependencies:
 #
-# Requires defined type {mssql::config} in order to execute against the SQL Server instance
+# Requires defined type {sqlserver::config} in order to execute against the SQL Server instance
 #
 #
 # === Parameters
@@ -82,7 +82,7 @@
 # @see http://msdn.microsoft.com/en-us/library/ms174269.aspx ALTER DATABASE TSQL
 # @see http://msdn.microsoft.com/en-us/library/ms190303.aspx System Languages
 #
-define mssql::database (
+define sqlserver::database (
   $db_name = $title,
   $instance = 'MSSQLSERVER',
   $ensure = present,
@@ -172,11 +172,11 @@ define mssql::database (
     absent  => 'delete',
   }
 
-  mssql_tsql { "database-${instance}-${db_name}":
+  sqlserver_tsql { "database-${instance}-${db_name}":
     instance => $instance,
-    command  => template("mssql/${create_delete}/database.sql.erb"),
-    onlyif   => template('mssql/query/database_exists.sql.erb'),
-    require  => Mssql::Config[$instance],
+    command  => template("sqlserver/${create_delete}/database.sql.erb"),
+    onlyif   => template('sqlserver/query/database_exists.sql.erb'),
+    require  => Sqlserver::Config[$instance],
   }
 
 
