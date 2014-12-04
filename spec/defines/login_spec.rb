@@ -35,4 +35,9 @@ RSpec.describe 'sqlserver::login', :type => :define do
     it_behaves_like 'mssql_tsql command'
     it_behaves_like 'mssql_tsql onlyif'
   end
+  describe 'check_policy' do
+    let(:additional_params) { {:check_policy => false, :check_expiration => true} }
+    let(:raise_error_check) { 'Can not have check expiration enabled when check_policy is disabled' }
+    it_should_behave_like 'validation error'
+  end
 end
