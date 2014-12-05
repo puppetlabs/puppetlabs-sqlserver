@@ -7,6 +7,21 @@
   "source": "PRIVATE",
   "project_page": "https://tickets.puppetlabs.com/browse/MODULES/component/12400",
   "issues_url": "https://tickets.puppetlabs.com/browse/MODULES/component/12400",
+  "operatingsystem_support": [
+    {
+      "operatingsystem": "Windows",
+      "operatingsystemrelease": [
+        "Server 2012",
+        "Server 2012 R2"
+      ]
+    }
+  ],
+  "requirements": [
+    {
+      "name": "pe",
+      "version_requirement": "3.7.x"
+    }
+  ],
   "dependencies": [
     {
       "name": "puppetlabs-stdlib",
