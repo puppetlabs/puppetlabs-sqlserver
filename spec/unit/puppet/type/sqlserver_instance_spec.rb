@@ -25,7 +25,7 @@ RSpec.describe Puppet::Type.type(:sqlserver_instance) do
         Puppet::Type.type(:sqlserver_instance).new(args)
       }.to raise_error(error_class) { |e|
         Array[messages].each do |message|
-          /#{message}/.match(e.message)
+          expect(e.message).to match(/#{message}/)
         end
       }
     end
