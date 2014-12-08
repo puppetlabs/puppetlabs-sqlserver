@@ -11,7 +11,7 @@
 # @raise [Puppet::ParserError] Instance name can not start or end with underscore (_)
 #
 module Puppet::Parser::Functions
-  newfunction(:mssql_validate_instance_name, :docs => <<DOC) do |args|
+  newfunction(:sqlserver_validate_instance_name, :docs => <<DOC) do |args|
 Validate the MS SQL Instance name based on what Microsoft has set within the document located at
   http://msdn.microsoft.com/en-us/library/ms143531(v=sql.120).aspx
 DOC

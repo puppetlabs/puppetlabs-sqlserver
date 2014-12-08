@@ -1,5 +1,5 @@
-require 'puppet/property/login'
-require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'puppet_x/mssql/server_helper'))
+require File.expand_path(File.join(File.dirname(__FILE__), '..', 'property/login'))
+require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'puppet_x/sqlserver/server_helper'))
 
 Puppet::Type::newtype(:sqlserver_features) do
   ensurable
@@ -19,7 +19,7 @@ Puppet::Type::newtype(:sqlserver_features) do
 
   end
 
-  newparam(:is_svc_account, :parent => Puppet::Property::MssqlLogin) do
+  newparam(:is_svc_account, :parent => Puppet::Property::SqlserverLogin) do
     desc 'Either domain user name or system account. Defaults to "NT AUTHORITY\NETWORK SERVICE"'
 
   end
@@ -35,8 +35,8 @@ Puppet::Type::newtype(:sqlserver_features) do
           Tools, Books online components, SQL Server Data Tools, and other shared components.'
     newvalues(:Tools, :BC, :Conn, :SSMS, :ADV_SSMS, :SDK, :IS, :MDS)
     munge do |value|
-      if PuppetX::Mssql::ServerHelper.is_super_feature(value)
-        PuppetX::Mssql::ServerHelper.get_sub_features(value).collect { |v| v.to_s }
+      if PuppetX::Sqlserver::ServerHelper.is_super_feature(value)
+        PuppetX::Sqlserver::ServerHelper.get_sub_features(value).collect { |v| v.to_s }
       else
         value
       end
@@ -55,15 +55,15 @@ Puppet::Type::newtype(:sqlserver_features) do
     end
   end
 
-  def is_domain_user?(user)
-    PuppetX::Mssql::ServerHelper.is_domain_user?(user, Facter.value(:hostname))
+  def is_domain_or_local_user?(user)
+    PuppetX::Sqlserver::ServerHelper.is_domain_or_local_user?(user, Facter.value(:hostname))
   end
 
   def validate_user_password_required(account, pass)
     if !(set?(account))
       fail("User #{account} is required")
     end
-    if is_domain_user?(self[account]) && self[pass].nil?
+    if is_domain_or_local_user?(self[account]) && self[pass].nil?
       fail("#{pass} required when using domain account")
     end
   end

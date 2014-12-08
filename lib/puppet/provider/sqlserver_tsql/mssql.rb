@@ -1,10 +1,10 @@
-require File.expand_path(File.join(File.dirname(__FILE__), '..', 'mssql'))
+require File.expand_path(File.join(File.dirname(__FILE__), '..', 'sqlserver'))
 
-Puppet::Type::type(:sqlserver_tsql).provide(:mssql, :parent => Puppet::Provider::Mssql) do
+Puppet::Type::type(:sqlserver_tsql).provide(:mssql, :parent => Puppet::Provider::Sqlserver) do
 
   def run(query)
     debug("Running resource #{query} against #{resource[:instance]}")
-    result = Puppet::Provider::Mssql.run_authenticated_sqlcmd(query, {:instance_name => resource[:instance]})
+    result = Puppet::Provider::Sqlserver.run_authenticated_sqlcmd(query, {:instance_name => resource[:instance]})
     return result
   end
 

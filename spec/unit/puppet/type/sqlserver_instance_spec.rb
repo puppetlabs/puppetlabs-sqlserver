@@ -1,5 +1,5 @@
 require 'spec_helper'
-require File.expand_path(File.join(File.dirname(__FILE__), '..', 'mssql_install_context.rb'))
+require File.expand_path(File.join(File.dirname(__FILE__), '..', 'sqlserver_install_context.rb'))
 
 RSpec.describe Puppet::Type.type(:sqlserver_instance) do
   let(:error_class) { Puppet::Error }

@@ -40,7 +40,7 @@
 #
 # [disabled]
 #   Default value is false.  Accepts [Boolean] values of true or false.
-# @see Puppet::Parser::Fucntions#mssql_validate_instance_name
+# @see Puppet::Parser::Fucntions#sqlserver_validate_instance_name
 # @see http://msdn.microsoft.com/en-us/library/ms186320(v=sql.110).aspx Server Role Members
 # @see http://technet.microsoft.com/en-us/library/ms189751(v=sql.110).aspx Create Login
 # @see http://technet.microsoft.com/en-us/library/ms189828(v=sql.110).aspx Alter Login
@@ -59,7 +59,7 @@ define sqlserver::login (
   $disabled = false,
 ) {
 
-  mssql_validate_instance_name($instance)
+  sqlserver_validate_instance_name($instance)
 
   validate_re($login_type,['^(SQL_LOGIN|WINDOWS_LOGIN)$'])
 

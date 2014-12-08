@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-require File.expand_path(File.join(File.dirname(__FILE__), '..', 'mssql_install_context.rb'))
+require File.expand_path(File.join(File.dirname(__FILE__), '..', 'sqlserver_install_context.rb'))
 
 provider_class = Puppet::Type.type(:sqlserver_instance).provider(:mssql)
 

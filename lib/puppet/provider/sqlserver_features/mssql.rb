@@ -1,19 +1,17 @@
 require 'json'
-require File.expand_path(File.join(File.dirname(__FILE__), '..', 'mssql'))
+require File.expand_path(File.join(File.dirname(__FILE__), '..', 'sqlserver'))
 
-Puppet::Type::type(:sqlserver_features).provide(:mssql, :parent => Puppet::Provider::Mssql) do
+Puppet::Type::type(:sqlserver_features).provide(:mssql, :parent => Puppet::Provider::Sqlserver) do
 
   def self.instances
     instances = []
-    discovery = File.readlines(File.expand_path(File.join(File.dirname(__FILE__), '../../../../files/run_discovery.ps1')))
-    result = powershell([discovery])
-    jsonResult = JSON.parse(result)
+    jsonResult = Puppet::Provider::Sqlserver.run_discovery_script
     debug "Parsing json result #{jsonResult}"
     if jsonResult.has_key?('Generic Features')
       existing_instance = {:name => "Generic Features",
                            :ensure => :present,
                            :features =>
-                               PuppetX::Mssql::ServerHelper.translate_features(
+                               PuppetX::Sqlserver::ServerHelper.translate_features(
                                    jsonResult['Generic Features']).sort!
       }
       debug "Parsed features = #{existing_instance[:features]}"
@@ -66,8 +64,7 @@ Puppet::Type::type(:sqlserver_features).provide(:mssql, :parent => Puppet::Provi
   end
 
   def installNet35
-    discovery = File.readlines(File.expand_path(File.join(File.dirname(__FILE__), '../../../../files/install_dot_net_35.ps1')))
-    result = powershell([discovery])
+    result = Puppet::Provider::Sqlserver.run_install_dot_net
   end
 
   def create

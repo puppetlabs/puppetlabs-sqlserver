@@ -1,13 +1,12 @@
-require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'lib/puppet_x/mssql/server_helper'))
+require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'lib/puppet_x/sqlserver/server_helper'))
 
-
-RSpec.describe 'mssql_is_domain_user' do
+RSpec.describe 'sqlserver_is_domain_or_local_user?' do
   shared_examples 'return the value' do
     let(:scope) { PuppetlabsSpec::PuppetInternals.scope }
     it {
       Facter.stubs(:value).with(anything())
       Facter.stubs(:value).with(:hostname).returns('mybox')
-      expect(scope.function_mssql_is_domain_user([user])).to eq(expected_value)
+      expect(scope.function_sqlserver_is_domain_or_local_user([user])).to eq(expected_value)
     }
   end
 

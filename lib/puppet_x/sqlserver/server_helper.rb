@@ -1,5 +1,5 @@
 module PuppetX
-  module Mssql
+  module Sqlserver
     class ServerHelper
       @features_hash = {
           :AS => 'Analysis Services',
@@ -40,7 +40,7 @@ module PuppetX
         @super_feature_hash.has_key?(feature.to_sym)
       end
 
-      def self.is_domain_user?(user, hostname)
+      def self.is_domain_or_local_user?(user, hostname)
         if /(^(((nt (authority|service))|#{hostname})\\\w+)$)|^(\w+)$/i.match(user)
           false
         else

@@ -4,7 +4,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), 'manifest_shared_exam
 RSpec.describe 'sqlserver::sp_configure', :type => :define do
   include_context 'manifests' do
     let(:title) { 'filestream access level' }
-    let(:mssql_tsql_title) { 'sp_configure-MSSQLSERVER-filestream access level' }
+    let(:sqlserver_tsql_title) { 'sp_configure-MSSQLSERVER-filestream access level' }
     let(:params) { {
         :config_name => 'filestream access level',
         :value => 1,
@@ -22,8 +22,8 @@ RSpec.describe 'sqlserver::sp_configure', :type => :define do
         "IF EXISTS(select * from @sp_conf where name = 'filestream access level' AND run_value != 1)
 	THROW 51000, 'sp_configure `filestream access level` is not in the correct state', 10"
     ] }
-    it_behaves_like 'mssql_tsql command'
-    it_behaves_like 'mssql_tsql onlyif'
+    it_behaves_like 'sqlserver_tsql command'
+    it_behaves_like 'sqlserver_tsql onlyif'
   end
 
   describe 'reconfigure => false' do
@@ -34,7 +34,7 @@ RSpec.describe 'sqlserver::sp_configure', :type => :define do
         'RECONFIGURE WITH OVERRIDE',
         'RECONFIGURE'
     ] }
-    it_behaves_like 'mssql_tsql without_command'
+    it_behaves_like 'sqlserver_tsql without_command'
   end
 
   describe 'reconfigure => false' do
@@ -45,8 +45,8 @@ RSpec.describe 'sqlserver::sp_configure', :type => :define do
         'RECONFIGURE WITH OVERRIDE',
     ] }
     let(:should_contain_command) { ['RECONFIGURE'] }
-    it_behaves_like 'mssql_tsql command'
-    it_behaves_like 'mssql_tsql without_command'
+    it_behaves_like 'sqlserver_tsql command'
+    it_behaves_like 'sqlserver_tsql without_command'
   end
 
   describe 'service' do

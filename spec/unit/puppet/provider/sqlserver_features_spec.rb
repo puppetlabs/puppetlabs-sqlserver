@@ -1,6 +1,6 @@
 require 'spec_helper'
 require 'rspec'
-require File.expand_path(File.join(File.dirname(__FILE__), '..', 'mssql_spec_helper.rb'))
+require File.expand_path(File.join(File.dirname(__FILE__), '..', 'sqlserver_spec_helper.rb'))
 
 provider_class = Puppet::Type.type(:sqlserver_features).provider(:mssql)
 
@@ -48,9 +48,7 @@ RSpec.describe provider_class do
       @provider = provider_class.new(@resource)
 
       stub_powershell_call(subject)
-
       stub_source_which_call args
-
       if !feature_remove.empty?
         stub_remove_features(args, feature_remove)
       end

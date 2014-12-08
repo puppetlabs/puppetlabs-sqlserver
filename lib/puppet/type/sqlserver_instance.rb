@@ -1,5 +1,5 @@
-require 'puppet/property/login'
-require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'puppet_x/mssql/server_helper'))
+require File.expand_path(File.join(File.dirname(__FILE__), '..', 'property/login'))
+require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'puppet_x/sqlserver/server_helper'))
 
 Puppet::Type::newtype(:sqlserver_instance) do
   ensurable
@@ -24,8 +24,8 @@ Puppet::Type::newtype(:sqlserver_instance) do
           Replication, Full-Text, and Data Quality Services (DQS) server.'
     newvalues(:SQL, :SQLEngine, :Replication, :FullText, :DQ, :AS, :RS)
     munge do |value|
-      if PuppetX::Mssql::ServerHelper.is_super_feature(value)
-        PuppetX::Mssql::ServerHelper.get_sub_features(value).collect { |v| v.to_s }
+      if PuppetX::Sqlserver::ServerHelper.is_super_feature(value)
+        PuppetX::Sqlserver::ServerHelper.get_sub_features(value).collect { |v| v.to_s }
       else
         value
       end
@@ -42,7 +42,7 @@ Puppet::Type::newtype(:sqlserver_instance) do
     newvalues(:automatic, :manual, :disable)
   end
 
-  newparam(:sql_svc_account, :parent => Puppet::Property::MssqlLogin) do
+  newparam(:sql_svc_account, :parent => Puppet::Property::SqlserverLogin) do
     desc 'Account for SQL Server service: Domain\User or system account.'
     # Default to "NT Service\SQLAGENT$#{instance_name}"
 
@@ -58,7 +58,7 @@ Puppet::Type::newtype(:sqlserver_instance) do
 
   end
 
-  newparam(:agt_svc_account, :parent => Puppet::Property::MssqlLogin) do
+  newparam(:agt_svc_account, :parent => Puppet::Property::SqlserverLogin) do
     desc 'Either domain user name or system account'
 
   end
@@ -68,7 +68,7 @@ Puppet::Type::newtype(:sqlserver_instance) do
 
   end
 
-  newparam(:as_svc_account, :parent => Puppet::Property::MssqlLogin) do
+  newparam(:as_svc_account, :parent => Puppet::Property::SqlserverLogin) do
     desc 'The account used by the Analysis Services service.'
 
   end
@@ -82,7 +82,7 @@ Puppet::Type::newtype(:sqlserver_instance) do
     desc 'Specifies the list of administrator accounts to provision.'
   end
 
-  newparam(:rs_svc_account, :parent => Puppet::Property::MssqlLogin) do
+  newparam(:rs_svc_account, :parent => Puppet::Property::SqlserverLogin) do
     desc 'Specify the service account of the report server. This value is required.
           If you omit this value, Setup will use the default built-in account for
           the current operating system (either NetworkService or LocalSystem).
@@ -142,13 +142,13 @@ Puppet::Type::newtype(:sqlserver_instance) do
     if !(set?(account))
       fail("User #{account} is required")
     end
-    if is_domain_user?(self[account]) && self[pass].nil?
+    if is_domain_or_local_user?(self[account]) && self[pass].nil?
       fail("#{pass} required when using domain account")
     end
   end
 
-  def is_domain_user?(user)
-    PuppetX::Mssql::ServerHelper.is_domain_user?(user, Facter.value(:hostname))
+  def is_domain_or_local_user?(user)
+    PuppetX::Sqlserver::ServerHelper.is_domain_or_local_user?(user, Facter.value(:hostname))
   end
 
   def is_strong_password?(key)
