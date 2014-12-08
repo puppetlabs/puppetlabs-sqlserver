@@ -1,5 +1,4 @@
 require 'puppet'
-require 'puppet/property/login'
 
 Puppet::Type::newtype(:sqlserver_tsql) do
   newparam :name, :namevar => true

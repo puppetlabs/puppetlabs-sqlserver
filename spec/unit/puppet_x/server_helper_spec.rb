@@ -1,20 +1,20 @@
 require 'rspec'
 require 'spec_helper'
-require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', '..', 'lib/puppet_x/mssql/server_helper'))
+require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', '..', 'lib/puppet_x/sqlserver/server_helper'))
 
-RSpec.describe PuppetX::Mssql::ServerHelper do
-  let(:subject) { PuppetX::Mssql::ServerHelper }
+RSpec.describe PuppetX::Sqlserver::ServerHelper do
+  let(:subject) { PuppetX::Sqlserver::ServerHelper }
 
   shared_examples 'when calling with' do |user, should_be_bool|
     it "with #{user} should return #{should_be_bool}" do
       subject.stubs(:lookupvar).with('hostname').returns('mybox')
-      subject.is_domain_user?(user, 'mybox').should(eq(should_be_bool))
+      subject.is_domain_or_local_user?(user, 'mybox').should(eq(should_be_bool))
     end
   end
 
   shared_examples 'translate_features' do
     it {
-      expect(PuppetX::Mssql::ServerHelper.translate_features(features)).to eq(translated)
+      expect(PuppetX::Sqlserver::ServerHelper.translate_features(features)).to eq(translated)
     }
   end
 

@@ -3,7 +3,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), 'manifest_shared_exam
 
 RSpec.describe 'sqlserver::login', :type => :define do
   include_context 'manifests' do
-    let(:mssql_tsql_title) { 'login-MSSQLSERVER-myTitle' }
+    let(:sqlserver_tsql_title) { 'login-MSSQLSERVER-myTitle' }
     let(:title) { 'myTitle' }
     let(:params) { {
         :login => 'myTitle',
@@ -32,8 +32,8 @@ RSpec.describe 'sqlserver::login', :type => :define do
         "@default_lang as varchar(50) = 'us_english'",
         "IF NOT EXISTS(SELECT name FROM sys.server_principals WHERE  name = 'myTitle')"
     ] }
-    it_behaves_like 'mssql_tsql command'
-    it_behaves_like 'mssql_tsql onlyif'
+    it_behaves_like 'sqlserver_tsql command'
+    it_behaves_like 'sqlserver_tsql onlyif'
   end
   describe 'check_policy' do
     let(:additional_params) { {:check_policy => false, :check_expiration => true} }

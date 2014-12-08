@@ -1,14 +1,14 @@
 require 'spec_helper'
 require 'puppet/error'
 
-RSpec.describe 'mssql_validate_svrroles_hash function' do
+RSpec.describe 'sqlserver_validate_svrroles_hash function' do
   let(:scope) { PuppetlabsSpec::PuppetInternals.scope }
 
   possible_roles = %w(sysadmin serveradmin securityadmin processadmin setupadmin bulkadmin diskadmin dbcreator)
 
   shared_examples 'compile' do |value|
     it {
-      scope.function_mssql_validate_svrroles_hash([value])
+      scope.function_sqlserver_validate_svrroles_hash([value])
     }
   end
 
@@ -29,7 +29,7 @@ RSpec.describe 'mssql_validate_svrroles_hash function' do
     let(:msg) { /svrrole requires a value of/ }
     it {
       expect {
-        scope.function_mssql_validate_svrroles_hash(arguments)
+        scope.function_sqlserver_validate_svrroles_hash(arguments)
       }.to raise_error(Puppet::Error, msg)
 
     }
@@ -37,10 +37,10 @@ RSpec.describe 'mssql_validate_svrroles_hash function' do
 
   describe 'should fail with more than one parameter' do
     let(:arguments) { [{'sysadmin' => 1}, 'whoops'] }
-    let(:msg) { /mssql_validate_svcrole_hash\(\): wrong number of arguments/ }
+    let(:msg) { /sqlserver_validate_svcrole_hash\(\): wrong number of arguments/ }
     it {
       expect {
-        scope.function_mssql_validate_svrroles_hash(arguments)
+        scope.function_sqlserver_validate_svrroles_hash(arguments)
       }.to raise_error(Puppet::Error, msg)
     }
   end

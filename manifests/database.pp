@@ -118,25 +118,25 @@ define sqlserver::database (
 #  validate filespec _size and _maxsize
 ##
   if $filespec_size {
-    mssql_validate_size($filespec_size)
+    sqlserver_validate_size($filespec_size)
   }
   if $filespec_maxsize and $filespec_maxsize != 'UNLIMITED' {
-    mssql_validate_size($filespec_maxsize)
+    sqlserver_validate_size($filespec_maxsize)
   }
   if $filespec_filename or $filespec_name {
     validate_re($filespec_filename, '^.+$', 'filespec_filename must not be null if specifying filespec_name')
     validate_re($filespec_name, '^.+$', 'filespec_name must not be null if specifying filespec_filename')
-    mssql_validate_range($filespec_name, 1, 128, 'filespec_name can not be more than 128 characters and must be at least 1 character in length')
+    sqlserver_validate_range($filespec_name, 1, 128, 'filespec_name can not be more than 128 characters and must be at least 1 character in length')
     validate_absolute_path($filespec_filename)
   }
   if $log_filename {
-    mssql_validate_range($log_name, 1, 128, "${log_name} can not be more than 128 characters and must be at least 1 character in length")
+    sqlserver_validate_range($log_name, 1, 128, "${log_name} can not be more than 128 characters and must be at least 1 character in length")
     validate_absolute_path($log_filename)
   }
-  if $log_size { mssql_validate_size($log_size) }
-  if $log_maxsize { mssql_validate_size($log_maxsize) }
+  if $log_size { sqlserver_validate_size($log_size) }
+  if $log_maxsize { sqlserver_validate_size($log_maxsize) }
   if $log_filename or $log_filegrowth or $log_maxsize or $log_name or $log_size {
-    mssql_validate_range($filespec_filename, 1, 128, 'filespec_name and filespec_filename must be specified when specifying any log attributes')
+    sqlserver_validate_range($filespec_filename, 1, 128, 'filespec_name and filespec_filename must be specified when specifying any log attributes')
     validate_absolute_path($filespec_filename)
   }
 ## VALIDATE FILESTREAM
@@ -150,17 +150,17 @@ define sqlserver::database (
       "Filestream Directory Name should not be an absolute path but a directory name only, you provided ${filestream_directory_name}")
   }
 
-  mssql_validate_instance_name($instance)
+  sqlserver_validate_instance_name($instance)
 
   validate_re($containment, '^(PARTIAL|NONE)$', "Containment must be either PARTIAL or NONE, you provided ${containment}")
 
 ## Validate PARTIAL required variables switches
   if $containment == 'PARTIAL' {
-    if $db_chaining { mssql_validate_on_off($db_chaining) }
-    if $nested_triggers { mssql_validate_on_off($nested_triggers) }
-    if $transform_noise_words { mssql_validate_on_off($transform_noise_words) }
-    if $trustworthy { mssql_validate_on_off($trustworthy) }
-    mssql_validate_range($two_digit_year_cutoff, 1753, 9999,
+    if $db_chaining { sqlserver_validate_on_off($db_chaining) }
+    if $nested_triggers { sqlserver_validate_on_off($nested_triggers) }
+    if $transform_noise_words { sqlserver_validate_on_off($transform_noise_words) }
+    if $trustworthy { sqlserver_validate_on_off($trustworthy) }
+    sqlserver_validate_range($two_digit_year_cutoff, 1753, 9999,
       "Two digit year cutoff must be between 1753 and 9999, you provided ${two_digit_year_cutoff}")
   }
 

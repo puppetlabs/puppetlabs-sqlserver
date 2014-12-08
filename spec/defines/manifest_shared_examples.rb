@@ -1,6 +1,6 @@
 RSpec.shared_context 'manifests' do
   let(:title) { 'simple title' }
-  let(:mssql_tsql_title) {}
+  let(:sqlserver_tsql_title) {}
   let(:params) { {} }
   let(:additional_params) { {} }
   let(:should_contain_command) { [] }
@@ -15,38 +15,38 @@ RSpec.shared_context 'manifests' do
     Regexp.new(Regexp.escape(str))
   end
 
-  shared_examples 'mssql_tsql onlyif' do
+  shared_examples 'sqlserver_tsql onlyif' do
     it {
       params.merge!(additional_params)
       should_contain_onlyif.each do |check|
-        should contain_sqlserver_tsql(mssql_tsql_title).with_onlyif(convert_to_regexp(check))
+        should contain_sqlserver_tsql(sqlserver_tsql_title).with_onlyif(convert_to_regexp(check))
       end
     }
 
   end
-  shared_examples 'mssql_tsql without_onlyif' do
+  shared_examples 'sqlserver_tsql without_onlyif' do
     it {
       params.merge!(additional_params)
       should_not_contain_onlyif.each do |check|
-        should contain_sqlserver_tsql(mssql_tsql_title).with_onlyif(convert_to_regexp(check))
+        should contain_sqlserver_tsql(sqlserver_tsql_title).with_onlyif(convert_to_regexp(check))
       end
     }
   end
 
-  shared_examples 'mssql_tsql command' do
+  shared_examples 'sqlserver_tsql command' do
     it {
       params.merge!(additional_params)
       should_contain_command.each do |check|
-        should contain_sqlserver_tsql(mssql_tsql_title).with_command(convert_to_regexp(check))
+        should contain_sqlserver_tsql(sqlserver_tsql_title).with_command(convert_to_regexp(check))
       end
     }
 
   end
-  shared_examples 'mssql_tsql without_command' do
+  shared_examples 'sqlserver_tsql without_command' do
     it {
       params.merge!(additional_params)
       should_not_contain_command.each do |check|
-        should_not contain_sqlserver_tsql(mssql_tsql_title).with_command(convert_to_regexp(check))
+        should_not contain_sqlserver_tsql(sqlserver_tsql_title).with_command(convert_to_regexp(check))
       end
     }
   end

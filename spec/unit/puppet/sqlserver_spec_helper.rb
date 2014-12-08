@@ -4,7 +4,7 @@ end
 
 def stub_powershell_call(subject)
   Puppet::Util.stubs(:which).with('powershell.exe').returns('powershell.exe')
-  subject.expects(:powershell)
+  Puppet::Provider::Sqlserver.stubs(:run_install_dot_net).returns()
 end
 
 def stub_add_features(args, features)

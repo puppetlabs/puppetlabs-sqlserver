@@ -1,7 +1,7 @@
 module Puppet::Parser::Functions
-  newfunction(:mssql_validate_svrroles_hash) do |args|
+  newfunction(:sqlserver_validate_svrroles_hash) do |args|
     if args.length != 1 then
-      raise Puppet::ParseError, ("mssql_validate_svcrole_hash(): wrong number of arguments (#{args.length}; must be 1)")
+      raise Puppet::ParseError, ("sqlserver_validate_svcrole_hash(): wrong number of arguments (#{args.length}; must be 1)")
     end
 
     value = args[0]

@@ -34,7 +34,7 @@ define sqlserver::sp_configure (
   $with_override = false,
   $restart       = false,
 ){
-  mssql_validate_instance_name($instance)
+  sqlserver_validate_instance_name($instance)
   validate_re($config_name,'^\w+')
   validate_re($value,'^\d+$', "Value for ${config_name}, for instance ${instance}, must be a integer value, you provided ${value}")
 

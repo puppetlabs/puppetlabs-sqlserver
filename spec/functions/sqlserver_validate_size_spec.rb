@@ -1,29 +1,29 @@
 require 'spec_helper'
 require 'puppet/error'
 
-describe 'mssql_validate_size function' do
+describe 'sqlserver_validate_size function' do
   let(:scope) { PuppetlabsSpec::PuppetInternals.scope }
 
   shared_examples 'should compile' do |value|
     it "with a value #{value}" do
-      scope.function_mssql_validate_size([value])
+      scope.function_sqlserver_validate_size([value])
     end
   end
 
   shared_examples 'should raise error' do |value, error_re|
 
     it {
-      expect { scope.function_mssql_validate_size([value]) }.to raise_error(Puppet::ParseError, error_re)
+      expect { scope.function_sqlserver_validate_size([value]) }.to raise_error(Puppet::ParseError, error_re)
     }
   end
 
   it 'should exist' do
-    expect(Puppet::Parser::Functions.function("mssql_validate_size")).to eq("function_mssql_validate_size")
+    expect(Puppet::Parser::Functions.function("sqlserver_validate_size")).to eq("function_sqlserver_validate_size")
   end
 
   describe 'should raise error when no arguments passed' do
     it {
-      expect { scope.function_mssql_validate_size([]) }.to raise_error(Puppet::ParseError, /requires exactly 1 argument/)
+      expect { scope.function_sqlserver_validate_size([]) }.to raise_error(Puppet::ParseError, /requires exactly 1 argument/)
     }
   end
 
