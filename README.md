@@ -15,11 +15,11 @@
 
 ##Overview
 
-The sqlserver module installs and manages MS SQL Server 2012 and 2014 on Windows systems. 
+The sqlserver module installs and manages Microsoft SQL Server 2012 and 2014 on Windows systems. 
 
 ##Module Description
  
-The sqlserver module adds defined types to install and manage MS SQL Server 2012 and 2014 on Windows Server 2012. The module can install SQL Server clients, multiple instances, and SQL features, as well as create and manage new databases and logins. 
+The sqlserver module adds defined types to install and manage Microsoft SQL Server 2012 and 2014 on Windows Server 2012. The module can install SQL Server clients, multiple instances, and SQL features, as well as create and manage new databases and logins. 
 
 ##Setup
 
@@ -39,8 +39,6 @@ The sqlserver module requires the following:
 	
 ###Beginning with sqlserver
 
-
-
 To get started with the sqlserver module, include these settings in your manifest: 
 
 ```
@@ -55,7 +53,7 @@ This manifest installs MS SQL and creates an MS SQL instance named MSSQLSERVER. 
 
 ##Usage
 
-Note: For clarification on Microsoft SQL Server terminology, please see [Windows SQL Server Terms](#windows-sql-server-terms) below.
+Note: For clarification on Microsoft SQL Server terminology, please see [Microsoft SQL Server Terms](#microsoft-sql-server-terms) below.
 
 ###To install SQL Server tools and features not specific to a database instance:
 
@@ -180,7 +178,7 @@ Creates, destroys, or updates databases, but does not move or modify files. Requ
 * `log_maxsize`: Specifies the maximum size to which the file can grow. MAXSIZE cannot be specified when the os_file_name is specified as a UNC path. This parameter is affected only at creation; updates will not change this setting. 
 * `log_filegrowth`: Specifies the automatic growth increment of the file. The FILEGROWTH setting for a file cannot exceed the MAXSIZE setting. FILEGROWTH cannot be specified when the os_file_name is specified as a UNC path. FILEGROWTH does not apply to a FILESTREAM filegroup. This parameter is affected only at creation; updates will not change this setting. 
 * `containment`: Defaults to 'NONE'.Other possible values are 'PARTIAL'. Setting `containment` =>'PARTIAL' requires defined type `sqlserver::sp_configure`. See [http://msdn.microsoft.com/en-us/library/ff929071.aspx](http://msdn.microsoft.com/en-us/library/ff929071.aspx) for complete documentation about containment.
-* `default_fulltext_language`: Sets default fulltext language. Only applicable if `containment` => ‘PARTIAL’. Valid values are documented at [http://msdn.microsoft.com/en-us/library/ms176076.aspx](http://msdn.microsoft.com/en-us/library/ms176076.aspx). Defaults to 'us_english'.
+* `default_fulltext_language`: Sets default fulltext language. Only applicable if `containment` => ‘PARTIAL’. Valid values are documented at [http://msdn.microsoft.com/en-us/library/ms190303.aspx](http://msdn.microsoft.com/en-us/library/ms190303.aspx). Defaults to 'us_english'.
 * `default_language`: Sets default language. Only applicable if `containment` => ‘PARTIAL’. Valid values are documented at http://msdn.microsoft.com/en-us/library/ms190303.aspx. Defaults to 'us_english'.
 * `nested_triggers`: Enables cascading triggers. Only applicable if `containment` => ‘PARTIAL’. Valid values are 'ON', 'OFF'. See [http://msdn.microsoft.com/en-us/library/ms178101.aspx](http://msdn.microsoft.com/en-us/library/ms178101.aspx) for complete documentation.
 * `transform_noise_words`: Removes noise or stop words, such as “is”, “the”, “this”. Only applicable if `containment` => ‘PARTIAL’. Valid values are 'ON', 'OFF'. 
