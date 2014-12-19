@@ -236,3 +236,7 @@ This defined type configures the instance to allow usage of filestream parameter
 ##Limitations
 
 This module is available only for Puppet Enterprise 3.7 and later. 
+
+## Development
+
+This is a proprietary module only available to Puppet Enterprise users. As such, we have no formal way for users to contribute toward development. However, we know our users are a charming collection of brilliant people, so if you have a bug you've fixed or a contribution to this module, please generate a diff and throw it into a ticket to support---they'll ensure that we get it.
