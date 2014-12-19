@@ -237,10 +237,6 @@ This defined type configures the instance to allow usage of filestream parameter
 
 This module is available only for Puppet Enterprise 3.7 and later. 
 
-##Development
+## Development
 
-Puppet Labs modules on the Puppet Forge are open projects, and community contributions are essential for keeping them great. We can’t access the huge number of platforms and myriad of hardware, software, and deployment configurations that Puppet is intended to serve.
-
-We want to keep it as easy as possible to contribute changes so that our modules work in your environment. There are a few guidelines that we need contributors to follow so that we can have a chance of keeping on top of things.
-
-You can read the complete module contribution guide on [Contributing to the Puppet Forge](https://docs.puppetlabs.com/forge/contributing.html).
+This is a proprietary module only available to Puppet Enterprise users. As such, we have no formal way for users to contribute toward development. However, we know our users are a charming collection of brilliant people, so if you have a bug you've fixed or a contribution to this module, please generate a diff and throw it into a ticket to support---they'll ensure that we get it.
