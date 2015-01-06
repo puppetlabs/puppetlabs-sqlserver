@@ -4,11 +4,11 @@ sqlserver::config{ 'MSSQLSERVER':
   require    => Mssql_instance[$instance_name],
 }
 #Enable Filestream access on server
-mssql::sp_configure{ 'filestream access level':
+sqlserver::sp_configure{ 'filestream access level':
   value => 1,
 }
 #Enable Partial Contained databases on server
-mssql::sp_configure{ 'contained database authentication':
+sqlserver::sp_configure{ 'contained database authentication':
   value         => 1,
   reconfigure   => true,
   with_override => false,
