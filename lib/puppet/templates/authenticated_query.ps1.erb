@@ -25,10 +25,12 @@ if (!(Get-Command 'sqlcmd.exe' -ErrorAction SilentlyContinue)){
 
 $result = sqlcmd.exe -i '<%= input_file %>' -h-1 -W -s ',' <% if @instance != 'MSSQLSERVER' %>-S localhost\<%= @instance %><%end%>
     if($result -match "ERROR"){
-        Write-Error -Message ($result | where {$_ -match "ERROR"} | select -First 1)
+    	Write-Host ($result | where {$_ -match "THROW CAUGHT"} | select -First 1)
+        Write-Error -Message ($result | where {$_ -match "THROW CAUGHT"} | select -First 1)
 		exit(10)
     }
 	if($result -match "Incorrect syntax near "){
+		Write-Host ($result | where {$_ -match "Incorrect syntax near"} | select -First 1)
 	    Write-Error -Message ($result | where {$_ -match "Incorrect syntax"} | select -First 1)
 		exit(10)
 	}

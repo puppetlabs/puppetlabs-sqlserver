@@ -1,4 +1,5 @@
 require 'puppet'
+require 'puppet/property/sqlserver_tsql'
 
 Puppet::Type::newtype(:sqlserver_tsql) do
   newparam :name, :namevar => true
@@ -15,21 +16,23 @@ Puppet::Type::newtype(:sqlserver_tsql) do
   end
 
   desc 'command to run against an instance with the authenticated credentials used in sqlserver::config'
-  newparam(:command) do
+  newparam(:command, :parent => Puppet::Property::SqlserverTsql) do
 
   end
 
   desc 'requires the usage of sqlserver::config with the user and password'
   newparam(:instance) do
-
+    munge do |value|
+      value.upcase
+    end
   end
 
   desc 'SQL Query to run and only run if exits with non-zero'
-  newcheck(:onlyif) do
-    # Return true if the command returns 0.
+  newcheck(:onlyif, :parent => Puppet::Property::SqlserverTsql) do
+    #Runs in the event that our TSQL exits with anything other than 0
     def check(value)
       begin
-        output = provider.run(value)
+        output = provider.run(value, :failonfail => false)
       end
       debug("OnlyIf returned exitstatus of #{output.exitstatus}")
       output.exitstatus != 0

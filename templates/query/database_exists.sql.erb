@@ -1,4 +1,3 @@
-BEGIN TRY
 -- QUICK CHECK before most costly query
 IF <% if @ensure == 'present' %>NOT<% end %> EXISTS(SELECT name from sys.databases WHERE name = '<%= @db_name %>')
     THROW 51000, 'The database does <% if @ensure == 'present' %>not<% end %> exist', 10
@@ -23,5 +22,3 @@ IF <% if @ensure == 'present' %>NOT<% end %> EXISTS(SELECT name from sys.databas
 <% end
  #end ensure present section
  -%>
-END TRY
-<%= scope.function_template(['sqlserver/snippets/begin_catch.sql.erb']) %>
