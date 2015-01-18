@@ -1,4 +1,3 @@
-GO
 DECLARE
 	@login as varchar(255) = '<%= @login %>',
 	@is_disabled as tinyint = <%= @disabled ? 1 : 0 %>;
@@ -47,6 +46,5 @@ BEGIN
         <% end -%>
 	<% end -%>
 END
-GO
 
 
