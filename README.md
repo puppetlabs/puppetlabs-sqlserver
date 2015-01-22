@@ -95,19 +95,21 @@ sqlserver::login{'WIN-D95P1A3V103\localAccount':
 }
 ```
 
-###To run custom TSQL statements
+###To run custom TSQL statements:
 
-To use `sqlserver_tsql` as a trigger to other defined types in order to trigger other workflows
+To use `sqlserver_tsql` to trigger other classes or defined types:
+
 ```
 sqlserver_tsql{ 'Query Logging DB Status':
     instance => 'MSSQLSERVER',
     onlyif   => "IF (SELECT count(*) FROM myDb.dbo.logging_table WHERE
         message like 'FATAL%') > 1000  THROW 50000, 'Fatal Exceptions in Logging', 10",
-    notify   => Exec['To Many Fatal Errors']
-}
+    notify   => Exec['Too Many Fatal Errors']
+}  
 ```
 
-It can also be used to help clean up regular logs with conditional checks
+To clean up regular logs with conditional checks:
+
 ```
 sqlserver_tsql{ 'Cleanup Old Logs':
     instance => 'MSSQLSERVER',
@@ -117,7 +119,8 @@ sqlserver_tsql{ 'Cleanup Old Logs':
 }
 ```
 
-In the event you want something to always execute you can also leave the `onlyif` parameter out and have it execute every time
+If you want something to always execute, you can leave out the `onlyif` parameter:
+
 ```
 sqlserver_tsql{ 'Always running':
     instance => 'MSSQLSERVER',
@@ -170,9 +173,9 @@ Terminology differs somewhat between various database systems; please refer to t
 * `sql_sysadmin_accounts`: The Windows or SQL account(s) to provision as SQL Server system administrators.
 
 ####sqlserver_tsql
-* `command`: TSQL to execute on a potentially conditional basis
+* `command`: The TSQL statement to execute.
 * `onlyif`: TSQL to execute as a check to see if we should proceed and run the command parameter, should encounter a throw or error to trigger
-* `instance`: SQL Server instance that we should execute against
+* `instance`: The SQL Server instance you want to execute against.
 
 ### Defined Types
 
