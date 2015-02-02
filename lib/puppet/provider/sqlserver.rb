@@ -54,8 +54,8 @@ class Puppet::Provider::Sqlserver < Puppet::Provider
         #We want to not fail the exec but fail the overall process once we get the clean result back, otherwise we report the temp file which is meaningless
         result = Puppet::Util::Execution.execute(['powershell.exe', '-noprofile', '-executionpolicy', 'unrestricted', temp_ps1.path], {:failonfail => false}) #We expect some things to fail in order to run as an only if
         debug("Return result #{result}")
-        if opts[:failonfail] && result.match(/ERROR/)
-          fail(result)
+        if opts[:failonfail] && result.match(/THROW CAUGHT/)
+          fail(result.gsub('THROW CAUGHT:',''))
         end
         return result
       ensure
