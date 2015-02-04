@@ -55,7 +55,10 @@ class Puppet::Provider::Sqlserver < Puppet::Provider
         result = Puppet::Util::Execution.execute(['powershell.exe', '-noprofile', '-executionpolicy', 'unrestricted', temp_ps1.path], {:failonfail => false}) #We expect some things to fail in order to run as an only if
         debug("Return result #{result}")
         if opts[:failonfail] && result.match(/THROW CAUGHT/)
-          fail(result.gsub('THROW CAUGHT:',''))
+          fail(result.gsub('THROW CAUGHT:', ''))
+        end
+        if result.match(/Msg \d+, Level 16/)
+          fail(result)
         end
         return result
       ensure

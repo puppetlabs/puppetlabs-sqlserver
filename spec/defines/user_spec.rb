@@ -78,7 +78,7 @@ RSpec.describe 'sqlserver::user', :type => :define do
     let(:additional_params) { {:user => 'myMachineName/myUser'} }
     let(:sqlserver_tsql_title) { 'user-MSSQLSERVER-myDatabase-myMachineName/myUser' }
     let(:should_contain_command) { [
-        "USE [myDatabase]",
+        "USE [myDatabase];",
         'CREATE USER [myMachineName/myUser]'
     ] }
     it_should_behave_like 'sqlserver_tsql command'
@@ -93,9 +93,24 @@ RSpec.describe 'sqlserver::user', :type => :define do
     ] }
     it_should_behave_like 'sqlserver_tsql command'
   end
+
   describe 'have dependency on Sqlserver::Config[MSSQLSERVER]' do
     it 'should require ::config' do
       should contain_sqlserver_tsql(sqlserver_tsql_title).with_require('Sqlserver::Config[MSSQLSERVER]')
     end
   end
+
+  describe 'when ensure => absent' do
+    let(:additional_params) { {:ensure => 'absent'} }
+    let(:sqlserver_contain_command) { [
+        'USE [loggingDb];\nDROP [loggingUser]',
+        "\nIF EXISTS(SELECT name FROM sys.database_principals WHERE name = 'loggingUser')\n     THROW",
+    ] }
+    let(:sqlserver_contain_onlyif) { [
+        "\nIF EXISTS(SELECT name FROM sys.database_principals WHERE type in ('U','S','G') AND name = 'loggingUser')\n",
+    ] }
+    it_should_behave_like 'sqlserver_tsql command'
+    it_should_behave_like 'sqlserver_tsql onlyif'
+  end
+
 end
