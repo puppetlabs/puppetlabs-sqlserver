@@ -95,6 +95,37 @@ sqlserver::login{'WIN-D95P1A3V103\localAccount':
 }
 ```
 
+###To create a new login and a user for a given database
+```
+sqlserver::login{'loggingUser':
+    password => 'Pupp3t1@',
+}
+
+sqlserver::user{'rp_logging-loggingUser':
+    user     => 'loggingUser',
+    database => 'rp_logging',
+    require  => Sqlserver::Login['loggingUser'],
+}
+```
+
+###To manage the above users permission
+```
+sqlserver::user::permission{'INSERT-loggingUser-On-rp_logging':
+    user       => 'loggingUser',
+    database   => 'rp_logging',
+    permission => 'INSERT',
+    require    => Sqlserver::User['rp_logging-loggingUser'],
+}
+
+sqlserver::user::permission{'Deny the Update as we should only insert':
+    user       => 'loggingUser',
+    database   => 'rp_logging',
+    permission => 'UPDATE',
+    state      => 'DENY',
+    require    => Sqlserver::User['rp_logging-loggingUser'],
+}
+```
+
 ###To run custom TSQL statements:
 
 To use `sqlserver_tsql` to trigger other classes or defined types:
@@ -105,7 +136,7 @@ sqlserver_tsql{ 'Query Logging DB Status':
     onlyif   => "IF (SELECT count(*) FROM myDb.dbo.logging_table WHERE
         message like 'FATAL%') > 1000  THROW 50000, 'Fatal Exceptions in Logging', 10",
     notify   => Exec['Too Many Fatal Errors']
-}  
+}
 ```
 
 To clean up regular logs with conditional checks:
@@ -269,6 +300,32 @@ Requires defined type `sqlserver::config`.
 * [Server Role Members](http://msdn.microsoft.com/en-us/library/ms186320.aspx)
 * [Create Login](http://technet.microsoft.com/en-us/library/ms189751.aspx)
 * [Alter Login](http://technet.microsoft.com/en-us/library/ms189828.aspx)
+
+#### `sqlserver::user`
+
+Requires defined type `sqlserver::config`
+
+* `user`: The username you would like to manage.
+* `database`: The database you want the user created on.
+* `login`: The login to associate the database user with.  If left blank SQL Server will assume the user and login are the same.
+* `instance`: The named of the instance you want to have the user created on. Defaults to 'MSSQLSERVER'
+* `password`: The password to assign to the user.  The database must have `containment` set to 'PARTIAL' in order to accept user level passwords
+* `default_schema`: The schema that should be default when the user connects.  Default for SQL Server is 'dbo' but can be configured on server level.
+
+#### `sqlserver::user::permission`
+
+Requires defined type `sqlserver::config`
+
+* `permission`: The permission you would like managed. i.e. 'SELECT', 'INSERT', 'UPDATE', 'DELETE'
+* `state`: The state you would like the permission in.  Accepts 'GRANT', 'DENY', 'REVOKE' Please note that REVOKE equates to absent and will default to database and system level permissions.
+* `user`: The username you would like to manage.
+* `database`: The database you wanted it manged on.
+* `instance`: THe name of the instance where the user and database exists. Defaults to 'MSSQLSERVER'
+
+**For more information about these settings and permissions in Microsoft SQL Server, please see:**
+
+* [Permissions (Database Engine)](https://msdn.microsoft.com/en-us/library/ms191291.aspx)
+* [Grant Database Permissions](https://msdn.microsoft.com/en-us/library/ms178569.aspx)
 
 #### sqlserver::sp_configure
 
