@@ -34,6 +34,12 @@ $result = sqlcmd.exe -i '<%= input_file %>' -h-1 -W -s ',' <% if @instance != 'M
 	    Write-Error -Message ($result | where {$_ -match "Incorrect syntax"} | select -First 1)
 		exit(10)
 	}
+	if($result -match "Msg \d+, Level 16"){
+		$msg = $result -join ' '
+		Write-Host $msg
+		Write-Error -Message "ERROR: $msg"
+		exit(10)
+	}
 }
 catch{
 	Write-Host $_

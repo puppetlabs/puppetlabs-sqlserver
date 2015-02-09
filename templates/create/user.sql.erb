@@ -1,8 +1,7 @@
--- Need to use exec instead of use statement as this will trigger try catch
 USE [<%= @database %>];
 <% if @password %>
     IF EXISTS(select containment from sys.databases WHERE name = '<%= @database %>' AND containment = 0)
-	    THROW 51000, 'Database must be contained in order to use passwords', 0
+	    THROW 51000, 'Database must be contained in order to use passwords', 10
 <% end %>
 CREATE USER [<%= @user %>]
 <% if @login -%>
