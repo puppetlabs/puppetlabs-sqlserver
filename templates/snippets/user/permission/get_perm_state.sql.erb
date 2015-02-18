@@ -1,0 +1,5 @@
+ISNULL(
+    (SELECT perm.state_desc FROM sys.database_principals princ
+        JOIN sys.database_permissions perm ON perm.grantee_principal_id = princ.principal_id
+        WHERE princ.type in ('U','S','G') AND name = '<%= @user %>' AND permission_name = '<%= @_permission %>'),
+        'REVOKE')
