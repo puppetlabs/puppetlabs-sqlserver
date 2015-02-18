@@ -1,0 +1,7 @@
+BEGIN
+    USE [<%= @database %>];
+    <%= @_state %> <%= @_permission %> TO [<%= @user %>];
+END
+BEGIN
+    <%= scope.function_template(['sqlserver/query/user_permission_exists.sql.erb']) %>
+END
