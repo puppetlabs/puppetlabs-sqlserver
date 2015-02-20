@@ -1,0 +1,11 @@
+BEGIN
+    USE [master];
+    <% if @with_grant_option == false %>
+    IF 'GRANT_WITH_GRANT_OPTION' = <%= scope.function_template(['sqlserver/snippets/login/get_perm_state.sql.erb']) %>
+        REVOKE GRANT OPTION FOR <%= @_permission %> TO [<%= @login %>] CASCADE;
+    <% end %>
+    <%= @_state %> <%= @_permission %> TO [<%= @login %>]<% if @with_grant_option == true %> WITH GRANT OPTION<% end %>;
+END
+BEGIN
+    <%= scope.function_template(['sqlserver/query/login/permission_exists.sql.erb']) %>
+END
