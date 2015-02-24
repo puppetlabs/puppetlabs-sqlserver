@@ -301,6 +301,14 @@ Requires defined type `sqlserver::config`.
 * [Create Login](http://technet.microsoft.com/en-us/library/ms189751.aspx)
 * [Alter Login](http://technet.microsoft.com/en-us/library/ms189828.aspx)
 
+#### `sqlserver::login::permission`
+
+* `login`: The SQL or Windows login you want to manage.
+* `permission`: The permission you would like managed. i.e. 'SELECT', 'INSERT', 'UPDATE', 'DELETE'
+* `state`: The stat you would like the permission to be in.  Accepts 'GRANT', 'DENY', 'REVOKE'.  Please not that REVOKE equates to absent and will default ot the database, role and system levels.
+* `with_grant_option`: Whether to give the user the option to grant this permission to other users, accepts true or false, defaults to false
+* `instance`: The name of the instance to connect to. Instance names can not be longer than 16 characters
+
 #### `sqlserver::user`
 
 Requires defined type `sqlserver::config`
@@ -316,10 +324,11 @@ Requires defined type `sqlserver::config`
 
 Requires defined type `sqlserver::config`
 
-* `permission`: The permission you would like managed. i.e. 'SELECT', 'INSERT', 'UPDATE', 'DELETE'
-* `state`: The state you would like the permission in.  Accepts 'GRANT', 'DENY', 'REVOKE' Please note that REVOKE equates to absent and will default to database and system level permissions.
 * `user`: The username you would like to manage.
 * `database`: The database you wanted it manged on.
+* `permissions`: An array of permissions you would like managed. i.e. ['SELECT', 'INSERT', 'UPDATE', 'DELETE']
+* `state`: The state you would like the permission in.  Accepts 'GRANT', 'DENY', 'REVOKE' Please note that REVOKE equates to absent and will default to database and system level permissions.
+* `with_grant_option`: Whether to give the user the option to grant this permission to other users, accepts true or false, defaults to false
 * `instance`: THe name of the instance where the user and database exists. Defaults to 'MSSQLSERVER'
 
 **For more information about these settings and permissions in Microsoft SQL Server, please see:**
@@ -327,7 +336,33 @@ Requires defined type `sqlserver::config`
 * [Permissions (Database Engine)](https://msdn.microsoft.com/en-us/library/ms191291.aspx)
 * [Grant Database Permissions](https://msdn.microsoft.com/en-us/library/ms178569.aspx)
 
-#### sqlserver::sp_configure
+
+#### `sqlserver::user`
+
+Requires defined type `sqlserver::config`
+
+* `user`: The username you want to manage, defaults to the title
+* `database`: The database you want the user to be managed on.
+* `ensure`: Whether you want the user toe be 'present' or 'absent'.  Defaults to 'present'
+* `default_schema`: SQL schema or namespace you would like to default to, typically 'dbo'
+* `instance`: The named instance you want to manage against
+* `login`: The login to associate the user with, by default SQL Server will assume the user and login match if left empty
+* `password`: The password for the user, can only be used when the database is a contained database.
+
+* [Contained Databases](http://msdn.microsoft.com/en-us/library/ff929071.aspx)
+
+#### `sqlserver::user::permission`
+
+Requires defined type `sqlserver::config`
+
+* `user`: The username for which the permission will be manage.
+* `database`: The database you would like the permission managed on.
+* `permissions`: An array of permissions you would like managed. i.e. ['SELECT', 'INSERT', 'UPDATE', 'DELETE']
+* `state`: The stat you would like the permission to be in.  Accepts 'GRANT', 'DENY', 'REVOKE'.  Please not that REVOKE equates to absent and will default ot the database, role and system levels.
+* `with_grant_option`: Whether to give the user the option to grant this permission to other users, accepts true or false, defaults to false
+* `instance`: The name of the instance to connect to. Instance names can not be longer than 16 characters
+
+#### `sqlserver::sp_configure`
 
 This defined type configures the instance to allow usage of filestream parameters or partial containment. Requires defined type `sqlserver::config`.
 
