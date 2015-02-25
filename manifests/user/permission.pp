@@ -13,8 +13,8 @@
 # [database]
 #   The databaser you would like the permission managed on.
 #
-# [permission]
-#   The permission you would like managed. i.e. 'SELECT', 'INSERT', 'UPDATE', 'DELETE'
+# [permissions]
+#   An array of permissions you would like managed. i.e. ['SELECT', 'INSERT', 'UPDATE', 'DELETE']
 #
 # [state]
 #   The state you would like the permission in.  Accepts 'GRANT', 'DENY', 'REVOKE' Please note that REVOKE equates to absent and will default to database and system level permissions.
@@ -29,7 +29,7 @@
 define sqlserver::user::permission (
   $user,
   $database,
-  $permission        = $title,
+  $permissions,
   $state             = 'GRANT',
   $with_grant_option = false,
   $instance          = 'MSSQLSERVER',
@@ -37,9 +37,8 @@ define sqlserver::user::permission (
   sqlserver_validate_instance_name($instance)
 
 ## Validate Permissions
-  $_permission = upcase($permission)
-  sqlserver_validate_range($_permission, 4, 128, 'Permission must be between 4 and 128 characters')
-  validate_re($_permission, '^([A-Z]|\s)+$','Permissions must be alphabetic only')
+  sqlserver_validate_range($permissions, 4, 128, 'Permission must be between 4 and 128 characters')
+  validate_array($permissions)
 
 ## Validate state
   $_state = upcase($state)
@@ -54,8 +53,11 @@ define sqlserver::user::permission (
 
   sqlserver_validate_range($user, 1, 128, 'User must be between 1 and 128 characters')
 
+  if $with_grant_option {
+    $grant_option = "-WITH_GRANT_OPTION"
+  }
   sqlserver_tsql{
-    "user-permissions-${instance}-${database}-${user}-${_permission}":
+    "user-permissions-${instance}-${database}-${user}-${_state}${grant_option}":
       instance => $instance,
       command  => template("sqlserver/create/user/permission.sql.erb"),
       onlyif   => template('sqlserver/query/user/permission_exists.sql.erb'),
