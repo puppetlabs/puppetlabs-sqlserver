@@ -3,5 +3,5 @@ ISNULL(
 	  JOIN sys.server_principals princ ON princ.principal_id = perm.grantee_principal_id
 	  WHERE princ.type IN ('U','S','G')
 	    AND princ.name = '<%= @login %>'
-        AND perm.permission_name = '<%= @_permission %>'),
+        AND perm.permission_name = @permission),
      'REVOKE')
