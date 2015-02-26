@@ -4,7 +4,8 @@ define sqlserver::role(
   $instance      = 'MSSQLSERVER',
   $authorization = undef,
   $type          = 'SERVER',
-  $database      = 'master'
+  $database      = 'master',
+  $permissions   = { },
 ){
   sqlserver_validate_instance_name($instance)
   sqlserver_validate_range($role, 1, 128, 'Role names must be between 1 and 128 characters')
@@ -27,4 +28,41 @@ define sqlserver::role(
     instance => $instance,
   }
 
+  if $ensure == present {
+    validate_hash($permissions)
+    $_upermissions = sqlserver_upcase($permissions)
+
+    Sqlserver::Role::Permissions{
+      role     => $role,
+      instance => $instance,
+      database => $database,
+      type     => $type,
+      require  => Sqlserver_tsql["role-${role}-${instance}"]
+    }
+    if has_key($_upermissions, 'GRANT') and is_array($_upermissions['GRANT']) {
+      sqlserver::role::permissions{ "Sqlserver::Role[${title}]-GRANT-${role}":
+        state       => 'GRANT',
+        permissions => $_upermissions['GRANT'],
+      }
+    }
+    if has_key($_upermissions, 'DENY') and is_array($_upermissions['DENY']) {
+      sqlserver::role::permissions{ "Sqlserver::Role[${title}]-DENY-${role}":
+        state       => 'DENY',
+        permissions => $_upermissions['DENY'],
+      }
+    }
+    if has_key($_upermissions, 'REVOKE') and is_array($_upermissions['REVOKE']) {
+      sqlserver::role::permissions{ "Sqlserver::Role[${title}]-REVOKE-${role}":
+        state       => 'REVOKE',
+        permissions => $_upermissions['REVOKE'],
+      }
+    }
+    if has_key($_upermissions, 'GRANT_WITH_OPTION') and is_array($_upermissions['GRANT_WITH_OPTION']) {
+      sqlserver::role::permissions{ "Sqlserver::Role[${title}]-GRANT-WITH_GRANT_OPTION-${role}":
+        state             => 'GRANT',
+        with_grant_option => true,
+        permissions       => $_upermissions['GRANT_WITH_OPTION'],
+      }
+    }
+  }
 }
