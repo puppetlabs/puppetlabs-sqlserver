@@ -1,0 +1,5 @@
+USE [<%= @database %>];
+BEGIN
+    DROP <% if @type == 'SERVER' %>SERVER <% end %>ROLE [<%= @role %>];
+END
+<%= scope.function_template(['sqlserver/query/role_exists.sql.erb']) %>

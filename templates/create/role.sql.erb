@@ -1,0 +1,10 @@
+USE [<%= @database %>];
+BEGIN
+    <%= scope.function_template(['sqlserver/snippets/role/exists.sql.erb']) %>
+        CREATE <% if @type == 'SERVER' %>SERVER <% end %>ROLE [<%= @role %>]<% if @authorization %> AUTHORIZATION [<%= @authorization %>]<% end %>;
+    <% if @authorization %>
+    <%= scope.function_template(['sqlserver/snippets/role/owner_check.sql.erb']) %>
+        ALTER AUTHORIZATION ON <% if @type =='SERVER' %>SERVER <% end %>ROLE::[<%= @role %>] TO [<%= @authorization %>];
+    <% end %>
+END
+<%= scope.function_template(['sqlserver/query/role_exists.sql.erb']) %>

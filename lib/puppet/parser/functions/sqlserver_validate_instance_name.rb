@@ -20,6 +20,9 @@ DOC
     end
     value = args[0]
     errors = []
+    if value.length < 1 || value.empty?
+      errors << "Instance name must be between 1 to 16 characters"
+    end
     if value.length > 16
       errors << "Instance name can not be larger than 16 characters, you provided #{value}"
     end

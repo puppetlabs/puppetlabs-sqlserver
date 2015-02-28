@@ -1,0 +1,4 @@
+IF NOT EXISTS(
+    SELECT p.name,r.name FROM sys.<%= @type.downcase %>_principals r
+	JOIN sys.<%= @type.downcase %>_principals p ON p.principal_id = r.owning_principal_id
+	WHERE r.type_desc = '<%= @type.upcase %>_ROLE' AND p.name = '<%= @authorization %>' AND r.name = '<%= @role %>')
