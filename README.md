@@ -362,6 +362,30 @@ Requires defined type `sqlserver::config`
 * `with_grant_option`: Whether to give the user the option to grant this permission to other users, accepts true or false, defaults to false
 * `instance`: The name of the instance to connect to. Instance names can not be longer than 16 characters
 
+#### `sqlserver::role`
+
+Requires defined type `sqlserver::config`
+
+* `role`: The unique name you want the role to be created under
+* `ensure`: Whether it should be absent or present.
+* `instance`: The named instance you want to manage against
+* `authorization`: The login/user that should be the owning party for the Role
+* `type`: Whether the Role to be created is `SERVER` or `DATABASE`
+* `database`: The name of the database you want the role to be created for when specifying `type => 'DATABASE'`
+* `permissions`: A hash of permissions that should be managed for the role.  Valid keys are 'GRANT', 'GRANT_WITH_OPTION', 'DENY' or 'REVOKE'.  Valid values must be an array of Strings i.e. {'GRANT' => ['CONNECT', 'CREATE ANY DATABASE'] }
+
+#### `sqlserver::role::permissions`
+
+Requires defined type `sqlserver::config`
+
+* `role`: The name of the role you want permissions to be managed for.
+* `permissions`: An array of permissions you want manged for the given role
+* `state`: The stat you would like the permission to be in.  Accepts 'GRANT', 'DENY', 'REVOKE'.  Please not that REVOKE equates to absent and will default ot the database, role and system levels.
+* `with_grant_option`: Whether to give the user the option to grant this permission to other users, accepts true or false, defaults to false, `state` must be 'GRANT' in order to be set to true
+* `type`: Whether the Role is `SERVER` or `DATABASE` level
+* `database`: The name of the database you want the role to be created for when specifying `type => 'DATABASE'`
+* `instance`: The named instance you want to manage against
+
 #### `sqlserver::sp_configure`
 
 This defined type configures the instance to allow usage of filestream parameters or partial containment. Requires defined type `sqlserver::config`.
