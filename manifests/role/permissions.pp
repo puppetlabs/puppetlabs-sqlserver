@@ -1,3 +1,35 @@
+##
+# == Define Resource Type: sqlserver::role::permissions
+#
+#
+# === Requirement/Dependencies:
+#
+# Requires defined type {sqlserver::config} in order to execute against the SQL Server instance
+#
+#
+# === Parameters
+# [role]
+#   The name of the role for which the permissions will be manage.
+#
+# [permissions]
+#   An array of permissions you want manged for the given role
+#
+# [state]
+#   The state you would like the permission in.  Accepts 'GRANT', 'DENY', 'REVOKE' Please note that REVOKE equates to absent and will default to database and system level permissions.
+#
+# [with_grant_option]
+#   Whether to give the role the option to grant this permission to other principal objects, accepts true or false, defaults to false
+#
+# [type]
+#   Whether the Role is `SERVER` or `DATABASE`
+#
+# [database]
+#   The name of the database the role exists on when specifying `type => 'DATABASE'`. Defaults to 'master'
+#
+# [instance]
+#   The name of the instance where the role and database exists. Defaults to 'MSSQLSERVER'
+#
+##
 define sqlserver::role::permissions (
   $role,
   $permissions,
