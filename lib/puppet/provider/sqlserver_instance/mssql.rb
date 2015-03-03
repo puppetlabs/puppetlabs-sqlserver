@@ -12,8 +12,8 @@ Puppet::Type::type(:sqlserver_instance).provide(:mssql, :parent => Puppet::Provi
         existing_instance = {:name => instance_name,
                              :ensure => :present,
                              :features =>
-                                 PuppetX::Sqlserver::ServerHelper.translate_features(
-                                     jsonResult[instance_name]['features']).sort!
+                               PuppetX::Sqlserver::ServerHelper.translate_features(
+                                 jsonResult[instance_name]['features']).sort!
         }
         instance = new(existing_instance)
         instances << instance
@@ -73,7 +73,7 @@ Puppet::Type::type(:sqlserver_instance).provide(:mssql, :parent => Puppet::Provi
   def build_cmd_args(features, action="install")
     cmd_args = basic_cmd_args(features, action)
     if action == 'install'
-      (@resource.parameters.keys - %w(ensure loglevel features name provider source sql_sysadmin_accounts sql_security_mode).map(&:to_sym)).sort.collect do |key|
+      (@resource.parameters.keys - %w(ensure loglevel features name provider source sql_sysadmin_accounts sql_security_mode install_switches).map(&:to_sym)).sort.collect do |key|
         cmd_args << "/#{key.to_s.gsub(/_/, '').upcase}=\"#{@resource[key]}\""
       end
       if not_nil_and_not_empty? @resource[:sql_sysadmin_accounts]
@@ -81,6 +81,15 @@ Puppet::Type::type(:sqlserver_instance).provide(:mssql, :parent => Puppet::Provi
           cmd_args << "/SQLSYSADMINACCOUNTS=#{ Array.new(@resource[:sql_sysadmin_accounts]).collect { |account| "\"#{account}\"" }.join(' ')}"
         else
           cmd_args << "/SQLSYSADMINACCOUNTS=\"#{@resource[:sql_sysadmin_accounts]}\""
+        end
+      end
+      if not_nil_and_not_empty? @resource[:install_switches]
+        @resource[:install_switches].each_pair do |k, v|
+          if v.is_a?(Numeric) || (v.is_a?(String) && v =~ /\d/)
+            cmd_args << "/#{k}=#{v}"
+          else
+            cmd_args << "/#{k}='#{v}'"
+          end
         end
       end
     end

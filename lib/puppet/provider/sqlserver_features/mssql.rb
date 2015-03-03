@@ -11,8 +11,8 @@ Puppet::Type::type(:sqlserver_features).provide(:mssql, :parent => Puppet::Provi
       existing_instance = {:name => "Generic Features",
                            :ensure => :present,
                            :features =>
-                               PuppetX::Sqlserver::ServerHelper.translate_features(
-                                   jsonResult['Generic Features']).sort!
+                             PuppetX::Sqlserver::ServerHelper.translate_features(
+                               jsonResult['Generic Features']).sort!
       }
       debug "Parsed features = #{existing_instance[:features]}"
 
@@ -57,6 +57,15 @@ Puppet::Type::type(:sqlserver_features).provide(:mssql, :parent => Puppet::Provi
         end
         if not_nil_and_not_empty?(@resource[:pid])
           cmd_args << "/PID=#{@resource[:pid]}"
+        end
+        if not_nil_and_not_empty?(@resource[:install_switches])
+          @resource[:install_switches].each_pair do |k, v|
+            if v.is_a?(Numeric) || (v.is_a?(String) && v =~ /\d/)
+              cmd_args << "/#{k}=#{v}"
+            else
+              cmd_args << "/#{k}='#{v}'"
+            end
+          end
         end
       end
       try_execute(cmd_args, "Unable to #{action} features (#{features.join(', ')})")
