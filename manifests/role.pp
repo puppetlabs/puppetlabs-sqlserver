@@ -30,6 +30,11 @@
 # [permissions]
 #   A hash of permissions that should be managed for the role.  Valid keys are 'GRANT', 'GRANT_WITH_OPTION', 'DENY' or 'REVOKE'.  Valid values must be an array of Strings i.e. {'GRANT' => ['CONNECT', 'CREATE ANY DATABASE'] }
 #
+# [members]
+#   An array of users/logins that should be a member of the role
+#
+# [members_purge]
+#   Whether we should purge any members not listed in the members parameter. Default: false
 ##
 define sqlserver::role(
   $ensure        = present,
@@ -39,6 +44,8 @@ define sqlserver::role(
   $type          = 'SERVER',
   $database      = 'master',
   $permissions   = { },
+  $members       = [],
+  $members_purge = false,
 ){
   sqlserver_validate_instance_name($instance)
   sqlserver_validate_range($role, 1, 128, 'Role names must be between 1 and 128 characters')
@@ -95,6 +102,15 @@ define sqlserver::role(
         state             => 'GRANT',
         with_grant_option => true,
         permissions       => $_upermissions['GRANT_WITH_OPTION'],
+      }
+    }
+
+    validate_array($members)
+    if size($members) > 0 or $members_purge == true {
+      sqlserver_tsql{ "role-${role}-members":
+        command  => template('sqlserver/create/role/members.sql.erb'),
+        onlyif   => template('sqlserver/query/role/member_exists.sql.erb'),
+        instance => $instance,
       }
     }
   }
