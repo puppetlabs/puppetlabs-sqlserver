@@ -373,6 +373,8 @@ Requires defined type `sqlserver::config`
 * `type`: Whether the Role to be created is `SERVER` or `DATABASE`
 * `database`: The name of the database you want the role to be created for when specifying `type => 'DATABASE'`
 * `permissions`: A hash of permissions that should be managed for the role.  Valid keys are 'GRANT', 'GRANT_WITH_OPTION', 'DENY' or 'REVOKE'.  Valid values must be an array of Strings i.e. {'GRANT' => ['CONNECT', 'CREATE ANY DATABASE'] }
+* `members`: An array of logins/users that should be members of the role.
+* `members_purge`: If set to true we will DROP any members not listed in the array.  If an empty array provided we will drop all members. Default: false
 
 #### `sqlserver::role::permissions`
 
