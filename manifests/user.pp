@@ -34,6 +34,9 @@
 # [password]
 #   The password for the user, can only be used when the database is a contained database.
 #
+# [permissions]
+#   A hash of permissions that should be managed for the user.  Valid keys are 'GRANT', 'GRANT_WITH_OPTION', 'DENY' or 'REVOKE'.  Valid values must be an array of Strings i.e. {'GRANT' => ['SELECT', 'INSERT'] }
+#
 ##
 define sqlserver::user (
   $database,
@@ -43,6 +46,7 @@ define sqlserver::user (
   $instance       = 'MSSQLSERVER',
   $login          = undef,
   $password       = undef,
+  $permissions    = { },
 )
 {
   sqlserver_validate_instance_name($instance)
@@ -69,4 +73,41 @@ define sqlserver::user (
     require  => Sqlserver::Config[$instance]
   }
 
+  if $ensure == present {
+    validate_hash($permissions)
+    $_upermissions = sqlserver_upcase($permissions)
+    sqlserver_validate_hash_uniq_values($_upermissions, "Duplicate permissions found for sqlserver::user[${title}]")
+
+    Sqlserver::User::Permissions{
+      user      => $user,
+      database  => $database,
+      instance  => $instance,
+      require   => Sqlserver_tsql["user-${instance}-${database}-${user}"]
+    }
+    if has_key($_upermissions, 'GRANT') and is_array($_upermissions['GRANT']) {
+      sqlserver::user::permissions{ "Sqlserver::User[${title}]-GRANT-${user}":
+        state       => 'GRANT',
+        permissions => $_upermissions['GRANT'],
+      }
+    }
+    if has_key($_upermissions, 'DENY') and is_array($_upermissions['DENY']) {
+      sqlserver::user::permissions{ "Sqlserver::User[${title}]-DENY-${user}":
+        state       => 'DENY',
+        permissions => $_upermissions['DENY'],
+      }
+    }
+    if has_key($_upermissions, 'REVOKE') and is_array($_upermissions['REVOKE']) {
+      sqlserver::user::permissions{ "Sqlserver::User[${title}]-REVOKE-${user}":
+        state       => 'REVOKE',
+        permissions => $_upermissions['REVOKE'],
+      }
+    }
+    if has_key($_upermissions, 'GRANT_WITH_OPTION') and is_array($_upermissions['GRANT_WITH_OPTION']) {
+      sqlserver::user::permissions{ "Sqlserver::User[${title}]-GRANT-WITH_GRANT_OPTION-${user}":
+        state             => 'GRANT',
+        with_grant_option => true,
+        permissions       => $_upermissions['GRANT_WITH_OPTION'],
+      }
+    }
+  }
 }

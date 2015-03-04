@@ -1,5 +1,5 @@
 ##
-# == Define Resource Type: sqlserver::login::permission#
+# == Define Resource Type: sqlserver::login::permissions#
 #
 # === Requirement/Dependencies:
 #
@@ -20,7 +20,7 @@
 #   The name of the instance where the user and database exists. Defaults to 'MSSQLSERVER'
 #
 ##
-define sqlserver::login::permission (
+define sqlserver::login::permissions (
   $login,
   $permissions,
   $state             = 'GRANT',

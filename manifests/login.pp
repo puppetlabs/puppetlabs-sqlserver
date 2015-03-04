@@ -45,6 +45,10 @@
 # @see http://technet.microsoft.com/en-us/library/ms189751(v=sql.110).aspx Create Login
 # @see http://technet.microsoft.com/en-us/library/ms189828(v=sql.110).aspx Alter Login
 #
+# [permissions]
+#   A hash of permissions that should be managed for the login.  Valid keys are 'GRANT', 'GRANT_WITH_OPTION', 'DENY' or 'REVOKE'.  Valid values must be an array of Strings i.e. {'GRANT' => ['CONNECT SQL', 'CREATE ANY DATABASE'] }
+#
+##
 define sqlserver::login (
   $login = $title,
   $instance = 'MSSQLSERVER',
@@ -57,6 +61,7 @@ define sqlserver::login (
   $check_expiration = false,
   $check_policy = true,
   $disabled = false,
+  $permissions = { },
 ) {
 
   sqlserver_validate_instance_name($instance)
@@ -67,15 +72,52 @@ define sqlserver::login (
     fail ('Can not have check expiration enabled when check_policy is disabled')
   }
 
-  $create_delete = $ensure ? {
+  $_create_delete = $ensure ? {
     present => 'create',
     absent  => 'delete',
   }
 
   sqlserver_tsql{ "login-${instance}-${login}":
     instance => $instance,
-    command  => template("sqlserver/${create_delete}/login.sql.erb"),
+    command  => template("sqlserver/${_create_delete}/login.sql.erb"),
     onlyif   => template('sqlserver/query/login_exists.sql.erb'),
     require  => Sqlserver::Config[$instance]
+  }
+
+  if $ensure == present {
+    validate_hash($permissions)
+    $_upermissions = sqlserver_upcase($permissions)
+    sqlserver_validate_hash_uniq_values($_upermissions, "Duplicate permissions found for sqlserver::login[${title}]")
+
+    Sqlserver::Login::Permissions{
+      login     => $login,
+      instance  => $instance,
+      require   => Sqlserver_tsql["login-${instance}-${login}"]
+    }
+    if has_key($_upermissions, 'GRANT') and is_array($_upermissions['GRANT']) {
+      sqlserver::login::permissions{ "Sqlserver::Login[${title}]-GRANT-${login}":
+        state       => 'GRANT',
+        permissions => $_upermissions['GRANT'],
+      }
+    }
+    if has_key($_upermissions, 'DENY') and is_array($_upermissions['DENY']) {
+      sqlserver::login::permissions{ "Sqlserver::Login[${title}]-DENY-${login}":
+        state       => 'DENY',
+        permissions => $_upermissions['DENY'],
+      }
+    }
+    if has_key($_upermissions, 'REVOKE') and is_array($_upermissions['REVOKE']) {
+      sqlserver::login::permissions{ "Sqlserver::Login[${title}]-REVOKE-${login}":
+        state       => 'REVOKE',
+        permissions => $_upermissions['REVOKE'],
+      }
+    }
+    if has_key($_upermissions, 'GRANT_WITH_OPTION') and is_array($_upermissions['GRANT_WITH_OPTION']) {
+      sqlserver::login::permissions{ "Sqlserver::Login[${title}]-GRANT-WITH_GRANT_OPTION-${login}":
+        state             => 'GRANT',
+        with_grant_option => true,
+        permissions       => $_upermissions['GRANT_WITH_OPTION'],
+      }
+    }
   }
 }
