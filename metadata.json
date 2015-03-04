@@ -1,17 +1,37 @@
 {
-  "name": "puppetlabs-mssql",
-  "version": "0.1.0",
+  "name": "puppetlabs-sqlserver",
+  "version": "1.1.0",
   "author": "puppetlabs",
-  "summary": null,
-  "license": "Apache 2.0",
-  "source": "",
-  "project_page": null,
-  "issues_url": null,
-  "dependencies": [
+  "summary": "The `sqlserver` module installs and manages MS SQL Server 2012 and 2014 on Windows systems.",
+  "license": "PuppetLabs-Enterprise",
+  "source": "https://tickets.puppetlabs.com/browse/MODULES/component/12400",
+  "project_page": "https://tickets.puppetlabs.com/browse/MODULES/component/12400",
+  "issues_url": "https://tickets.puppetlabs.com/browse/MODULES/component/12400",
+  "tags": [
+    "ms sql",
+    "mssql",
+    "sql server",
+    "microsoft",
+    "sql 2012",
+    "sql 2014"
+  ],
+  "operatingsystem_support": [
     {
-      "name": "puppetlabs-stdlib",
-      "version_range": ">= 1.0.0"
+      "operatingsystem": "Windows",
+      "operatingsystemrelease": [
+        "Server 2012",
+        "Server 2012 R2"
+      ]
     }
+  ],
+  "requirements": [
+    {
+      "name": "pe",
+      "version_requirement": "3.7.x"
+    }
+  ],
+  "dependencies": [
+    { "name": "puppetlabs-stdlib", "version_requirement": "4.x" },
+    { "name": "puppetlabs-acl", "version_requirement": "1.x" }
   ]
 }
-

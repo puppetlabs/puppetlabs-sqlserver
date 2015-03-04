@@ -1,5 +1,3 @@
-
-GO
 DECLARE
 	@login as varchar(255) = '<%= @login %>',
 	@is_disabled as tinyint = <%= @disabled ? 1 : 0 %>,
@@ -8,7 +6,8 @@ DECLARE
 	@type_desc as varchar(50) = '<%= @login_type %>',
 	@default_db as varchar(255) = '<%= @default_database %>',
 	@default_lang as varchar(50) = '<%= @default_language %>'
-IF <% if @ensure == 'present' %>NOT<% end %> EXISTS(SELECT name FROM sys.server_principals WHERE  name = '<%= @login %>') THROW 51000, 'ERROR: the login is not <%= @ensure %>', 10
+IF <% if @ensure == 'present' %>NOT<% end %> EXISTS(SELECT name FROM sys.server_principals WHERE  name = '<%= @login %>')
+    THROW 51000, 'The login is not <%= @ensure %>', 10
 
 <% if @ensure == 'present' %>
 BEGIN
@@ -25,10 +24,10 @@ IF NOT EXISTS(
 	    AND is_policy_checked = @check_policy
 	    AND is_expiration_checked = @check_expiration
 	  <% end %>
-        ) THROW 51000, 'ERROR: the login is not in the correct state', 10
+        ) THROW 51000, 'The login is not in the correct state', 10
     /* If it does exist check for each role is in the correct state */
     <% @svrroles.each do |role, enable_bit| %>
-        IF IS_SRVROLEMEMBER('<%= role %>','<%= @login %>') != <%= enable_bit %> THROW 51000, 'ERROR: a role is not correct for <%= role %>', 10
+        IF IS_SRVROLEMEMBER('<%= role %>','<%= @login %>') != <%= enable_bit %> THROW 51000, 'A svrrole is not correct for <%= role %>', 10
     <% end %>
 
 <% end %>

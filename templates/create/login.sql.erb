@@ -1,7 +1,6 @@
-GO
 DECLARE
 	@login as varchar(255) = '<%= @login %>',
-	@is_disabled as tinyint = <%= @disable ? 1 : 0 %>;
+	@is_disabled as tinyint = <%= @disabled ? 1 : 0 %>;
 IF exists(select * from sys.sql_logins where name = '<%= @login %>')
 BEGIN
     IF @is_disabled = 0	ALTER LOGIN [<%= @login %>] ENABLE
@@ -39,9 +38,6 @@ BEGIN
 	<% end -%>
 	    DEFAULT_LANGUAGE = [<%= @default_language %>],
 		DEFAULT_DATABASE = [<%= @default_database %>];
-	<% if @disable != 1 -%>
-	EXECUTE xp_grantlogin @loginame = [<%= @login %>];
-	<% end -%>
 	<% @svrroles.each do |role, enable_bit| -%>
 	    <% if enable_bit == '1' -%>
     ALTER SERVER ROLE <%= role %> ADD MEMBER [<%= @login %>];
@@ -50,6 +46,5 @@ BEGIN
         <% end -%>
 	<% end -%>
 END
-GO
 
 

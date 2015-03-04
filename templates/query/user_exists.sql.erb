@@ -1,0 +1,4 @@
+-- Need to use exec instead of use statement as this will trigger try catch
+USE [<%= @database %>];
+IF <% if @ensure == 'present' %>NOT<% end %> EXISTS(SELECT name FROM sys.database_principals WHERE type in ('U','S','G') AND name = '<%= @user %>')
+    THROW 51000, 'User [<%= @user %>] does not exist for database [<%= @database %>]', 10

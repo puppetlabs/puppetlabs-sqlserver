@@ -1,0 +1,1 @@
+IF NOT EXISTS(SELECT name FROM sys.databases WHERE name = N'<%= @db_name %>' AND two_digit_year_cutoff = <%= @two_digit_year_cutoff %>)

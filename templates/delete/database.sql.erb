@@ -1,5 +1,6 @@
 /* Delete Database Backup and Restore History from MSDB System Database */
-EXEC msdb.dbo.sp_delete_database_backuphistory @database_name = N'<%= @db_name %>' GO
+EXEC msdb.dbo.sp_delete_database_backuphistory @database_name = N'<%= @db_name %>'
+GO
 /* Query to Get Exclusive Access of SQL Server Database before Dropping the Database */
 USE [master]
 GO

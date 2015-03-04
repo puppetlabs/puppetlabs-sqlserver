@@ -1,0 +1,18 @@
+USE [<%= @database %>];
+DECLARE
+  @role varchar(128) = '<%= @role %>',
+  @member varchar(128),
+  @error_msg varchar(250);
+
+<% @members.each do |member| %>
+SET @member = '<%= member %>';
+SET @error_msg = 'The member [<%= member %>] is <% if @ensure == 'present'%>not <% end %>a member of the role [<%=@role %>]';
+<%= scope.function_template(['sqlserver/snippets/role/member_exists.sql.erb']) -%>
+    THROW 51000, @error_msg, 10
+<% end %>
+
+<% if @members_purge %>
+<%= scope.function_template(['sqlserver/snippets/role/populate_purge_members.sql.erb']) %>
+IF 0 != (SELECT COUNT(*) FROM @purge_members)
+    THROW 51000, 'Unlisted Members in Role, will be purged', 10
+<% end %>
