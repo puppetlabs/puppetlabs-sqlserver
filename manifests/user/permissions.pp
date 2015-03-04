@@ -1,5 +1,5 @@
 ##
-# == Define Resource Type: sqlserver::user::permission#
+# == Define Resource Type: sqlserver::user::permissions
 #
 # === Requirement/Dependencies:
 #
@@ -26,7 +26,7 @@
 #   The name of the instance where the user and database exists. Defaults to 'MSSQLSERVER'
 #
 ##
-define sqlserver::user::permission (
+define sqlserver::user::permissions (
   $user,
   $database,
   $permissions,

@@ -1,7 +1,7 @@
 require 'spec_helper'
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'manifest_shared_examples.rb'))
 
-describe 'sqlserver::user::permission' do
+describe 'sqlserver::user::permissions' do
   let(:facts) { {:osfamily => 'windows'} }
   context 'validation errors' do
     include_context 'manifests' do
@@ -15,7 +15,7 @@ describe 'sqlserver::user::permission' do
       } }
       let(:raise_error_check) { 'User must be between 1 and 128 characters' }
       describe 'missing' do
-        let(:raise_error_check) { 'Must pass user to Sqlserver::User::Permission[myTitle]' }
+        let(:raise_error_check) { 'Must pass user to Sqlserver::User::Permissions[myTitle]' }
         it_behaves_like 'validation error'
       end
       describe 'empty' do
