@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'mocha'
 
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'sqlserver_install_context.rb'))
 
@@ -144,10 +145,18 @@ RSpec.describe provider_class do
   end
 
   describe 'install_switches' do
+    before :each do
+      @file_double = Tempfile.new(['sqlconfig', '.ini'])
+      @file_double.stubs(:write)
+      @file_double.stubs(:flush)
+      @file_double.stubs(:close)
+      Tempfile.stubs(:new).with(['sqlconfig', '.ini']).returns(@file_double)
+    end
+
     it_behaves_like 'create' do
       args = get_basic_args
       args[:install_switches] = {'ERRORREPORTING' => 1}
-      let(:additional_install_switches) { ['/ERRORREPORTING=1'] }
+      let(:additional_install_switches) { ["/ConfigurationFile=\"#{@file_double.path}\""] }
       let(:args) { args }
       munged = {:features => Array.new(args[:features])}
       munged[:features].delete('SQL')
@@ -158,7 +167,7 @@ RSpec.describe provider_class do
     it_behaves_like 'create' do
       args = get_basic_args
       args[:install_switches] = {'ERRORREPORTING' => 1, 'SQLBACKUPDIR' => 'I:\DBbackup'}
-      let(:additional_install_switches) { ['/ERRORREPORTING=1', '/SQLBACKUPDIR=\'I:\DBbackup\''] }
+      let(:additional_install_switches) { ["/ConfigurationFile=\"#{@file_double.path}\""] }
       let(:args) { args }
       munged = {:features => Array.new(args[:features])}
       munged[:features].delete('SQL')
