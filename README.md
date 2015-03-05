@@ -149,6 +149,12 @@ Terminology differs somewhat between various database systems; please refer to t
 * `is_svc_account`: Either domain user name or system account. Defaults to 'NT AUTHORITY\NETWORK SERVICE'.
 * `is_svc_password`: Password for domain user.
 * `pid`: Specify the SQL Server product key to configure which edition you would like to use. Can be left empty for evaluation versions.
+* `install_switches`: Hash of install switches you would like to be based to a config file during installation.
+
+** Please not that any duplicates from what we provide on the command line will be ignored. For more information see the links below
+
+* [Installer switches](https://msdn.microsoft.com/en-us/library/ms144259.aspx)
+* [Configuration File](https://msdn.microsoft.com/en-us/library/dd239405.aspx)
 
 #### sqlserver_instance
 
@@ -170,6 +176,12 @@ Terminology differs somewhat between various database systems; please refer to t
 * `sql_svc_account`: Account for SQL Server service: Domain\User or system account.
 * `sql_svc_password`: The SQL Server service password; required only for a domain account.
 * `sql_sysadmin_accounts`: The Windows or SQL account(s) to provision as SQL Server system administrators.
+* `install_switches`: Hash of install switches you would like to be based to a config file during installation.
+
+** Please not that any duplicates from what we provide on the command line will be ignored. For more information see the links below
+
+* [Installer switches](https://msdn.microsoft.com/en-us/library/ms144259.aspx)
+* [Configuration File](https://msdn.microsoft.com/en-us/library/dd239405.aspx)
 
 ####sqlserver_tsql
 * `command`: The TSQL statement to execute.
