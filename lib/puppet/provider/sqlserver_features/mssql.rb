@@ -11,8 +11,8 @@ Puppet::Type::type(:sqlserver_features).provide(:mssql, :parent => Puppet::Provi
       existing_instance = {:name => "Generic Features",
                            :ensure => :present,
                            :features =>
-                               PuppetX::Sqlserver::ServerHelper.translate_features(
-                                   jsonResult['Generic Features']).sort!
+                             PuppetX::Sqlserver::ServerHelper.translate_features(
+                               jsonResult['Generic Features']).sort!
       }
       debug "Parsed features = #{existing_instance[:features]}"
 
@@ -59,8 +59,42 @@ Puppet::Type::type(:sqlserver_features).provide(:mssql, :parent => Puppet::Provi
           cmd_args << "/PID=#{@resource[:pid]}"
         end
       end
-      try_execute(cmd_args, "Unable to #{action} features (#{features.join(', ')})")
+      begin
+        config_file = create_temp_for_install_switch unless action == 'uninstall'
+        cmd_args << "/ConfigurationFile=\"#{config_file.path}\"" unless config_file.nil?
+        try_execute(cmd_args, "Unable to #{action} features (#{features.join(', ')})")
+      ensure
+        if config_file
+          config_file.close
+          config_file.unlink
+        end
+      end
     end
+  end
+
+  def create_temp_for_install_switch
+    if not_nil_and_not_empty? @resource[:install_switches]
+      config_file = ["[OPTIONS]"]
+      @resource[:install_switches].each_pair do |k, v|
+        if RESERVED_SWITCHES.include? k
+          warn("Reserved switch [#{k}] found for `install_switches`, please know the provided value
+may be overridden by some command line arguments")
+        end
+        if v.is_a?(Numeric) || (v.is_a?(String) && v =~ /\d/)
+          config_file << "#{k}=#{v}"
+        elsif v.nil?
+          config_file << k
+        else
+          config_file << "#{k}=\"#{v}\""
+        end
+      end
+      config_temp = Tempfile.new(['sqlconfig', '.ini'])
+      config_temp.write(config_file.join("\n"))
+      config_temp.flush
+      config_temp.close
+      return config_temp
+    end
+    return nil
   end
 
   def installNet35

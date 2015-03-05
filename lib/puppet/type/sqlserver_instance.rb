@@ -2,7 +2,9 @@ require File.expand_path(File.join(File.dirname(__FILE__), '..', 'property/login
 require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'puppet_x/sqlserver/server_helper'))
 
 Puppet::Type::newtype(:sqlserver_instance) do
+
   ensurable
+
   newparam(:name, :namevar => true) do
     munge do |value|
       value.upcase
@@ -112,6 +114,13 @@ Puppet::Type::newtype(:sqlserver_instance) do
           If this parameter is not supplied, then Windows-only authentication mode is supported.
           Supported value: SQL'
     newvalues('SQL')
+  end
+
+  newparam(:install_switches) do
+    desc 'A hash of switches you want to pass to the installer'
+    validate do |value|
+      fail ArguemntError, 'install_switch must be in the form of a Hash' unless value.is_a?(Hash)
+    end
   end
 
 
