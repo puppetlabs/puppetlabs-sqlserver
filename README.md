@@ -151,7 +151,7 @@ Terminology differs somewhat between various database systems; please refer to t
 * `pid`: Specify the SQL Server product key to configure which edition you would like to use. Can be left empty for evaluation versions.
 * `install_switches`: Hash of optional installer switches for SQL Server setup.
 
-  Please note that if an option is set in both its own specific parameter and `install_switches`, the specifically named parameter takes precedence. For example, if you set an SA password in both `sa_pwd` and in `install_switches`, the `sa_pwd` parameter will be honored.
+  Please note that if an option is set in both its own specific parameter and `install_switches`, the specifically named parameter takes precedence. For example, if you set the product key in both `pid` and in `install_switches`, the `pid` parameter will be honored.
 
 For more information about installer switches and configuration, see the links below:
 
@@ -180,7 +180,7 @@ For more information about installer switches and configuration, see the links b
 * `sql_sysadmin_accounts`: The Windows or SQL account(s) to provision as SQL Server system administrators.
 * `install_switches`: Hash of optional installer switches for SQL Server instance setup.
 
-  Please note that if an option is set in both its own specific parameter and `install_switches`, the specifically named parameter takes precedence. For example, if you set an SA password in both `sa_pwd` and in `install_switches`, the `sa_pwd` parameter will be honored.
+  Please note that if an option is set in both its own specific parameter and `install_switches`, the specifically named parameter takes precedence. For example, if you set the product key in both `pid` and in `install_switches`, the `pid` parameter will be honored.
 
 For more information about installer switches and configuration, see the links below:
 
