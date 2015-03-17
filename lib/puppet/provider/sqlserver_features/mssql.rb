@@ -2,17 +2,20 @@ require 'json'
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'sqlserver'))
 
 Puppet::Type::type(:sqlserver_features).provide(:mssql, :parent => Puppet::Provider::Sqlserver) do
+  RESERVED_SWITCHES =
+    %w(AGTSVCACCOUNT AGTSVCPASSWORD ASSVCACCOUNT AGTSVCPASSWORD PID
+       RSSVCACCOUNT RSSVCPASSWORD SAPWD SECURITYMODE SQLSYSADMINACCOUNTS FEATURES)
 
   def self.instances
     instances = []
-    jsonResult = Puppet::Provider::Sqlserver.run_discovery_script
-    debug "Parsing json result #{jsonResult}"
-    if jsonResult.has_key?('Generic Features')
+    sqlserver_hash = Facter.value(:sqlserver_hash)
+    debug "Parsing json result #{sqlserver_hash}"
+    if sqlserver_hash != nil && sqlserver_hash.has_key?('Features')
       existing_instance = {:name => "Generic Features",
                            :ensure => :present,
                            :features =>
                              PuppetX::Sqlserver::ServerHelper.translate_features(
-                               jsonResult['Generic Features']).sort!
+                               sqlserver_hash['Features']).sort!
       }
       debug "Parsed features = #{existing_instance[:features]}"
 
@@ -80,7 +83,7 @@ Puppet::Type::type(:sqlserver_features).provide(:mssql, :parent => Puppet::Provi
           warn("Reserved switch [#{k}] found for `install_switches`, please know the provided value
 may be overridden by some command line arguments")
         end
-        if v.is_a?(Numeric) || (v.is_a?(String) && v =~ /\d/)
+        if v.is_a?(Numeric) || (v.is_a?(String) && v =~ /^(true|false|1|0)$/i)
           config_file << "#{k}=#{v}"
         elsif v.nil?
           config_file << k
