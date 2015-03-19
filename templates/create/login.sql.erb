@@ -8,7 +8,7 @@ BEGIN
     ELSE				ALTER LOGIN [<%= @login %>] DISABLE
 
 	ALTER LOGIN [<%= @login %>] WITH
-	<% if @type != 'WINDOWS_LOGIN' -%>
+	<% if @login_type != 'WINDOWS_LOGIN' -%>
 		CHECK_EXPIRATION = <% if @check_expiration %>ON<% else %>OFF<% end %>,
 		CHECK_POLICY	 = <% if @check_policy %>ON<% else %>OFF<% end %>,
 	<% end -%>
@@ -29,7 +29,7 @@ END
 ELSE
 BEGIN
 	CREATE LOGIN [<%= @login %>]
-	 <% if @type != 'WINDOWS_LOGIN' -%>
+	 <% if @login_type !~ /WINDOWS_LOGIN/i -%>
 	  WITH
 		PASSWORD = '<%= @password %>',
 		CHECK_EXPIRATION = <% if @check_expiration %>ON<% else %>OFF<% end %>,
