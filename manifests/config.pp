@@ -26,7 +26,8 @@ define sqlserver::config (
 #possible future parameter if we do end up supporting different install directories
   $install_dir ='C:/Program Files/Microsoft SQL Server'
   $config_dir = "${install_dir}/.puppet"
-  $config_file = "${config_dir}/.${instance_name}.cfg"
+  $_instance = upcase($instance_name)
+  $config_file = "${config_dir}/.${_instance}.cfg"
   if !defined(File[$config_dir]){
     file{ $config_dir:
       ensure => directory
