@@ -75,7 +75,7 @@ sqlserver_features { 'Generic Features':
 
 ```
 sqlserver::database{ 'minviable':
-    instance => ‘MSSQLSERVER’,
+    instance => 'MSSQLSERVER',
 }
 ```
 
@@ -202,7 +202,7 @@ For more information about installer switches and configuration, see the links b
 * `pid`: Specify the SQL Server product key to configure which edition you would like to use.
 * `rs_svc_account`: Specify the service account of the report server. This value is required. If you omit this value, Setup uses the default built-in account for the current operating system (either NetworkService or LocalSystem). If you specify a domain user account, the domain must be under 254 characters and the user name must be under 20 characters. The account name cannot contain the following characters: '"/ \ [ ] : ; | = , + * ? < >'.
 * `rs_svc_password`: Specify a strong password for the account. A strong password is at least 8 characters and includes a combination of upper and lower case alphanumeric characters and at least one symbol character. Avoid spelling an actual word or name that might be listed in a dictionary.
-* `sa_pwd`: Required when :security_mode => ‘SQL’.
+* `sa_pwd`: Required when :security_mode => 'SQL'.
 * `security_mode`:Specifies the security mode for SQL Server. If this parameter is not supplied, then Windows-only authentication mode is supported. Valid values are `SQL`.
 * `service_ensure`: Setting this to `automatic` ensures running if stopped; `manual` sets the service to manual and takes no action on current state; `disable` stops and disables the service. Valid values are `automatic`, `manual`, `disable`.
 * `source`: The drive where the ISO is mounted or expanded; can be a network share.
@@ -262,13 +262,13 @@ Creates, destroys, or updates databases, but does not move or modify files. Requ
 * `log_maxsize`: Specifies the maximum size to which the file can grow. MAXSIZE cannot be specified when the os_file_name is specified as a UNC path. This parameter is affected only at creation; updates will not change this setting.
 * `log_filegrowth`: Specifies the automatic growth increment of the file. The FILEGROWTH setting for a file cannot exceed the MAXSIZE setting. FILEGROWTH cannot be specified when the os_file_name is specified as a UNC path. FILEGROWTH does not apply to a FILESTREAM filegroup. This parameter is affected only at creation; updates will not change this setting.
 * `containment`: Defaults to 'NONE'.Other possible values are 'PARTIAL'. Setting `containment` =>'PARTIAL' requires defined type `sqlserver::sp_configure`. See [http://msdn.microsoft.com/en-us/library/ff929071.aspx](http://msdn.microsoft.com/en-us/library/ff929071.aspx) for complete documentation about containment.
-* `default_fulltext_language`: Sets default fulltext language. Only applicable if `containment` => ‘PARTIAL’. Valid values are documented at [http://msdn.microsoft.com/en-us/library/ms190303.aspx](http://msdn.microsoft.com/en-us/library/ms190303.aspx). Defaults to 'us_english'.
-* `default_language`: Sets default language. Only applicable if `containment` => ‘PARTIAL’. Valid values are documented at http://msdn.microsoft.com/en-us/library/ms190303.aspx. Defaults to 'us_english'.
-* `nested_triggers`: Enables cascading triggers. Only applicable if `containment` => ‘PARTIAL’. Valid values are 'ON', 'OFF'. See [http://msdn.microsoft.com/en-us/library/ms178101.aspx](http://msdn.microsoft.com/en-us/library/ms178101.aspx) for complete documentation.
-* `transform_noise_words`: Removes noise or stop words, such as “is”, “the”, “this”. Only applicable if `containment` => ‘PARTIAL’. Valid values are 'ON', 'OFF'.
-* `two_digit_year_cutoff`: The year at which the system will treat the year as four digits instead of two. For example, if set to '1999', 1998 would be abbreviated to '98', while 2014 would be '2014'. Only applicable if `containment` => ‘PARTIAL’. Valid values are any year between 1753 and 9999. Defaults to 2049.
-* `db_chaining`: Whether the database can be the source or target of a cross-database ownership chain. Only applicable if `containment` => ‘PARTIAL’. Valid values are 'ON', 'OFF'. Defaults to 'OFF'.
-* `trustworthy`: Whether database modules (such as views, user-defined functions, or stored procedures) that use an impersonation context can access resources outside the database. Only applicable if `containment` => ‘PARTIAL’. Valid values are 'ON', 'OFF'. Defaults to 'OFF'.
+* `default_fulltext_language`: Sets default fulltext language. Only applicable if `containment` => 'PARTIAL'. Valid values are documented at [http://msdn.microsoft.com/en-us/library/ms190303.aspx](http://msdn.microsoft.com/en-us/library/ms190303.aspx). Defaults to 'us_english'.
+* `default_language`: Sets default language. Only applicable if `containment` => 'PARTIAL'. Valid values are documented at http://msdn.microsoft.com/en-us/library/ms190303.aspx. Defaults to 'us_english'.
+* `nested_triggers`: Enables cascading triggers. Only applicable if `containment` => 'PARTIAL'. Valid values are 'ON', 'OFF'. See [http://msdn.microsoft.com/en-us/library/ms178101.aspx](http://msdn.microsoft.com/en-us/library/ms178101.aspx) for complete documentation.
+* `transform_noise_words`: Removes noise or stop words, such as “is”, “the”, “this”. Only applicable if `containment` => 'PARTIAL'. Valid values are 'ON', 'OFF'.
+* `two_digit_year_cutoff`: The year at which the system will treat the year as four digits instead of two. For example, if set to '1999', 1998 would be abbreviated to '98', while 2014 would be '2014'. Only applicable if `containment` => 'PARTIAL'. Valid values are any year between 1753 and 9999. Defaults to 2049.
+* `db_chaining`: Whether the database can be the source or target of a cross-database ownership chain. Only applicable if `containment` => 'PARTIAL'. Valid values are 'ON', 'OFF'. Defaults to 'OFF'.
+* `trustworthy`: Whether database modules (such as views, user-defined functions, or stored procedures) that use an impersonation context can access resources outside the database. Only applicable if `containment` => 'PARTIAL'. Valid values are 'ON', 'OFF'. Defaults to 'OFF'.
 
 **For more information about these settings and configuration in Microsoft SQL Server, please see:**
 
