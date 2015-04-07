@@ -11,12 +11,14 @@ HOSTS:
     roles:
       - agent
       - default
+      - sql2012
     platform: windows-2012r2-x86_64
     template: win-2012r2-x86_64
     hypervisor: vcloud
   sql2014:
     roles:
       - agent
+      - sql2014
     platform: windows-2012r2-x86_64
     template: win-2012r2-x86_64
     hypervisor: vcloud
