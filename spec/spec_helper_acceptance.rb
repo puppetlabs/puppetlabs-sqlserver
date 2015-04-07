@@ -1,8 +1,19 @@
 require 'beaker-rspec/spec_helper'
 require 'beaker-rspec/helpers/serverspec'
+require 'sql_testing_helpers'
 
+QA_RESOURCE_ROOT = "http://int-resources.ops.puppetlabs.net/QA_resources/microsoft_sql/iso/"
+SQL_2014_ISO = "SQLServer2014-x64-ENU.iso"
+SQL_2012_ISO = "SQLServer2012SP1-FullSlipstream-ENU-x64.iso"
 
-UNSUPPORTED_PLATFORMS = ['debian', 'ubuntu']
+RSpec.configure do |c|
+  # Readable test descriptions
+  c.formatter = :documentation
+  c.before(:suite) do
+    base_install
+  end
+end
+
 FUTURE_PARSER = ENV['FUTURE_PARSER'] == 'true' || false
 
 unless ENV['RS_PROVISION'] == 'no' or ENV['BEAKER_provision'] == 'no'
@@ -24,17 +35,17 @@ unless ENV['RS_PROVISION'] == 'no' or ENV['BEAKER_provision'] == 'no'
   end
 
   agents.each do |agent|
-    step "Install sqlserver to agent #{agent.node_name}"
+    step "Install sqlserver module to agent #{agent.node_name}"
     on agent, "mkdir -p #{default['distmoduledir']}/sqlserver"
     result = on agent, "echo #{default['distmoduledir']}"
     target = result.raw_output.chomp
     proj_root = File.expand_path(File.join(File.dirname(__FILE__), '..'))
-    exec_puppet = <<EOS
-exec{'Download':
-  command => 'powershell.exe -command "Invoke-WebRequest https://forgeapi.puppetlabs.com"',
-  path => ['c:\\windows\\sysnative\\WindowsPowershell\\v1.0','c:\\windows\\system32\\WindowsPowershell\\v1.0'],
-}
-EOS
+    exec_puppet = <<-EOS
+    exec{'Download':
+      command => 'powershell.exe -command "Invoke-WebRequest https://forgeapi.puppetlabs.com"',
+      path => ['c:\\windows\\sysnative\\WindowsPowershell\\v1.0','c:\\windows\\system32\\WindowsPowershell\\v1.0'],
+    }
+    EOS
     apply_manifest_on(agent, exec_puppet)
     %w(puppetlabs/stdlib puppetlabs/acl cyberious/pget puppetlabs/reboot puppetlabs/registry).each do |dep|
       on agent, puppet("module install #{dep}")
@@ -44,21 +55,4 @@ EOS
   end
 end
 
-RSpec.configure do |c|
-  # Readable test descriptions
-  c.formatter = :documentation
-end
 
-def get_host_for(sqlserver_version)
-  if sqlserver_version.to_i % 2012 != 0 && windows_agents.count > 1
-    windows_agents[1]
-  else
-    windows_agents[0]
-  end
-end
-
-def windows_agents
-  agents.select { |agent|
-    agent.platform =~ /windows/
-  }
-end
