@@ -5,6 +5,8 @@ require 'sql_testing_helpers'
 QA_RESOURCE_ROOT = "http://int-resources.ops.puppetlabs.net/QA_resources/microsoft_sql/iso/"
 SQL_2014_ISO = "SQLServer2014-x64-ENU.iso"
 SQL_2012_ISO = "SQLServer2012SP1-FullSlipstream-ENU-x64.iso"
+SQL_ADMIN_USER = 'sa'
+SQL_ADMIN_PASS = 'Pupp3t1@'
 
 RSpec.configure do |c|
   # Readable test descriptions
