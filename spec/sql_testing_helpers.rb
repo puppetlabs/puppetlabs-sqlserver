@@ -47,8 +47,8 @@ def run_sql_query(host, opts = {}, &block)
   # runs an arbitrary SQL command
   opts[:expected_row_count] ||= 1
   query = opts[:query]
-  sql_admin_pass = opts[:sql_admin_pass]
-  sql_admin_user = opts[:sql_admin_user]
+  sql_admin_pass = opts[:sql_admin_pass] ||= SQL_ADMIN_PASS
+  sql_admin_user = opts[:sql_admin_user] ||= SQL_ADMIN_USER
   environment_path = '/cygdrive/c/Program Files/Microsoft SQL Server/Client SDK/ODBC/110/Tools/Binn:/cygdrive/c/Program Files/Microsoft SQL Server/110/Tools/Binn'
   tmpfile = host.tmpfile('should_contain_query.sql')
   create_remote_file(host, tmpfile, query + "\n")
