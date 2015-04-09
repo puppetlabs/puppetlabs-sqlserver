@@ -43,7 +43,7 @@ def install_sqlserver(host, opts = {})
     apply_manifest_on(host, pp)
 end
 
-def run_sql_query(host, opts = {})
+def run_sql_query(host, opts = {}, &block)
   # runs an arbitrary SQL command
   opts[:expected_row_count] ||= 1
   query = opts[:query]
@@ -57,11 +57,21 @@ def run_sql_query(host, opts = {})
   sqlcmd.exe -U #{sql_admin_user} -P #{sql_admin_pass} -h-1 -W -s "|" -i \"#{tmpfile}\"
   sql_query
   on(host, sqlcmd_query, :environment => {"PATH" => environment_path}) do |result|
-    match = /(\d*) rows affected/.match(result.stdout)
-    raise 'Could not match number of rows for SQL query' unless match
-    rows_observed = match[1]
-    error_message = "Expected #{opts[:expected_row_count]} rows but observed #{rows_observed}"
-    raise error_message unless opts[:expected_row_count] == rows_observed.to_i
+
+    unless opts[:expected_row_count] == 0
+      # match an expeted row count
+      match = /(\d*) rows affected/.match(result.stdout)
+      raise 'Could not match number of rows for SQL query' unless match
+      rows_observed = match[1]
+      error_message = "Expected #{opts[:expected_row_count]} rows but observed #{rows_observed}"
+      raise error_message unless opts[:expected_row_count] == rows_observed.to_i
+    end
+    case block.arity
+    when 0
+      yield self
+    else
+      yield result
+    end
   end
 end
 
