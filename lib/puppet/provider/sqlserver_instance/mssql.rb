@@ -8,15 +8,15 @@ Puppet::Type::type(:sqlserver_instance).provide(:mssql, :parent => Puppet::Provi
 
   def self.instances
     instances = []
-    jsonResult = Puppet::Provider::Sqlserver.run_discovery_script
-    debug "Parsing json result #{jsonResult}"
-    if jsonResult.has_key?('instances')
-      jsonResult['instances'].each do |instance_name|
+    sqlserver_hash = Facter.value(:sqlserver_hash)
+    debug "Parsing json result #{sqlserver_hash}"
+    if sqlserver_hash != nil && sqlserver_hash.has_key?('Instances')
+      sqlserver_hash['Instances'].each do |instance_name|
         existing_instance = {:name => instance_name,
                              :ensure => :present,
                              :features =>
                                PuppetX::Sqlserver::ServerHelper.translate_features(
-                                 jsonResult[instance_name]['features']).sort!
+                                 sqlserver_hash[instance_name]['Features']).sort!
         }
         instance = new(existing_instance)
         instances << instance
@@ -70,17 +70,6 @@ Puppet::Type::type(:sqlserver_instance).provide(:mssql, :parent => Puppet::Provi
     else
       installNet35
       add_features(@resource[:features])
-      # cmd_args = build_cmd_args(@resource[:features])
-      # begin
-      #   config_file = create_temp_for_install_switch
-      #   cmd_args << "/ConfigurationFile=\"#{config_file.path}\"" unless config_file.nil?
-      #   try_execute(cmd_args)
-      # ensure
-      #   if config_file
-      #     config_file.close
-      #     config_file.unlink
-      #   end
-      # end
     end
   end
 
@@ -92,7 +81,7 @@ Puppet::Type::type(:sqlserver_instance).provide(:mssql, :parent => Puppet::Provi
           warn("Reserved switch [#{k}] found for `install_switches`, please know the provided value
 may be overridden by some command line arguments")
         end
-        if v.is_a?(Numeric) || (v.is_a?(String) && v =~ /\d/)
+        if v.is_a?(Numeric) || (v.is_a?(String) && v =~ /^(true|false|1|0)$/i)
           config_file << "#{k}=#{v}"
         elsif v.nil?
           config_file << k
@@ -121,14 +110,23 @@ may be overridden by some command line arguments")
   def build_cmd_args(features, action="install")
     cmd_args = basic_cmd_args(features, action)
     if action == 'install'
-      (@resource.parameters.keys - %w(ensure loglevel features name provider source sql_sysadmin_accounts sql_security_mode install_switches).map(&:to_sym)).sort.collect do |key|
-        cmd_args << "/#{key.to_s.gsub(/_/, '').upcase}=\"#{@resource[key]}\""
+      %w(pid sa_pwd sql_svc_account sql_svc_password agt_svc_account agt_svc_password as_svc_account as_svc_password rs_svc_account rs_svc_password security_mode).map(&:to_sym).sort.collect do |key|
+        if not_nil_and_not_empty? @resource[key]
+          cmd_args << "/#{key.to_s.gsub(/_/, '').upcase}=\"#{@resource[key]}\""
+        end
       end
       if not_nil_and_not_empty? @resource[:sql_sysadmin_accounts]
         if @resource[:sql_sysadmin_accounts].kind_of?(Array)
           cmd_args << "/SQLSYSADMINACCOUNTS=#{ Array.new(@resource[:sql_sysadmin_accounts]).collect { |account| "\"#{account}\"" }.join(' ')}"
         else
           cmd_args << "/SQLSYSADMINACCOUNTS=\"#{@resource[:sql_sysadmin_accounts]}\""
+        end
+      end
+      if not_nil_and_not_empty? @resource[:as_sysadmin_accounts]
+        if @resource[:as_sysadmin_accounts].kind_of?(Array)
+          cmd_args << "/ASSYSADMINACCOUNTS=#{ Array.new(@resource[:as_sysadmin_accounts]).collect { |account| "\"#{account}\"" }.join(' ')}"
+        else
+          cmd_args << "/ASSYSADMINACCOUNTS=\"#{@resource[:as_sysadmin_accounts]}\""
         end
       end
     end

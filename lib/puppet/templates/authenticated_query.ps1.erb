@@ -5,33 +5,38 @@ if($json.instance -ne 'MSSQLSERVER'){
 $env:SQLCMDSERVER = "localhost\${json.instance}"
 }
 try {
-if (!(Get-Command 'sqlcmd.exe' -ErrorAction SilentlyContinue)){
-	if (Test-Path 'C:\Program Files\Microsoft SQL Server\120\Tools\Binn\sqlcmd.exe'){
-    	$env:Path += ";C:\Program Files\Microsoft SQL Server\120\Tools\Binn\;"
-	}elseif(Test-Path 'C:\Program Files\Microsoft SQL Server\110\Tools\Binn\sqlcmd.exe'){
-    	$env:Path += ";C:\Program Files\Microsoft SQL Server\110\Tools\Binn\;"
-	}else{
-   		$result = ls 'C:\Program Files\Microsoft SQL Server' -Filter sqlcmd.exe -Recurse | Select -First 1
-		if ($result -eq $null) {
-			Write-Error -Message "Unable to find the sqlcmd.exe" -Category ResourceUnavailable
-		}else{
-			$env:Path += ";{0}" -f $result.DirectoryName
-		}
-	}
-	if (!(Get-Command 'sqlcmd.exe')){
-	    Write-Error -Message "Unable to still find the sqlcmd.exe command" -Category ResourceUnavailable
-	}
-}
-
-$result = sqlcmd.exe -i '<%= input_file %>' -h-1 -W -s ',' <% if @instance != 'MSSQLSERVER' %>-S localhost\<%= @instance %><%end%>
-    if($result -match "ERROR"){
-        Write-Error -Message ($result | where {$_ -match "ERROR"} | select -First 1)
-		exit(10)
+  $sqlcmd = Get-Command 'sqlcmd.exe' -ErrorAction SilentlyContinue
+  if ($sqlcmd -ne $null){
+    $env:PATH += ";" + (Get-Item (Get-Command 'sqlcmd.exe').Path).Directory
+  }
+  else{
+    @(120,110) | %{
+      if (Test-Path "C:\Program Files\Microsoft SQL Server\$_\Tools\Binn\sqlcmd.exe"){
+        $env:PATH += ";C:\Program Files\Microsoft SQL Server\$_\Tools\Binn"
+      }
+      elseif (Test-Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$_\Tools\ClientSetup"){
+        $k = gi "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\$_\Tools\ClientSetup"
+        if ($k.GetValueNames().Contains("Path")){
+          $env:PATH += ";" + $k.GetValue("Path")
+        }
+      }
     }
-	if($result -match "Incorrect syntax near "){
-	    Write-Error -Message ($result | where {$_ -match "Incorrect syntax"} | select -First 1)
-		exit(10)
-	}
+    if (!(Test-Path 'sqlcmd.exe')){
+      $result = ls 'C:\Program Files\Microsoft SQL Server' -Filter sqlcmd.exe -Recurse | Select -First 1
+	  if ($result -ne $null) {
+	    $env:PATH += ";" + ($result.DirectoryName)
+	  }
+   }
+ }
+ $result = sqlcmd.exe -i '<%= input_file %>' -h-1 -W -s ',' <% if @instance != 'MSSQLSERVER' %>-S localhost\<%= @instance %><%end%>
+  if($result -match "ERROR"){
+    Write-Error -Message ($result | where {$_ -match "ERROR"} | select -First 1)
+	exit(10)
+  }
+  if($result -match "Incorrect syntax near "){
+    Write-Error -Message ($result | where {$_ -match "Incorrect syntax"} | select -First 1)
+	exit(10)
+  }
 }
 catch{
 	Write-Host $_
