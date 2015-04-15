@@ -57,7 +57,14 @@ unless ENV['RS_PROVISION'] == 'no' or ENV['BEAKER_provision'] == 'no'
       on agent, puppet("module install #{dep}")
     end
     on agent, "git clone https://github.com/puppetlabs/puppetlabs-mount_iso #{target}/mount_iso"
-    install_dev_puppet_module_on(agent, {:proj_root => proj_root, :target_module_path => "#{target}", :module_name => 'sqlserver'})
+
+    install_ca_certs(agent)
+
+    # in CI install from staging forge, otherwise from local
+    staging = { :module_name => 'puppetlabs-sqlserver' }
+    local = { :module_name => 'sqlserver', :proj_root => proj_root, :target_module_path => target }
+
+    install_dev_puppet_module_on(agent, options[:forge_host] ? staging : local)
   end
 end
 
