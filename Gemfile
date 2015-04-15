@@ -19,6 +19,7 @@ group :development, :test do
   gem 'puppet-lint',            :require => false
   gem 'simplecov',              :require => false
   gem 'yard',                   :require => false
+  gem 'pry',                    :require => false
 end
 
 beaker_version = ENV['BEAKER_VERSION']
