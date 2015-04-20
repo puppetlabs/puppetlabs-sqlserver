@@ -5,6 +5,8 @@ Puppet::Type::newtype(:sqlserver_instance) do
 
   ensurable
 
+  autorequire('class') { 'sqlserver' }
+
   newparam(:name, :namevar => true) do
     munge do |value|
       value.upcase

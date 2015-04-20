@@ -26,15 +26,11 @@ define sqlserver::config (
 #possible future parameter if we do end up supporting different install directories
   $install_dir ='C:/Program Files/Microsoft SQL Server'
   $config_dir = "${install_dir}/.puppet"
-  $config_file = "${config_dir}/.${instance_name}.cfg"
-  if !defined(File[$config_dir]){
-    file{ $config_dir:
-      ensure => directory
-    }
-  }
+  $_instance = upcase($instance_name)
+  $config_file = "${config_dir}/.${_instance}.cfg"
+
   file{ $config_file:
     content => template('sqlserver/instance_config.erb'),
-    require => File[$config_dir],
   }
 
   $acl_permissions = [{ identity => 'Administrators', rights => ['full'] } ]

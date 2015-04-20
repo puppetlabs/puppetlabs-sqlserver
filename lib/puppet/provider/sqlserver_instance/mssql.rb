@@ -8,15 +8,15 @@ Puppet::Type::type(:sqlserver_instance).provide(:mssql, :parent => Puppet::Provi
 
   def self.instances
     instances = []
-    jsonResult = Puppet::Provider::Sqlserver.run_discovery_script
-    debug "Parsing json result #{jsonResult}"
-    if jsonResult.has_key?('instances')
-      jsonResult['instances'].each do |instance_name|
+    sqlserver_hash = Facter.value(:sqlserver_hash)
+    debug "Parsing json result #{sqlserver_hash}"
+    if sqlserver_hash != nil && sqlserver_hash.has_key?('Instances')
+      sqlserver_hash['Instances'].each do |instance_name|
         existing_instance = {:name => instance_name,
                              :ensure => :present,
                              :features =>
                                PuppetX::Sqlserver::ServerHelper.translate_features(
-                                 jsonResult[instance_name]['features']).sort!
+                                 sqlserver_hash[instance_name]['Features']).sort!
         }
         instance = new(existing_instance)
         instances << instance
@@ -70,17 +70,6 @@ Puppet::Type::type(:sqlserver_instance).provide(:mssql, :parent => Puppet::Provi
     else
       installNet35
       add_features(@resource[:features])
-      # cmd_args = build_cmd_args(@resource[:features])
-      # begin
-      #   config_file = create_temp_for_install_switch
-      #   cmd_args << "/ConfigurationFile=\"#{config_file.path}\"" unless config_file.nil?
-      #   try_execute(cmd_args)
-      # ensure
-      #   if config_file
-      #     config_file.close
-      #     config_file.unlink
-      #   end
-      # end
     end
   end
 
