@@ -83,7 +83,7 @@ Puppet::Type::type(:sqlserver_features).provide(:mssql, :parent => Puppet::Provi
           warn("Reserved switch [#{k}] found for `install_switches`, please know the provided value
 may be overridden by some command line arguments")
         end
-        if v.is_a?(Numeric) || (v.is_a?(String) && v =~ /\d/)
+        if v.is_a?(Numeric) || (v.is_a?(String) && v =~ /^(true|false|1|0)$/i)
           config_file << "#{k}=#{v}"
         elsif v.nil?
           config_file << k
