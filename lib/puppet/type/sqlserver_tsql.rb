@@ -61,7 +61,10 @@ Puppet::Type::newtype(:sqlserver_tsql) do
 
   def refresh
     if self.check_all_attributes(true)
-      provider.run_update
+      result = provider.run_update
+      if result.has_errors
+        fail("Unable to apply changes, failed with error message #{result.error_message}")
+      end
     end
   end
 
