@@ -121,18 +121,23 @@ may be overridden by some command line arguments")
   def build_cmd_args(features, action="install")
     cmd_args = basic_cmd_args(features, action)
     if action == 'install'
-      (@resource.parameters.keys - %w(ensure loglevel features name provider source sql_sysadmin_accounts sql_security_mode install_switches).map(&:to_sym)).sort.collect do |key|
-        cmd_args << "/#{key.to_s.gsub(/_/, '').upcase}=\"#{@resource[key]}\""
-      end
-      if not_nil_and_not_empty? @resource[:sql_sysadmin_accounts]
-        if @resource[:sql_sysadmin_accounts].kind_of?(Array)
-          cmd_args << "/SQLSYSADMINACCOUNTS=#{ Array.new(@resource[:sql_sysadmin_accounts]).collect { |account| "\"#{account}\"" }.join(' ')}"
-        else
-          cmd_args << "/SQLSYSADMINACCOUNTS=\"#{@resource[:sql_sysadmin_accounts]}\""
+      %w(pid sa_pwd sql_svc_account sql_svc_password agt_svc_account agt_svc_password as_svc_account as_svc_password rs_svc_account rs_svc_password security_mode).map(&:to_sym).sort.collect do |key|
+        if not_nil_and_not_empty? @resource[key]
+          cmd_args << "/#{key.to_s.gsub(/_/, '').upcase}=\"#{@resource[key]}\""
         end
       end
+
+      format_cmd_args_array('/SQLSYSADMINACCOUNTS', @resource[:sql_sysadmin_accounts], cmd_args)
+      format_cmd_args_array('/ASSYSADMINACCOUNTS', @resource[:as_sysadmin_accounts], cmd_args)
     end
     cmd_args
+  end
+
+  def format_cmd_args_array(switch, arr, cmd_args)
+    if not_nil_and_not_empty? arr
+      arr = [arr] if !arr.kind_of?(Array)
+      cmd_args << "#{switch}=#{arr.collect { |item| "\"#{item}\"" }.join(' ')}"
+    end
   end
 
   def destroy
