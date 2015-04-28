@@ -133,6 +133,13 @@ may be overridden by some command line arguments")
           cmd_args << "/SQLSYSADMINACCOUNTS=\"#{@resource[:sql_sysadmin_accounts]}\""
         end
       end
+      if not_nil_and_not_empty? @resource[:as_sysadmin_accounts]
+        if @resource[:as_sysadmin_accounts].kind_of?(Array)
+          cmd_args << "/ASSYSADMINACCOUNTS=#{ Array.new(@resource[:as_sysadmin_accounts]).collect { |account| "\"#{account}\"" }.join(' ')}"
+        else
+          cmd_args << "/ASSYSADMINACCOUNTS=\"#{@resource[:as_sysadmin_accounts]}\""
+        end
+      end
     end
     cmd_args
   end
