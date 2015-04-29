@@ -149,7 +149,14 @@ Terminology differs somewhat between various database systems; please refer to t
 * `is_svc_account`: Either domain user name or system account. Defaults to 'NT AUTHORITY\NETWORK SERVICE'.
 * `is_svc_password`: Password for domain user.
 * `pid`: Specify the SQL Server product key to configure which edition you would like to use. Can be left empty for evaluation versions.
-* `provider`: The specific backend to use for this `sqlserver_features` resource. You seldom need to specify this---Puppet will usually discover the appropriate provider for your platform. Available providers are: `mssql`, `source`.
+* `install_switches`: Hash of optional installer switches for SQL Server setup.
+
+  Please note that if an option is set in both its own specific parameter and `install_switches`, the specifically named parameter takes precedence. For example, if you set the product key in both `pid` and in `install_switches`, the `pid` parameter will be honored.
+
+For more information about installer switches and configuration, see the links below:
+
+* [Installer Switches](https://msdn.microsoft.com/en-us/library/ms144259.aspx)
+* [Configuration File](https://msdn.microsoft.com/en-us/library/dd239405.aspx)
 
 #### sqlserver_instance
 
@@ -171,6 +178,14 @@ Terminology differs somewhat between various database systems; please refer to t
 * `sql_svc_account`: Account for SQL Server service: Domain\User or system account.
 * `sql_svc_password`: The SQL Server service password; required only for a domain account.
 * `sql_sysadmin_accounts`: The Windows or SQL account(s) to provision as SQL Server system administrators.
+* `install_switches`: Hash of optional installer switches for SQL Server instance setup.
+
+  Please note that if an option is set in both its own specific parameter and `install_switches`, the specifically named parameter takes precedence. For example, if you set the product key in both `pid` and in `install_switches`, the `pid` parameter will be honored.
+
+For more information about installer switches and configuration, see the links below:
+
+* [Installer Switches](https://msdn.microsoft.com/en-us/library/ms144259.aspx)
+* [Configuration File](https://msdn.microsoft.com/en-us/library/dd239405.aspx)
 
 ####sqlserver_tsql
 * `command`: The TSQL statement to execute.
