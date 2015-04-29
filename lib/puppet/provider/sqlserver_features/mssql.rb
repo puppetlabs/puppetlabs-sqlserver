@@ -58,18 +58,43 @@ Puppet::Type::type(:sqlserver_features).provide(:mssql, :parent => Puppet::Provi
         if not_nil_and_not_empty?(@resource[:pid])
           cmd_args << "/PID=#{@resource[:pid]}"
         end
-        if not_nil_and_not_empty?(@resource[:install_switches])
-          @resource[:install_switches].each_pair do |k, v|
-            if v.is_a?(Numeric) || (v.is_a?(String) && v =~ /\d/)
-              cmd_args << "/#{k}=#{v}"
-            else
-              cmd_args << "/#{k}='#{v}'"
-            end
-          end
+      end
+      begin
+        config_file = create_temp_for_install_switch unless action == 'uninstall'
+        cmd_args << "/ConfigurationFile=\"#{config_file.path}\"" unless config_file.nil?
+        try_execute(cmd_args, "Unable to #{action} features (#{features.join(', ')})")
+      ensure
+        if config_file
+          config_file.close
+          config_file.unlink
         end
       end
-      try_execute(cmd_args, "Unable to #{action} features (#{features.join(', ')})")
     end
+  end
+
+  def create_temp_for_install_switch
+    if not_nil_and_not_empty? @resource[:install_switches]
+      config_file = ["[OPTIONS]"]
+      @resource[:install_switches].each_pair do |k, v|
+        if RESERVED_SWITCHES.include? k
+          warn("Reserved switch [#{k}] found for `install_switches`, please know the provided value
+may be overridden by some command line arguments")
+        end
+        if v.is_a?(Numeric) || (v.is_a?(String) && v =~ /\d/)
+          config_file << "#{k}=#{v}"
+        elsif v.nil?
+          config_file << k
+        else
+          config_file << "#{k}=\"#{v}\""
+        end
+      end
+      config_temp = Tempfile.new(['sqlconfig', '.ini'])
+      config_temp.write(config_file.join("\n"))
+      config_temp.flush
+      config_temp.close
+      return config_temp
+    end
+    return nil
   end
 
   def installNet35

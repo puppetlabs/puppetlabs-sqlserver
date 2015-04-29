@@ -2,6 +2,9 @@ require 'json'
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'sqlserver'))
 
 Puppet::Type::type(:sqlserver_instance).provide(:mssql, :parent => Puppet::Provider::Sqlserver) do
+  RESERVED_SWITCHES =
+    %w(AGTSVCACCOUNT AGTSVCPASSWORD ASSVCACCOUNT AGTSVCPASSWORD PID
+       RSSVCACCOUNT RSSVCPASSWORD SAPWD SECURITYMODE SQLSYSADMINACCOUNTS FEATURES)
 
   def self.instances
     instances = []
@@ -42,7 +45,17 @@ Puppet::Type::type(:sqlserver_instance).provide(:mssql, :parent => Puppet::Provi
   def modify_features(features, action)
     if not_nil_and_not_empty? features
       debug "#{action.capitalize}ing features '#{features.join(',')}'"
-      try_execute(build_cmd_args(features, action), "Error trying to #{action} features (#{features.join(', ')}")
+      cmd_args = build_cmd_args(features, action)
+      begin
+        config_file = create_temp_for_install_switch unless action == 'uninstall'
+        cmd_args << "/ConfigurationFile=\"#{config_file.path}\"" unless config_file.nil?
+        try_execute(cmd_args, "Error trying to #{action} features (#{features.join(', ')}")
+      ensure
+        if config_file
+          config_file.close
+          config_file.unlink
+        end
+      end
     end
   end
 
@@ -56,9 +69,44 @@ Puppet::Type::type(:sqlserver_instance).provide(:mssql, :parent => Puppet::Provi
       destroy
     else
       installNet35
-      cmd_args = build_cmd_args(@resource[:features])
-      try_execute(cmd_args)
+      add_features(@resource[:features])
+      # cmd_args = build_cmd_args(@resource[:features])
+      # begin
+      #   config_file = create_temp_for_install_switch
+      #   cmd_args << "/ConfigurationFile=\"#{config_file.path}\"" unless config_file.nil?
+      #   try_execute(cmd_args)
+      # ensure
+      #   if config_file
+      #     config_file.close
+      #     config_file.unlink
+      #   end
+      # end
     end
+  end
+
+  def create_temp_for_install_switch
+    if not_nil_and_not_empty? @resource[:install_switches]
+      config_file = ["[OPTIONS]"]
+      @resource[:install_switches].each_pair do |k, v|
+        if RESERVED_SWITCHES.include? k
+          warn("Reserved switch [#{k}] found for `install_switches`, please know the provided value
+may be overridden by some command line arguments")
+        end
+        if v.is_a?(Numeric) || (v.is_a?(String) && v =~ /\d/)
+          config_file << "#{k}=#{v}"
+        elsif v.nil?
+          config_file << k
+        else
+          config_file << "#{k}=\"#{v}\""
+        end
+      end
+      config_temp = Tempfile.new(['sqlconfig', '.ini'])
+      config_temp.write(config_file.join("\n"))
+      config_temp.flush
+      config_temp.close
+      return config_temp
+    end
+    return nil
   end
 
   def basic_cmd_args(features, action)
@@ -73,27 +121,23 @@ Puppet::Type::type(:sqlserver_instance).provide(:mssql, :parent => Puppet::Provi
   def build_cmd_args(features, action="install")
     cmd_args = basic_cmd_args(features, action)
     if action == 'install'
-      (@resource.parameters.keys - %w(ensure loglevel features name provider source sql_sysadmin_accounts sql_security_mode install_switches).map(&:to_sym)).sort.collect do |key|
-        cmd_args << "/#{key.to_s.gsub(/_/, '').upcase}=\"#{@resource[key]}\""
-      end
-      if not_nil_and_not_empty? @resource[:sql_sysadmin_accounts]
-        if @resource[:sql_sysadmin_accounts].kind_of?(Array)
-          cmd_args << "/SQLSYSADMINACCOUNTS=#{ Array.new(@resource[:sql_sysadmin_accounts]).collect { |account| "\"#{account}\"" }.join(' ')}"
-        else
-          cmd_args << "/SQLSYSADMINACCOUNTS=\"#{@resource[:sql_sysadmin_accounts]}\""
+      %w(pid sa_pwd sql_svc_account sql_svc_password agt_svc_account agt_svc_password as_svc_account as_svc_password rs_svc_account rs_svc_password security_mode).map(&:to_sym).sort.collect do |key|
+        if not_nil_and_not_empty? @resource[key]
+          cmd_args << "/#{key.to_s.gsub(/_/, '').upcase}=\"#{@resource[key]}\""
         end
       end
-      if not_nil_and_not_empty? @resource[:install_switches]
-        @resource[:install_switches].each_pair do |k, v|
-          if v.is_a?(Numeric) || (v.is_a?(String) && v =~ /\d/)
-            cmd_args << "/#{k}=#{v}"
-          else
-            cmd_args << "/#{k}='#{v}'"
-          end
-        end
-      end
+
+      format_cmd_args_array('/SQLSYSADMINACCOUNTS', @resource[:sql_sysadmin_accounts], cmd_args)
+      format_cmd_args_array('/ASSYSADMINACCOUNTS', @resource[:as_sysadmin_accounts], cmd_args)
     end
     cmd_args
+  end
+
+  def format_cmd_args_array(switch, arr, cmd_args)
+    if not_nil_and_not_empty? arr
+      arr = [arr] if !arr.kind_of?(Array)
+      cmd_args << "#{switch}=#{arr.collect { |item| "\"#{item}\"" }.join(' ')}"
+    end
   end
 
   def destroy

@@ -2,11 +2,11 @@ source ENV['GEM_SOURCE'] || 'https://rubygems.org'
 
 def location_for(place, fake_version = nil)
   if place =~ /^(git:[^#]*)#(.*)/
-    [fake_version, { :git => $1, :branch => $2, :require => false }].compact
+    [fake_version, {:git => $1, :branch => $2, :require => false}].compact
   elsif place =~ /^file:\/\/(.*)/
-    ['>= 0', { :path => File.expand_path($1), :require => false }]
+    ['>= 0', {:path => File.expand_path($1), :require => false}]
   else
-    [place, { :require => false }]
+    [place, {:require => false}]
   end
 end
 
@@ -18,9 +18,7 @@ group :development, :test do
   gem 'puppetlabs_spec_helper', :require => false
   gem 'puppet-lint',            :require => false
   gem 'simplecov',              :require => false
-  gem 'rspec',                  :require => false
   gem 'yard',                   :require => false
-  gem 'pry',                    :require => false
 end
 
 beaker_version = ENV['BEAKER_VERSION']
@@ -40,7 +38,10 @@ end
 if puppetversion = ENV['PUPPET_GEM_VERSION']
   gem 'puppet', puppetversion,  :require => false
 else
-  gem 'puppet', '~> 3.7',       :require => false
+  gem 'puppet', '~> 3.7', :require => false
 end
 
+if File.exists? "#{__FILE__}.local"
+  eval(File.read("#{__FILE__}.local"), binding)
+end
 # vim:ft=ruby

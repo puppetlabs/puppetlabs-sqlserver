@@ -62,7 +62,7 @@ RSpec.shared_context 'manifests' do
   shared_examples 'validation error' do
     it {
       params.merge!(additional_params)
-      expect { should contain_sqlserver_tsql(sqlserver_tsql_title) }.to raise_error(error_class, convert_to_regexp(raise_error_check))
+      expect { catalogue }.to raise_error(error_class, convert_to_regexp(raise_error_check))
     }
   end
 end
