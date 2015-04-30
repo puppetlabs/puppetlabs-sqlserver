@@ -1,8 +1,11 @@
 require 'json'
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'sqlserver'))
 
-Puppet::Type::type(:sqlserver_features).provide(:mssql, :parent => Puppet::Provider::Sqlserver) do
+FEATURE_RESERVED_SWITCHES =
+  %w(AGTSVCACCOUNT AGTSVCPASSWORD ASSVCACCOUNT AGTSVCPASSWORD PID
+       RSSVCACCOUNT RSSVCPASSWORD SAPWD SECURITYMODE SQLSYSADMINACCOUNTS FEATURES)
 
+Puppet::Type::type(:sqlserver_features).provide(:mssql, :parent => Puppet::Provider::Sqlserver) do
   def self.instances
     instances = []
     jsonResult = Puppet::Provider::Sqlserver.run_discovery_script
@@ -76,11 +79,11 @@ Puppet::Type::type(:sqlserver_features).provide(:mssql, :parent => Puppet::Provi
     if not_nil_and_not_empty? @resource[:install_switches]
       config_file = ["[OPTIONS]"]
       @resource[:install_switches].each_pair do |k, v|
-        if RESERVED_SWITCHES.include? k
+        if FEATURE_RESERVED_SWITCHES.include? k
           warn("Reserved switch [#{k}] found for `install_switches`, please know the provided value
 may be overridden by some command line arguments")
         end
-        if v.is_a?(Numeric) || (v.is_a?(String) && v =~ /\d/)
+        if v.is_a?(Numeric) || (v.is_a?(String) && v =~ /^(true|false|1|0)$/i)
           config_file << "#{k}=#{v}"
         elsif v.nil?
           config_file << k
