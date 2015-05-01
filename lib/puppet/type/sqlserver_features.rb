@@ -4,6 +4,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'puppet_x
 Puppet::Type::newtype(:sqlserver_features) do
   ensurable
 
+  autorequire('class') { 'sqlserver' }
 
   newparam(:name, :namevar => true) do
     #Due to our prefetch and unaware of what name the user will provide we munge the value to meet our expecations.
