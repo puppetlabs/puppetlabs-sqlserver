@@ -1,8 +1,5 @@
 {
   "excludes": [
-    "**/contrib/**",
-    "**/examples/**",
-    "**/tests/**",
     "**/spec/**",
     "**/pkg/**"
   ]
