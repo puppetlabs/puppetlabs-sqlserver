@@ -8,12 +8,14 @@
   "project_page": "https://tickets.puppetlabs.com/browse/MODULES/component/12400",
   "issues_url": "https://tickets.puppetlabs.com/browse/MODULES/component/12400",
   "tags": [
-    "ms sql",
+    "sql",
     "mssql",
-    "sql server",
+    "sqlserver",
     "microsoft",
-    "sql 2012",
-    "sql 2014"
+    "sql2012",
+    "sql2014",
+    "tsql",
+    "database"
   ],
   "operatingsystem_support": [
     {
