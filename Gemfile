@@ -43,4 +43,7 @@ else
   gem 'puppet', '~> 3.7',       :require => false
 end
 
+if File.exists? "#{__FILE__}.local"
+  eval(File.read("#{__FILE__}.local"), binding)
+end
 # vim:ft=ruby

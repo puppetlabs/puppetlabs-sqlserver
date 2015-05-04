@@ -43,6 +43,13 @@ Puppet::Type::newtype(:sqlserver_features) do
     end
   end
 
+  newparam(:install_switches) do
+    desc 'A hash of switches you want to pass to the installer'
+    validate do |value|
+      fail ArguemntError, 'install_switch must be in the form of a Hash' unless value.is_a?(Hash)
+    end
+  end
+
   def validate
     if set?(:features)
       self[:features] = self[:features].flatten.sort.uniq
