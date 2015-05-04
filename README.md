@@ -154,6 +154,11 @@ For more information about installer switches and configuration, see the links b
 * [Installer Switches](https://msdn.microsoft.com/en-us/library/ms144259.aspx)
 * [Configuration File](https://msdn.microsoft.com/en-us/library/dd239405.aspx)
 
+####sqlserver_tsql
+* `command`: The TSQL statement to execute.
+* `onlyif`: TSQL to execute as a check to see if we should proceed and run the command parameter, should encounter a throw or error to trigger
+* `instance`: The SQL Server instance you want to execute against.
+
 ### Defined Types
 
 #### `sqlserver::config`
