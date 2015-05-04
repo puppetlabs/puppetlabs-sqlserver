@@ -1,0 +1,30 @@
+USE [<%= @database %>];
+DECLARE
+  @role varchar(128) = '<%= @role %>',
+  @member varchar(128),
+  @error_msg varchar(250);
+
+<%- @members.each do |member| -%>
+BEGIN
+SET @member = '<%= member %>';
+<%= scope.function_template(['sqlserver/snippets/role/member_exists.sql.erb']) -%>
+    ALTER <% if @type == 'SERVER' %>SERVER <% end %>ROLE [<%= @role %>] ADD MEMBER [<%= member %>];
+
+<%= scope.function_template(['sqlserver/snippets/role/member_exists.sql.erb']) -%>
+    THROW 51000, 'Failed to add member [<%= member %>] to Role [<%= @role %>]', 10
+END
+<% end -%>
+
+<% if @members_purge %>
+<%= scope.function_template(['sqlserver/snippets/role/populate_purge_members.sql.erb']) -%>
+
+DECLARE @sql varchar(250), @row int = 1, @row_count int;
+SET @row_count = (SELECT COUNT(*) FROM @purge_members);
+
+WHILE(@row <= @row_count)
+BEGIN
+    SET @sql = 'ALTER <% if @type == 'SERVER' %>SERVER <% end %>ROLE [<%= @role %>] DROP MEMBER [' + (SELECT member FROM @purge_members WHERE ID = @row) + '];'
+    EXEC(@sql)
+	SET @row += 1
+END
+<% end %>

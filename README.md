@@ -95,6 +95,39 @@ sqlserver::login{'WIN-D95P1A3V103\localAccount':
 }
 ```
 
+###To run custom TSQL statements:
+
+To use `sqlserver_tsql` to trigger other classes or defined types:
+
+```
+sqlserver_tsql{ 'Query Logging DB Status':
+    instance => 'MSSQLSERVER',
+    onlyif   => "IF (SELECT count(*) FROM myDb.dbo.logging_table WHERE
+        message like 'FATAL%') > 1000  THROW 50000, 'Fatal Exceptions in Logging', 10",
+    notify   => Exec['Too Many Fatal Errors']
+}  
+```
+
+To clean up regular logs with conditional checks:
+
+```
+sqlserver_tsql{ 'Cleanup Old Logs':
+    instance => 'MSSQLSERVER',
+    command  => "DELETE FROM myDb.dbo.logging_table WHERE log_date < '${log_max_date}'",
+    onlyif   => "IF exists(SELECT * FROM myDb.dbo.logging_table WHERE log_date < '${log_max_date}')
+        THROW 50000, 'need log cleanup', 10",
+}
+```
+
+If you want something to always execute, you can leave out the `onlyif` parameter:
+
+```
+sqlserver_tsql{ 'Always running':
+    instance => 'MSSQLSERVER',
+    command  => 'EXEC notified_executor()',
+}
+```
+
 #### Windows SQL Server Terms
 
 Terminology differs somewhat between various database systems; please refer to this list of terms for clarification.

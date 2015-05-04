@@ -1,4 +1,4 @@
-require File.expand_path(File.join(File.dirname(__FILE__), '..', 'property/login'))
+require File.expand_path(File.join(File.dirname(__FILE__), '..', 'property/sqlserver_login'))
 require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'puppet_x/sqlserver/server_helper'))
 
 Puppet::Type::newtype(:sqlserver_features) do

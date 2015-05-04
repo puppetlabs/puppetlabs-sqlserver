@@ -1,4 +1,3 @@
-BEGIN TRY
 USE master
 DECLARE @default_db_path as nvarchar(max),
 		@default_log_path as varchar(max)
@@ -116,5 +115,3 @@ END
 
 IF NOT EXISTS (select * from sys.databases WHERE name = '<%= @db_name %>')
     THROW 51000, 'DATABASE CREATION FAILED', 10
-END TRY
-<%= scope.function_template(['sqlserver/snippets/begin_catch.sql.erb']) %>

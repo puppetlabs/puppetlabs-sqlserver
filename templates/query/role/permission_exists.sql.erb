@@ -1,0 +1,8 @@
+USE [<%= @database %>];
+<%= scope.function_template(['sqlserver/snippets/role/declare_and_set_variables.sql.erb']) -%>
+
+<% @permissions.each do |permission|
+    permission.upcase! -%>
+SET @permission = '<%= permission %>';
+<%= scope.function_template(['sqlserver/snippets/principal/permission/exists.sql.erb']) -%>
+<% end -%>

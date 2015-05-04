@@ -12,7 +12,12 @@ RSpec.describe 'sqlserver::database', :type => :define do
   end
 
   describe 'Minimal Params' do
-    it_behaves_like 'sqlserver_tsql command'
+    let(:pre_condition) { <<-EOF
+      define sqlserver::config{}
+      sqlserver::config {'MSSQLSERVER': }
+    EOF
+    }
+    it_behaves_like 'compile'
   end
 
   describe 'Providing log filespec it should compile with valid log on params and' do

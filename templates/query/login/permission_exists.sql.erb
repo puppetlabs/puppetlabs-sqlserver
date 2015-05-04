@@ -1,0 +1,8 @@
+USE [master];
+DECLARE @perm_state varchar(250), @error_msg varchar(250), @permission varchar(250);
+ <% @permissions.each do |permission|
+  permission.upcase!
+ %>
+SET @permission = '<%= permission %>'
+<%= scope.function_template(['sqlserver/snippets/login/permission/exists.sql.erb']) %>
+<% end %>

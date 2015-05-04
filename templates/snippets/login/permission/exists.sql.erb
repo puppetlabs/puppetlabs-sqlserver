@@ -1,0 +1,4 @@
+SET @perm_state = <%= scope.function_template(['sqlserver/snippets/login/get_perm_state.sql.erb']) %>;
+SET @error_msg = 'EXPECTED login [<%= @login %>] to have permission [' + @permission + '] with <%= @_state %> but got ' + @perm_state;
+IF @perm_state != '<% if @with_grant_option == true %>GRANT_WITH_GRANT_OPTION<% else %><%= @_state %><% end %>'
+	    THROW 51000, @error_msg, 10;
