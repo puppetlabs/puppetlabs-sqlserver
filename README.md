@@ -149,7 +149,6 @@ Terminology differs somewhat between various database systems; please refer to t
 * `is_svc_account`: Either domain user name or system account. Defaults to 'NT AUTHORITY\NETWORK SERVICE'.
 * `is_svc_password`: Password for domain user.
 * `pid`: Specify the SQL Server product key to configure which edition you would like to use. Can be left empty for evaluation versions.
-* `provider`: The specific backend to use for this `sqlserver_features` resource. You seldom need to specify this---Puppet will usually discover the appropriate provider for your platform. Available providers are: `mssql`, `source`.
 
 #### sqlserver_instance
 
