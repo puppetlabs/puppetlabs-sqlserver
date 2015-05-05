@@ -94,3 +94,34 @@ def base_install
   }
   install_sqlserver(sql2014, sql2014_opts)
 end
+
+def validate_sql_install(host, opts = {}, &block)
+  dir = set_dir(opts[:version])
+  cmd = "#{dir}SQLServer#{opts[:version]}/setup.exe /Action=RunDiscovery /q"
+  on(host, cmd)
+  result = on(host, "cat #{dir}Log/Summary.txt")
+  if block_given?
+    case block.arity
+    when 0
+      yield self
+    else
+      yield result
+    end
+  end
+end
+
+def remove_sql_features(host, opts = {})
+  dir = set_dir(opts[:version])
+  cmd = "#{dir}SQLServer#{opts[:version]}/setup.exe /Action=uninstall /Q /IACCEPTSQLSERVERLICENSETERMS /FEATURES=#{opts[:features].join(',')}"
+  on(host, cmd, {:acceptable_exit_codes => [0,1,2]})
+end
+
+def set_dir(version)
+  if version == '2012'
+    "/cygdrive/c/'Program Files'/'Microsoft SQL Server'/110/'Setup Bootstrap'/"
+  elsif version == '2014'
+    "/cygdrive/c/'Program Files'/'Microsoft SQL Server'/120/'Setup Bootstrap'/"
+  else
+    raise 'Version must be specified to validate_sql_install'
+  end
+end
