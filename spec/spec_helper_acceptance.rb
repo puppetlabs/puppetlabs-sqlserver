@@ -35,23 +35,27 @@ unless ENV['RS_PROVISION'] == 'no' or ENV['BEAKER_provision'] == 'no'
   end
 
   agents.each do |agent|
-    step "Install sqlserver module to agent #{agent.node_name}"
-    on agent, "mkdir -p #{default['distmoduledir']}/sqlserver"
-    result = on agent, "echo #{default['distmoduledir']}"
-    target = result.raw_output.chomp
-    proj_root = File.expand_path(File.join(File.dirname(__FILE__), '..'))
-    exec_puppet = <<-EOS
-    exec{'Download':
-      command => 'powershell.exe -command "Invoke-WebRequest https://forgeapi.puppetlabs.com"',
-      path => ['c:\\windows\\sysnative\\WindowsPowershell\\v1.0','c:\\windows\\system32\\WindowsPowershell\\v1.0'],
-    }
-    EOS
-    apply_manifest_on(agent, exec_puppet)
-    %w(puppetlabs/stdlib puppetlabs/acl cyberious/pget puppetlabs/reboot puppetlabs/registry).each do |dep|
-      on agent, puppet("module install #{dep}")
+    if ENV['PKG_VERSION']
+      # install with PMT from staging forge
+      on(agent, puppet("module install puppetlabs-aws --version #{ENV['PKG_VERSION']} --module_repository=https://api-forge-aio01-qatest.puppetlabs.com/"))
+    else
+      step "Install sqlserver module to agent #{agent.node_name}"
+      result = on agent, "echo #{default['distmoduledir']}"
+      target = result.raw_output.chomp
+      proj_root = File.expand_path(File.join(File.dirname(__FILE__), '..'))
+      on agent, "git clone https://github.com/puppetlabs/puppetlabs-mount_iso #{target}/mount_iso"
+      install_dev_puppet_module_on(agent, {:proj_root => proj_root, :target_module_path => "#{target}", :module_name => 'sqlserver'})
     end
-    on agent, "git clone https://github.com/puppetlabs/puppetlabs-mount_iso #{target}/mount_iso"
-    install_dev_puppet_module_on(agent, {:proj_root => proj_root, :target_module_path => "#{target}", :module_name => 'sqlserver'})
+    exec_puppet = <<-EOS
+      exec{'Download':
+        command => 'powershell.exe -command "Invoke-WebRequest https://forgeapi.puppetlabs.com"',
+        path => ['c:\\windows\\sysnative\\WindowsPowershell\\v1.0','c:\\windows\\system32\\WindowsPowershell\\v1.0'],
+      }
+      EOS
+      apply_manifest_on(agent, exec_puppet)
+      %w(puppetlabs/stdlib puppetlabs/acl cyberious/pget puppetlabs/reboot puppetlabs/registry).each do |dep|
+        on agent, puppet("module install #{dep}")
+      end
   end
 end
 
