@@ -1,5 +1,6 @@
 require 'puppet'
-require 'puppet/property/sqlserver_tsql'
+require File.expand_path(File.join(File.dirname(__FILE__), '..', 'property/sqlserver_tsql'))
+
 
 Puppet::Type::newtype(:sqlserver_tsql) do
   newparam :name, :namevar => true
