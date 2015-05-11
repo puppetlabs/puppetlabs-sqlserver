@@ -57,7 +57,8 @@ def run_sql_query(host, opts = {}, &block)
   sqlcmd.exe -U #{sql_admin_user} -P #{sql_admin_pass} -h-1 -W -s "|" -i \"#{tmpfile}\"
   sql_query
   on(host, sqlcmd_query, :environment => {"PATH" => environment_path}) do |result|
-    unless opts[:no_rows_expected]
+
+    unless opts[:expected_row_count] == 0
       # match an expeted row count
       match = /(\d*) rows affected/.match(result.stdout)
       raise 'Could not match number of rows for SQL query' unless match
