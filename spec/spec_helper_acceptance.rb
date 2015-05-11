@@ -36,7 +36,6 @@ unless ENV['RS_PROVISION'] == 'no' or ENV['BEAKER_provision'] == 'no'
 
   agents.each do |agent|
     step "Install sqlserver module to agent #{agent.node_name}"
-    on agent, "mkdir -p #{default['distmoduledir']}/sqlserver"
     result = on agent, "echo #{default['distmoduledir']}"
     target = result.raw_output.chomp
     proj_root = File.expand_path(File.join(File.dirname(__FILE__), '..'))
