@@ -10,7 +10,8 @@ RSpec.configure do |c|
   # Readable test descriptions
   c.formatter = :documentation
   c.before(:suite) do
-    base_install
+    host = find_only_one('sql_host')
+    base_install(host['sql_version'])
   end
 end
 
