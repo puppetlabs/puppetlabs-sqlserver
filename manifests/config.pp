@@ -24,8 +24,9 @@ define sqlserver::config (
   $instance_name = $title,
 ) {
 #possible future parameter if we do end up supporting different install directories
+  $_instance = upcase($instance_name)
   $config_dir = "${::puppet_vardir}/cache/sqlserver"
-  $config_file = "${config_dir}/.${instance_name}.cfg"
+  $config_file = "${config_dir}/.${_instance}.cfg"
   ensure_resource('file', ["${::puppet_vardir}/cache",$config_dir], { 'ensure' => 'directory','recurse' => 'true' })
 
   file{ $config_file:
