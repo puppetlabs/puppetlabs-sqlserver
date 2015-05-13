@@ -22,7 +22,7 @@ RSpec.describe PuppetX::Sqlserver::SqlConnection do
       before :each do
         stub_connection
         @connection.stubs(:State).returns(0)
-        @connection.stubs(:Open).with('Provider=SQLOLEDB.1;Persist Security Info=False;User ID=sa;password=Pupp3t1@;Initial Catalog=master;Application Name=Puppet;Data Source=localhost;')
+        @connection.stubs(:Open).with('Provider=SQLOLEDB.1;User ID=sa;Password=Pupp3t1@;Initial Catalog=master;Application Name=Puppet;Data Source=localhost')
       end
       it 'should not raise an error but populate has_errors with message' do
         subject.stubs(:win32_exception).returns(Exception)
@@ -48,11 +48,11 @@ RSpec.describe PuppetX::Sqlserver::SqlConnection do
         @connection.stubs(:State).returns(0)
       end
       it 'should not add MSSQLSERVER to connection string' do
-        @connection.stubs(:Open).with('Provider=SQLOLEDB.1;Persist Security Info=False;User ID=sa;password=Pupp3t1@;Initial Catalog=master;Application Name=Puppet;Data Source=localhost;')
+        @connection.stubs(:Open).with('Provider=SQLOLEDB.1;User ID=sa;Password=Pupp3t1@;Initial Catalog=master;Application Name=Puppet;Data Source=localhost')
         subject.open_and_run_command('query', {'admin' => 'sa', 'pass' => 'Pupp3t1@', 'instance' => 'MSSQLSERVER'})
       end
       it 'should add a non default instance to connection string' do
-        @connection.stubs(:Open).with('Provider=SQLOLEDB.1;Persist Security Info=False;User ID=superuser;password=puppetTested;Initial Catalog=master;Application Name=Puppet;Data Source=localhost\LOGGING;')
+        @connection.stubs(:Open).with('Provider=SQLOLEDB.1;User ID=superuser;Password=puppetTested;Initial Catalog=master;Application Name=Puppet;Data Source=localhost\LOGGING')
         subject.open_and_run_command('query', {'admin' => 'superuser', 'pass' => 'puppetTested', 'instance' => 'LOGGING'})
       end
     end
