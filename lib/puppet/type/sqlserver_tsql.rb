@@ -32,9 +32,7 @@ Puppet::Type::newtype(:sqlserver_tsql) do
   newcheck(:onlyif, :parent => Puppet::Property::SqlserverTsql) do
     #Runs in the event that our TSQL exits with anything other than 0
     def check(value)
-      begin
-        output = provider.run(value, :failonfail => false)
-      end
+      output = provider.run(value)
       debug("OnlyIf returned exitstatus of #{output.exitstatus}")
       output.exitstatus != 0
     end
@@ -62,7 +60,10 @@ Puppet::Type::newtype(:sqlserver_tsql) do
 
   def refresh
     if self.check_all_attributes(true)
-      provider.run_update
+      result = provider.run_update
+      if result.has_errors
+        fail("Unable to apply changes, failed with error message #{result.error_message}")
+      end
     end
   end
 

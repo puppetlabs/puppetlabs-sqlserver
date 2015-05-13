@@ -30,7 +30,7 @@ class Puppet::Provider::Sqlserver < Puppet::Provider
   ##
   def self.run_authenticated_sqlcmd(query, opts)
     b = binding
-    @sql_instance_config = "C:/Program Files/Microsoft SQL Server/.puppet/.#{opts[:instance_name]}.cfg"
+    @sql_instance_config = File.join(Puppet[:vardir], "cache/sqlserver/.#{resource[:instance]}.cfg")
     if File.exists?(@sql_instance_config)
       @sql_instance_config = native_path(@sql_instance_config)
     else

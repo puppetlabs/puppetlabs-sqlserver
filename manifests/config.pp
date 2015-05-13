@@ -24,14 +24,10 @@ define sqlserver::config (
   $instance_name = $title,
 ) {
 #possible future parameter if we do end up supporting different install directories
-  $install_dir ='C:/Program Files/Microsoft SQL Server'
-  $config_dir = "${install_dir}/.puppet"
+  $config_dir = "${::puppet_vardir}/cache/sqlserver"
   $config_file = "${config_dir}/.${instance_name}.cfg"
-  if !defined(File[$config_dir]){
-    file{ $config_dir:
-      ensure => directory
-    }
-  }
+  ensure_resource('file', ["${::puppet_vardir}/cache",$config_dir], { 'ensure' => 'directory','recurse' => 'true' })
+
   file{ $config_file:
     content => template('sqlserver/instance_config.erb'),
     require => File[$config_dir],
