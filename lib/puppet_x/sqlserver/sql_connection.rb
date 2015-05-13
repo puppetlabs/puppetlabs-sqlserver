@@ -28,19 +28,19 @@ module PuppetX
       end
 
       def get_connection_string(config)
-        config = {'database' => 'master'}.merge(config)
-        # Open ADO connection to the SQL Server database
-        connection_string = "Provider=SQLOLEDB.1;"
-        connection_string << "Persist Security Info=False;"
-        connection_string << "User ID=#{config['admin']};"
-        connection_string << "password=#{config['pass']};"
-        connection_string << "Initial Catalog=#{config['database']};"
-        connection_string << "Application Name=Puppet;"
+        params = {
+          'Provider'         => 'SQLOLEDB.1',
+          'User ID'          => config['admin'],
+          'Password'         => config['pass'],
+          'Initial Catalog'  => config['database'] || 'master',
+          'Application Name' => 'Puppet',
+          'Data Source'      => 'localhost'
+        }
         if config['instance'] !~ /^MSSQLSERVER$/
-          connection_string << "Data Source=localhost\\#{config['instance']};"
-        else
-          connection_string << "Data Source=localhost;"
+          params['Data Source'] = "localhost\\#{config['instance']}"
         end
+
+        params.map { |k, v| "#{k}=#{v}" }.join(';')
       end
 
       def command(sql)
