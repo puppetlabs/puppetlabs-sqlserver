@@ -6,12 +6,6 @@ module PuppetX
     class SqlConnection
       attr_reader :exception_caught
 
-
-      def initialize
-        @connection = nil
-        @data = nil
-      end
-
       def open_and_run_command(query, config)
         begin
           open(config)
@@ -80,8 +74,6 @@ module PuppetX
       end
 
       def reset_instance
-        @data = nil
-        @fields = nil
         @exception_caught = nil
       end
 
@@ -105,10 +97,6 @@ module PuppetX
       # having as a method instead of hard coded allows us to stub and test outside of Windows
       def win32_exception
         ::WIN32OLERuntimeError
-      end
-
-      def connection=(conn)
-        @connection = conn
       end
     end
 
