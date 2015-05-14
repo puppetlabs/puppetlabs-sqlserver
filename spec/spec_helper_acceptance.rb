@@ -5,6 +5,8 @@ require 'sql_testing_helpers'
 QA_RESOURCE_ROOT = "http://int-resources.ops.puppetlabs.net/QA_resources/microsoft_sql/iso/"
 SQL_2014_ISO = "SQLServer2014-x64-ENU.iso"
 SQL_2012_ISO = "SQLServer2012SP1-FullSlipstream-ENU-x64.iso"
+SQL_ADMIN_USER = 'sa'
+SQL_ADMIN_PASS = 'Pupp3t1@'
 
 RSpec.configure do |c|
   # Readable test descriptions
@@ -36,7 +38,6 @@ unless ENV['RS_PROVISION'] == 'no' or ENV['BEAKER_provision'] == 'no'
 
   agents.each do |agent|
     step "Install sqlserver module to agent #{agent.node_name}"
-    on agent, "mkdir -p #{default['distmoduledir']}/sqlserver"
     result = on agent, "echo #{default['distmoduledir']}"
     target = result.raw_output.chomp
     proj_root = File.expand_path(File.join(File.dirname(__FILE__), '..'))
@@ -54,5 +55,4 @@ unless ENV['RS_PROVISION'] == 'no' or ENV['BEAKER_provision'] == 'no'
     install_dev_puppet_module_on(agent, {:proj_root => proj_root, :target_module_path => "#{target}", :module_name => 'sqlserver'})
   end
 end
-
 
