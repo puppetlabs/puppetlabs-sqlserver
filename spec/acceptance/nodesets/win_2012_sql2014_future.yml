@@ -7,21 +7,14 @@ HOSTS:
     platform: debian-6-i386
     template: debian-6-i386
     hypervisor: vcloud
-  sql2012:
+  win2012:
     roles:
       - agent
-      - default
-      - sql2012
-    platform: windows-2012r2-x86_64
-    template: win-2012r2-x86_64
+      - sql_host
+    platform: windows-2012-x86_64
+    template: win-2012-x86_64
     hypervisor: vcloud
-  sql2014:
-    roles:
-      - agent
-      - sql2014
-    platform: windows-2012r2-x86_64
-    template: win-2012r2-x86_64
-    hypervisor: vcloud
+    sql_version: 2014
 CONFIG:
   nfs_server: none
   consoleport: 443
@@ -29,3 +22,7 @@ CONFIG:
   folder: Delivery/Quality Assurance/FOSS/Dynamic
   resourcepool: delivery/Quality Assurance/FOSS/Dynamic
   pooling_api: http://vcloud.delivery.puppetlabs.net/
+  forge_host: api-module-staging.puppetlabs.com
+  default_apply_opts:
+    parser: future
+    strict_variables: ~

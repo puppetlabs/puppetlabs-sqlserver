@@ -75,32 +75,24 @@ def run_sql_query(host, opts = {}, &block)
   end
 end
 
-def base_install
-  sql2012 = find_only_one('sql2012')
-  step "Mount the ISO on the agent #{sql2012.node_name}"
-  iso_2012_opts = {
-    :qa_iso_resource_root   => QA_RESOURCE_ROOT,
-    :sqlserver_iso          => SQL_2012_ISO,
-    :sqlserver_version      => '2012',
-  }
-  mount_iso(sql2012, iso_2012_opts)
-  step "Install Microsoft SQL 2012 on the agent #{sql2012.node_name} before running any tests"
-  sql2012_opts ={
-    :features => 'SQL',
-  }
-  install_sqlserver(sql2012, sql2012_opts)
-
-  sql2014 = find_only_one('sql2014')
-  step "Mount the ISO on the agent #{sql2014.node_name}"
-  iso_2014_opts = {
-    :qa_iso_resource_root   => QA_RESOURCE_ROOT,
-    :sqlserver_iso          => SQL_2014_ISO,
-    :sqlserver_version      => '2014',
-  }
-  mount_iso(sql2014, iso_2014_opts)
-  step "Install Microsoft SQL 2014 on the agent #{sql2014.node_name} before running any tests"
-  sql2014_opts ={
-    :features => 'SQL',
-  }
-  install_sqlserver(sql2014, sql2014_opts)
+def base_install(sql_version)
+  case sql_version
+  when /2012/
+    iso_opts = {
+      :qa_iso_resource_root   => QA_RESOURCE_ROOT,
+      :sqlserver_iso          => SQL_2012_ISO,
+      :sqlserver_version      => '2012',
+    }
+  when /2014/
+    iso_opts = {
+      :qa_iso_resource_root   => QA_RESOURCE_ROOT,
+      :sqlserver_iso          => SQL_2014_ISO,
+      :sqlserver_version      => '2014',
+    }
+  end
+  host = find_only_one('sql_host')
+  step "Mount the ISO on the aggent #{host.node_name}"
+  mount_iso(host, iso_opts)
+  step "Install Microsoft SQL #{sql_version} on the agent #{host.node_name} before running any tests"
+  install_sqlserver(host, {:features => 'SQL'})
 end
