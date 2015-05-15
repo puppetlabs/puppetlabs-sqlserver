@@ -1,6 +1,5 @@
 fixtures:
   forge_modules:
-    acl: "puppetlabs/acl"
     stdlib: "puppetlabs/stdlib"
   symlinks:
     sqlserver: "#{source_dir}"
