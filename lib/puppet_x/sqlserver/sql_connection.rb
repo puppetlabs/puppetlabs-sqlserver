@@ -10,6 +10,8 @@ module PuppetX
         begin
           open(config)
           command(query)
+        rescue win32_exception => e
+          @exception_caught = e
         ensure
           close
         end
