@@ -41,7 +41,7 @@ define sqlserver::login::permissions (
 
   validate_bool($with_grant_option)
   if $with_grant_option {
-    $grant_option = "-WITH_GRANT_OPTION"
+    $grant_option = '-WITH_GRANT_OPTION'
   }
   sqlserver_tsql{ "login-permission-${instance}-${login}-${_state}${grant_option}":
     instance => $instance,
