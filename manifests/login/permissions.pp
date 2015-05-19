@@ -40,10 +40,11 @@ define sqlserver::login::permissions (
   validate_re($_state,'^(GRANT|REVOKE|DENY)$', "State parameter can only be one of 'GRANT', 'REVOKE' or 'DENY', you passed a value of ${state}")
 
   validate_bool($with_grant_option)
-  if $with_grant_option {
-    $grant_option = '-WITH_GRANT_OPTION'
+  $_grant_option =  $with_grant_option ? {
+    true => '-WITH_GRANT_OPTION',
+    default => ''
   }
-  sqlserver_tsql{ "login-permission-${instance}-${login}-${_state}${grant_option}":
+  sqlserver_tsql{ "login-permission-${instance}-${login}-${_state}${_grant_option}":
     instance => $instance,
     command  => template('sqlserver/create/login/permission.sql.erb'),
     onlyif   => template('sqlserver/query/login/permission_exists.sql.erb'),
