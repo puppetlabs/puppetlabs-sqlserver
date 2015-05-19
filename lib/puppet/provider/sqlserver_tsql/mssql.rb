@@ -6,7 +6,7 @@ Puppet::Type::type(:sqlserver_tsql).provide(:mssql, :parent => Puppet::Provider:
 
   def run(query)
     debug("Running resource #{query} against #{resource[:instance]}")
-    config = get_config
+    config = get_config.merge({ :database => resource[:database] })
     sqlconn = PuppetX::Sqlserver::SqlConnection.new
 
     sqlconn.open_and_run_command(query, config)
