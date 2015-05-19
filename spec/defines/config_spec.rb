@@ -11,8 +11,8 @@ RSpec.describe 'sqlserver::config', :type => :define do
   let(:facts) { {:osfamily => 'windows', :platform => :windows, :puppet_vardir => 'C:/ProgramData/PuppetLabs/puppet/var'} }
   describe 'compile' do
     it {
-      should contain_file('C:/ProgramData/PuppetLabs/puppet/var/cache/sqlserver/.MSSQLSERVER.cfg')
-      should contain_file('C:/ProgramData/PuppetLabs/puppet/var/cache/sqlserver')
+      should_not contain_file('C:/ProgramData/PuppetLabs/puppet/var/cache/sqlserver/.MSSQLSERVER.cfg')
+      should_not contain_file('C:/ProgramData/PuppetLabs/puppet/var/cache/sqlserver')
     }
   end
 end

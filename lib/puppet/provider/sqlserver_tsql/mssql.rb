@@ -6,21 +6,23 @@ Puppet::Type::type(:sqlserver_tsql).provide(:mssql, :parent => Puppet::Provider:
 
   def run(query)
     debug("Running resource #{query} against #{resource[:instance]}")
-    config = get_instance_config
+    config = get_config
     sqlconn = PuppetX::Sqlserver::SqlConnection.new
 
     sqlconn.open_and_run_command(query, config)
   end
 
-  def get_instance_config
-    config_file = File.join(Puppet[:vardir], "cache/sqlserver/.#{resource[:instance]}.cfg")
-    if !File.exists? (config_file)
-      fail('Required config file missing, add the appropriate sqlserver::config and rerun')
+  def get_config
+    instance = resource[:instance]
+    config_resc = resource.catalog.resources.detect { |resc|
+      resc.title =~ /Sqlserver::Config/ &&
+        resc.original_parameters[:instance_name] =~ /#{instance}/i
+    }
+    if config_resc.nil?
+      fail("Sqlserver_tsql #{resource[:title]} was unable to retrieve the config for the instance #{resource[:instance]}")
     end
-    if !File.readable?(config_file)
-      fail('Unable to read config file, ensure proper permissions and please try again')
-    end
-    JSON.parse(File.read(config_file))
+
+    config_resc.original_parameters
   end
 
   def run_check

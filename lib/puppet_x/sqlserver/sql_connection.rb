@@ -10,6 +10,8 @@ module PuppetX
         begin
           open(config)
           command(query)
+        rescue win32_exception => e
+          @exception_caught = e
         ensure
           close
         end
@@ -30,14 +32,14 @@ module PuppetX
       def get_connection_string(config)
         params = {
           'Provider'         => 'SQLOLEDB.1',
-          'User ID'          => config['admin'],
-          'Password'         => config['pass'],
-          'Initial Catalog'  => config['database'] || 'master',
+          'User ID'          => config[:admin_user],
+          'Password'         => config[:admin_pass],
+          'Initial Catalog'  => config[:database] || 'master',
           'Application Name' => 'Puppet',
           'Data Source'      => 'localhost'
         }
-        if config['instance'] !~ /^MSSQLSERVER$/
-          params['Data Source'] = "localhost\\#{config['instance']}"
+        if config[:instance_name] !~ /^MSSQLSERVER$/
+          params['Data Source'] = "localhost\\#{config[:instance_name]}"
         end
 
         params.map { |k, v| "#{k}=#{v}" }.join(';')

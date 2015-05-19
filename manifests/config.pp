@@ -23,22 +23,6 @@ define sqlserver::config (
   $admin_pass,
   $instance_name = $title,
 ) {
-#possible future parameter if we do end up supporting different install directories
-  $_instance = upcase($instance_name)
-  $config_dir = "${::puppet_vardir}/cache/sqlserver"
-  $config_file = "${config_dir}/.${_instance}.cfg"
-  ensure_resource('file', ["${::puppet_vardir}/cache",$config_dir], { 'ensure' => 'directory','recurse' => 'true' })
-
-  file{ $config_file:
-    content => template('sqlserver/instance_config.erb'),
-    require => File[$config_dir],
-  }
-
-  $acl_permissions = [{ identity => 'Administrators', rights => ['full'] } ]
-  acl{ $config_file:
-    purge                      => true,
-    inherit_parent_permissions => false,
-    permissions                => $acl_permissions,
-    require                    => File[$config_file]
-  }
+  ##This config is a catalog requirement for sqlserver_tsql and is looked up to retrieve the admin_user and
+  ## admin_pass for a given instance_name
 }
