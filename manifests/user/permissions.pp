@@ -53,13 +53,14 @@ define sqlserver::user::permissions (
 
   sqlserver_validate_range($user, 1, 128, 'User must be between 1 and 128 characters')
 
-  if $with_grant_option {
-    $grant_option = "-WITH_GRANT_OPTION"
+  $_grant_option =  $with_grant_option ? {
+    true => '-WITH_GRANT_OPTION',
+    default => ''
   }
   sqlserver_tsql{
-    "user-permissions-${instance}-${database}-${user}-${_state}${grant_option}":
+    "user-permissions-${instance}-${database}-${user}-${_state}${_grant_option}":
       instance => $instance,
-      command  => template("sqlserver/create/user/permission.sql.erb"),
+      command  => template('sqlserver/create/user/permission.sql.erb'),
       onlyif   => template('sqlserver/query/user/permission_exists.sql.erb'),
       require  => Sqlserver::Config[$instance],
   }
