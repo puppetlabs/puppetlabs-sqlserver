@@ -38,11 +38,11 @@ unless ENV['RS_PROVISION'] == 'no' or ENV['BEAKER_provision'] == 'no'
   end
 
   agents.each do |agent|
-    step "Emit CommonProgramFiles environment variable"
+    # Emit CommonProgramFiles environment variable
     program_files = agent.get_env_var('ProgramFiles').split('=')[1]
     agent.add_env_var('CommonProgramFiles', "#{program_files}\\Common Files")
 
-    step "Install sqlserver module to agent #{agent.node_name}"
+    # Install sqlserver module to agent
     result = on agent, "echo #{agent['distmoduledir']}"
     target = result.raw_output.chomp
     proj_root = File.expand_path(File.join(File.dirname(__FILE__), '..'))
