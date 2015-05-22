@@ -91,8 +91,8 @@ def base_install(sql_version)
     }
   end
   host = find_only_one('sql_host')
-  step "Mount the ISO on the aggent #{host.node_name}"
+  # Mount the ISO on the agent
   mount_iso(host, iso_opts)
-  step "Install Microsoft SQL #{sql_version} on the agent #{host.node_name} before running any tests"
+  # Install Microsoft SQL on the agent before running any tests
   install_sqlserver(host, {:features => 'SQL'})
 end
