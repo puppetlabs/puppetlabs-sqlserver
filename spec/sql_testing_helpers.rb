@@ -77,13 +77,13 @@ end
 
 def base_install(sql_version)
   case sql_version
-  when /2012/
+  when /2012/, 2012
     iso_opts = {
       :qa_iso_resource_root   => QA_RESOURCE_ROOT,
       :sqlserver_iso          => SQL_2012_ISO,
       :sqlserver_version      => '2012',
     }
-  when /2014/
+  when /2014/, 2012
     iso_opts = {
       :qa_iso_resource_root   => QA_RESOURCE_ROOT,
       :sqlserver_iso          => SQL_2014_ISO,
@@ -95,4 +95,35 @@ def base_install(sql_version)
   mount_iso(host, iso_opts)
   # Install Microsoft SQL on the agent before running any tests
   install_sqlserver(host, {:features => 'SQL'})
+end
+
+def validate_sql_install(host, opts = {}, &block)
+  dir = set_dir(opts[:version])
+  cmd = "#{dir}SQLServer#{opts[:version]}/setup.exe /Action=RunDiscovery /q"
+  on(host, cmd)
+  result = on(host, "cat #{dir}Log/Summary.txt")
+  if block_given?
+    case block.arity
+    when 0
+      yield self
+    else
+      yield result
+    end
+  end
+end
+
+def remove_sql_features(host, opts = {})
+  dir = set_dir(opts[:version])
+  cmd = "#{dir}SQLServer#{opts[:version]}/setup.exe /Action=uninstall /Q /IACCEPTSQLSERVERLICENSETERMS /FEATURES=#{opts[:features].join(',')}"
+  on(host, cmd, {:acceptable_exit_codes => [0,1,2]})
+end
+
+def set_dir(version)
+  if version == '2012'
+    "/cygdrive/c/'Program Files'/'Microsoft SQL Server'/110/'Setup Bootstrap'/"
+  elsif version == '2014'
+    "/cygdrive/c/'Program Files'/'Microsoft SQL Server'/120/'Setup Bootstrap'/"
+  else
+    raise 'Version must be specified to validate_sql_install'
+  end
 end
