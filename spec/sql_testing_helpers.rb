@@ -76,14 +76,14 @@ def run_sql_query(host, opts = {}, &block)
 end
 
 def base_install(sql_version)
-  case sql_version
-  when /2012/
+  case sql_version.to_i
+  when 2012
     iso_opts = {
       :qa_iso_resource_root   => QA_RESOURCE_ROOT,
       :sqlserver_iso          => SQL_2012_ISO,
       :sqlserver_version      => '2012',
     }
-  when /2014/
+  when 2014
     iso_opts = {
       :qa_iso_resource_root   => QA_RESOURCE_ROOT,
       :sqlserver_iso          => SQL_2014_ISO,
