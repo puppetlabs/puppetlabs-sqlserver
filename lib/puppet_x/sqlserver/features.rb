@@ -116,11 +116,11 @@ module PuppetX
       def self.get_instance_features(reg_root, instance_name)
         instance_features = {
           # also reg Replication/IsInstalled set to 1
-          'SQL_Replication_Core_Inst' => 'SQL Server Replication',
+          'SQL_Replication_Core_Inst' => 'Replication', # SQL Server Replication
           # also WMI: SqlService WHERE SQLServiceType = 1 # MSSQLSERVER
-          'SQL_Engine_Core_Inst' => 'Database Engine Services',
-          'SQL_FullText_Adv' => 'Full-Text and Semantic Extractions for Search',
-          'SQL_DQ_Full' => 'Data Quality Services'
+          'SQL_Engine_Core_Inst' => 'SQLEngine', # Database Engine Services
+          'SQL_FullText_Adv' => 'FullText', # Full-Text and Semantic Extractions for Search
+          'SQL_DQ_Full' => 'DQ', # Data Quality Services
         }
 
         feat_root = "#{reg_root}\\ConfigurationState"
@@ -130,9 +130,9 @@ module PuppetX
         # WMI equivalents require trickier name parsing
         parent_subkey_features = {
           # also WMI: SqlService WHERE SQLServiceType = 5 # MSSQLServerOLAPService
-          'OLAP' => 'Analysis Services',
+          'OLAP' => 'AS', # Analysis Services,
           # also WMI: SqlService WHERE SQLServiceType = 6 # ReportServer
-          'RS' => 'Reporting Services - Native'
+          'RS' => 'RS' # Reporting Services - Native
         }
 
         # instance features found in non-parented reg keys
@@ -144,14 +144,14 @@ module PuppetX
 
       def self.get_shared_features(version)
         shared_features = {
-          'Connectivity_Full' => 'Client Tools Connectivity',
-          'SDK_Full' => 'Client Tools SDK',
-          'MDSCoreFeature' => 'Master Data Services',
-          'Tools_Legacy_Full' => 'Client Tools Backwards Compatibility',
-          'SQL_SSMS_Full' => 'Management Tools - Complete',
-          'SQL_SSMS_Adv' => 'Management Tools - Basic', # also SQL_PowerShell_Tools_ANS
+          'Connectivity_Full' => 'Conn', # Client Tools Connectivity
+          'SDK_Full' => 'SDK', # Client Tools SDK
+          'MDSCoreFeature' => 'MDS', # Master Data Services
+          'Tools_Legacy_Full' => 'BC', # Client Tools Backwards Compatibility
+          'SQL_SSMS_Full' => 'ADV_SSMS', # Management Tools - Complete
+          'SQL_SSMS_Adv' => 'SSMS', # Management Tools - Basic
           # also WMI: SqlService WHERE SQLServiceType = 4 # MsDtsServer
-          'SQL_DTS_Full' => 'Integration Services'
+          'SQL_DTS_Full' => 'IS', # Integration Services
           # currently ignoring Reporting Services Shared
         }
 
@@ -174,12 +174,12 @@ module PuppetX
       #       "version" => "12.0.2000.8",
       #       "reg_root" => "Software\\Microsoft\\Microsoft SQL Server\\MSSQL12.MSSQLSERVER",
       #       "features" => [
-      #         "SQL Server Replication",
-      #         "Database Engine Services",
-      #         "Full-Text and Semantic Extractions for Search",
-      #         "Data Quality Services",
-      #         "Analysis Services",
-      #         "Reporting Services - Native"
+      #         "Replication",
+      #         "SQLEngine",
+      #         "FullText",
+      #         "DQ",
+      #         "AS",
+      #         "RS"
       #       ]
       #     }
       #   }
@@ -216,13 +216,13 @@ module PuppetX
       #   "version_friendly" => "SQL_2014",
       #   "version" => "12.0.2000.8",
       #   "reg_root" => "Software\\Microsoft\\Microsoft SQL Server\\MSSQL12.MSSQLSERVER2",
-      #   "features" => [
-      #     "SQLServer Replication",
-      #     "Database Engine Services",
-      #     "Full-Text and Semantic Extractions for Search",
-      #     "Data Quality Services",
-      #     "Analysis Services",
-      #     "Reporting Services - Native"
+      #   "features" =>[
+      #     "Replication",
+      #     "SQLEngine",
+      #     "FullText",
+      #     "DQ",
+      #     "AS",
+      #     "RS"
       #   ]
       # }
       def self.get_instance_info(version = SQL_2014, instance_name)

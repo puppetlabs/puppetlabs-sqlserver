@@ -14,9 +14,7 @@ Puppet::Type::type(:sqlserver_features).provide(:mssql, :parent => Puppet::Provi
     if !result.empty?
       existing_instance = {:name => "Generic Features",
                            :ensure => :present,
-                           :features =>
-                             PuppetX::Sqlserver::ServerHelper.translate_features(
-                               result).sort!
+                           :features => result.sort
       }
       debug "Parsed features = #{existing_instance[:features]}"
 

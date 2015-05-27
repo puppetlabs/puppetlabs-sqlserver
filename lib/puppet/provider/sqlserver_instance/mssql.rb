@@ -15,9 +15,7 @@ Puppet::Type::type(:sqlserver_instance).provide(:mssql, :parent => Puppet::Provi
     result.keys.each do |instance_name|
         existing_instance = {:name => instance_name,
                              :ensure => :present,
-                             :features =>
-                               PuppetX::Sqlserver::ServerHelper.translate_features(
-                                 result[instance_name]['features']).sort!
+                             :features => result[instance_name]['features'].sort
         }
         instance = new(existing_instance)
         instances << instance
