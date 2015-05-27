@@ -9,14 +9,15 @@ INSTANCE_RESERVED_SWITCHES =
 Puppet::Type::type(:sqlserver_instance).provide(:mssql, :parent => Puppet::Provider::Sqlserver) do
   def self.instances
     instances = []
-    result = Puppet::Provider::Sqlserver.run_discovery_script
+    result = Facter.value(:sqlserver_instances)
     debug "Parsing result #{result}"
-    result[:instances].keys.each do |instance_name|
+    result = result.values.inject(:merge)
+    result.keys.each do |instance_name|
         existing_instance = {:name => instance_name,
                              :ensure => :present,
                              :features =>
                                PuppetX::Sqlserver::ServerHelper.translate_features(
-                                 result[:instances][instance_name][:features]).sort!
+                                 result[instance_name]['features']).sort!
         }
         instance = new(existing_instance)
         instances << instance

@@ -8,14 +8,15 @@ FEATURE_RESERVED_SWITCHES =
 Puppet::Type::type(:sqlserver_features).provide(:mssql, :parent => Puppet::Provider::Sqlserver) do
   def self.instances
     instances = []
-    result = Puppet::Provider::Sqlserver.run_discovery_script
+    result = Facter.value(:sqlserver_features)
     debug "Parsing result #{result}"
-    if !result[:features].empty?
+    result = !result[SQL_2014].empty? ? result[SQL_2014] : result[SQL_2012]
+    if !result.empty?
       existing_instance = {:name => "Generic Features",
                            :ensure => :present,
                            :features =>
                              PuppetX::Sqlserver::ServerHelper.translate_features(
-                               result[:features]).sort!
+                               result).sort!
       }
       debug "Parsed features = #{existing_instance[:features]}"
 

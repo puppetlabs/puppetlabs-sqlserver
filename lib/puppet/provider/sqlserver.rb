@@ -39,17 +39,6 @@ class Puppet::Provider::Sqlserver < Puppet::Provider
     !obj.nil? and !obj.empty?
   end
 
-  def self.run_discovery_script
-    features = PuppetX::Sqlserver::Features.get_features
-
-    instances = {
-      # SQL instance names are unique over side-by-side installs
-      :instances => PuppetX::Sqlserver::Features.get_instances.values.inject(:merge),
-      # but features across versions are different
-      :features => !features[SQL_2014].empty? ? features[SQL_2014] : features[SQL_2012]
-    }
-  end
-
   def self.run_install_dot_net
     install_dot_net = <<-DOTNET
 Install-WindowsFeature  NET-Framework-Core

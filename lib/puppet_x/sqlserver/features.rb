@@ -1,5 +1,5 @@
-SQL_2012 = 'SQL_2012'
-SQL_2014 = 'SQL_2014'
+SQL_2012 ||= 'SQL_2012'
+SQL_2014 ||= 'SQL_2014'
 
 module PuppetX
   module Sqlserver
@@ -7,12 +7,12 @@ module PuppetX
     class Features
       private
 
-      SQL_WMI_PATH = {
+      SQL_WMI_PATH ||= {
         SQL_2012 => 'ComputerManagement11',
         SQL_2014 => 'ComputerManagement12',
       }
 
-      SQL_REG_ROOT = 'Software\Microsoft\Microsoft SQL Server'
+      SQL_REG_ROOT ||= 'Software\Microsoft\Microsoft SQL Server'
 
       # http://msdn.microsoft.com/en-us/library/windows/desktop/aa384129(v=vs.85).aspx
       KEY_WOW64_64KEY    ||= 0x100
@@ -105,11 +105,11 @@ module PuppetX
 
       def self.get_wmi_instance_info(version, instance_name)
         {
-          :name => instance_name,
-          :version_friendly => version,
-          :version => get_sql_property_values(version, instance_name, 'VERSION').first,
+          'name' => instance_name,
+          'version_friendly' => version,
+          'version' => get_sql_property_values(version, instance_name, 'VERSION').first,
           # typically Software\Microsoft\Microsoft SQL Server\MSSQL11.MSSQLSERVER
-          :reg_root => get_sql_property_values(version, instance_name, 'REGROOT').first,
+          'reg_root' => get_sql_property_values(version, instance_name, 'REGROOT').first,
         }
       end
 
@@ -169,11 +169,11 @@ module PuppetX
       #   "SQL_2012" => {},
       #   "SQL_2014" => {
       #     "MSSQLSERVER" => {
-      #       :name => "MSSQLSERVER",
-      #       :version_friendly => "SQL_2014",
-      #       :version => "12.0.2000.8",
-      #       :reg_root => "Software\\Microsoft\\Microsoft SQL Server\\MSSQL12.MSSQLSERVER",
-      #       :features => [
+      #       "name" => "MSSQLSERVER",
+      #       "version_friendly" => "SQL_2014",
+      #       "version" => "12.0.2000.8",
+      #       "reg_root" => "Software\\Microsoft\\Microsoft SQL Server\\MSSQL12.MSSQLSERVER",
+      #       "features" => [
       #         "SQL Server Replication",
       #         "Database Engine Services",
       #         "Full-Text and Semantic Extractions for Search",
@@ -212,11 +212,11 @@ module PuppetX
       # returns a hash containing instance details
       #
       # {
-      #   :name => "MSSQLSERVER2",
-      #   :version_friendly => "SQL_2014",
-      #   :version => "12.0.2000.8",
-      #   :reg_root => "Software\\Microsoft\\Microsoft SQL Server\\MSSQL12.MSSQLSERVER2",
-      #   :features => [
+      #   "name" => "MSSQLSERVER2",
+      #   "version_friendly" => "SQL_2014",
+      #   "version" => "12.0.2000.8",
+      #   "reg_root" => "Software\\Microsoft\\Microsoft SQL Server\\MSSQL12.MSSQLSERVER2",
+      #   "features" => [
       #     "SQLServer Replication",
       #     "Database Engine Services",
       #     "Full-Text and Semantic Extractions for Search",
@@ -227,8 +227,8 @@ module PuppetX
       # }
       def self.get_instance_info(version = SQL_2014, instance_name)
         sql_instance = get_wmi_instance_info(version, instance_name)
-        feats = get_instance_features(sql_instance[:reg_root], sql_instance[:name])
-        sql_instance.merge({:features => feats})
+        feats = get_instance_features(sql_instance['reg_root'], sql_instance['name'])
+        sql_instance.merge({'features' => feats})
       end
     end
   end
