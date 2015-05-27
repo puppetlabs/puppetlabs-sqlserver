@@ -1,4 +1,5 @@
 require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', '..', 'lib/puppet_x/sqlserver/server_helper'))
+require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', '..', 'lib/puppet_x/sqlserver/features'))
 require File.expand_path(File.join(File.dirname(__FILE__), 'sqlserver'))
 require 'tempfile'
 
@@ -39,44 +40,14 @@ class Puppet::Provider::Sqlserver < Puppet::Provider
   end
 
   def self.run_discovery_script
-    discovery = <<-DISCOVERY
-    if(Test-Path 'C:\\Program Files\\Microsoft SQL Server\\120\\Setup Bootstrap\\SQLServer2014\\setup.exe'){
-    pushd 'C:\\Program Files\\Microsoft SQL Server\\120\\Setup Bootstrap\\SQLServer2014\\'
-    Start-Process -FilePath .\\setup.exe -ArgumentList @("/Action=RunDiscovery","/q") -Wait -WindowStyle Hidden
-    popd
-}elseif(Test-Path 'C:\\Program Files\\Microsoft SQL Server\\110\\Setup Bootstrap\\SQLServer2012\\setup.exe'){
-    pushd 'C:\\Program Files\\Microsoft SQL Server\\110\\Setup Bootstrap\\SQLServer2012\\'
-    Start-Process -FilePath .\\setup.exe -ArgumentList @("/Action=RunDiscovery","/q") -Wait -WindowStyle Hidden
-    popd
-}
+    features = PuppetX::Sqlserver::Features.get_features
 
-$file = gci 'C:\\Program Files\\Microsoft SQL Server\\*\\Setup Bootstrap\\Log\\*\\SqlDiscoveryReport.xml' -ErrorAction Ignore | sort -Descending | select -First 1
-if($file -ne $null) {
-    [xml] $xml = cat $file
-    $json = $xml.ArrayOfDiscoveryInformation.DiscoveryInformation
-    $hash = @{"instances" = @();"TimeStamp"= ("{0:yyyy-MM-dd HH:mm:ss}" -f $file.CreationTime)}
-    foreach($instance in ($json | % { $_.Instance } | Get-Unique )){
-        $features = @()
-        $json | %{
-            if($_.instance -eq $instance){
-                $features += $_.feature
-            }
-        }
-        if($instance -eq "" ){
-            $hash.Add("Generic Features",$features)
-        }else{
-            $hash["instances"] += $instance
-            $hash.Add($instance,@{"features"=$features})
-        }
+    instances = {
+      # SQL instance names are unique over side-by-side installs
+      :instances => PuppetX::Sqlserver::Features.get_instances.values.inject(:merge),
+      # but features across versions are different
+      :features => !features[SQL_2014].empty? ? features[SQL_2014] : features[SQL_2012]
     }
-    $file.Directory.Delete($true)
-    Write-Host (ConvertTo-Json $hash)
-}else{
-    Write-host ("{}")
-}
-    DISCOVERY
-    result = powershell([discovery])
-    JSON.parse(result)
   end
 
   def self.run_install_dot_net

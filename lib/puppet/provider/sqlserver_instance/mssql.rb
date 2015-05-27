@@ -9,19 +9,17 @@ INSTANCE_RESERVED_SWITCHES =
 Puppet::Type::type(:sqlserver_instance).provide(:mssql, :parent => Puppet::Provider::Sqlserver) do
   def self.instances
     instances = []
-    jsonResult = Puppet::Provider::Sqlserver.run_discovery_script
-    debug "Parsing json result #{jsonResult}"
-    if jsonResult.has_key?('instances')
-      jsonResult['instances'].each do |instance_name|
+    result = Puppet::Provider::Sqlserver.run_discovery_script
+    debug "Parsing result #{result}"
+    result[:instances].keys.each do |instance_name|
         existing_instance = {:name => instance_name,
                              :ensure => :present,
                              :features =>
                                PuppetX::Sqlserver::ServerHelper.translate_features(
-                                 jsonResult[instance_name]['features']).sort!
+                                 result[:instances][instance_name][:features]).sort!
         }
         instance = new(existing_instance)
         instances << instance
-      end
     end
     instances
   end
