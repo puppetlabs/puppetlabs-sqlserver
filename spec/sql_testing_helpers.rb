@@ -76,14 +76,14 @@ def run_sql_query(host, opts = {}, &block)
 end
 
 def base_install(sql_version)
-  case sql_version
-  when /2012/
+  case sql_version.to_i
+  when 2012
     iso_opts = {
       :qa_iso_resource_root   => QA_RESOURCE_ROOT,
       :sqlserver_iso          => SQL_2012_ISO,
       :sqlserver_version      => '2012',
     }
-  when /2014/
+  when 2014
     iso_opts = {
       :qa_iso_resource_root   => QA_RESOURCE_ROOT,
       :sqlserver_iso          => SQL_2014_ISO,
@@ -95,4 +95,39 @@ def base_install(sql_version)
   mount_iso(host, iso_opts)
   # Install Microsoft SQL on the agent before running any tests
   install_sqlserver(host, {:features => 'SQL'})
+end
+
+def validate_sql_install(host, opts = {}, &block)
+  bootstrap_dir, setup_dir = get_install_paths(opts[:version])
+
+  # NOTE: executing a fully qualified setup.exe quoted this way fails
+  # but that can be circumvented by first changing directories
+  cmd = "cd \\\"#{setup_dir}\\\" && setup.exe /Action=RunDiscovery /q"
+  on(host, "cmd.exe /c \"#{cmd}\"")
+
+  cmd = "type \\\"#{bootstrap_dir}\\Log\\Summary.txt\\\""
+  result = on(host, "cmd.exe /c \"#{cmd}\"")
+  if block_given?
+    case block.arity
+    when 0
+      yield self
+    else
+      yield result
+    end
+  end
+end
+
+def remove_sql_features(host, opts = {})
+  bootstrap_dir, setup_dir = get_install_paths(opts[:version])
+  cmd = "cd \\\"#{setup_dir}\\\" && setup.exe /Action=uninstall /Q /IACCEPTSQLSERVERLICENSETERMS /FEATURES=#{opts[:features].join(',')}"
+  on(host, "cmd.exe /c \"#{cmd}\"", {:acceptable_exit_codes => [0, 1, 2]})
+end
+
+def get_install_paths(version)
+  vers = { '2012' => '110', '2014' => '120' }
+
+  raise 'Valid version must be specified' if ! vers.keys.include?(version)
+
+  dir = "%ProgramFiles%\\Microsoft SQL Server\\#{vers[version]}\\Setup Bootstrap"
+  [dir, "#{dir}\\SQLServer#{version}"]
 end
