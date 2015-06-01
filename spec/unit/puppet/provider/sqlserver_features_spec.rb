@@ -61,7 +61,7 @@ RSpec.describe provider_class do
   context 'it should expand the superset for features' do
     include_context 'features'
     let(:additional_params) { {:features => %w(Tools)} }
-    let(:munged_args) { {:features => %w(ADV_SSMS Conn SSMS)} }
+    let(:munged_args) { {:features => %w(ADV_SSMS BC Conn SDK SSMS)} }
     it_should_behave_like 'create'
   end
 
@@ -109,7 +109,7 @@ RSpec.describe provider_class do
   context 'it should install the expanded tools set' do
     include_context 'features'
     @feature_params[:features] = %w(Tools)
-    let(:feature_add) { %w(ADV_SSMS Conn SSMS) }
+    let(:feature_add) { %w(ADV_SSMS BC Conn SDK SSMS) }
     it_should_behave_like 'features=', @feature_params
   end
 

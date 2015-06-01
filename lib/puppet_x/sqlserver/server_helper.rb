@@ -3,7 +3,7 @@ module PuppetX
     class ServerHelper
       @super_feature_hash = {
           :SQL => [:DQ, :FullText, :Replication, :SQLEngine],
-          :Tools => [:SSMS, :ADV_SSMS, :Conn]
+          :Tools => [:BC, :SSMS, :ADV_SSMS, :Conn, :SDK]
       }
 
       def self.get_sub_features(super_feature)
