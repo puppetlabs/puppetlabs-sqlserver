@@ -1,5 +1,5 @@
 require 'spec_helper_acceptance'
-require 'ERB'
+require 'erb'
 
 host = find_only_one("sql_host")
 describe "sqlserver_features", :node => host do
