@@ -1,5 +1,5 @@
 require 'spec_helper_acceptance'
-require 'ERB'
+require 'erb'
 
 host = find_only_one("sql_host")
 describe "sqlserver_features", :node => host do
@@ -228,7 +228,7 @@ describe "sqlserver_features", :node => host do
     end
 
     it 'fails when ADV_SSMS is supplied but SSMS is not' do
-      pending('This test is blocked by FM-2712')
+      skip('This test is blocked by FM-2712')
       features = ['BC', 'Conn', 'ADV_SSMS', 'SDK']
       ensure_sql_features(host, features)
     end
