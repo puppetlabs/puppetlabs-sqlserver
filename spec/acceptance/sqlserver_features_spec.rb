@@ -241,9 +241,12 @@ describe "sqlserver_features", :node => host do
       features = ['Tools', 'BC', 'Conn', 'SSMS', 'ADV_SSMS', 'SDK', 'IS', 'MDS']
 
       before(:all) do
-        # this assumes that only default MSSQLSERVER has been installed so far
-        # be careful about running tests out of sequence
-        remove_sql_instances(host, {:version => version, :instance_names => ['MSSQLSERVER']})
+        # use agents fact to get instance names
+        distmoduledir = on(host, "echo #{host['distmoduledir']}").raw_output.chomp
+        facter_opts = {:environment => {'FACTERLIB' => "#{distmoduledir}/sqlserver/lib/facter" }}
+
+        names = eval(fact_on(host, 'sqlserver_instances', facter_opts)).values.inject(:merge).keys
+        remove_sql_instances(host, {:version => version, :instance_names => names})
       end
 
       after(:all) do
