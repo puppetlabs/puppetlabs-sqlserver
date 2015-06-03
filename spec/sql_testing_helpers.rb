@@ -123,6 +123,14 @@ def remove_sql_features(host, opts = {})
   on(host, "cmd.exe /c \"#{cmd}\"", {:acceptable_exit_codes => [0, 1, 2]})
 end
 
+def remove_sql_instances(host, opts = {})
+  bootstrap_dir, setup_dir = get_install_paths(opts[:version])
+  opts[:instance_names].each do |instance_name|
+    cmd = "cd \\\"#{setup_dir}\\\" && setup.exe /Action=uninstall /Q /IACCEPTSQLSERVERLICENSETERMS /FEATURES=SQL,AS,RS /INSTANCENAME=#{instance_name}"
+    on(host, "cmd.exe /c \"#{cmd}\"", {:acceptable_exit_codes => [0]})
+  end
+end
+
 def get_install_paths(version)
   vers = { '2012' => '110', '2014' => '120' }
 

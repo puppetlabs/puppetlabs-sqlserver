@@ -233,4 +233,39 @@ describe "sqlserver_features", :node => host do
       ensure_sql_features(host, features)
     end
   end
+
+  context 'with no installed instances' do
+
+    context 'can install' do
+
+      features = ['Tools', 'BC', 'Conn', 'SSMS', 'ADV_SSMS', 'SDK', 'IS', 'MDS']
+
+      before(:all) do
+        # use agents fact to get instance names
+        distmoduledir = on(host, "echo #{host['distmoduledir']}").raw_output.chomp
+        facter_opts = {:environment => {'FACTERLIB' => "#{distmoduledir}/sqlserver/lib/facter" }}
+
+        names = eval(fact_on(host, 'sqlserver_instances', facter_opts)).values.inject(:merge).keys
+        remove_sql_instances(host, {:version => version, :instance_names => names})
+      end
+
+      after(:all) do
+        remove_sql_features(host, {:features => features, :version => version})
+      end
+
+      it 'all possible features' do
+        ensure_sql_features(host, features)
+
+        validate_sql_install(host, {:version => version}) do |r|
+          expect(r.stdout).to match(/Management Tools - Basic/)
+          expect(r.stdout).to match(/Management Tools - Complete/)
+          expect(r.stdout).to match(/Client Tools Connectivity/)
+          expect(r.stdout).to match(/Client Tools Backwards Compatibility/)
+          expect(r.stdout).to match(/Client Tools SDK/)
+          expect(r.stdout).to match(/Integration Services/)
+          expect(r.stdout).to match(/Master Data Services/)
+        end
+      end
+    end
+  end
 end
