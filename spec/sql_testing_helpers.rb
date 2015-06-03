@@ -21,11 +21,11 @@ end
 
 def install_sqlserver(host, opts = {})
   # this method installs SQl server on a given host
-  features = opts[:features]
+  features = opts[:features].map{ |x| "'#{x}'"}.join(', ')
   pp = <<-MANIFEST
     sqlserver_instance{'MSSQLSERVER':
       source => 'H:',
-      features => #{features},
+      features => [ #{features} ],
       security_mode => 'SQL',
       sa_pwd => 'Pupp3t1@',
       sql_sysadmin_accounts => ['Administrator'],
@@ -94,7 +94,7 @@ def base_install(sql_version)
   # Mount the ISO on the agent
   mount_iso(host, iso_opts)
   # Install Microsoft SQL on the agent before running any tests
-  install_sqlserver(host, {:features => 'SQL'})
+  install_sqlserver(host, {:features => ['SQL']})
 end
 
 def validate_sql_install(host, opts = {}, &block)
