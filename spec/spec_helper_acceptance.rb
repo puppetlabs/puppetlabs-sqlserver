@@ -37,7 +37,7 @@ unless ENV['MODULE_provision'] == 'no'
     }
     EOS
     apply_manifest_on(agent, exec_puppet)
-    %w(puppetlabs/stdlib puppetlabs/acl cyberious/pget puppetlabs/reboot puppetlabs/registry).each do |dep|
+    %w(puppetlabs/stdlib cyberious/pget).each do |dep|
       on agent, puppet("module install #{dep}")
     end
     on agent, "git clone https://github.com/puppetlabs/puppetlabs-mount_iso #{target}/mount_iso"
