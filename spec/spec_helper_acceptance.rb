@@ -1,6 +1,7 @@
 require 'beaker-rspec/spec_helper'
 require 'beaker-rspec/helpers/serverspec'
 require 'sql_testing_helpers'
+require 'beaker/puppet_install_helper'
 
 QA_RESOURCE_ROOT = "http://int-resources.ops.puppetlabs.net/QA_resources/microsoft_sql/iso/"
 SQL_2014_ISO = "SQLServer2014-x64-ENU.iso"
@@ -17,26 +18,9 @@ RSpec.configure do |c|
   end
 end
 
-FUTURE_PARSER = ENV['FUTURE_PARSER'] == 'true' || false
+run_puppet_install_helper
 
-unless ENV['RS_PROVISION'] == 'no' or ENV['BEAKER_provision'] == 'no'
-  is_foss = (ENV['IS_PE'] == 'no' || ENV['IS_PE'] == 'false') ? true : false
-  if hosts.first.is_pe? && !is_foss
-    install_pe
-  else
-    version = ENV['PUPPET_VERSION'] || '3.7.4'
-    download_url = ENV['WIN_DOWNLOAD_URL'] || 'http://downloads.puppetlabs.com/windows/'
-    hosts.each do |host|
-      if host['platform'] =~ /windows/i
-        install_puppet_from_msi(host,
-                                {
-                                  :win_download_url => download_url,
-                                  :version => version,
-                                  :install_32 => true})
-      end
-    end
-  end
-
+unless ENV['MODULE_provision'] == 'no'
   agents.each do |agent|
     # Emit CommonProgramFiles environment variable
     program_files = agent.get_env_var('ProgramFiles').split('=')[1]
