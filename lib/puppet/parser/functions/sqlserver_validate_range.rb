@@ -6,13 +6,14 @@ module Puppet::Parser::Functions
     values, lower, upper, msg = args
 
 
-    if values.is_a? String
+    if !values.is_a?(Array)
       values = Array.new << values
     end
 
     values.each do |value|
       msg = msg || "validate_range(): #{args[0].inspect} is not between #{args[1].inspect} and #{args[2].inspect}"
-      if /^\d+(|\.\d+)$/.match(value)
+      if value.is_a? Numeric
+      elsif /^\d+(|\.\d+)$/.match(value)
         raise(Puppet::ParseError, msg) unless Float(value).between?(Float(lower), Float(upper))
       else
         value.strip!
