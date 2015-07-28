@@ -28,6 +28,13 @@ Puppet::Type::newtype(:sqlserver_tsql) do
     end
   end
 
+  newparam(:database) do
+    defaultto 'master'
+    validate do |value|
+      fail("Invalid database name #{value}") unless /^[[:word:]|#|@]+/.match(value)
+    end
+  end
+
   desc 'SQL Query to run and only run if exits with non-zero'
   newcheck(:onlyif, :parent => Puppet::Property::SqlserverTsql) do
     #Runs in the event that our TSQL exits with anything other than 0
