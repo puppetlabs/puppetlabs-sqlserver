@@ -22,9 +22,12 @@ RSpec.describe Puppet::Type.type(:sqlserver_tsql).provider(:mssql) do
   end
 
   def gen_query(query)
+    quoted_query = query.gsub('\'', '\'\'')
     <<-PP
 BEGIN TRY
-    #{query}
+    DECLARE @sql_text as NVARCHAR(max);
+    SET @sql_text = N'#{quoted_query}'
+    EXECUTE sp_executesql @sql_text;
 END TRY
 BEGIN CATCH
     DECLARE @msg as VARCHAR(max);
