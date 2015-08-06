@@ -12,7 +12,7 @@
     * [Create a new database](#create-a-new-database-on-an-instance-of-sql-server)
     * [Set up a new login](#set-up-a-new-login)
     * [Create a new login and a user](#create-a-new-login-and-a-user-for-a-given-database)
-    * [Manage the user's permission](#manage-the-above-users-permission)
+    * [Manage the user's permissions](#manage-the-above-users-permissions)
     * [Run custom TSQL statements](#run-custom-tsql-statements)
 5. [Reference - An under-the-hood peek at what the module is doing and how](#reference)
 6. [Limitations - OS compatibility, etc.](#limitations)
@@ -110,20 +110,20 @@ sqlserver::user{'rp_logging-loggingUser':
 }
 ~~~
 
-###Manage the above user's permission
+###Manage the above user's permissions
 
 ~~~puppet
-sqlserver::user::permission{'INSERT-loggingUser-On-rp_logging':
+sqlserver::user::permissions{'INSERT-loggingUser-On-rp_logging':
     user       => 'loggingUser',
     database   => 'rp_logging',
-    permission => 'INSERT',
+    permissions => 'INSERT',
     require    => Sqlserver::User['rp_logging-loggingUser'],
 }
 
-sqlserver::user::permission{'Deny the Update as we should only insert':
+sqlserver::user::permissions{'Deny the Update as we should only insert':
     user       => 'loggingUser',
     database   => 'rp_logging',
-    permission => 'UPDATE',
+    permissions => 'UPDATE',
     state      => 'DENY',
     require    => Sqlserver::User['rp_logging-loggingUser'],
 }
@@ -363,7 +363,7 @@ Requires the `sqlserver::config` define.
 * [Create Login](http://technet.microsoft.com/en-us/library/ms189751.aspx)
 * [Alter Login](http://technet.microsoft.com/en-us/library/ms189828.aspx)
 
-#### `sqlserver::login::permission`
+#### `sqlserver::login::permissions`
 
 Configures the permissions associated with a given login account.
 
@@ -371,7 +371,7 @@ Configures the permissions associated with a given login account.
 
 * `login`: *Required.* Specifies a SQL or Windows login to manage. Valid options: a string containing an existing login. 
 
-* `permission`: *Required.* Specifies one or more permissions to manage. Valid options: a string or an array of strings, where each string contains a [SQL Server permission](https://technet.microsoft.com/en-us/library/ms191291%28v=sql.105%29.aspx) (e.g., 'SELECT', 'INSERT', 'UPDATE', or 'DELETE'). 
+* `permissions`: *Required.* Specifies one or more permissions to manage. Valid options: a string or an array of strings, where each string contains a [SQL Server permissions](https://technet.microsoft.com/en-us/library/ms191291%28v=sql.105%29.aspx) (e.g., 'SELECT', 'INSERT', 'UPDATE', or 'DELETE'). 
 
 * `state`: *Optional.* Determines the state of the specified permissions. Valid options: 'GRANT', 'DENY', and 'REVOKE'. If set to 'REVOKE', Puppet removes any explicit statements of these permissions and falls back on inherited levels. Default: 'GRANT'. 
 
@@ -397,7 +397,7 @@ Requires the `sqlserver::config` define for access to the parent instance.
 
 * `user`: *Required.* Specifies a user to manage. Valid options: a string containing a username. Default: the title of your declared resource. 
 
-#### `sqlserver::user::permission`
+#### `sqlserver::user::permissions`
 
 Configures the permissions associated with a user account within a given database.
 
