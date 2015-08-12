@@ -37,7 +37,7 @@ RSpec.describe 'sqlserver::sp_configure', :type => :define do
     it_behaves_like 'sqlserver_tsql without_command'
   end
 
-  describe 'reconfigure => false' do
+  describe 'with_override => false' do
     let(:additional_params) { {
         :with_override => false,
     } }
