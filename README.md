@@ -252,7 +252,9 @@ Requires the `sqlserver::config` define for access to the parent instance.
 
 * `command`: *Optional.* Supplies a TSQL statement to execute. Valid options: a string. 
 
-* `instance`: *Required.* Specifies the SQL Server instance on which to execute the statement. Valid options: a string containing the name of an existing instance. Default: 'MSSQLSERVER'. 
+* `instance`: *Required.* Specifies the SQL Server instance on which to execute the statement. Valid options: a string containing the name of an existing instance. Default: 'MSSQLSERVER'.
+ 
+* `database`: *Optional* Specifies the default database to connect to. Default: 'master' 
 
 * `onlyif`: *Optional.* Supplies a TSQL statement to execute before running the `command` statement, determining whether to move forward. If the `onlyif` statement ends with a THROW or any non-standard exit, Puppet executes the `command` statement. Valid options: a string. 
 
