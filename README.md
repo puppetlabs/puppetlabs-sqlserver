@@ -308,7 +308,7 @@ Requires the `sqlserver::config` define for access to the parent instance.
 
 * `log_filegrowth`: *Optional.* Specifies the automatic growth increment of the log file. Cannot be specified if `os_file_name` is set to a UNC path. Does not apply to a FILESTREAM filegroup. This parameter is set at creation only; it is not affected by updates. Valid options: a number with an optional suffix of 'KB', 'MB', 'GB', or 'TB', no greater than the value of `log_maxsize`. If you do not include a suffix, SQL Server assumes the number is in megabytes. Default: undef. 
 
-* `log_filename`: *Required if `log_name` is specified.* Specifies the operating system (physical) name of the log file. This parameter is set at creation only; it is not affected by updates. Valid options: a string. Default: undef. 
+* `log_filename`: *Required if `log_name` is specified.* Specifies the operating system (physical) name of the log file. This parameter is set at creation only; it is not affected by updates. Valid options: a string containing an absolute path. Default: undef. 
 
 * `log_maxsize`: *Optional.* Specifies the maximum size to which the log file can grow. Cannot be specified if `os_file_name` is set to a UNC path. This parameter is set at creation only; it is not affected by updates. Valid options: a number, no greater than 2147483647, with an optional suffix of 'KB', 'MB', 'GB', or 'TB'. If you do not include a suffix, SQL Server assumes the number is in megabytes. Default: undef. 
 
