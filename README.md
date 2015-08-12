@@ -248,6 +248,8 @@ For more information about installer switches and configuring SQL Server, see th
 
 Executes a TSQL query against a SQL Server instance.
 
+Requires the `sqlserver::config` define for access to the parent instance.
+
 * `command`: *Optional.* Supplies a TSQL statement to execute. Valid options: a string. 
 
 * `instance`: *Required.* Specifies the SQL Server instance on which to execute the statement. Valid options: a string containing the name of an existing instance. Default: 'MSSQLSERVER'. 
