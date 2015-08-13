@@ -26,14 +26,14 @@ def location_for(place_or_version, fake_version = nil)
 end
 
 group :development do
-  gem 'rake',                    :require => false
-  gem 'rspec', '~>3.0.0',        :require => false
-  gem 'puppet-lint',             :require => false
-  gem 'puppetlabs_spec_helper',  :require => false
-  gem 'puppet_facts',            :require => false
-  gem 'mocha', '~>0.10.5',       :require => false
-  gem 'simplecov',               :require => false
-  gem 'yard',                    :require => false
+  gem 'rake',                                :require => false
+  gem 'rspec', '~>3.0.0',                    :require => false
+  gem 'puppet-lint',                         :require => false
+  gem 'puppetlabs_spec_helper', '~>0.10.3',  :require => false
+  gem 'puppet_facts',                        :require => false
+  gem 'mocha', '~>0.10.5',                   :require => false
+  gem 'simplecov',                           :require => false
+  gem 'yard',                                :require => false
 end
 
 group :system_tests do
