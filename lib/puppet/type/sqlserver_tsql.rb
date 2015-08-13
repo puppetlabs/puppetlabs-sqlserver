@@ -16,27 +16,28 @@ Puppet::Type::newtype(:sqlserver_tsql) do
     @checks.keys
   end
 
-  desc 'command to run against an instance with the authenticated credentials used in sqlserver::config'
   newparam(:command, :parent => Puppet::Property::SqlserverTsql) do
+    desc 'command to run against an instance with the authenticated credentials used in sqlserver::config'
 
   end
 
-  desc 'requires the usage of sqlserver::config with the user and password'
   newparam(:instance) do
+    desc 'requires the usage of sqlserver::config with the user and password'
     munge do |value|
       value.upcase
     end
   end
 
   newparam(:database) do
+    desc 'initial database to connect to during query execution'
     defaultto 'master'
     validate do |value|
       fail("Invalid database name #{value}") unless /^[[:word:]|#|@]+/.match(value)
     end
   end
 
-  desc 'SQL Query to run and only run if exits with non-zero'
   newcheck(:onlyif, :parent => Puppet::Property::SqlserverTsql) do
+    desc 'SQL Query to run and only run if exits with non-zero'
     #Runs in the event that our TSQL exits with anything other than 0
     def check(value)
       output = provider.run(value)

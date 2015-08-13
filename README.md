@@ -248,9 +248,13 @@ For more information about installer switches and configuring SQL Server, see th
 
 Executes a TSQL query against a SQL Server instance.
 
+Requires the `sqlserver::config` define for access to the parent instance.
+
 * `command`: *Optional.* Supplies a TSQL statement to execute. Valid options: a string. 
 
-* `instance`: *Required.* Specifies the SQL Server instance on which to execute the statement. Valid options: a string containing the name of an existing instance. Default: 'MSSQLSERVER'. 
+* `instance`: *Required.* Specifies the SQL Server instance on which to execute the statement. Valid options: a string containing the name of an existing instance. Default: 'MSSQLSERVER'.
+ 
+* `database`: *Optional* Specifies the default database to connect to. Default: 'master' 
 
 * `onlyif`: *Optional.* Supplies a TSQL statement to execute before running the `command` statement, determining whether to move forward. If the `onlyif` statement ends with a THROW or any non-standard exit, Puppet executes the `command` statement. Valid options: a string. 
 
@@ -306,7 +310,7 @@ Requires the `sqlserver::config` define for access to the parent instance.
 
 * `log_filegrowth`: *Optional.* Specifies the automatic growth increment of the log file. Cannot be specified if `os_file_name` is set to a UNC path. Does not apply to a FILESTREAM filegroup. This parameter is set at creation only; it is not affected by updates. Valid options: a number with an optional suffix of 'KB', 'MB', 'GB', or 'TB', no greater than the value of `log_maxsize`. If you do not include a suffix, SQL Server assumes the number is in megabytes. Default: undef. 
 
-* `log_filename`: *Required if `log_name` is specified.* Specifies the operating system (physical) name of the log file. This parameter is set at creation only; it is not affected by updates. Valid options: a string. Default: undef. 
+* `log_filename`: *Required if `log_name` is specified.* Specifies the operating system (physical) name of the log file. This parameter is set at creation only; it is not affected by updates. Valid options: a string containing an absolute path. Default: undef. 
 
 * `log_maxsize`: *Optional.* Specifies the maximum size to which the log file can grow. Cannot be specified if `os_file_name` is set to a UNC path. This parameter is set at creation only; it is not affected by updates. Valid options: a number, no greater than 2147483647, with an optional suffix of 'KB', 'MB', 'GB', or 'TB'. If you do not include a suffix, SQL Server assumes the number is in megabytes. Default: undef. 
 
