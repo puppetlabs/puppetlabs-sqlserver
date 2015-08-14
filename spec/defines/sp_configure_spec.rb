@@ -37,7 +37,19 @@ RSpec.describe 'sqlserver::sp_configure', :type => :define do
     it_behaves_like 'sqlserver_tsql without_command'
   end
 
-  describe 'reconfigure => false' do
+  describe 'reconfigure => invalid' do
+    let(:additional_params) { {:reconfigure => 'invalid'} }
+    let(:raise_error_check) {'"invalid" is not a boolean.  It looks to be a String'}
+    it_behaves_like 'validation error'
+  end
+
+  describe 'restart => invalid' do
+    let(:additional_params) { {:restart => 'invalid'} }
+    let(:raise_error_check) {'"invalid" is not a boolean.  It looks to be a String'}
+    it_behaves_like 'validation error'
+  end
+
+  describe 'with_override => false' do
     let(:additional_params) { {
         :with_override => false,
     } }
@@ -47,6 +59,12 @@ RSpec.describe 'sqlserver::sp_configure', :type => :define do
     let(:should_contain_command) { ['RECONFIGURE'] }
     it_behaves_like 'sqlserver_tsql command'
     it_behaves_like 'sqlserver_tsql without_command'
+  end
+
+  describe 'with_override => invalid' do
+    let(:additional_params) { {:with_override => 'invalid'} }
+    let(:raise_error_check) {'"invalid" is not a boolean.  It looks to be a String'}
+    it_behaves_like 'validation error'
   end
 
   describe 'service' do
