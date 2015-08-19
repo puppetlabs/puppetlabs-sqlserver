@@ -77,7 +77,7 @@ describe "sqlserver_instance", :node => host do
       remove_sql_features(host, {:features => features, :version => version})
     end
 
-    it "create #{inst_name} instance" do
+    it "create #{inst_name} instance with only SQL feature" do
       ensure_sqlserver_instance(host, features, inst_name)
 
       validate_sql_install(host, {:version => version}) do |r|
@@ -99,7 +99,7 @@ describe "sqlserver_instance", :node => host do
       remove_sql_features(host, {:features => features, :version => version})
     end
 
-    it "create #{inst_name} instance" do
+    it "create #{inst_name} instance with only RS feature" do
       ensure_sqlserver_instance(host, features, inst_name)
 
       validate_sql_install(host, {:version => version}) do |r|
@@ -121,7 +121,9 @@ describe "sqlserver_instance", :node => host do
       remove_sql_features(host, {:features => features, :version => version})
     end
 
-    it "create #{inst_name} instance" do
+    #skip below test due to ticket MODULES-2379, when the ticket was resolved
+    # will change xit to it
+    xit "create #{inst_name} instance with only AS feature" do
       ensure_sqlserver_instance(host, features, inst_name)
 
       validate_sql_install(host, {:version => version}) do |r|
