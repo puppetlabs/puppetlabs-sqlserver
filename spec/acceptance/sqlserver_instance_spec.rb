@@ -11,8 +11,8 @@ describe "sqlserver_instance", :node => host do
 
   def ensure_sqlserver_instance(host, features, inst_name, ensure_val = 'present')
     manifest = <<-MANIFEST
-    sqlserver_instance{'<%= inst_value %>':
-      name                  => '<%= inst_value %>',
+    sqlserver_instance{'#{inst_name}':
+      name                  => '#{inst_name}',
       ensure                => <%= ensure_value %>,
       source                => 'H:',
       features              => [ <%= mssql_features %> ],
@@ -22,7 +22,6 @@ describe "sqlserver_instance", :node => host do
     }
     MANIFEST
 
-    inst_value      = inst_name
     ensure_value    = ensure_val
     mssql_features  = features.map{ |x| "'#{x}'"}.join(', ')
 
