@@ -13,7 +13,7 @@ describe "sqlserver_instance", :node => host do
     manifest = <<-MANIFEST
     sqlserver_instance{'#{inst_name}':
       name                  => '#{inst_name}',
-      ensure                => <%= ensure_value %>,
+      ensure                => <%= ensure_val %>,
       source                => 'H:',
       features              => [ <%= mssql_features %> ],
       sql_sysadmin_accounts => ['Administrator'],
@@ -22,7 +22,6 @@ describe "sqlserver_instance", :node => host do
     }
     MANIFEST
 
-    ensure_value    = ensure_val
     mssql_features  = features.map{ |x| "'#{x}'"}.join(', ')
 
     pp = ERB.new(manifest).result(binding)
