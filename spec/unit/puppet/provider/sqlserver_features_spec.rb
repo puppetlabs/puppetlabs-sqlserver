@@ -1,30 +1,39 @@
 require 'spec_helper'
 require 'rspec'
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'sqlserver_spec_helper.rb'))
+require 'mocha'
 
 provider_class = Puppet::Type.type(:sqlserver_features).provider(:mssql)
 
 RSpec.describe provider_class do
   subject { provider_class }
-
-  shared_examples 'create' do |args, munged_args = {}|
+  let(:params) { {
+    :name => 'Base features',
+    :source => 'C:\myinstallexecs',
+    :features => %w(BC SSMS)
+  } }
+  let(:additional_params) { {} }
+  let(:munged_args) { {} }
+  let(:additional_switches) { [] }
+  shared_examples 'create' do
     it {
-      @resource = Puppet::Type::Sqlserver_features.new(args)
+      params.merge!(additional_params)
+      @resource = Puppet::Type::Sqlserver_features.new(params)
       @provider = provider_class.new(@resource)
 
       stub_powershell_call(subject)
 
-      executed_args = args.merge(munged_args)
-      stub_add_features(executed_args, executed_args[:features])
+      executed_args = params.merge(munged_args)
+      stub_add_features(executed_args, executed_args[:features], additional_switches)
       @provider.create
     }
   end
 
   shared_context 'features' do
     @feature_params = {
-        :name => 'Base features',
-        :source => 'C:\myinstallexecs',
-        :features => %w(BC SSMS)
+      :name => 'Base features',
+      :source => 'C:\myinstallexecs',
+      :features => %w(BC SSMS)
     }
     let(:feature_remove) { [] }
     let(:feature_add) { [] }
@@ -32,14 +41,28 @@ RSpec.describe provider_class do
 
   context 'it should provide the correct command default command' do
     include_context 'features'
-    it_should_behave_like 'create', @feature_params
+    it_should_behave_like 'create'
+  end
+
+  context 'it should provide the correct command default command' do
+    before :each do
+      @file_double = Tempfile.new(['sqlconfig', '.ini'])
+      @file_double.stubs(:write)
+      @file_double.stubs(:flush)
+      @file_double.stubs(:close)
+      Tempfile.stubs(:new).with(['sqlconfig', '.ini']).returns(@file_double)
+    end
+    it_should_behave_like 'create' do
+      let(:additional_params) { {:install_switches => {'ERRORREPORTING' => 1, 'SQLBACKUPDIR' => 'I:\DBbackup'}} }
+      let(:additional_switches) { ["/ConfigurationFile=\"#{@file_double.path}\""] }
+    end
   end
 
   context 'it should expand the superset for features' do
     include_context 'features'
-    @feature_params[:features] = %w(Tools)
-    munged = {:features => %w(ADV_SSMS Conn SSMS)}
-    it_should_behave_like 'create', @feature_params, munged
+    let(:additional_params) { {:features => %w(Tools)} }
+    let(:munged_args) { {:features => %w(ADV_SSMS BC Conn SDK SSMS)} }
+    it_should_behave_like 'create'
   end
 
   shared_examples 'features=' do |args|
@@ -86,7 +109,7 @@ RSpec.describe provider_class do
   context 'it should install the expanded tools set' do
     include_context 'features'
     @feature_params[:features] = %w(Tools)
-    let(:feature_add) { %w(ADV_SSMS Conn SSMS) }
+    let(:feature_add) { %w(ADV_SSMS BC Conn SDK SSMS) }
     it_should_behave_like 'features=', @feature_params
   end
 
@@ -100,21 +123,21 @@ RSpec.describe provider_class do
   describe 'it should call destroy on empty array' do
     it {
       feature_params = {
-          :name => 'Base features',
-          :source => 'C:\myinstallexecs',
-          :features => []
+        :name => 'Base features',
+        :source => 'C:\myinstallexecs',
+        :features => []
       }
       @resource = Puppet::Type::Sqlserver_features.new(feature_params)
       @provider = provider_class.new(@resource)
       @provider.stubs(:current_installed_features).returns(%w(SSMS ADV_SSMS Conn))
       Puppet::Util.stubs(:which).with("#{feature_params[:source]}/setup.exe").returns("#{feature_params[:source]}/setup.exe")
       Puppet::Util::Execution.expects(:execute).with(
-          ["#{feature_params[:source]}/setup.exe",
-           "/ACTION=uninstall",
-           '/Q',
-           '/IACCEPTSQLSERVERLICENSETERMS',
-           "/FEATURES=#{%w(SSMS ADV_SSMS Conn).join(',')}",
-          ]).returns(0)
+        ["#{feature_params[:source]}/setup.exe",
+         "/ACTION=uninstall",
+         '/Q',
+         '/IACCEPTSQLSERVERLICENSETERMS',
+         "/FEATURES=#{%w(SSMS ADV_SSMS Conn).join(',')}",
+        ]).returns(0)
       @provider.create
     }
   end

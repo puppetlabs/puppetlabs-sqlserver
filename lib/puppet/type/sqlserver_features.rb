@@ -1,4 +1,4 @@
-require File.expand_path(File.join(File.dirname(__FILE__), '..', 'property/login'))
+require File.expand_path(File.join(File.dirname(__FILE__), '..', 'property/sqlserver_login'))
 require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'puppet_x/sqlserver/server_helper'))
 
 Puppet::Type::newtype(:sqlserver_features) do
@@ -40,6 +40,13 @@ Puppet::Type::newtype(:sqlserver_features) do
       else
         value
       end
+    end
+  end
+
+  newparam(:install_switches) do
+    desc 'A hash of switches you want to pass to the installer'
+    validate do |value|
+      fail ArguemntError, 'install_switch must be in the form of a Hash' unless value.is_a?(Hash)
     end
   end
 

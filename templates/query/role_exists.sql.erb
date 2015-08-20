@@ -1,0 +1,7 @@
+USE [<%= @database %>];
+<%= scope.function_template(['sqlserver/snippets/role/exists.sql.erb']) %>
+    THROW 51000, 'The <%= @type %> ROLE [<%= @role %>] does <% if @ensure == 'present' %>not<% end %> exist', 10
+<% if @ensure == 'present' && @authorization -%>
+    <%= scope.function_template(['sqlserver/snippets/role/owner_check.sql.erb']) %>
+    THROW 51000, 'The <%= @type %> ROLE [<%= @role %>] does not have the correct owner of [<%= @authorization %>]', 10
+<% end -%>

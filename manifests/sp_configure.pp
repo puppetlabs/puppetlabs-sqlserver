@@ -36,7 +36,13 @@ define sqlserver::sp_configure (
 ){
   sqlserver_validate_instance_name($instance)
   validate_re($config_name,'^\w+')
-  validate_re($value,'^\d+$', "Value for ${config_name}, for instance ${instance}, must be a integer value, you provided ${value}")
+  if !is_integer($value) {
+    fail("Value for ${config_name}, for instance ${instance}, must be a integer value, you provided ${value}")
+  }
+
+  validate_bool($reconfigure)
+  validate_bool($with_override)
+  validate_bool($restart)
 
   $service_name = $instance ? {
     'MSSQLSERVER' => 'MSSQLSERVER',

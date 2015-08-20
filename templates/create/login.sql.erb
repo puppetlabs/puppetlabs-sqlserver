@@ -1,4 +1,3 @@
-GO
 DECLARE
 	@login as varchar(255) = '<%= @login %>',
 	@is_disabled as tinyint = <%= @disabled ? 1 : 0 %>;
@@ -8,7 +7,7 @@ BEGIN
     ELSE				ALTER LOGIN [<%= @login %>] DISABLE
 
 	ALTER LOGIN [<%= @login %>] WITH
-	<% if @type != 'WINDOWS_LOGIN' -%>
+	<% if @login_type != 'WINDOWS_LOGIN' -%>
 		CHECK_EXPIRATION = <% if @check_expiration %>ON<% else %>OFF<% end %>,
 		CHECK_POLICY	 = <% if @check_policy %>ON<% else %>OFF<% end %>,
 	<% end -%>
@@ -29,7 +28,7 @@ END
 ELSE
 BEGIN
 	CREATE LOGIN [<%= @login %>]
-	 <% if @type != 'WINDOWS_LOGIN' -%>
+	 <% if @login_type !~ /WINDOWS_LOGIN/i -%>
 	  WITH
 		PASSWORD = '<%= @password %>',
 		CHECK_EXPIRATION = <% if @check_expiration %>ON<% else %>OFF<% end %>,
@@ -47,6 +46,4 @@ BEGIN
         <% end -%>
 	<% end -%>
 END
-GO
-
 

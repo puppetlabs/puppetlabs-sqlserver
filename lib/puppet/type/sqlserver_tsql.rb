@@ -1,4 +1,6 @@
 require 'puppet'
+require File.expand_path(File.join(File.dirname(__FILE__), '..', 'property/sqlserver_tsql'))
+
 
 Puppet::Type::newtype(:sqlserver_tsql) do
   newparam :name, :namevar => true
@@ -14,23 +16,31 @@ Puppet::Type::newtype(:sqlserver_tsql) do
     @checks.keys
   end
 
-  desc 'command to run against an instance with the authenticated credentials used in sqlserver::config'
-  newparam(:command) do
+  newparam(:command, :parent => Puppet::Property::SqlserverTsql) do
+    desc 'command to run against an instance with the authenticated credentials used in sqlserver::config'
 
   end
 
-  desc 'requires the usage of sqlserver::config with the user and password'
   newparam(:instance) do
-
+    desc 'requires the usage of sqlserver::config with the user and password'
+    munge do |value|
+      value.upcase
+    end
   end
 
-  desc 'SQL Query to run and only run if exits with non-zero'
-  newcheck(:onlyif) do
-    # Return true if the command returns 0.
+  newparam(:database) do
+    desc 'initial database to connect to during query execution'
+    defaultto 'master'
+    validate do |value|
+      fail("Invalid database name #{value}") unless /^[[:word:]|#|@]+/.match(value)
+    end
+  end
+
+  newcheck(:onlyif, :parent => Puppet::Property::SqlserverTsql) do
+    desc 'SQL Query to run and only run if exits with non-zero'
+    #Runs in the event that our TSQL exits with anything other than 0
     def check(value)
-      begin
-        output = provider.run(value)
-      end
+      output = provider.run(value)
       debug("OnlyIf returned exitstatus of #{output.exitstatus}")
       output.exitstatus != 0
     end
@@ -58,7 +68,10 @@ Puppet::Type::newtype(:sqlserver_tsql) do
 
   def refresh
     if self.check_all_attributes(true)
-      provider.run_update
+      result = provider.run_update
+      if result.has_errors
+        fail("Unable to apply changes, failed with error message #{result.error_message}")
+      end
     end
   end
 
