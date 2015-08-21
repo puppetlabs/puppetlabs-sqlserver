@@ -47,7 +47,7 @@ describe "sqlserver::config test", :node => host do
 
     after(:all) do
       # remove the newly created instance
-      #ensure_sqlserver_instance(host, 'absent')
+      ensure_sqlserver_instance(host, 'absent')
     end
 
     it "Create New Admin Login:" do
@@ -62,7 +62,7 @@ describe "sqlserver::config test", :node => host do
         login_type  => 'SQL_LOGIN',
         login       => '#{@admin_user}',
         password    => '#{@admin_pass}',
-        svrroles    => {'sysadmin' => 1, 'diskadmin' => 1, 'dbcreator' => 1},
+        svrroles    => {'sysadmin' => 1},
       }
       MANIFEST
       apply_manifest_on(host, create_new_login) do |r|
@@ -71,7 +71,7 @@ describe "sqlserver::config test", :node => host do
     end
 
     it "Validate New Config WITH using instance_name in sqlserver::config" do
-      pp1 = <<-MANIFEST
+      pp = <<-MANIFEST
       sqlserver::config{'#{INST_NAME}':
         admin_user    => '#{@admin_user}',
         admin_pass    => '#{@admin_pass}',
@@ -81,8 +81,54 @@ describe "sqlserver::config test", :node => host do
         instance => '#{INST_NAME}',
       }
       MANIFEST
-      apply_manifest_on(host, pp1) do |r|
+      apply_manifest_on(host, pp) do |r|
         expect(r.stderr).not_to match(/Error/i)
+      end
+    end
+
+    it "Validate New Config WITHOUT using instance_name in sqlserver::config" do
+      pp = <<-MANIFEST
+      sqlserver::config{'#{INST_NAME}':
+        admin_user    => '#{@admin_user}',
+        admin_pass    => '#{@admin_pass}',
+      }
+      sqlserver::database{'#{DB_NAME}':
+        instance => '#{INST_NAME}',
+      }
+      MANIFEST
+      apply_manifest_on(host, pp) do |r|
+        expect(r.stderr).not_to match(/Error/i)
+      end
+    end
+
+    it "Negative test: sqlserver::config without admin_user" do
+      pp = <<-MANIFEST
+      sqlserver::config{'#{INST_NAME}':
+          admin_pass    => '#{@admin_pass}',
+          instance_name => '#{INST_NAME}',
+      }
+      sqlserver::database{'#{DB_NAME}':
+          instance => '#{INST_NAME}',
+      }
+      MANIFEST
+      apply_manifest_on(host, pp, {:acceptable_exit_codes => [0,1]}) do |r|
+        expect(r.stderr).to match(/Error: Must pass admin_user to Sqlserver/)
+
+      end
+    end
+
+    it "Negative test: sqlserver::config without admin_pass" do
+      pp = <<-MANIFEST
+      sqlserver::config{'#{INST_NAME}':
+          admin_user    => '#{@admin_user}',
+          instance_name => '#{INST_NAME}',
+      }
+      sqlserver::database{'#{DB_NAME}':
+          instance => '#{INST_NAME}',
+      }
+      MANIFEST
+      apply_manifest_on(host, pp, {:acceptable_exit_codes => [0,1]}) do |r|
+        expect(r.stderr).to match(/Error: Must pass admin_pass to Sqlserver/)
       end
     end
   end

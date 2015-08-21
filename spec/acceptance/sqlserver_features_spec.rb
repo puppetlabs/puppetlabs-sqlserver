@@ -1,5 +1,6 @@
 require 'spec_helper_acceptance'
 require 'erb'
+require 'json'
 
 host = find_only_one("sql_host")
 describe "sqlserver_features", :node => host do
@@ -21,7 +22,7 @@ describe "sqlserver_features", :node => host do
     MANIFEST
 
     ensure_value = ensure_val
-    mssql_features = features.map{ |x| "'#{x}'"}.join(', ')
+    mssql_features = features.map { |x| "'#{x}'" }.join(', ')
 
     pp = ERB.new(manifest).result(binding)
 
@@ -213,7 +214,7 @@ describe "sqlserver_features", :node => host do
       MANIFEST
 
       ensure_value = ensure_val
-      mssql_features = features.map{ |x| "'#{x}'"}.join(', ')
+      mssql_features = features.map { |x| "'#{x}'" }.join(', ')
 
       pp = ERB.new(failing_manifest).result(binding)
 
@@ -241,11 +242,18 @@ describe "sqlserver_features", :node => host do
       features = ['Tools', 'BC', 'Conn', 'SSMS', 'ADV_SSMS', 'SDK', 'IS', 'MDS']
 
       before(:all) do
-        # use agents fact to get instance names
-        distmoduledir = on(host, "echo #{host['distmoduledir']}").raw_output.chomp
-        facter_opts = {:environment => {'FACTERLIB' => "#{distmoduledir}/sqlserver/lib/facter" }}
+        puppet_version = (on host, puppet('--version')).stdout.chomp
 
-        names = eval(fact_on(host, 'sqlserver_instances', facter_opts)).values.inject(:merge).keys
+        if puppet_version =~ /^4\.\d+\.\d+/
+          json_result = JSON.parse((on host, puppet('facts --render-as json')).raw_output)["values"]["sqlserver_instances"]
+          names = json_result.collect { |k, v| json_result[k].keys }.flatten
+        else
+          # use agents fact to get instance names
+          distmoduledir = on(host, "echo #{host['distmoduledir']}").raw_output.chomp
+          facter_opts = {:environment => {'FACTERLIB' => "#{distmoduledir}/sqlserver/lib/facter"}}
+
+          names = eval(fact_on(host, 'sqlserver_instances', facter_opts)).values.inject(:merge).keys
+        end
         remove_sql_instances(host, {:version => version, :instance_names => names})
       end
 
