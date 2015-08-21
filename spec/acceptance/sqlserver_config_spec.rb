@@ -25,12 +25,11 @@ describe "sqlserver::config test", :node => host do
     }
     MANIFEST
 
-    #pp = ERB.new(create_new_instance).result(binding)
-
     apply_manifest_on(host, create_new_instance) do |r|
       expect(r.stderr).not_to match(/Error/i)
     end
   end
+
   context "can create sqlserver::config" do
 
     before(:all) do
@@ -85,7 +84,7 @@ describe "sqlserver::config test", :node => host do
         expect(r.stderr).not_to match(/Error/i)
       end
     end
-
+    
     it "Validate New Config WITHOUT using instance_name in sqlserver::config" do
       pp = <<-MANIFEST
       sqlserver::config{'#{INST_NAME}':
