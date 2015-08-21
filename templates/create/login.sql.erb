@@ -16,7 +16,7 @@ BEGIN
 	<% @svrroles.each do |role, enable_bit| -%>
 	IF IS_SRVROLEMEMBER('<%= role %>','<%= @login %>') != <%= enable_bit %>
 	BEGIN
-	    <% if enable_bit == '1' -%>
+	    <% if enable_bit == '1' || enable_bit == 1 -%>
         ALTER SERVER ROLE <%= role %> ADD MEMBER [<%= @login %>];
         <% else -%>
         ALTER SERVER ROLE  <%= role %> DROP MEMBER [<%= @login %>];
@@ -39,7 +39,7 @@ BEGIN
 	    DEFAULT_LANGUAGE = [<%= @default_language %>],
 		DEFAULT_DATABASE = [<%= @default_database %>];
 	<% @svrroles.each do |role, enable_bit| -%>
-	    <% if enable_bit == '1' -%>
+	    <% if enable_bit == '1' || enable_bit == 1 -%>
     ALTER SERVER ROLE <%= role %> ADD MEMBER [<%= @login %>];
         <% else -%>
     ALTER SERVER ROLE <%= role %> DROP MEMBER [<%= @login %>];
