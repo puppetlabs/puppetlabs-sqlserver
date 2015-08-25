@@ -47,6 +47,8 @@ def run_sql_query(host, opts = {}, &block)
   # runs an arbitrary SQL command
   opts[:expected_row_count] ||= 1
   query = opts[:query]
+  server = opts[:server]
+  instance = opts[:instance]
   sql_admin_pass = opts[:sql_admin_pass] ||= SQL_ADMIN_PASS
   sql_admin_user = opts[:sql_admin_user] ||= SQL_ADMIN_USER
   environment_path = '/cygdrive/c/Program Files/Microsoft SQL Server/Client SDK/ODBC/110/Tools/Binn:/cygdrive/c/Program Files/Microsoft SQL Server/110/Tools/Binn'
@@ -54,7 +56,7 @@ def run_sql_query(host, opts = {}, &block)
   create_remote_file(host, tmpfile, query + "\n")
   tmpfile.gsub!("/", "\\")
   sqlcmd_query = <<-sql_query
-  sqlcmd.exe -U #{sql_admin_user} -P #{sql_admin_pass} -h-1 -W -s "|" -i \"#{tmpfile}\"
+  sqlcmd.exe -S #{server}\\#{instance} -U #{sql_admin_user} -P #{sql_admin_pass} -h-1 -W -s "|" -i \"#{tmpfile}\"
   sql_query
   on(host, sqlcmd_query, :environment => {"PATH" => environment_path}) do |result|
 
@@ -72,6 +74,24 @@ def run_sql_query(host, opts = {}, &block)
     else
       yield result
     end
+  end
+end
+
+def run_simple_sql_query(host, opts = {})
+  query = opts[:query]
+  server = opts[:server]
+  instance = opts[:instance]
+  sql_admin_pass = opts[:sql_admin_pass] ||= SQL_ADMIN_PASS
+  sql_admin_user = opts[:sql_admin_user] ||= SQL_ADMIN_USER
+
+  powershell  = <<-EOS
+      $Env:Path +=\";C:\\Program Files\\Microsoft SQL Server\\Client SDK\\ODBC\\110\\Tools\\Binn;C:\\Program Files\\Microsoft SQL Server\\110\\Tools\\Binn\\"
+      sqlcmd.exe -S #{server}\\#{instance} -U #{sql_admin_user} -P #{sql_admin_pass} -Q \"#{query}\"
+  EOS
+  create_remote_file(host,"tmp.ps1", powershell)
+
+  on(host, "powershell -NonInteractive -NoLogo -File \"C:\\cygwin64\\home\\Administrator\\tmp.ps1\"") do |r|
+    return r.stdout
   end
 end
 

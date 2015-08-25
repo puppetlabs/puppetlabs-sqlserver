@@ -84,7 +84,15 @@ describe "sqlserver::config test", :node => host do
         expect(r.stderr).not_to match(/Error/i)
       end
     end
-    
+
+    it "Validate new login and database actualy created" do
+      hostname = host.hostname
+      query = "USE #{DB_NAME};"
+
+      output = run_simple_sql_query(host, {:query => query, :server => hostname, :instance => INST_NAME, :sql_admin_user => @admin_user, :sql_admin_pass => @admin_pass})
+      expect(output).to match(/Changed database context to '#{Regexp.new(DB_NAME)}'/)
+    end
+
     it "Validate New Config WITHOUT using instance_name in sqlserver::config" do
       pp = <<-MANIFEST
       sqlserver::config{'#{INST_NAME}':
