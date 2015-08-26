@@ -89,7 +89,7 @@ describe "sqlserver::config test", :node => host do
       hostname = host.hostname
       query = "USE #{DB_NAME};"
 
-      output = run_simple_sql_query(host, {:query => query, :server => hostname, :instance => INST_NAME, :sql_admin_user => @admin_user, :sql_admin_pass => @admin_pass})
+      output = run_sql_query(host, {:query => query, :server => hostname, :instance => INST_NAME, :sql_admin_user => @admin_user, :sql_admin_pass => @admin_pass})
       expect(output).to match(/Changed database context to '#{Regexp.new(DB_NAME)}'/)
     end
 
