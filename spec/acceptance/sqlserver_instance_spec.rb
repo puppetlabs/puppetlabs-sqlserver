@@ -30,7 +30,7 @@ describe "sqlserver_instance", :node => host do
     end
   end
 
-  context "server_url =>", {:testrail => ['88978', '89028', '89031', '89043']} do
+  context "server_url =>", {:testrail => ['88978', '89028', '89031', '89043', '89061']} do
 
     features = ['SQL', 'SQLEngine', 'Replication', 'FullText', 'DQ']
 
