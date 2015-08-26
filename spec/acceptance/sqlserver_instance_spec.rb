@@ -30,7 +30,7 @@ describe "sqlserver_instance", :node => host do
     end
   end
 
-  context "can create sqlserver instance: #{inst_name}" do
+  context "server_url =>", {:testrail => ['88978', '89028', '89031', '89043']} do
 
     features = ['SQL', 'SQLEngine', 'Replication', 'FullText', 'DQ']
 
@@ -59,7 +59,7 @@ describe "sqlserver_instance", :node => host do
     end
   end
 
-  context "can create instance with only one SQL feature" do
+  context "server_url =>", {:testrail => ['89032']} do
     features = ['SQL']
 
     before(:all) do
@@ -79,7 +79,7 @@ describe "sqlserver_instance", :node => host do
     end
   end
 
-  context "can create instance with only one RS feature" do
+  context "server_url =>", {:testrail => ['89034']} do
     features = ['RS']
 
     before(:all) do
@@ -99,7 +99,7 @@ describe "sqlserver_instance", :node => host do
     end
   end
 
-  context "can create instance with only one AS feature" do
+  context "server_url =>", {:testrail => ['89033']} do
     features = ['AS']
 
     before(:all) do
