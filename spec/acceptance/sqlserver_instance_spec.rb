@@ -3,8 +3,7 @@ require 'securerandom'
 require 'erb'
 
 host = find_only_one("sql_host")
-inst_name = "MSSQL" + SecureRandom.hex(4)
-inst_name = inst_name.upcase
+inst_name = ("MSSQL" + SecureRandom.hex(4)).upcase
 
 describe "sqlserver_instance", :node => host do
   version = host['sql_version'].to_s
@@ -37,12 +36,10 @@ describe "sqlserver_instance", :node => host do
 
     before(:all) do
       ensure_sqlserver_instance(host, features, inst_name, 'absent')
-      remove_sql_features(host, {:features => features, :version => version})
     end
 
     after(:all) do
       ensure_sqlserver_instance(host, features, inst_name, 'absent')
-      remove_sql_features(host, {:features => features, :version => version})
     end
 
     it "create #{inst_name} instance" do
@@ -54,7 +51,6 @@ describe "sqlserver_instance", :node => host do
     end
 
     it "remove #{inst_name} instance" do
-      remove_sql_features(host, {:features => features, :version => version})
       ensure_sqlserver_instance(host, features, inst_name, 'absent')
 
       validate_sql_install(host, {:version => version}) do |r|
@@ -63,20 +59,18 @@ describe "sqlserver_instance", :node => host do
     end
   end
 
-  context "can create instance with only SQL feature" do
+  context "can create instance with only one SQL feature" do
     features = ['SQL']
 
     before(:all) do
       ensure_sqlserver_instance(host, features, inst_name, 'absent')
-      remove_sql_features(host, {:features => features, :version => version})
     end
 
     after(:all) do
       ensure_sqlserver_instance(host, features, inst_name, 'absent')
-      remove_sql_features(host, {:features => features, :version => version})
     end
 
-    it "create #{inst_name} instance with only SQL feature" do
+    it "create #{inst_name} instance with only one SQL feature" do
       ensure_sqlserver_instance(host, features, inst_name)
 
       validate_sql_install(host, {:version => version}) do |r|
@@ -85,20 +79,18 @@ describe "sqlserver_instance", :node => host do
     end
   end
 
-  context "can create instance with only RS feature" do
+  context "can create instance with only one RS feature" do
     features = ['RS']
 
     before(:all) do
       ensure_sqlserver_instance(host, features, inst_name, 'absent')
-      remove_sql_features(host, {:features => features, :version => version})
     end
 
     after(:all) do
       ensure_sqlserver_instance(host, features, inst_name, 'absent')
-      remove_sql_features(host, {:features => features, :version => version})
     end
 
-    it "create #{inst_name} instance with only RS feature" do
+    it "create #{inst_name} instance with only one RS feature" do
       ensure_sqlserver_instance(host, features, inst_name)
 
       validate_sql_install(host, {:version => version}) do |r|
@@ -107,22 +99,20 @@ describe "sqlserver_instance", :node => host do
     end
   end
 
-  context "can create instance with only AS feature" do
+  context "can create instance with only one AS feature" do
     features = ['AS']
 
     before(:all) do
       ensure_sqlserver_instance(host, features, inst_name, 'absent')
-      remove_sql_features(host, {:features => features, :version => version})
     end
 
     after(:all) do
       ensure_sqlserver_instance(host, features, inst_name, 'absent')
-      remove_sql_features(host, {:features => features, :version => version})
     end
 
     #skip below test due to ticket MODULES-2379, when the ticket was resolved
     # will change xit to it
-    xit "create #{inst_name} instance with only AS feature" do
+    xit "create #{inst_name} instance with only one AS feature" do
       ensure_sqlserver_instance(host, features, inst_name)
 
       validate_sql_install(host, {:version => version}) do |r|
@@ -130,5 +120,4 @@ describe "sqlserver_instance", :node => host do
       end
     end
   end
-
 end
