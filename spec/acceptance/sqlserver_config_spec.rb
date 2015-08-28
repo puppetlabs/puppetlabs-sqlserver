@@ -30,7 +30,7 @@ describe "sqlserver::config test", :node => host do
     end
   end
 
-  context "can create sqlserver::config" do
+  context "server_url =>", {:testrail => ['89070', '89071', '89072', '89073']} do
 
     before(:all) do
       # Create new instance
@@ -87,10 +87,10 @@ describe "sqlserver::config test", :node => host do
 
     it "Validate new login and database actualy created" do
       hostname = host.hostname
-      query = "USE #{DB_NAME};"
+      query = "USE #{DB_NAME}; SELECT * from master..sysdatabases WHERE name = '#{DB_NAME}'"
 
-      output = run_sql_query(host, {:query => query, :server => hostname, :instance => INST_NAME, :sql_admin_user => @admin_user, :sql_admin_pass => @admin_pass})
-      expect(output).to match(/Changed database context to '#{Regexp.new(DB_NAME)}'/)
+      run_sql_query(host, {:query => query, :server => hostname, :instance => INST_NAME, \
+      :sql_admin_user => @admin_user, :sql_admin_pass => @admin_pass, :expected_row_count => 1})
     end
 
     it "Validate New Config WITHOUT using instance_name in sqlserver::config" do
@@ -120,7 +120,6 @@ describe "sqlserver::config test", :node => host do
       MANIFEST
       apply_manifest_on(host, pp, {:acceptable_exit_codes => [0,1]}) do |r|
         expect(r.stderr).to match(/Error: Must pass admin_user to Sqlserver/)
-
       end
     end
 
