@@ -18,9 +18,8 @@ RSpec.describe 'sqlserver::sp_configure', :type => :define do
         'RECONFIGURE'
     ] }
     let(:should_contain_onlyif) { [
-        "INSERT INTO @sp_conf EXECUTE sp_configure @configname = N'filestream access level'",
-        "IF EXISTS(select * from @sp_conf where name = 'filestream access level' AND run_value != 1)
-	THROW 51000, 'sp_configure `filestream access level` is not in the correct state', 10"
+        "IF EXISTS(SELECT * FROM sys.configurations WHERE name = 'filestream access level' AND value_in_use != 1)",
+        "THROW 51000, 'sp_configure `filestream access level` is not in the correct state', 10"
     ] }
     it_behaves_like 'sqlserver_tsql command'
     it_behaves_like 'sqlserver_tsql onlyif'
