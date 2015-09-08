@@ -28,7 +28,7 @@ describe "sqlserver_tsql test", :node => host do
     end
   end
 
-  context "server_url =>", {:testrail => ['89024', '89025', '89026', '89068', '89069']} do
+  context "Test sqlserver_tsql", {:testrail => ['89024', '89025', '89026', '89068', '89069']} do
 
     before(:all) do
       # Create new database
@@ -61,8 +61,13 @@ describe "sqlserver_tsql test", :node => host do
       end
 
       puts "validate the result of tsql command and table #{@table_name} should be created:"
-      run_sql_query(host, {:query => @query, :sql_admin_user => @admin_user, \
-        :sql_admin_pass => @admin_pass, :expected_row_count => 1})
+      run_sql_query_opts = {
+          :query              => @query,
+          :sql_admin_user     => @admin_user,
+          :sql_admin_pass     => @admin_pass,
+          :expected_row_count => 1,
+      }
+      run_sql_query(host, run_sql_query_opts)
     end
 
     it "Run sqlserver_tsql WITH onlyif is true:" do
@@ -88,9 +93,15 @@ describe "sqlserver_tsql test", :node => host do
       end
 
       puts "Validate #{@table_name} is successfully created:"
-      run_sql_query(host, {:query => @query, :sql_admin_user => @admin_user, \
-        :sql_admin_pass => @admin_pass, :expected_row_count => 1})
+      run_sql_query_opts = {
+          :query              => @query,
+          :sql_admin_user     => @admin_user,
+          :sql_admin_pass     => @admin_pass,
+          :expected_row_count => 1,
+      }
+      run_sql_query(host, run_sql_query_opts)
     end
+
     it "Run sqlserver_tsql WITH onlyif is false:" do
       #Initilize a new table name:
       @table_name = 'Table_' + SecureRandom.hex(3)
@@ -115,8 +126,13 @@ describe "sqlserver_tsql test", :node => host do
       end
 
       puts "Validate #{@table_name} is NOT created:"
-      run_sql_query(host, {:query => @query, :sql_admin_user => @admin_user, \
-        :sql_admin_pass => @admin_pass, :expected_row_count => 0})
+      run_sql_query_opts = {
+          :query              => @query,
+          :sql_admin_user     => @admin_user,
+          :sql_admin_pass     => @admin_pass,
+          :expected_row_count => 0,
+      }
+      run_sql_query(host, run_sql_query_opts)
     end
 
     it "Negative test: Run tsql with invalid command:" do
