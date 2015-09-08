@@ -43,7 +43,7 @@ def install_sqlserver(host, opts = {})
     apply_manifest_on(host, pp)
 end
 
-def run_sql_query(host, opts = {})
+def run_sql_query(host, opts = {}, &block)
   query = opts[:query]
   server = opts[:server]
   instance = opts[:instance]
@@ -54,10 +54,28 @@ def run_sql_query(host, opts = {})
       $Env:Path +=\";C:\\Program Files\\Microsoft SQL Server\\Client SDK\\ODBC\\110\\Tools\\Binn;C:\\Program Files\\Microsoft SQL Server\\110\\Tools\\Binn\\"
       sqlcmd.exe -S #{server}\\#{instance} -U #{sql_admin_user} -P #{sql_admin_pass} -Q \"#{query}\"
   EOS
+  # sqlcmd has problem authenticate to sqlserver if the instance is the default one MSSQLSERVER
+  # Below is a work-around for it (remove "-S server\instance" from the connection string)
+  if (instance == nil || instance == "MSSQLSERVER")
+    powershell.gsub!("-S #{server}\\#{instance}", "")
+  end
+
   create_remote_file(host,"tmp.ps1", powershell)
 
   on(host, "powershell -NonInteractive -NoLogo -File \"C:\\cygwin64\\home\\Administrator\\tmp.ps1\"") do |r|
-    return r.stdout
+    match = /(\d*) rows affected/.match(r.stdout)
+    raise 'Could not match number of rows for SQL query' unless match
+    rows_observed = match[1]
+    error_message = "Expected #{opts[:expected_row_count]} rows but observed #{rows_observed}"
+    raise error_message unless opts[:expected_row_count] == rows_observed.to_i
+  end
+  if block_given?
+    case block.arity
+      when 0
+        yield self
+      else
+        yield r
+    end
   end
 end
 
