@@ -41,14 +41,14 @@ describe "sqlserver::user test", :node => host do
       # Create new database
       ensure_sqlserver_database(host)
     end
-    before (:each) do
+    before(:each) do
       @new_sql_login = "Login" + SecureRandom.hex(2)
       @db_user = "DBuser" + SecureRandom.hex(2)
     end
 
     after(:all) do
       # remove the newly created instance
-      #ensure_sqlserver_database(host, 'absent')
+      ensure_sqlserver_database(host, 'absent')
     end
 
     it "Create database user with optional default_schema" do
@@ -73,7 +73,7 @@ describe "sqlserver::user test", :node => host do
         expect(r.stderr).not_to match(/Error/i)
       end
 
-      puts "validate that the database user '#{@db_user}' is successfully created with default schema 'guest':"
+      # validate that the database user '#{@db_user}' is successfully created with default schema 'guest':
       query = "USE #{DB_NAME};
               SELECT name AS Database_User_Name, default_schema_name
               FROM SYS.DATABASE_PRINCIPALS
@@ -105,7 +105,7 @@ describe "sqlserver::user test", :node => host do
           expect(r.stderr).not_to match(/Error/i)
         end
 
-        puts "validate that the database user '#{@db_user}' is successfully created:"
+        #validate that the database user '#{@db_user}' is successfully created:
         query = "USE #{DB_NAME};
                 SELECT name AS Database_User_Name
                 FROM SYS.DATABASE_PRINCIPALS
@@ -136,7 +136,7 @@ describe "sqlserver::user test", :node => host do
         expect(r.stderr).not_to match(/Error/i)
       end
 
-      puts "validate that the database user '#{@db_user}' is mapped with sql login '#{@new_sql_login}':"
+      #validate that the database user '#{@db_user}' is mapped with sql login '#{@new_sql_login}':
       query = "USE #{DB_NAME};
               SELECT d.name AS Database_User, l.name as Associated_sql_login
               FROM SYS.DATABASE_PRINCIPALS d, MASTER.SYS.SQL_LOGINS l
@@ -194,7 +194,7 @@ describe "sqlserver::user test", :node => host do
         expect(r.stderr).not_to match(/Error/i)
       end
 
-      puts "validate that the database user '#{@db_user}' is successfully created:"
+      #validate that the database user '#{@db_user}' is successfully created:
       query = "USE #{DB_NAME}; SELECT * FROM SYS.DATABASE_PRINCIPALS WHERE name = '#{@db_user}';"
       run_sql_query(host, { :query => query, :server => hostname, :expected_row_count => 1 })
 
@@ -211,7 +211,7 @@ describe "sqlserver::user test", :node => host do
       apply_manifest_on(host, pp) do |r|
         expect(r.stderr).not_to match(/Error/i)
       end
-      puts "validate that the database user '#{@db_user}' should be deleted:"
+      #validate that the database user '#{@db_user}' should be deleted:
       query = "USE #{DB_NAME}; SELECT * FROM SYS.DATABASE_PRINCIPALS WHERE name = '#{@db_user}';"
       run_sql_query(host, { :query => query, :server => hostname, :expected_row_count => 0 })
     end
