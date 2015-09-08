@@ -30,7 +30,7 @@ describe "sqlserver::config test", :node => host do
     end
   end
 
-  context "server_url =>", {:testrail => ['89070', '89071', '89072', '89073']} do
+  context "Testing sqlserver::config", {:testrail => ['89070', '89071', '89072', '89073']} do
 
     before(:all) do
       # Create new instance
