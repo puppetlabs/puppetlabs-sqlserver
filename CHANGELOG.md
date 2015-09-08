@@ -1,4 +1,4 @@
-##2015-08-24 - 1.1.0
+##2015-09-08 - 1.1.0
 ###Summary
 
 User, Roles and Login as well as they permissions associated with each are now available.
