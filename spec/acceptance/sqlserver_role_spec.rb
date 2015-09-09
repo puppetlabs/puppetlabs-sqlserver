@@ -14,7 +14,6 @@ USER1     = "User1_" + SecureRandom.hex(2)
 
 describe "Test sqlserver::role", :node => host do
 
-
   def ensure_sqlserver_logins_users(host)
     pp = <<-MANIFEST
     sqlserver::config{'MSSQLSERVER':
@@ -24,18 +23,17 @@ describe "Test sqlserver::role", :node => host do
     sqlserver::database{ '#{DB_NAME}':
     }
     sqlserver::login{'#{LOGIN1}':
-        login_type  => 'SQL_LOGIN',
-        password    => 'Pupp3t1@',
+      login_type  => 'SQL_LOGIN',
+      password    => 'Pupp3t1@',
     }
     sqlserver::login{'#{LOGIN2}':
-        login_type  => 'SQL_LOGIN',
-        password    => 'Pupp3t1@',
+      login_type  => 'SQL_LOGIN',
+      password    => 'Pupp3t1@',
     }
     sqlserver::login{'#{LOGIN3}':
-        login_type  => 'SQL_LOGIN',
-        password    => 'Pupp3t1@',
+      login_type  => 'SQL_LOGIN',
+      password    => 'Pupp3t1@',
     }
-
     sqlserver::user{'#{USER1}':
       database        => '#{DB_NAME}',
       user            => '#{USER1}',
@@ -49,26 +47,44 @@ describe "Test sqlserver::role", :node => host do
     end
   end
 
-  context "Test sqlser::role", {:testrail => ['89161', '89162', '89163', '89164', '89165']} do
+  context "Start testing sqlserver::role", {:testrail => ['89161', '89162', '89163', '89164', '89165']} do
     before(:all) do
       # Create database users
       ensure_sqlserver_logins_users(host)
     end
     before(:each) do
-      #@new_sql_login = "Login" + SecureRandom.hex(2)
       @role = "Role_" + SecureRandom.hex(2)
+    end
+    after(:each) do
+      pp = <<-MANIFEST
+      sqlserver::config{'MSSQLSERVER':
+        admin_user    => 'sa',
+        admin_pass    => 'Pupp3t1@',
+      }
+      sqlserver::role{'#{@role}':
+        ensure  => 'absent',
+      }
+      MANIFEST
+      apply_manifest_on(host, pp) do |r|
+        expect(r.stderr).not_to match(/Error/i)
+      end
     end
 
     after(:all) do
-      # remove the newly created database
+      # remove all newly created logins
       pp = <<-MANIFEST
-      sqlserver::database{ '#{DB_NAME}':
-      ensure => 'absent',
+      sqlserver::config{'MSSQLSERVER':
+        admin_user    => 'sa',
+        admin_pass    => 'Pupp3t1@',
+      }
+      sqlserver::user{'#{USER1}':
+        database  => '#{DB_NAME}',
+        ensure    => 'absent',
       }
       MANIFEST
-      # apply_manifest_on(host, pp) do |r|
-      #   expect(r.stderr).not_to match(/Error/i)
-      # end
+      apply_manifest_on(host, pp) do |r|
+        expect(r.stderr).not_to match(/Error/i)
+      end
     end
 
     it "Create server role #{@role} with optional authorization" do
@@ -111,7 +127,7 @@ describe "Test sqlserver::role", :node => host do
       run_sql_query(host, { :query => query, :server => hostname, :expected_row_count => 1 })
     end
 
-    it "Create database-specific role: #{@role}" do
+    it "Create database-specific role #{@role}" do
       pp = <<-MANIFEST
       sqlserver::config{'MSSQLSERVER':
         admin_user    => 'sa',
@@ -141,7 +157,8 @@ describe "Test sqlserver::role", :node => host do
       run_sql_query(host, { :query => query, :server => hostname, :expected_row_count => 6 })
     end
 
-    it "Create server role #{@role} with optional members" do
+    # temporarily skip this test because of ticket MODULES-2543
+    xit "Create server role #{@role} with optional members and optional members-purge" do
       pp = <<-MANIFEST
       sqlserver::config{'MSSQLSERVER':
         admin_user    => 'sa',
@@ -162,7 +179,7 @@ describe "Test sqlserver::role", :node => host do
 
       #validate that the server role '#{@role}' is successfully created with specified permissions':
       query = "USE #{DB_NAME};
-      SELECT spr.principal_id, spr.name,
+      SELECT spr.principal_id AS ID, spr.name AS Server_Role,
               spe.state_desc, spe.permission_name
       FROM sys.server_principals AS spr
       JOIN sys.server_permissions AS spe
@@ -173,20 +190,18 @@ describe "Test sqlserver::role", :node => host do
 
       #validate that the t server role '#{@role}' has correct members (Login1, 2, 3)
       query = "USE #{DB_NAME};
-      SELECT sp1.principal_id AS LOGIN, sp1.name AS ServerRole
-      FROM sys.server_principals sp1
+      SELECT spr.principal_id AS ID, spr.name AS ServerRole
+      FROM sys.server_principals AS spr
       JOIN sys.server_role_members m
-        ON sp1.principal_id = m.member_principal_id
-      JOIN sys.server_principals sp2
-        ON m.role_principal_id = sp2.principal_id
-      WHERE sp1.name = '#{LOGIN1}'
-        OR sp1.name = '#{LOGIN2}'
-        OR sp1.name = '#{LOGIN3}';"
+        ON spr.principal_id = m.member_principal_id
+      WHERE spr.name = '#{LOGIN1}'
+        OR spr.name = '#{LOGIN2}'
+        OR spr.name = '#{LOGIN3}'
+        OR spr.name = 'LOGIN4';"
 
       run_sql_query(host, { :query => query, :server => hostname, :expected_row_count => 3 })
-    end
 
-    it "Create server role #{@role} with optional members_purge" do
+      puts "Create server role #{@role} with optional members_purge:"
       pp = <<-MANIFEST
       sqlserver::config{'MSSQLSERVER':
         admin_user    => 'sa',
@@ -206,24 +221,15 @@ describe "Test sqlserver::role", :node => host do
         expect(r.stderr).not_to match(/Error/i)
       end
 
-      #validate that the server role '#{@role}' is successfully created with specified permissions':
+      #validate that the t server role '#{@role}' has correct members (only Login3)
       query = "USE #{DB_NAME};
-      SELECT spr.principal_id, spr.name,
-              spe.state_desc, spe.permission_name
+      SELECT spr.principal_id AS ID, spr.name AS ServerRole
       FROM sys.server_principals AS spr
-      JOIN sys.server_permissions AS spe
-        ON spe.grantee_principal_id = spr.principal_id
-      WHERE spr.name = '#{@role}';"
-
-      run_sql_query(host, { :query => query, :server => hostname, :expected_row_count => 2 })
-
-      #validate that the t server role '#{@role}' has correct members (Login3)
-      query = "USE #{DB_NAME};
-      SELECT sp1.principal_id AS ID, sp1.name AS Logins
-      FROM sys.server_principals sp1
       JOIN sys.server_role_members m
-        ON sp1.principal_id = m.member_principal_id
-      where sp1.name = '#{@role}';"
+        ON spr.principal_id = m.member_principal_id
+      WHERE spr.name = '#{LOGIN1}'
+        OR spr.name = '#{LOGIN2}'
+        OR spr.name = '#{LOGIN3}';"
 
       run_sql_query(host, { :query => query, :server => hostname, :expected_row_count => 1 })
     end
