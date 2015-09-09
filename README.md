@@ -33,7 +33,6 @@ Microsoft SQL Server is a database platform for Windows. The sqlserver module le
 The sqlserver module requires the following:
 
 * Puppet Enterprise 3.7 or later.
-* The Puppet Supported [`acl` module](https://forge.puppetlabs.com/puppetlabs/acl).
 * .NET 3.5 (installed automatically if not present. This might require an internet connection).
 * The contents of the SQL Server ISO file, mounted or extracted either locally or on a network share.
 * Windows Server 2012 or 2012R2.
