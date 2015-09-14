@@ -6,7 +6,7 @@ host = find_only_one("sql_host")
 hostname = host.hostname
 
 # database name
-DB_NAME   = ("DB" + SecureRandom.hex(4)).upcase
+db_name   = ("DB" + SecureRandom.hex(4)).upcase
 LOGIN1    = "Login1_" + SecureRandom.hex(2)
 LOGIN2    = "Login2_" + SecureRandom.hex(2)
 LOGIN3    = "Login3_" + SecureRandom.hex(2)
@@ -14,13 +14,13 @@ USER1     = "User1_" + SecureRandom.hex(2)
 
 describe "Test sqlserver::role", :node => host do
 
-  def ensure_sqlserver_logins_users(host)
+  def ensure_sqlserver_logins_users(host, db_name)
     pp = <<-MANIFEST
     sqlserver::config{'MSSQLSERVER':
       admin_user   => 'sa',
       admin_pass   => 'Pupp3t1@',
     }
-    sqlserver::database{ '#{DB_NAME}':
+    sqlserver::database{ '#{db_name}':
     }
     sqlserver::login{'#{LOGIN1}':
       login_type  => 'SQL_LOGIN',
@@ -35,7 +35,7 @@ describe "Test sqlserver::role", :node => host do
       password    => 'Pupp3t1@',
     }
     sqlserver::user{'#{USER1}':
-      database        => '#{DB_NAME}',
+      database        => '#{db_name}',
       user            => '#{USER1}',
       login           => '#{LOGIN1}',
       default_schema  => 'guest',
@@ -50,7 +50,7 @@ describe "Test sqlserver::role", :node => host do
   context "Start testing sqlserver::role", {:testrail => ['89161', '89162', '89163', '89164', '89165']} do
     before(:all) do
       # Create database users
-      ensure_sqlserver_logins_users(host)
+      ensure_sqlserver_logins_users(host, db_name)
     end
     before(:each) do
       @role = "Role_" + SecureRandom.hex(2)
@@ -78,7 +78,7 @@ describe "Test sqlserver::role", :node => host do
         admin_pass    => 'Pupp3t1@',
       }
       sqlserver::user{'#{USER1}':
-        database  => '#{DB_NAME}',
+        database  => '#{db_name}',
         ensure    => 'absent',
       }
       MANIFEST
@@ -106,7 +106,7 @@ describe "Test sqlserver::role", :node => host do
       end
 
       #validate that the database-specific role '#{@role}' is successfully created with specified permissions':
-      query = "USE #{DB_NAME};
+      query = "USE #{db_name};
       SELECT spr.principal_id, spr.name,
               spe.state_desc, spe.permission_name
       FROM sys.server_principals AS spr
@@ -117,7 +117,7 @@ describe "Test sqlserver::role", :node => host do
       run_sql_query(host, { :query => query, :server => hostname, :expected_row_count => 2 })
 
       # validate that the database-specific role '#{@role}' has correct authorization #{LOGIN1}
-      query = "USE #{DB_NAME};
+      query = "USE #{db_name};
       SELECT spr.name, sl.name
       FROM sys.server_principals AS spr
       JOIN sys.sql_logins AS sl
@@ -136,7 +136,7 @@ describe "Test sqlserver::role", :node => host do
       sqlserver::role{'DatabaseRole':
         ensure      => 'present',
         role        => '#{@role}',
-        database    => '#{DB_NAME}',
+        database    => '#{db_name}',
         permissions => {'GRANT' => ['SELECT', 'INSERT', 'UPDATE', 'DELETE', 'CONTROL', 'ALTER']},
         type        => 'DATABASE',
       }
@@ -146,7 +146,7 @@ describe "Test sqlserver::role", :node => host do
       end
 
       # validate that the database-specific role '#{@role}' is successfully created with specified permissions':
-      query = "USE #{DB_NAME};
+      query = "USE #{db_name};
       SELECT pr.principal_id, pr.name, pr.type_desc,
               pr.authentication_type_desc, pe.state_desc, pe.permission_name
       FROM sys.database_principals AS pr
@@ -178,7 +178,7 @@ describe "Test sqlserver::role", :node => host do
       end
 
       #validate that the server role '#{@role}' is successfully created with specified permissions':
-      query = "USE #{DB_NAME};
+      query = "USE #{db_name};
       SELECT spr.principal_id AS ID, spr.name AS Server_Role,
               spe.state_desc, spe.permission_name
       FROM sys.server_principals AS spr
@@ -189,7 +189,7 @@ describe "Test sqlserver::role", :node => host do
       run_sql_query(host, { :query => query, :server => hostname, :expected_row_count => 2 })
 
       #validate that the t server role '#{@role}' has correct members (Login1, 2, 3)
-      query = "USE #{DB_NAME};
+      query = "USE #{db_name};
       SELECT spr.principal_id AS ID, spr.name AS ServerRole
       FROM sys.server_principals AS spr
       JOIN sys.server_role_members m
@@ -222,7 +222,7 @@ describe "Test sqlserver::role", :node => host do
       end
 
       #validate that the t server role '#{@role}' has correct members (only Login3)
-      query = "USE #{DB_NAME};
+      query = "USE #{db_name};
       SELECT spr.principal_id AS ID, spr.name AS ServerRole
       FROM sys.server_principals AS spr
       JOIN sys.server_role_members m

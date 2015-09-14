@@ -5,20 +5,20 @@ require 'erb'
 host = find_only_one("sql_host")
 
 # database name
-DB_NAME   = ("DB" + SecureRandom.hex(4)).upcase
+db_name   = ("DB" + SecureRandom.hex(4)).upcase
 
 #database user:
 DB_LOGIN_USER   = "loginuser" + SecureRandom.hex(2)
 
 describe "sqlserver_tsql test", :node => host do
 
-  def ensure_sqlserver_database(host, ensure_val = 'present')
+  def ensure_sqlserver_database(host,db_name, ensure_val = 'present')
     pp = <<-MANIFEST
     sqlserver::config{'MSSQLSERVER':
       admin_user   => 'sa',
       admin_pass   => 'Pupp3t1@',
     }
-    sqlserver::database{'#{DB_NAME}':
+    sqlserver::database{'#{db_name}':
         instance => 'MSSQLSERVER',
     }
     MANIFEST
@@ -33,9 +33,9 @@ describe "sqlserver_tsql test", :node => host do
     before(:all) do
       # Create new database
       @table_name = 'Tables_' + SecureRandom.hex(3)
-      @query = "USE #{DB_NAME}; SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE table_name = '#{@table_name}';"
+      @query = "USE #{db_name}; SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE table_name = '#{@table_name}';"
 
-      ensure_sqlserver_database(host)
+      ensure_sqlserver_database(host, db_name)
     end
 
     after(:all) do
@@ -52,7 +52,7 @@ describe "sqlserver_tsql test", :node => host do
       }
       sqlserver_tsql{'testsqlserver_tsql':
         instance => 'MSSQLSERVER',
-        database => '#{DB_NAME}',
+        database => '#{db_name}',
         command => "CREATE TABLE #{@table_name} (id INT, name VARCHAR(20), email VARCHAR(20));",
       }
       MANIFEST
@@ -73,7 +73,7 @@ describe "sqlserver_tsql test", :node => host do
     it "Run sqlserver_tsql WITH onlyif is true:" do
       #Initilize a new table name:
       @table_name = 'Table_' + SecureRandom.hex(3)
-      @query = "USE #{DB_NAME}; SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE table_name = '#{@table_name}';"
+      @query = "USE #{db_name}; SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE table_name = '#{@table_name}';"
       pp = <<-MANIFEST
       sqlserver::config{'MSSQLSERVER':
           instance_name => 'MSSQLSERVER',
@@ -82,7 +82,7 @@ describe "sqlserver_tsql test", :node => host do
       }
       sqlserver_tsql{'testsqlserver_tsql':
           instance => 'MSSQLSERVER',
-          database => '#{DB_NAME}',
+          database => '#{db_name}',
           command => "CREATE TABLE #{@table_name} (id INT, name VARCHAR(20), email VARCHAR(20));",
           onlyif => "IF (SELECT COUNT(*) FROM INFORMATION_SCHEMA.TABLES) < 10000"
       }
@@ -105,7 +105,7 @@ describe "sqlserver_tsql test", :node => host do
     it "Run sqlserver_tsql WITH onlyif is false:" do
       #Initilize a new table name:
       @table_name = 'Table_' + SecureRandom.hex(3)
-      @query = "USE #{DB_NAME}; SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE table_name = '#{@table_name}';"
+      @query = "USE #{db_name}; SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE table_name = '#{@table_name}';"
       pp = <<-MANIFEST
       sqlserver::config{'MSSQLSERVER':
           instance_name => 'MSSQLSERVER',
@@ -114,7 +114,7 @@ describe "sqlserver_tsql test", :node => host do
       }
       sqlserver_tsql{'testsqlserver_tsql':
           instance => 'MSSQLSERVER',
-          database => '#{DB_NAME}',
+          database => '#{db_name}',
           command => "CREATE TABLE #{@table_name} (id INT, name VARCHAR(20), email VARCHAR(20));",
           onlyif => "IF (SELECT COUNT(*) FROM INFORMATION_SCHEMA.TABLES) > 10000
           THROW 5300, 'Too many tables', 10"
@@ -144,7 +144,7 @@ describe "sqlserver_tsql test", :node => host do
       }
       sqlserver_tsql{'testsqlserver_tsql':
         instance => 'MSSQLSERVER',
-        database => '#{DB_NAME}',
+        database => '#{db_name}',
         command => "invalid-tsql-command",
       }
       MANIFEST

@@ -6,11 +6,11 @@ host = find_only_one("sql_host")
 hostname = host.hostname
 
 # database name
-DB_NAME   = ("DB" + SecureRandom.hex(4)).upcase
+db_name   = ("DB" + SecureRandom.hex(4)).upcase
 
 describe "sqlserver::user test", :node => host do
 
-  def ensure_sqlserver_database(host, ensure_val = 'present')
+  def ensure_sqlserver_database(host, db_name, ensure_val = 'present')
     pp = <<-MANIFEST
     sqlserver::config{'MSSQLSERVER':
       admin_user   => 'sa',
@@ -22,7 +22,7 @@ describe "sqlserver::user test", :node => host do
       reconfigure   => true,
       instance      => 'MSSQLSERVER',
     }
-    sqlserver::database{ '#{DB_NAME}':
+    sqlserver::database{ '#{db_name}':
       instance            => 'MSSQLSERVER',
       collation_name      => 'SQL_Estonian_CP1257_CS_AS',
       compatibility       => '100',
@@ -39,7 +39,7 @@ describe "sqlserver::user test", :node => host do
   context "Create database users with optional attributes", {:testrail => ['89143', '89144', '89145', '89146', '89149']} do
     before(:all) do
       # Create new database
-      ensure_sqlserver_database(host)
+      ensure_sqlserver_database(host, db_name)
     end
     before(:each) do
       @new_sql_login = "Login" + SecureRandom.hex(2)
@@ -47,8 +47,9 @@ describe "sqlserver::user test", :node => host do
     end
 
     after(:all) do
-      # remove the newly created instance
-      ensure_sqlserver_database(host, 'absent')
+      # remove the newly created database
+      # Temporarily skip delete database because of MODULES-2554
+      #ensure_sqlserver_database(host, 'absent')
     end
 
     it "Create database user with optional default_schema" do
@@ -63,7 +64,7 @@ describe "sqlserver::user test", :node => host do
         password    => 'Pupp3t1@',
       }
       sqlserver::user{'#{@db_user}':
-        database        => '#{DB_NAME}',
+        database        => '#{db_name}',
         user            => '#{@db_user}',
         default_schema  => 'guest',
         require         => Sqlserver::Login['#{@db_user}'],
@@ -74,7 +75,7 @@ describe "sqlserver::user test", :node => host do
       end
 
       # validate that the database user '#{@db_user}' is successfully created with default schema 'guest':
-      query = "USE #{DB_NAME};
+      query = "USE #{db_name};
               SELECT name AS Database_User_Name, default_schema_name
               FROM SYS.DATABASE_PRINCIPALS
               WHERE name = '#{@db_user}'
@@ -96,7 +97,7 @@ describe "sqlserver::user test", :node => host do
       }
       sqlserver::user{'#{@db_user}':
         instance        => 'MSSQLSERVER',
-        database        => '#{DB_NAME}',
+        database        => '#{db_name}',
         user            => '#{@db_user}',
         require         => Sqlserver::Login['#{@db_user}'],
       }
@@ -106,7 +107,7 @@ describe "sqlserver::user test", :node => host do
         end
 
         #validate that the database user '#{@db_user}' is successfully created:
-        query = "USE #{DB_NAME};
+        query = "USE #{db_name};
                 SELECT name AS Database_User_Name
                 FROM SYS.DATABASE_PRINCIPALS
                 WHERE name = '#{@db_user}';"
@@ -126,7 +127,7 @@ describe "sqlserver::user test", :node => host do
       }
       sqlserver::user{'#{@db_user}':
         instance        => 'MSSQLSERVER',
-        database        => '#{DB_NAME}',
+        database        => '#{db_name}',
         login           => '#{@new_sql_login}',
         user            => '#{@db_user}',
         require         => Sqlserver::Login['#{@new_sql_login}'],
@@ -137,7 +138,7 @@ describe "sqlserver::user test", :node => host do
       end
 
       #validate that the database user '#{@db_user}' is mapped with sql login '#{@new_sql_login}':
-      query = "USE #{DB_NAME};
+      query = "USE #{db_name};
               SELECT d.name AS Database_User, l.name as Associated_sql_login
               FROM SYS.DATABASE_PRINCIPALS d, MASTER.SYS.SQL_LOGINS l
               WHERE d.sid = l.sid
@@ -158,7 +159,7 @@ describe "sqlserver::user test", :node => host do
       }
       sqlserver::user{'#{@db_user}':
         instance        => 'MSSQLSERVER',
-        database        => '#{DB_NAME}',
+        database        => '#{db_name}',
         login           => '#{@new_sql_login}',
         user            => '#{@db_user}',
         password        => 'databaseUserPasswd',
@@ -170,7 +171,7 @@ describe "sqlserver::user test", :node => host do
       end
 
       puts "validate that the database user '#{@db_user}' is successfully created:"
-      query = "USE #{DB_NAME}; SELECT * FROM SYS.DATABASE_PRINCIPALS WHERE name = '#{@db_user}';"
+      query = "USE #{db_name}; SELECT * FROM SYS.DATABASE_PRINCIPALS WHERE name = '#{@db_user}';"
       run_sql_query(host, { :query => query, :server => hostname, :expected_row_count => 1 })
     end
 
@@ -186,7 +187,7 @@ describe "sqlserver::user test", :node => host do
         password    => 'Pupp3t1@',
       }
       sqlserver::user{'#{@db_user}':
-        database        => '#{DB_NAME}',
+        database        => '#{db_name}',
         require         => Sqlserver::Login['#{@db_user}'],
       }
       MANIFEST
@@ -195,7 +196,7 @@ describe "sqlserver::user test", :node => host do
       end
 
       #validate that the database user '#{@db_user}' is successfully created:
-      query = "USE #{DB_NAME}; SELECT * FROM SYS.DATABASE_PRINCIPALS WHERE name = '#{@db_user}';"
+      query = "USE #{db_name}; SELECT * FROM SYS.DATABASE_PRINCIPALS WHERE name = '#{@db_user}';"
       run_sql_query(host, { :query => query, :server => hostname, :expected_row_count => 1 })
 
       pp = <<-MANIFEST
@@ -205,14 +206,14 @@ describe "sqlserver::user test", :node => host do
       }
       sqlserver::user{'#{@db_user}':
         ensure          => 'absent',
-        database        => '#{DB_NAME}',
+        database        => '#{db_name}',
       }
       MANIFEST
       apply_manifest_on(host, pp) do |r|
         expect(r.stderr).not_to match(/Error/i)
       end
       #validate that the database user '#{@db_user}' should be deleted:
-      query = "USE #{DB_NAME}; SELECT * FROM SYS.DATABASE_PRINCIPALS WHERE name = '#{@db_user}';"
+      query = "USE #{db_name}; SELECT * FROM SYS.DATABASE_PRINCIPALS WHERE name = '#{@db_user}';"
       run_sql_query(host, { :query => query, :server => hostname, :expected_row_count => 0 })
     end
   end
