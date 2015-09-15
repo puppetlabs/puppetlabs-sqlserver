@@ -23,7 +23,7 @@ describe "Test sqlserver::login", :node => host do
     }
   end
 
-  context "Start testing...", {:testrail => ['89118', '89119', '89120', '89121', '89122', '89123', '89124', '89125', '891540']} do
+  context "Start testing...", {:testrail => ['89118', '89119', '89120', '89121', '89122', '89123', '89124', '89125', '89540']} do
 
     before(:all) do
       # Create a database and a simple table to use for all the tests
@@ -39,11 +39,6 @@ describe "Test sqlserver::login", :node => host do
           database => '#{db_name}',
           command => "CREATE TABLE #{table_name} (id INT, name VARCHAR(20), email VARCHAR(20));",
           require => Sqlserver::Database['#{db_name}'],
-        }
-        ->
-        sqlserver_features{ 'features_forUI':
-          source => 'H:',
-          features => ['Tools', 'IS', 'MDS'],
         }
       MANIFEST
       ensure_manifest_apply(host, pp)
@@ -73,6 +68,7 @@ describe "Test sqlserver::login", :node => host do
 
     after(:each) do
       # delete recently created login after each test:
+      #This test also cover test case C89540: Delete login
       pp = <<-MANIFEST
         sqlserver::config{'MSSQLSERVER':
           admin_user    => 'sa',
@@ -106,17 +102,18 @@ describe "Test sqlserver::login", :node => host do
 
       puts "Validate the login '#{@login_user}' is successfully created and able to access database '#{db_name}':"
       query = "USE #{db_name}; SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE table_name = '#{table_name}';"
-      run_sql_query(host, run_sql_query_opts(@login_user, @login_passwd, query, 1))
+      run_sql_query(host, run_sql_query_opts(@login_user, @login_passwd, query, expected_row_count = 1))
 
       puts "Validate the login '#{@login_user}' is successfully created and has correct is_expiration_checked:"
       query = "SELECT name as LOGIN_NAME, is_expiration_checked
               FROM SYS.SQL_LOGINS
               WHERE is_expiration_checked = '1'
               AND name = '#{@login_user}';"
-      run_sql_query(host, run_sql_query_opts(@login_user, @login_passwd, query, 1))
+      run_sql_query(host, run_sql_query_opts(@login_user, @login_passwd, query, expected_row_count = 1))
     end
 
     it "Test Case C89119: create login with optional 'check_policy'" do
+      #This test also cover test case C89123: create login with optional 'instance'
       pp = <<-MANIFEST
         sqlserver::config{'MSSQLSERVER':
           admin_user    => 'sa',
@@ -135,17 +132,18 @@ describe "Test sqlserver::login", :node => host do
 
       puts "Validate the login '#{@login_user}' is successfully created and able to access database '#{db_name}':"
       query = "USE #{db_name}; SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE table_name = '#{table_name}';"
-      run_sql_query(host, run_sql_query_opts(@login_user, @login_passwd, query, 1))
+      run_sql_query(host, run_sql_query_opts(@login_user, @login_passwd, query, expected_row_count = 1))
 
       puts "Validate the login '#{@login_user}' is successfully created and has correct is_expiration_checked:"
       query = "SELECT name as LOGIN_NAME, is_policy_checked
               FROM SYS.SQL_LOGINS
               WHERE is_policy_checked = '1'
               AND name = '#{@login_user}';"
-      run_sql_query(host, run_sql_query_opts(@login_user, @login_passwd, query, 1))
+      run_sql_query(host, run_sql_query_opts(@login_user, @login_passwd, query, expected_row_count = 1))
     end
 
     it "Test Case C89120: create login with optional 'default_database'" do
+      #This test also cover test case C89124: create login with optional 'login_type'
       pp = <<-MANIFEST
         sqlserver::config{'MSSQLSERVER':
           admin_user    => 'sa',
@@ -164,17 +162,18 @@ describe "Test sqlserver::login", :node => host do
 
       puts "Validate the login '#{@login_user}' is successfully created and able to access database '#{db_name}':"
       query = "USE #{db_name}; SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE table_name = '#{table_name}';"
-      run_sql_query(host, run_sql_query_opts(@login_user, @login_passwd, query, 1))
+      run_sql_query(host, run_sql_query_opts(@login_user, @login_passwd, query, expected_row_count = 1))
 
-      puts "Validate the login '#{@login_user}' is successfully created and has correct is_expiration_checked:"
+      puts "Validate the login '#{@login_user}' is successfully created and has correct default_database:"
       query = "SELECT name as LOGIN_NAME, default_database_name
               FROM SYS.SQL_LOGINS
               WHERE default_database_name = '#{db_name}'
               AND name = '#{@login_user}';"
-      run_sql_query(host, run_sql_query_opts(@login_user, @login_passwd, query, 1))
+      run_sql_query(host, run_sql_query_opts(@login_user, @login_passwd, query, expected_row_count = 1))
     end
 
     it "Test Case C89121: create login with optional 'default_language'" do
+      #This test also cover test case C89125: create login with optional 'svrroles'
       pp = <<-MANIFEST
         sqlserver::config{'MSSQLSERVER':
           admin_user    => 'sa',
@@ -192,14 +191,14 @@ describe "Test sqlserver::login", :node => host do
 
       puts "Validate the login '#{@login_user}' is successfully created and able to access database '#{db_name}':"
       query = "USE #{db_name}; SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE table_name = '#{table_name}';"
-      run_sql_query(host, run_sql_query_opts(@login_user, @login_passwd, query, 1))
+      run_sql_query(host, run_sql_query_opts(@login_user, @login_passwd, query, expected_row_count = 1))
 
       puts "Validate the login '#{@login_user}' is successfully created and has correct default_language_name:"
       query = "SELECT name as LOGIN_NAME, default_language_name
               FROM SYS.SQL_LOGINS
               WHERE default_language_name = 'Spanish'
               AND name = '#{@login_user}';"
-      run_sql_query(host, run_sql_query_opts(@login_user, @login_passwd, query, 1))
+      run_sql_query(host, run_sql_query_opts(@login_user, @login_passwd, query, expected_row_count = 1))
     end
 
     #Temporarily skip this test because of ticket MODULES-2305
@@ -221,14 +220,14 @@ describe "Test sqlserver::login", :node => host do
 
       puts "Validate the login '#{@login_user}' is successfully created and able to access database '#{db_name}':"
       query = "USE #{db_name}; SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE table_name = '#{table_name}';"
-      run_sql_query(host, run_sql_query_opts(@login_user, @login_passwd, query, 1))
+      run_sql_query(host, run_sql_query_opts(@login_user, @login_passwd, query, expected_row_count = 1))
 
       puts "Validate the login '#{@login_user}' is successfully created and has correct is_disabled:"
       query = "SELECT name as LOGIN_NAME, is_policy_checked
               FROM SYS.SQL_LOGINS
               WHERE is_disabled = '1'
               AND name = '#{@login_user}';"
-      run_sql_query(host, run_sql_query_opts(@login_user, @login_passwd, query, 1))
+      run_sql_query(host, run_sql_query_opts(@login_user, @login_passwd, query, expected_row_count = 1))
     end
   end
 end
