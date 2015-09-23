@@ -105,7 +105,7 @@ describe "Test sqlserver::database", :node => host do
           admin_pass    => 'Pupp3t1@',
         }
         sqlserver::database{'#{@db_name}':
-          compatibility => 120,
+          compatibility => 100,
         }
         sqlserver_tsql{'testsqlserver_tsql':
           instance => 'MSSQLSERVER',
@@ -124,7 +124,7 @@ describe "Test sqlserver::database", :node => host do
       query = "SELECT name AS Database_Name, compatibility_level
                 FROM sys.databases
                 WHERE name = '#{@db_name}'
-                AND compatibility_level = '120';"
+                AND compatibility_level = '100';"
 
       run_sql_query(host, run_sql_query_opts(query, 1))
     end
