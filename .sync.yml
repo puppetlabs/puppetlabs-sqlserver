@@ -14,13 +14,14 @@ Gemfile:
     ':development':
       - gem: rake
       - gem: rspec
-        version: '~>3.0.0'
+        version: '~>3.0'
       - gem: puppet-lint
       - gem: puppetlabs_spec_helper
         version: '~>0.10.3'
       - gem: puppet_facts
       - gem: mocha
         version: '~>0.10.5'
+      - gem: pry
       - gem: simplecov
       - gem: yard
     ':system_tests':
