@@ -3,7 +3,7 @@
 
 Small release for support of newer PE versions.
 
-##2015-08-24 - Supported Release 1.1.0
+##2015-09-08 - Supported Release 1.1.0
 ###Summary
 
 User, Roles and Login as well as they permissions associated with each are now available.
