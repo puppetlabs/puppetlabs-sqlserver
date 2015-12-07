@@ -24,7 +24,7 @@ RSpec.describe 'sqlserver::config', :type => :define do
       :admin_user => 'sa',
     } }
 
-    if Puppet.version < '4.0.0'
+    if Puppet.version < '4.3.0'
       let(:error_message) { /Must pass admin_pass to Sqlserver::Config/ }
     else
       let(:error_message) { /expects a value for parameter 'admin_pass'/ }
@@ -43,7 +43,7 @@ RSpec.describe 'sqlserver::config', :type => :define do
     } }
 
 
-    if Puppet.version < '4.0.0'
+    if Puppet.version < '4.3.0'
       let(:error_message) { /Must pass admin_user to Sqlserver::Config/ }
     else
       let(:error_message) { /expects a value for parameter 'admin_user'/ }

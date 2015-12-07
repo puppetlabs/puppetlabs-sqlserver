@@ -15,7 +15,7 @@ describe 'sqlserver::user::permissions' do
       } }
       let(:raise_error_check) { 'User must be between 1 and 128 characters' }
       describe 'missing' do
-        if Puppet.version < '4.0.0'
+        if Puppet.version < '4.3.0'
           let(:raise_error_check) { 'Must pass user to Sqlserver::User::Permissions[myTitle]' }
         else
           let(:raise_error_check) { "expects a value for parameter 'user'" }
