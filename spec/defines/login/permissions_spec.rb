@@ -14,7 +14,11 @@ describe 'sqlserver::login::permissions' do
       } }
       let(:raise_error_check) { 'Login must be between 1 and 128 characters' }
       describe 'missing' do
-        let(:raise_error_check) { 'Must pass login to Sqlserver::Login::Permissions[myTitle]' }
+        if Puppet.version < '4.3.0'
+          let(:raise_error_check) { 'Must pass login to Sqlserver::Login::Permissions[myTitle]' }
+        else
+          let(:raise_error_check) { "expects a value for parameter 'login'" }
+        end
         it_behaves_like 'validation error'
       end
       describe 'empty' do

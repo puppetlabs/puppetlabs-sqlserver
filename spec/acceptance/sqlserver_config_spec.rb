@@ -106,35 +106,5 @@ describe "sqlserver::config test", :node => host do
         expect(r.stderr).not_to match(/Error/i)
       end
     end
-
-    it "Negative test: sqlserver::config without admin_user" do
-      pp = <<-MANIFEST
-      sqlserver::config{'#{inst_name}':
-          admin_pass    => '#{@admin_pass}',
-          instance_name => '#{inst_name}',
-      }
-      sqlserver::database{'#{db_name}':
-          instance => '#{inst_name}',
-      }
-      MANIFEST
-      apply_manifest_on(host, pp, {:acceptable_exit_codes => [0,1]}) do |r|
-        expect(r.stderr).to match(/Error: Must pass admin_user to Sqlserver/)
-      end
-    end
-
-    it "Negative test: sqlserver::config without admin_pass" do
-      pp = <<-MANIFEST
-      sqlserver::config{'#{inst_name}':
-          admin_user    => '#{@admin_user}',
-          instance_name => '#{inst_name}',
-      }
-      sqlserver::database{'#{db_name}':
-          instance => '#{inst_name}',
-      }
-      MANIFEST
-      apply_manifest_on(host, pp, {:acceptable_exit_codes => [0,1]}) do |r|
-        expect(r.stderr).to match(/Error: Must pass admin_pass to Sqlserver/)
-      end
-    end
   end
 end
