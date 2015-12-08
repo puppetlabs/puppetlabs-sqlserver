@@ -1,4 +1,4 @@
-##Supported Release 1.1.1
+##2015-12-08 - Supported Release 1.1.1
 ###Summary
 
 Small release for support of newer PE versions.
