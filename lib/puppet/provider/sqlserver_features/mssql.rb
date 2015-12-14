@@ -10,6 +10,7 @@ Puppet::Type::type(:sqlserver_features).provide(:mssql, :parent => Puppet::Provi
     instances = []
     result = Facter.value(:sqlserver_features)
     debug "Parsing result #{result}"
+    return [] if result.nil?
     result = !result[SQL_2014].empty? ? result[SQL_2014] : result[SQL_2012]
     if !result.empty?
       existing_instance = {:name => "Generic Features",

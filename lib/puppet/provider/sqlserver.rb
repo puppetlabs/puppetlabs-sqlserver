@@ -41,7 +41,8 @@ class Puppet::Provider::Sqlserver < Puppet::Provider
 
   def self.run_install_dot_net
     install_dot_net = <<-DOTNET
-Install-WindowsFeature  NET-Framework-Core
+Import-Module servermanager
+Add-WindowsFeature NET-Framework-Core
 
 Write-Host "Installing .Net Framework 3.5, do not close this prompt..."
 DISM /Online /Enable-Feature /FeatureName:NetFx3 /All /LimitAccess /Source:$LocalSource | Out-Null
