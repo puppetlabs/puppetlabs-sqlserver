@@ -113,7 +113,7 @@ Puppet::Type::newtype(:sqlserver_tsql) do
         @output = provider.run_update
       end
       unless @output.exitstatus.to_s == "0"
-        self.fail("#{self.resource[:command]} returned #{@output.exitstatus} instead of one of [#{self.should.join(",")}]")
+        self.fail("#{self.resource[:command]} returned #{@output.exitstatus} instead of one of [#{self.should.join(",")}] and error output #{@output.error_message}")
       end
       event
     end
