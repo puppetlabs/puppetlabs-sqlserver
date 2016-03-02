@@ -18,7 +18,7 @@ install:
 - SET PATH=C:\Ruby%RUBY_VER%\bin;%PATH%
 - DIR "C:\Ruby%RUBY_VER%\lib\ruby\gems\2.1.0\gems"
 - gem -v
-- gem install bundler --verbose --no-ri --no-rdoc
+- IF NOT EXIST "C:\Ruby%RUBY_VER%\lib\ruby\gems\2.1.0\gems\\bundler-1.11.2" gem install bundler --verbose --no-ri --no-rdoc
 - DIR "C:\Ruby%RUBY_VER%\lib\ruby\gems\2.1.0\gems"
 - bundle install --jobs 4 --retry 2 --without system_tests
 - type Gemfile.lock
