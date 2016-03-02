@@ -27,6 +27,7 @@ build: off
 test_script:
 - bundle exec puppet -V
 - ruby -v
+notifications:
 - provider: Email
   to:
   - nobody@nowhere.com
@@ -34,4 +35,4 @@ test_script:
   on_build_failure: false
   on_build_status_changed: false
 on_finish:
-- ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))notifications:
+- ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
