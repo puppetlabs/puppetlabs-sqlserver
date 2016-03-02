@@ -10,30 +10,22 @@ init:
 - 'mkdir C:\ProgramData\PuppetLabs\puppet\var && exit 0'
 environment:
   matrix:
-  - PUPPET_GEM_VERSION: ~> 3.0
-    RUBY_VER: 193
-  - PUPPET_GEM_VERSION: ~> 3.0
-    RUBY_VER: 200-x64
-  - PUPPET_GEM_VERSION: ~> 4.0
-    RUBY_VER: 21
   - PUPPET_GEM_VERSION: ~> 4.0
     RUBY_VER: 21-x64
-  - PUPPET_GEM_VERSION: 3.7.0
-    RUBY_VER: 193
-  - PUPPET_GEM_VERSION: 3.7.0
-    RUBY_VER: 200-x64
 matrix:
   fast_finish: true
 install:
 - SET PATH=C:\Ruby%RUBY_VER%\bin;%PATH%
-- gem install bundler --quiet --no-ri --no-rdoc
+- DIR "C:\Ruby%RUBY_VER%\lib\ruby\gems\2.1.0\gems"
+- gem -v
+- gem install bundler --verbose --no-ri --no-rdoc
+- DIR "C:\Ruby%RUBY_VER%\lib\ruby\gems\2.1.0\gems"
 - bundle install --jobs 4 --retry 2 --without system_tests
 - type Gemfile.lock
 build: off
 test_script:
 - bundle exec puppet -V
 - ruby -v
-- bundle exec rake spec SPEC_OPTS='--format documentation'
 notifications:
 - provider: Email
   to:
