@@ -235,3 +235,22 @@ EOM
   on host, "chmod 644 equifax.pem"
   on host, "cmd /c certutil -v -addstore Root `cygpath -w equifax.pem`"
 end
+
+def install_pe_license(host)
+  # Init
+  license = <<-EOF
+#######################
+#  Begin License File #
+#######################
+# PUPPET ENTERPRISE LICENSE - Puppet Labs
+to: qa
+nodes: 100
+start: 2016-03-31
+end: 2026-03-31
+#####################
+#  End License File #
+#####################
+EOF
+
+  create_remote_file(host, '/etc/puppetlabs/license.key', license)
+end

@@ -18,7 +18,11 @@ RSpec.configure do |c|
   end
 end
 
+# Install PE
 run_puppet_install_helper
+
+# Install PE License onto Master
+install_pe_license(master)
 
 unless ENV['MODULE_provision'] == 'no'
   agents.each do |agent|
@@ -26,29 +30,26 @@ unless ENV['MODULE_provision'] == 'no'
     program_files = agent.get_env_var('ProgramFiles').split('=')[1]
     agent.add_env_var('CommonProgramFiles', "#{program_files}\\Common Files")
 
-    # Install sqlserver module to agent
-    result = on agent, "echo #{agent['distmoduledir']}"
-    target = result.raw_output.chomp
-    proj_root = File.expand_path(File.join(File.dirname(__FILE__), '..'))
-    exec_puppet = <<-EOS
-    exec{'Download':
-      command => 'powershell.exe -command "Invoke-WebRequest https://forgeapi.puppetlabs.com"',
-      path => ['c:\\windows\\sysnative\\WindowsPowershell\\v1.0','c:\\windows\\system32\\WindowsPowershell\\v1.0'],
-    }
-    EOS
-    apply_manifest_on(agent, exec_puppet)
-    %w(puppetlabs/stdlib cyberious/pget).each do |dep|
-      on agent, puppet("module install #{dep}")
-    end
-    on agent, "git clone https://github.com/puppetlabs/puppetlabs-mount_iso #{target}/mount_iso"
-
+    # Install Forge certs to allow for PMT installation.
     install_ca_certs(agent)
 
-    # in CI install from staging forge, otherwise from local
-    staging = { :module_name => 'puppetlabs-sqlserver' }
-    local = { :module_name => 'sqlserver', :proj_root => proj_root, :target_module_path => target }
+    # Install test helper modules onto agent.
+    %w(puppetlabs-mount_iso cyberious-pget).each do |dep|
+      on(agent, puppet("module install #{dep}"))
+    end
 
-    install_dev_puppet_module_on(agent, options[:forge_host] ? staging : local)
+    # Determine root path of local module source.
+    proj_root = File.expand_path(File.join(File.dirname(__FILE__), '..'))
+
+    # In CI install from staging forge, otherwise from local
+    staging = { :module_name => 'puppetlabs-sqlserver' }
+    local = { :module_name => 'sqlserver', :source => proj_root }
+
+    # Install sqlserver dependencies.
+    on(agent, puppet('module install puppetlabs-stdlib'))
+
+    # Install sqlserver module from local source.
+    # See FM-5062 for more details.
+    copy_module_to(agent, local)
   end
 end
-
