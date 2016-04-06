@@ -1,3 +1,8 @@
+##2016-04-06 - Supported Release 1.1.2
+###Summary
+
+Small release to support Puppet version ranges.
+
 ##2015-12-08 - Supported Release 1.1.1
 ###Summary
 
