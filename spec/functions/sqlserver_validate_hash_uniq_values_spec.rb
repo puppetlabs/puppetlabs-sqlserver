@@ -1,8 +1,6 @@
 require 'spec_helper'
 
 describe "the sqlserver_validate_hash_uniq_values" do
-  let(:scope) { PuppetlabsSpec::PuppetInternals.scope }
-
   it "should exist" do
     expect(Puppet::Parser::Functions.function("sqlserver_validate_hash_uniq_values")).to eq("function_sqlserver_validate_hash_uniq_values")
   end
