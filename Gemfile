@@ -45,6 +45,8 @@ group :development do
   gem 'pry',                                 :require => false
   gem 'simplecov',                           :require => false
   gem 'yard',                                :require => false
+  # rspec-puppet should be pinned to 2.3.2 until MODULES-3240 is resolved
+  gem 'rspec-puppet','2.3.2',                :require => false  
 end
 
 group :system_tests do
