@@ -2,7 +2,6 @@ require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'lib/pupp
 
 RSpec.describe 'sqlserver_is_domain_or_local_user?' do
   shared_examples 'return the value' do
-    let(:scope) { PuppetlabsSpec::PuppetInternals.scope }
     it {
       Facter.stubs(:value).with(anything())
       Facter.stubs(:value).with(:hostname).returns('mybox')

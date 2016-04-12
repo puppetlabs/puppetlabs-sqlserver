@@ -1,8 +1,6 @@
 require 'spec_helper'
 
 describe 'sqlserver_validate_instance_name function' do
-  let(:scope) { PuppetlabsSpec::PuppetInternals.scope }
-
   it 'should exist' do
     expect(Puppet::Parser::Functions.function("sqlserver_validate_instance_name")).to eq("function_sqlserver_validate_instance_name")
   end
