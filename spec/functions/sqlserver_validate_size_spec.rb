@@ -2,8 +2,6 @@ require 'spec_helper'
 require 'puppet/error'
 
 describe 'sqlserver_validate_size function' do
-  let(:scope) { PuppetlabsSpec::PuppetInternals.scope }
-
   shared_examples 'should compile' do |value|
     it "with a value #{value}" do
       scope.function_sqlserver_validate_size([value])

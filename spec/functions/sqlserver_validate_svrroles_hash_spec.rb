@@ -2,8 +2,6 @@ require 'spec_helper'
 require 'puppet/error'
 
 RSpec.describe 'sqlserver_validate_svrroles_hash function' do
-  let(:scope) { PuppetlabsSpec::PuppetInternals.scope }
-
   possible_roles = %w(sysadmin serveradmin securityadmin processadmin setupadmin bulkadmin diskadmin dbcreator)
 
   shared_examples 'compile' do |value|
