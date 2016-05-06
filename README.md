@@ -518,6 +518,6 @@ This module is available only for Windows Server 2012 or 2012R2, and works with 
 
 This module was built by Puppet Labs specifically for use with Puppet Enterprise (PE).
 
-If you run into an issue with this module, or if you would like to request a feature, please [file a ticket](https://tickets.puppetlabs.com/browse/MODULES/).
+If you run into an issue with this module, or if you would like to request a feature, please [file a ticket](https://tickets.puppet.com/browse/MODULES/).
 
-If you are having problems getting this module up and running, please [contact Support](http://puppetlabs.com/services/customer-support).
+If you are having problems getting this module up and running, please [contact Support](http://puppet.com/services/customer-support).
