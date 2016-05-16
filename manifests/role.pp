@@ -62,7 +62,7 @@ define sqlserver::role(
     absent  => 'delete',
   }
 
-  sqlserver_tsql{ "role-${role}-${instance}":
+  sqlserver_tsql{ "role-${instance}-${database}-${role}":
     command  => template("sqlserver/${_create_delete}/role.sql.erb"),
     onlyif   => template('sqlserver/query/role_exists.sql.erb'),
     instance => $instance,
