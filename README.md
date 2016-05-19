@@ -55,12 +55,12 @@ A more advanced configuration, including installer switches:
 
 ~~~puppet
 sqlserver_instance{'MSSQLSERVER':
-  source => 'E:/',
-  features => ['SQL'],
-  security_mode => 'SQL',
-  sa_pwd => 'p@ssw0rd!!',
-  sql_sysadmin_accounts => ['myuser'],
-  install_switches => {
+  source                  => 'E:/',
+  features                => ['SQL'],
+  security_mode           => 'SQL',
+  sa_pwd                  => 'p@ssw0rd!!',
+  sql_sysadmin_accounts   => ['myuser'],
+  install_switches        => {
     'TCPENABLED'          => 1,
     'SQLBACKUPDIR'        => 'C:\\MSSQLSERVER\\backupdir',
     'SQLTEMPDBDIR'        => 'C:\\MSSQLSERVER\\tempdbdir',
