@@ -72,7 +72,7 @@ sqlserver_instance{'MSSQLSERVER':
 }
 ~~~
 
-This example creates the same MS SQL instance as above with additional options, including security mode (requiring password to be set) and optional install switches.
+This example creates the same MS SQL instance as shown above with additional options: security mode (requiring password to be set) and other optional install switches. This is specified using a hash syntax.
 
 ##Usage
 
