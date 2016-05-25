@@ -51,6 +51,29 @@ sqlserver_instance{'MSSQLSERVER':
 
 This example installs MS SQL and creates an MS SQL instance named MSSQLSERVER. It also installs the base SQL feature set (Data Quality, FullText, Replication, and SQLEngine), specifies the location of the setup.exe, and creates a new SQL-only sysadmin, 'myuser'.
 
+A more advanced configuration, including installer switches:
+
+~~~puppet
+sqlserver_instance{'MSSQLSERVER':
+  source                  => 'E:/',
+  features                => ['SQL'],
+  security_mode           => 'SQL',
+  sa_pwd                  => 'p@ssw0rd!!',
+  sql_sysadmin_accounts   => ['myuser'],
+  install_switches        => {
+    'TCPENABLED'          => 1,
+    'SQLBACKUPDIR'        => 'C:\\MSSQLSERVER\\backupdir',
+    'SQLTEMPDBDIR'        => 'C:\\MSSQLSERVER\\tempdbdir',
+    'INSTALLSQLDATADIR'   => 'C:\\MSSQLSERVER\\datadir',
+    'INSTANCEDIR'         => 'C:\\Program Files\\Microsoft SQL Server',
+    'INSTALLSHAREDDIR'    => 'C:\\Program Files\\Microsoft SQL Server',
+    'INSTALLSHAREDWOWDIR' => 'C:\\Program Files (x86)\\Microsoft SQL Server',
+  }
+}
+~~~
+
+This example creates the same MS SQL instance as shown above with additional options: security mode (requiring password to be set) and other optional install switches. This is specified using a hash syntax.
+
 ##Usage
 
 Note: For clarification on Microsoft SQL Server terminology, please see [Microsoft SQL Server Terms](#microsoft-sql-server-terms) below.
