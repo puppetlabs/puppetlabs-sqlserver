@@ -57,14 +57,14 @@ END CATCH
       }
     end
   end
-  context 'run_check' do
+  context 'run with onlyif' do
     describe 'against default database' do
       it {
         create_sqlserver_tsql({:title => 'runme', :command => 'whacka whacka', :onlyif => 'fozy wozy', :instance => 'MSSQLSERVER'})
         stub_get_instance_config(config)
         stub_open_and_run('fozy wozy', config.merge({:database => 'master'}))
 
-        @provider.run_check
+        @provider.run(gen_query('fozy wozy'))
       }
     end
     describe 'against non master database' do
@@ -78,7 +78,7 @@ END CATCH
         stub_get_instance_config(config)
         stub_open_and_run('fozy wozy', config.merge({:database => 'myDb'}))
 
-        @provider.run_check
+        @provider.run(gen_query('fozy wozy'))
       }
     end
   end
