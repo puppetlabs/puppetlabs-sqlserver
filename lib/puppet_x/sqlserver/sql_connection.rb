@@ -4,20 +4,17 @@ module PuppetX
     CONNECTION_CLOSED = 0
 
     class SqlConnection
-      attr_reader :exception_caught
-
       def open_and_run_command(query, config)
         begin
           open(config)
-          reset_instance
           execute(query)
         rescue win32_exception => e
-          @exception_caught = e
+          return ResultOutput.new(true, e.message)
         ensure
           close
         end
 
-        ResultOutput.new(has_errors, error_message)
+        ResultOutput.new(false, nil)
       end
 
       private
@@ -46,23 +43,11 @@ module PuppetX
         params.map { |k, v| "#{k}=#{v}" }.join(';')
       end
 
-      def has_errors
-        @exception_caught != nil
-      end
-
-      def error_message
-        @exception_caught.message unless @exception_caught == nil
-      end
-
       def close
         begin
           connection.Close unless connection_closed?
         rescue win32_exception => e
         end
-      end
-
-      def reset_instance
-        @exception_caught = nil
       end
 
       def connection_closed?
