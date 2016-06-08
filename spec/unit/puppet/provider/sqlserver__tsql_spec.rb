@@ -37,14 +37,14 @@ END CATCH
     PP
   end
 
-  context 'run_update' do
+  context 'run with a command' do
     describe 'against non master database' do
       it {
         create_sqlserver_tsql({:title => 'runme', :command => 'whacka whacka', :instance => 'MSSQLSERVER', :database => 'myDb'})
         stub_get_instance_config(config)
         stub_open_and_run('whacka whacka', config.merge({:database => 'myDb'}))
 
-        @provider.run_update
+        @provider.run(gen_query('whacka whacka'))
       }
     end
     describe 'against default database' do
@@ -53,7 +53,7 @@ END CATCH
         stub_get_instance_config(config)
         stub_open_and_run('whacka whacka', config.merge({:database => 'master'}))
 
-        @provider.run_update
+        @provider.run(gen_query('whacka whacka'))
       }
     end
   end

@@ -68,7 +68,7 @@ Puppet::Type::newtype(:sqlserver_tsql) do
 
   def refresh
     if self.check_all_attributes(true)
-      result = provider.run_update
+      result = provider.run(self.resource[:command])
       if result.has_errors
         fail("Unable to apply changes, failed with error message #{result.error_message}")
       end
@@ -110,7 +110,7 @@ Puppet::Type::newtype(:sqlserver_tsql) do
     def sync
       event = :executed_command
       begin
-        @output = provider.run_update
+        @output = provider.run(self.resource[:command])
       end
       unless @output.exitstatus.to_s == "0"
         self.fail("#{self.resource[:command]} returned #{@output.exitstatus} instead of one of [#{self.should.join(",")}]")
