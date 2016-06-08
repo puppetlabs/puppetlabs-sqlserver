@@ -18,40 +18,67 @@ RSpec.describe 'sqlserver::config', :type => :define do
     }
   end
 
-  context 'without admin_pass' do
-    let(:params) { {
-      :instance_name => 'MSSQLSERVER',
-      :admin_user => 'sa',
-    } }
+  context 'SQL Server based authentication' do
+    context 'without admin_pass' do
+      let(:params) { {
+        :instance_name => 'MSSQLSERVER',
+        :admin_user => 'sa',
+        :admin_login_type => 'SQL_LOGIN',
+      } }
 
-    if Puppet.version < '4.3.0'
-      let(:error_message) { /Must pass admin_pass to Sqlserver::Config/ }
-    else
-      let(:error_message) { /expects a value for parameter 'admin_pass'/ }
+      let(:error_message) { /expects admin_pass to be set for a admin_login_type of SQL_LOGIN/ }
+
+      it {
+        should_not compile
+        expect { catalogue }.to raise_error(Puppet::Error, error_message)
+        }
     end
 
-    it {
-      should_not compile
-      expect { catalogue }.to raise_error(Puppet::Error, error_message)
-      }
+    context 'without admin_user' do
+      let(:params) { {
+        :instance_name => 'MSSQLSERVER',
+        :admin_pass => 'Pupp3t1@',
+        :admin_login_type => 'SQL_LOGIN',
+      } }
+
+      let(:error_message) { /expects admin_user to be set for a admin_login_type of SQL_LOGIN/ }
+
+      it {
+        should_not compile
+        expect { catalogue }.to raise_error(Puppet::Error, error_message)
+        }
+    end
   end
 
-  context 'without admin_user' do
-    let(:params) { {
-      :instance_name => 'MSSQLSERVER',
-      :admin_pass => 'Pupp3t1@',
-    } }
+  context 'SQL Server based authentication' do
+    context 'with admin_user' do
+      let(:params) { {
+        :instance_name => 'MSSQLSERVER',
+        :admin_user => 'sa',
+        :admin_login_type => 'WINDOWS_LOGIN',
+      } }
 
+      let(:error_message) { /expects admin_user to be empty for a admin_login_type of WINDOWS_LOGIN/ }
 
-    if Puppet.version < '4.3.0'
-      let(:error_message) { /Must pass admin_user to Sqlserver::Config/ }
-    else
-      let(:error_message) { /expects a value for parameter 'admin_user'/ }
+      it {
+        should_not compile
+        expect { catalogue }.to raise_error(Puppet::Error, error_message)
+        }
     end
 
-    it {
-      should_not compile
-      expect { catalogue }.to raise_error(Puppet::Error, error_message)
-      }
+    context 'with admin_pass' do
+      let(:params) { {
+        :instance_name => 'MSSQLSERVER',
+        :admin_pass => 'Pupp3t1@',
+        :admin_login_type => 'WINDOWS_LOGIN',
+      } }
+
+      let(:error_message) { /expects admin_pass to be empty for a admin_login_type of WINDOWS_LOGIN/ }
+
+      it {
+        should_not compile
+        expect { catalogue }.to raise_error(Puppet::Error, error_message)
+        }
+    end
   end
 end
