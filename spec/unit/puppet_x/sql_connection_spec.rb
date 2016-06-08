@@ -41,11 +41,11 @@ RSpec.describe PuppetX::Sqlserver::SqlConnection do
         @connection.stubs(:Execute)
       end
       it 'should not add MSSQLSERVER to connection string' do
-        @connection.stubs(:Open).with('Provider=SQLOLEDB.1;User ID=sa;Password=Pupp3t1@;Initial Catalog=master;Application Name=Puppet;Data Source=localhost')
+        @connection.expects(:Open).with('Provider=SQLOLEDB.1;User ID=sa;Password=Pupp3t1@;Initial Catalog=master;Application Name=Puppet;Data Source=localhost')
         subject.open_and_run_command('query', config)
       end
       it 'should add a non default instance to connection string' do
-        @connection.stubs(:Open).with('Provider=SQLOLEDB.1;User ID=superuser;Password=puppetTested;Initial Catalog=master;Application Name=Puppet;Data Source=localhost\LOGGING')
+        @connection.expects(:Open).with('Provider=SQLOLEDB.1;User ID=superuser;Password=puppetTested;Initial Catalog=master;Application Name=Puppet;Data Source=localhost\LOGGING')
         subject.open_and_run_command('query', {:admin_user => 'superuser', :admin_pass => 'puppetTested', :instance_name => 'LOGGING'})
       end
     end
