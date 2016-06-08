@@ -16,7 +16,7 @@ module PuppetX
           close
         end
 
-        result
+        ResultOutput.new(has_errors, error_message)
       end
 
       private
@@ -54,10 +54,6 @@ module PuppetX
           @exception_caught = e
         end
         nil
-      end
-
-      def result
-        ResultOutput.new(has_errors, error_message)
       end
 
       def has_errors
