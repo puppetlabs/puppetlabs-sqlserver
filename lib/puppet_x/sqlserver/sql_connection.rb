@@ -47,13 +47,7 @@ module PuppetX
 
       def command(sql)
         reset_instance
-        begin
-          r = execute(sql)
-          yield(r) if block_given?
-        rescue win32_exception => e
-          @exception_caught = e
-        end
-        nil
+        execute(sql)
       end
 
       def has_errors
