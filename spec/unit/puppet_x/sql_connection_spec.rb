@@ -9,6 +9,7 @@ RSpec.describe PuppetX::Sqlserver::SqlConnection do
   def stub_connection
     @connection = mock()
     subject.stubs(:create_connection).returns(@connection)
+    @connection.stubs(:State).returns(PuppetX::Sqlserver::CONNECTION_CLOSED)
     subject.stubs(:win32_exception).returns(Exception)
   end
 
@@ -21,7 +22,6 @@ RSpec.describe PuppetX::Sqlserver::SqlConnection do
     context 'command execution' do
       before :each do
         stub_connection
-        @connection.stubs(:State).returns(0)
         @connection.stubs(:Open).with('Provider=SQLOLEDB.1;User ID=sa;Password=Pupp3t1@;Initial Catalog=master;Application Name=Puppet;Data Source=localhost')
       end
       it 'should not raise an error but populate has_errors with message' do
@@ -45,7 +45,6 @@ RSpec.describe PuppetX::Sqlserver::SqlConnection do
       before :each do
         stub_connection
         stub_no_errors
-        @connection.stubs(:State).returns(0)
       end
       it 'should not add MSSQLSERVER to connection string' do
         @connection.stubs(:Open).with('Provider=SQLOLEDB.1;User ID=sa;Password=Pupp3t1@;Initial Catalog=master;Application Name=Puppet;Data Source=localhost')
@@ -60,7 +59,7 @@ RSpec.describe PuppetX::Sqlserver::SqlConnection do
       it 'should not reopen an existing connection' do
         stub_connection
         @connection.expects(:open).never
-        @connection.stubs(:State).returns(1)
+        @connection.stubs(:State).returns(1) # any value other than CONNECTION_CLOSED
         @connection.expects(:Execute).with('query', nil, nil)
         subject.open_and_run_command('query', config)
       end
