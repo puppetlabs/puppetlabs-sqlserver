@@ -105,7 +105,7 @@ module PuppetX
 
       private
       def parse_for_error(result)
-        match = result.match(/SQL Server\n\s+(.*)/i)
+        match = result.match(/SQL Server\n\s*(.*)/i)
         match[1] unless match == nil
       end
     end
