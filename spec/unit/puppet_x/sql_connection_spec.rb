@@ -18,7 +18,7 @@ RSpec.describe PuppetX::Sqlserver::SqlConnection do
   end
 
   describe 'open_and_run_command' do
-    context 'command' do
+    context 'command execution' do
       before :each do
         stub_connection
         @connection.stubs(:State).returns(0)
@@ -68,7 +68,7 @@ RSpec.describe PuppetX::Sqlserver::SqlConnection do
     context 'return result with errors' do
       it {
         subject.expects(:open).with({:admin_user => 'sa', :admin_pass => 'Pupp3t1@', :instance_name => 'MSSQLSERVER'})
-        subject.expects(:command).with('SELECT * FROM sys.databases')
+        subject.expects(:execute).with('SELECT * FROM sys.databases')
         subject.expects(:close).once
         subject.stubs(:has_errors).returns(:true)
         subject.stubs(:error_message).returns(

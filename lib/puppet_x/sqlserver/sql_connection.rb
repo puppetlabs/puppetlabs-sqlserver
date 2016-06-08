@@ -9,7 +9,8 @@ module PuppetX
       def open_and_run_command(query, config)
         begin
           open(config)
-          command(query)
+          reset_instance
+          execute(query)
         rescue win32_exception => e
           @exception_caught = e
         ensure
@@ -43,11 +44,6 @@ module PuppetX
         end
 
         params.map { |k, v| "#{k}=#{v}" }.join(';')
-      end
-
-      def command(sql)
-        reset_instance
-        execute(sql)
       end
 
       def has_errors
