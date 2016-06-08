@@ -42,6 +42,7 @@ Puppet::Type::newtype(:sqlserver_tsql) do
     def check(value)
       output = provider.run(value)
       debug("OnlyIf returned exitstatus of #{output.exitstatus}")
+      debug("OnlyIf error: #{output.error_message}") if output.has_errors
       output.exitstatus != 0
     end
   end
