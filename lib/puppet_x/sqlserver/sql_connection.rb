@@ -29,15 +29,16 @@ module PuppetX
 
       def get_connection_string(config)
         params = {
-          'Provider'         => 'SQLOLEDB.1',
+          'Provider'         => 'SQLOLEDB',
+          'Network Library'  => 'dbmslpcn',
           'User ID'          => config[:admin_user],
           'Password'         => config[:admin_pass],
           'Initial Catalog'  => config[:database] || 'master',
           'Application Name' => 'Puppet',
-          'Data Source'      => 'localhost'
+          'Data Source'      => '(local)'
         }
         if config[:instance_name] !~ /^MSSQLSERVER$/
-          params['Data Source'] = "localhost\\#{config[:instance_name]}"
+          params['Data Source'] = "(local)\\#{config[:instance_name]}"
         end
 
         params.map { |k, v| "#{k}=#{v}" }.join(';')

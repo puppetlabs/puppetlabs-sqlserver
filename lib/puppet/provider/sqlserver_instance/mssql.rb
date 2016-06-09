@@ -11,6 +11,7 @@ Puppet::Type::type(:sqlserver_instance).provide(:mssql, :parent => Puppet::Provi
     instances = []
     result = Facter.value(:sqlserver_instances)
     debug "Parsing result #{result}"
+    return [] if result.nil?
     result = result.values.inject(:merge)
     result.keys.each do |instance_name|
         existing_instance = {:name => instance_name,
