@@ -286,9 +286,19 @@ Requires the `sqlserver::config` define for access to the parent instance.
 
 Stores credentials for Puppet to use when managing a given SQL Server instance.
 
-* `admin_pass`: *Required.* Supplies the password for the specified `admin_user` account. Valid options: a string containing a valid password.
+* `admin_login_type`: *Optional.* Specifies the type of login used to manage to SQL Server instace. The login type affects the `admin_user` and admin_pass` parameters which are described below. Valid options: 'SQL_LOGIN' and 'WINDOWS_LOGIN'. Default: 'SQL_LOGIN'.
 
-* `admin_user`: *Required.* Specifies a login account with sysadmin rights on the server, to be used for managing the instance. Valid options: a string containing a username.
+- When using SQL Server based authentication - `SQL_LOGIN`
+
+    * `admin_pass`: *Required.* Supplies the password for the specified `admin_user` account. Valid options: a string containing a valid password.
+
+    * `admin_user`: *Required.* Specifies a login account with sysadmin rights on the server, to be used for managing the instance. Valid options: a string containing a username.
+
+- When using Windows based authentication - `WINDOWS_LOGIN`
+
+    * `admin_pass`: *Optional.* Valid options: undefined or an empty string `''`
+
+    * `admin_user`: *Optional.* Valid options: undefined or an empty string `''`
 
 * `instance_name`: *Optional.* Specifies a SQL Server instance to manage. Valid options: a string containing the name of an existing instance. Default: the title of your declared resource.
 

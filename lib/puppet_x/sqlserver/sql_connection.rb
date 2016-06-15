@@ -30,13 +30,28 @@ module PuppetX
       def get_connection_string(config)
         params = {
           'Provider'         => 'SQLOLEDB.1',
-          'User ID'          => config[:admin_user],
-          'Password'         => config[:admin_pass],
           'Initial Catalog'  => config[:database] || 'master',
           'Application Name' => 'Puppet',
           'Data Source'      => 'localhost'
         }
-        if config[:instance_name] !~ /^MSSQLSERVER$/
+
+        admin_user = config[:admin_user] || ''
+        admin_pass = config[:admin_pass] || ''
+
+        if (config[:admin_login_type] == 'WINDOWS_LOGIN')
+          # Windows based authentication
+          raise ArgumentError, 'admin_user must be empty or nil' unless admin_user == ''
+          raise ArgumentError, 'admin_pass must be empty or nil' unless admin_pass == ''
+          params.store('Integrated Security','SSPI')
+        else
+          # SQL Server based authentication
+          raise ArgumentError, 'admin_user must not be empty or nil' unless admin_user != ''
+          raise ArgumentError, 'admin_pass must not be empty or nil' unless admin_pass != ''
+          params.store('User ID',  admin_user)
+          params.store('Password', admin_pass)
+        end
+
+        if config[:instance_name] != nil && config[:instance_name] !~ /^MSSQLSERVER$/
           params['Data Source'] = "localhost\\#{config[:instance_name]}"
         end
 
