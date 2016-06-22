@@ -1,7 +1,10 @@
 require 'puppetlabs_spec_helper/rake_tasks'
 require 'puppet-lint/tasks/puppet-lint'
 
+# Line length test is 80 chars in puppet-lint 1.1.0
 PuppetLint.configuration.send('disable_80chars')
+# Line length test is 140 chars in puppet-lint 2.x
+PuppetLint.configuration.send('disable_140chars')
 PuppetLint.configuration.ignore_paths = ["spec/**/*.pp", "pkg/**/*.pp"]
 
 desc "Validate manifests, templates, and ruby files"
