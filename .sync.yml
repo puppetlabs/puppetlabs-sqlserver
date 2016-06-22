@@ -23,7 +23,6 @@ Gemfile:
       - gem: mocha
         version: '~>0.10.5'
       - gem: pry
-      - gem: simplecov
       - gem: yard
     ':system_tests':
       - gem: beaker-rspec

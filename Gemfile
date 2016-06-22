@@ -43,7 +43,6 @@ group :development do
   gem 'puppet_facts',                        :require => false
   gem 'mocha', '~>0.10.5',                   :require => false
   gem 'pry',                                 :require => false
-  gem 'simplecov',                           :require => false
   gem 'yard',                                :require => false
 end
 
