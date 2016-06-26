@@ -1,4 +1,3 @@
-require 'simplecov'
 require 'rspec-puppet'
 require 'puppetlabs_spec_helper/module_spec_helper'
 
@@ -10,14 +9,5 @@ RSpec.configure do |c|
   c.expect_with :rspec do |e|
     e.syntax = [:should, :expect]
   end
-end
-
-SimpleCov.start do
-  add_group "Functions", "lib/puppet/parser/functions"
-  add_group "Types", "lib/puppet/type/"
-  add_group "Provider", "lib/puppet/provider"
-  add_group "Manifests", "manifests"
-  add_group "PuppetX", "lib/puppet_x/"
-  add_filter "/spec/"
 end
 
