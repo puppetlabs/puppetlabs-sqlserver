@@ -4,19 +4,17 @@ module PuppetX
     CONNECTION_CLOSED = 0
 
     class SqlConnection
-      attr_reader :exception_caught
-
       def open_and_run_command(query, config)
         begin
           open(config)
-          command(query)
+          execute(query)
         rescue win32_exception => e
-          @exception_caught = e
+          return ResultOutput.new(true, e.message)
         ensure
           close
         end
 
-        result
+        ResultOutput.new(false, nil)
       end
 
       private
@@ -32,40 +30,32 @@ module PuppetX
       def get_connection_string(config)
         params = {
           'Provider'         => 'SQLOLEDB.1',
-          'User ID'          => config[:admin_user],
-          'Password'         => config[:admin_pass],
           'Initial Catalog'  => config[:database] || 'master',
           'Application Name' => 'Puppet',
           'Data Source'      => 'localhost'
         }
-        if config[:instance_name] !~ /^MSSQLSERVER$/
+
+        admin_user = config[:admin_user] || ''
+        admin_pass = config[:admin_pass] || ''
+
+        if (config[:admin_login_type] == 'WINDOWS_LOGIN')
+          # Windows based authentication
+          raise ArgumentError, 'admin_user must be empty or nil' unless admin_user == ''
+          raise ArgumentError, 'admin_pass must be empty or nil' unless admin_pass == ''
+          params.store('Integrated Security','SSPI')
+        else
+          # SQL Server based authentication
+          raise ArgumentError, 'admin_user must not be empty or nil' unless admin_user != ''
+          raise ArgumentError, 'admin_pass must not be empty or nil' unless admin_pass != ''
+          params.store('User ID',  admin_user)
+          params.store('Password', admin_pass)
+        end
+
+        if config[:instance_name] != nil && config[:instance_name] !~ /^MSSQLSERVER$/
           params['Data Source'] = "localhost\\#{config[:instance_name]}"
         end
 
         params.map { |k, v| "#{k}=#{v}" }.join(';')
-      end
-
-      def command(sql)
-        reset_instance
-        begin
-          r = execute(sql)
-          yield(r) if block_given?
-        rescue win32_exception => e
-          @exception_caught = e
-        end
-        nil
-      end
-
-      def result
-        ResultOutput.new(has_errors, error_message)
-      end
-
-      def has_errors
-        @exception_caught != nil
-      end
-
-      def error_message
-        @exception_caught.message unless @exception_caught == nil
       end
 
       def close
@@ -73,10 +63,6 @@ module PuppetX
           connection.Close unless connection_closed?
         rescue win32_exception => e
         end
-      end
-
-      def reset_instance
-        @exception_caught = nil
       end
 
       def connection_closed?
@@ -119,7 +105,7 @@ module PuppetX
 
       private
       def parse_for_error(result)
-        match = result.match(/SQL Server\n\s+(.*)/i)
+        match = result.match(/SQL Server\n\s*(.*)/i)
         match[1] unless match == nil
       end
     end

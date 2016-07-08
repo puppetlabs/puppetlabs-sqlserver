@@ -24,12 +24,4 @@ Puppet::Type::type(:sqlserver_tsql).provide(:mssql, :parent => Puppet::Provider:
 
     config_resc.original_parameters
   end
-
-  def run_check
-    return self.run(resource[:onlyif])
-  end
-
-  def run_update
-    return self.run(resource[:command])
-  end
 end

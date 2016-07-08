@@ -9,23 +9,17 @@ RSpec.describe PuppetX::Sqlserver::SqlConnection do
   def stub_connection
     @connection = mock()
     subject.stubs(:create_connection).returns(@connection)
+    @connection.stubs(:State).returns(PuppetX::Sqlserver::CONNECTION_CLOSED)
     subject.stubs(:win32_exception).returns(Exception)
   end
 
-  def stub_no_errors
-    subject.stubs(:has_errors).returns(false)
-    subject.stubs(:error_message).returns(nil)
-  end
-
   describe 'open_and_run_command' do
-    context 'command' do
+    context 'command execution' do
       before :each do
         stub_connection
-        @connection.stubs(:State).returns(0)
-        @connection.stubs(:Open).with('Provider=SQLOLEDB.1;User ID=sa;Password=Pupp3t1@;Initial Catalog=master;Application Name=Puppet;Data Source=localhost')
+        @connection.stubs(:Open).with('Provider=SQLOLEDB.1;Initial Catalog=master;Application Name=Puppet;Data Source=localhost;User ID=sa;Password=Pupp3t1@')
       end
       it 'should not raise an error but populate has_errors with message' do
-        subject.stubs(:win32_exception).returns(Exception)
         subject.stubs(:execute).raises(Exception.new("SQL Server\n error has happened"))
         expect {
           result = subject.open_and_run_command('whacka whacka whacka', config)
@@ -44,36 +38,86 @@ RSpec.describe PuppetX::Sqlserver::SqlConnection do
     context 'closed connection' do
       before :each do
         stub_connection
-        stub_no_errors
-        @connection.stubs(:State).returns(0)
+        @connection.stubs(:Execute)
       end
-      it 'should not add MSSQLSERVER to connection string' do
-        @connection.stubs(:Open).with('Provider=SQLOLEDB.1;User ID=sa;Password=Pupp3t1@;Initial Catalog=master;Application Name=Puppet;Data Source=localhost')
-        subject.open_and_run_command('query', config)
+
+      context 'Use default authentication' do
+        it 'should defaul to SQL_LOGIN if admin_login_type is not set' do
+          @connection.expects(:Open).with('Provider=SQLOLEDB.1;Initial Catalog=master;Application Name=Puppet;Data Source=localhost;User ID=sa;Password=Pupp3t1@')
+          subject.open_and_run_command('query', {:admin_user => 'sa', :admin_pass => 'Pupp3t1@' })
+        end
       end
-      it 'should add a non default instance to connection string' do
-        @connection.stubs(:Open).with('Provider=SQLOLEDB.1;User ID=superuser;Password=puppetTested;Initial Catalog=master;Application Name=Puppet;Data Source=localhost\LOGGING')
-        subject.open_and_run_command('query', {:admin_user => 'superuser', :admin_pass => 'puppetTested', :instance_name => 'LOGGING'})
+
+      context 'SQL Server based authentication' do
+        it 'should result with error if set admin_user is not set' do
+          @connection.expects(:Open).never
+          expect {
+            result = subject.open_and_run_command('query', { :admin_pass => 'Pupp3t1@', :admin_login_type => 'SQL_LOGIN' })
+            expect(result.exitstatus).to eq(1)
+          }.to_not raise_error(Exception)
+        end
+
+        it 'should result with error if set admin_pass is not set' do
+          @connection.expects(:Open).never
+          expect {
+            result = subject.open_and_run_command('query', {:admin_user => 'sa', :admin_login_type => 'SQL_LOGIN' })
+            expect(result.exitstatus).to eq(1)
+          }.to_not raise_error(Exception)
+        end
+
+        it 'should not add the default instance of MSSQLSERVER to connection string' do
+          @connection.expects(:Open).with('Provider=SQLOLEDB.1;Initial Catalog=master;Application Name=Puppet;Data Source=localhost;User ID=sa;Password=Pupp3t1@')
+          subject.open_and_run_command('query', {:admin_user => 'sa', :admin_pass => 'Pupp3t1@', :instance_name => 'MSSQLSERVER'})
+        end
+        it 'should add a non default instance to connection string' do
+          @connection.expects(:Open).with('Provider=SQLOLEDB.1;Initial Catalog=master;Application Name=Puppet;Data Source=localhost\\LOGGING;User ID=sa;Password=Pupp3t1@')
+          subject.open_and_run_command('query', {:admin_user => 'sa', :admin_pass => 'Pupp3t1@', :instance_name => 'LOGGING'})
+        end
+      end
+
+      context 'Windows based authentication' do
+        it 'should result with error if set admin_user is set' do
+          @connection.expects(:Open).never
+          expect {
+            result = subject.open_and_run_command('query', {:admin_user => 'sa', :admin_pass => '', :admin_login_type => 'WINDOWS_LOGIN'})
+            expect(result.exitstatus).to eq(1)
+          }.to_not raise_error(Exception)
+        end
+
+        it 'should result with error if set admin_pass is set' do
+          @connection.expects(:Open).never
+          expect {
+            result = subject.open_and_run_command('query', {:admin_user => '', :admin_pass => 'Pupp3t1@', :admin_login_type => 'WINDOWS_LOGIN'})
+            expect(result.exitstatus).to eq(1)
+          }.to_not raise_error(Exception)
+        end
+
+        it 'should add integrated security to the connection string if admin and password are empty' do
+          @connection.expects(:Open).with('Provider=SQLOLEDB.1;Initial Catalog=master;Application Name=Puppet;Data Source=localhost;Integrated Security=SSPI')
+          subject.open_and_run_command('query', {:admin_user => '', :admin_pass => '', :admin_login_type => 'WINDOWS_LOGIN'})
+        end
+
+        it 'should add integrated security to the connection string if admin and password are not defined' do
+          @connection.expects(:Open).with('Provider=SQLOLEDB.1;Initial Catalog=master;Application Name=Puppet;Data Source=localhost;Integrated Security=SSPI')
+          subject.open_and_run_command('query', { :admin_login_type => 'WINDOWS_LOGIN' })
+        end
       end
     end
     context 'open connection' do
       it 'should not reopen an existing connection' do
         stub_connection
         @connection.expects(:open).never
-        @connection.stubs(:State).returns(1)
+        @connection.stubs(:State).returns(1) # any value other than CONNECTION_CLOSED
         @connection.expects(:Execute).with('query', nil, nil)
         subject.open_and_run_command('query', config)
       end
     end
     context 'return result with errors' do
       it {
+        subject.stubs(:win32_exception).returns(Exception)
         subject.expects(:open).with({:admin_user => 'sa', :admin_pass => 'Pupp3t1@', :instance_name => 'MSSQLSERVER'})
-        subject.expects(:command).with('SELECT * FROM sys.databases')
+        subject.expects(:execute).with('SELECT * FROM sys.databases').raises(Exception.new("SQL Server\ninvalid syntax provider"))
         subject.expects(:close).once
-        subject.stubs(:has_errors).returns(:true)
-        subject.stubs(:error_message).returns(
-          'SQL Server
-    invalid syntax provider')
         result =
           subject.open_and_run_command('SELECT * FROM sys.databases', config)
         expect(result.exitstatus).to eq(1)
@@ -85,8 +129,6 @@ RSpec.describe PuppetX::Sqlserver::SqlConnection do
         stub_connection
         err_message = "SQL Server\n ConnectionFailed"
         @connection.stubs(:Open).raises(Exception.new(err_message))
-        subject.stubs(:has_errors).returns(true)
-        subject.stubs(:error_message).returns(err_message)
         expect {
           result = subject.open_and_run_command('whacka whacka whacka', config)
           expect(result.exitstatus).to eq(1)

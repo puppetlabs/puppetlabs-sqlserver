@@ -62,7 +62,13 @@ define sqlserver::role(
     absent  => 'delete',
   }
 
-  sqlserver_tsql{ "role-${role}-${instance}":
+  # the title has to be unique to prevent collisions when multiple declarations
+  # are being used for the same role. for instance when multiple declarations
+  # for db_owner are declared in different databases or instances with different
+  # users. see MODULES-3355
+  $sqlserver_tsql_title = "role-${instance}-${database}-${role}"
+
+  sqlserver_tsql{ $sqlserver_tsql_title:
     command  => template("sqlserver/${_create_delete}/role.sql.erb"),
     onlyif   => template('sqlserver/query/role_exists.sql.erb'),
     instance => $instance,
@@ -77,7 +83,7 @@ define sqlserver::role(
       instance => $instance,
       database => $database,
       type     => $type,
-      require  => Sqlserver_tsql["role-${role}-${instance}"]
+      require  => Sqlserver_tsql[$sqlserver_tsql_title]
     }
     if has_key($_upermissions, 'GRANT') and is_array($_upermissions['GRANT']) {
       sqlserver::role::permissions{ "Sqlserver::Role[${title}]-GRANT-${role}":
