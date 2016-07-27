@@ -2,6 +2,7 @@ require 'spec_helper'
 require 'mocha'
 
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'sqlserver_install_context.rb'))
+require File.expand_path(File.join(File.dirname(__FILE__), '..', 'sqlserver_spec_helper.rb'))
 
 provider_class = Puppet::Type.type(:sqlserver_instance).provider(:mssql)
 
@@ -66,7 +67,13 @@ RSpec.describe provider_class do
       if execute_args[:sql_security_mode]
         cmd_args << "/SECURITYMODE=SQL"
       end
-      cmd_args << "/SQLSYSADMINACCOUNTS=#{ Array.new(@resource[:sql_sysadmin_accounts]).collect { |account| "\"#{account}\"" }.join(' ')}"
+
+      # wrap each arg in doublequotes
+      admin_args = execute_args[:sql_sysadmin_accounts].map { |a| "\"#{a}\"" }
+      # prepend first arg only with CLI switch
+      admin_args[0] = "/SQLSYSADMINACCOUNTS=" + admin_args[0]
+      cmd_args += admin_args
+
       additional_install_switches.each do |switch|
         cmd_args << switch
       end
