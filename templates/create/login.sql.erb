@@ -1,10 +1,21 @@
 DECLARE
 	@login as varchar(255) = '<%= @login %>',
-	@is_disabled as tinyint = <%= @disabled ? 1 : 0 %>;
-IF exists(select * from sys.sql_logins where name = '<%= @login %>')
+	@is_disabled as tinyint = <%= @disabled ? 1 : 0 %>,
+	@login_type as varchar(255) = NULL;
+SET @login_type = (SELECT [type] FROM sys.server_principals where name = '<%= @login %>')
+IF (@login_type IS NOT NULL)
 BEGIN
-    IF @is_disabled = 0	ALTER LOGIN [<%= @login %>] ENABLE
-    ELSE				ALTER LOGIN [<%= @login %>] DISABLE
+    IF (@login_type = 'G')
+	BEGIN
+		-- Windows Group type logins can only be granted/denied connection
+    	IF @is_disabled = 0	GRANT CONNECT SQL TO [<%= @login %>]
+    	ELSE				DENY CONNECT SQL TO [<%= @login %>]
+	END
+	ELSE
+    BEGIN
+		IF @is_disabled = 0	ALTER LOGIN [<%= @login %>] ENABLE
+		ELSE				ALTER LOGIN [<%= @login %>] DISABLE
+	END
 
 	ALTER LOGIN [<%= @login %>] WITH
 	<% if @login_type != 'WINDOWS_LOGIN' -%>

@@ -18,8 +18,7 @@ RSpec.describe 'sqlserver::login', :type => :define do
   end
   describe 'parameter assignment' do
     let(:should_contain_command) { [
-      "IF exists(select * from sys.sql_logins where name = 'myTitle')",
-      "@login as varchar(255) = 'myTitle'",
+      "FROM sys.server_principals where name = 'myTitle'",
       '@is_disabled as tinyint = 0'
     ] }
     let(:should_contain_onlyif) { [
@@ -30,7 +29,7 @@ RSpec.describe 'sqlserver::login', :type => :define do
       "@type_desc as varchar(50) = 'SQL_LOGIN'",
       "@default_db as varchar(255) = 'master'",
       "@default_lang as varchar(50) = 'us_english'",
-      "IF NOT EXISTS(SELECT name FROM sys.server_principals WHERE  name = 'myTitle')"
+      "FROM sys.server_principals WHERE name = 'myTitle'"
     ] }
     it_behaves_like 'sqlserver_tsql command'
     it_behaves_like 'sqlserver_tsql onlyif'
