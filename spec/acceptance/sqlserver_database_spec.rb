@@ -29,9 +29,7 @@ describe "Test sqlserver::database", :node => host do
     end
 
     after(:each) do
-
       # delete created database:
-
       pp = <<-MANIFEST
         sqlserver::config{'MSSQLSERVER':
           admin_user    => 'sa',
@@ -41,8 +39,7 @@ describe "Test sqlserver::database", :node => host do
           ensure  => 'absent',
         }
       MANIFEST
-      #comment out the below line because of ticket MODULES-2554.
-      #ensure_sqlserver_database(host, pp)
+      ensure_sqlserver_database(host, pp)
     end
 
     it "Test Case C89019: Create a database" do
@@ -65,6 +62,37 @@ describe "Test sqlserver::database", :node => host do
       puts "Validate the Database '#{@db_name}' and table '#{@table_name}' are successfully created:"
       query = "USE #{@db_name}; SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE table_name = '#{@table_name}';"
       run_sql_query(host, run_sql_query_opts(query, 1))
+    end
+
+    it "Delete a database" do
+      pp = <<-MANIFEST
+        sqlserver::config{'MSSQLSERVER':
+          admin_user    => 'sa',
+          admin_pass    => 'Pupp3t1@',
+        }
+        sqlserver::database{'#{@db_name}':
+        }
+      MANIFEST
+      ensure_sqlserver_database(host, pp)
+
+      puts "Validate the Database '#{@db_name}' exists"
+      query = "SELECT database_id from sys.databases WHERE name = '#{@db_name}';"
+      run_sql_query(host, run_sql_query_opts(query, 1))
+
+      pp = <<-MANIFEST
+        sqlserver::config{'MSSQLSERVER':
+          admin_user    => 'sa',
+          admin_pass    => 'Pupp3t1@',
+        }
+        sqlserver::database{'#{@db_name}':
+          ensure => absent,
+        }
+      MANIFEST
+      ensure_sqlserver_database(host, pp)
+
+      puts "Validate the Database '#{@db_name}' does not exist"
+      query = "SELECT database_id from sys.databases WHERE name = '#{@db_name}';"
+      run_sql_query(host, run_sql_query_opts(query, 0))
     end
 
     it "Test Case C89076: Create database with optional collation_name" do

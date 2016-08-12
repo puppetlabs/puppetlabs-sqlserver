@@ -56,8 +56,7 @@ describe "Test sqlserver::login", :node => host do
           ensure    => 'absent',
         }
       MANIFEST
-      #comment out the below line because of ticket MODULES-2554(delete database)
-      #ensure_manifest_apply(host, pp)
+      ensure_manifest_apply(host, pp)
     end
 
     # Generate different set of sqlserver login/password for each test
