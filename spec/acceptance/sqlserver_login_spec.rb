@@ -68,7 +68,7 @@ describe "Test sqlserver::login", :node => host do
 
     after(:each) do
       # delete recently created login after each test:
-      #This test also cover test case C89540: Delete login
+      # This test also cover test case C89540: Delete login
       pp = <<-MANIFEST
         sqlserver::config{'MSSQLSERVER':
           admin_user    => 'sa',
@@ -79,8 +79,7 @@ describe "Test sqlserver::login", :node => host do
           ensure    => 'absent',
         }
       MANIFEST
-      #comment out the below line because of ticket MODULES-2323(delete login)
-      #ensure_manifest_apply(host, pp)
+      ensure_manifest_apply(host, pp)
     end
 
     it "Test Case C89118: create login with optional 'check_expiration'" do
