@@ -15,6 +15,11 @@ Puppet::Type::newtype(:sqlserver_instance) do
 
   end
 
+  newparam(:windows_feature_source) do
+    desc 'Specify the location of the Windows Feature source files.  This may be needed to install the .Net Framework.
+          See https://support.microsoft.com/en-us/kb/2734782 for more information.'
+  end
+
   newparam(:pid) do
     desc 'Specify the SQL Server product key to configure which edition you would like to use.'
 

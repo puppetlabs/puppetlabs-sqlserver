@@ -57,8 +57,8 @@ Puppet::Type::type(:sqlserver_instance).provide(:mssql, :parent => Puppet::Provi
     end
   end
 
-  def installNet35
-    result = Puppet::Provider::Sqlserver.run_install_dot_net
+  def installNet35(source_location = nil)
+    result = Puppet::Provider::Sqlserver.run_install_dot_net(source_location)
   end
 
   def create
@@ -66,7 +66,7 @@ Puppet::Type::type(:sqlserver_instance).provide(:mssql, :parent => Puppet::Provi
       warn "Uninstalling all features for instance #{@resource[:name]} because an empty array was passed, please use ensure absent instead."
       destroy
     else
-      installNet35
+      installNet35(@resource[:windows_feature_source])
       add_features(@resource[:features])
       # cmd_args = build_cmd_args(@resource[:features])
       # begin

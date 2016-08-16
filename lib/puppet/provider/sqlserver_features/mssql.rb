@@ -99,8 +99,8 @@ may be overridden by some command line arguments")
     return nil
   end
 
-  def installNet35
-    result = Puppet::Provider::Sqlserver.run_install_dot_net
+  def installNet35(source_location = nil)
+    result = Puppet::Provider::Sqlserver.run_install_dot_net(source_location)
   end
 
   def create
@@ -108,7 +108,7 @@ may be overridden by some command line arguments")
       warn "Uninstalling all sql server features not tied into an instance because an empty array was passed, please use ensure absent instead."
       destroy
     else
-      installNet35
+      installNet35(@resource[:windows_feature_source])
       debug "Installing features #{@resource[:features]}"
       add_features(@resource[:features])
       @property_hash[:features] = @resource[:features]
