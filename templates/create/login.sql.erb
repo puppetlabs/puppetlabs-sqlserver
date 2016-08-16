@@ -45,9 +45,9 @@ ALTER LOGIN [<%= @login %>] WITH
 IF IS_SRVROLEMEMBER('<%= role %>','<%= @login %>') != <%= enable_bit %>
 BEGIN
 	<% if enable_bit == '1' || enable_bit == 1 -%>
-	ALTER SERVER ROLE <%= role %> ADD MEMBER [<%= @login %>];
+	ALTER SERVER ROLE [<%= role %>] ADD MEMBER [<%= @login %>];
 	<% else -%>
-	ALTER SERVER ROLE  <%= role %> DROP MEMBER [<%= @login %>];
+	ALTER SERVER ROLE [<%= role %>] DROP MEMBER [<%= @login %>];
 	<% end -%>
 END
 <% end -%>

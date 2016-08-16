@@ -259,7 +259,8 @@ describe "Test sqlserver::login", :node => host do
         before(:all) { remove_test_logins(host) }
 
         it "should create an initial #{testcase}" do
-          pp = create_login_manifest(testcase,@login_under_test,@login_passwd)
+          options = { 'svrroles' => '{\'sysadmin\' => 1}' }
+          pp = create_login_manifest(testcase,@login_under_test,@login_passwd,options)
           ensure_manifest_apply(host, pp)
         end
 
@@ -269,7 +270,7 @@ describe "Test sqlserver::login", :node => host do
         end
 
         it "should modify a #{testcase} login" do
-          options = { 'disabled' => true, 'default_database' => "#{db_name}", 'default_language' => 'Spanish', 'check_expiration' => true, 'check_policy' => true }
+          options = { 'disabled' => true, 'default_database' => "#{db_name}", 'default_language' => 'Spanish', 'check_expiration' => true, 'check_policy' => true, 'svrroles' => '{\'sysadmin\' => 1, \'serveradmin\' => 1}' }
           pp = create_login_manifest(testcase,@login_under_test,@login_passwd,options)
           ensure_manifest_apply(host, pp)
         end
@@ -284,6 +285,15 @@ describe "Test sqlserver::login", :node => host do
             query = "SELECT name as LOGIN_NAME, is_policy_checked FROM SYS.SQL_LOGINS WHERE is_policy_checked = '1' AND name = '#{@login_under_test}';"
             run_sql_query(host, run_sql_query_opts_as_sa(query, expected_row_count = 1))
           end
+        end
+
+        it "should have the specified sysadmin role" do
+          query = "SELECT 'is_sysadmin' AS result WHERE IS_SRVROLEMEMBER('sysadmin','#{@login_under_test}') = 1"
+          run_sql_query(host, run_sql_query_opts_as_sa(query, expected_row_count = 1))
+        end
+        it "should have the specified serveradmin role" do
+          query = "SELECT 'is_serveradmin' AS result WHERE IS_SRVROLEMEMBER('serveradmin','#{@login_under_test}') = 1"
+          run_sql_query(host, run_sql_query_opts_as_sa(query, expected_row_count = 1))
         end
 
         it "should have the specified default database" do
