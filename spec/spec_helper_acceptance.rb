@@ -27,8 +27,30 @@ install_pe_license(master)
 unless ENV['MODULE_provision'] == 'no'
   agents.each do |agent|
     # Emit CommonProgramFiles environment variable
-    program_files = agent.get_env_var('ProgramFiles').split('=')[1]
-    agent.add_env_var('CommonProgramFiles', "#{program_files}\\Common Files")
+    common_program_files = agent.get_env_var('CommonProgramFiles')
+
+    # Workarounds due to BKR-914
+    #  - newline chars indicate matching more than one env var
+    #  - env var key matching is very loose.  e.g. CommonProgramFiles(x86) can be returned
+    common_program_files = "" if common_program_files.include?("\n")
+    common_program_files = "" unless common_program_files.start_with?("CommonProgramFiles=")
+    #  If the env var is not found use a workaround to inject regex into the grep call
+    common_program_files = agent.get_env_var('^CommonProgramFiles=') if common_program_files == ""
+
+    if common_program_files == ""
+      program_files = agent.get_env_var('PROGRAMFILES')
+
+      # Workarounds due to BKR-914
+      #  - newline chars indicate matching more than one env var
+      #  - env var key matching is very loose.  e.g. ProgramFiles(x86) can be returned
+      program_files = "" if program_files.include?("\n")
+      program_files = "" unless program_files.start_with?("PROGRAMFILES=")
+      #  If the env var is not found use a workaround to inject regex into the grep call
+      program_files = agent.get_env_var('^PROGRAMFILES=') if program_files == ""
+
+      program_files = program_files.split('=')[1]
+      agent.add_env_var('CommonProgramFiles', "#{program_files}\\Common Files")
+    end
 
     # Install Forge certs to allow for PMT installation.
     install_ca_certs(agent)
