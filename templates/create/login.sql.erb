@@ -42,7 +42,12 @@ ALTER LOGIN [<%= @login %>] WITH
 	DEFAULT_DATABASE = [<%= @default_database %>];
 
 <% @svrroles.each do |role, enable_bit| -%>
-IF IS_SRVROLEMEMBER('<%= role %>','<%= @login %>') != <%= enable_bit %>
+IF (SELECT COUNT(me.role_principal_id) from sys.server_role_members me
+	JOIN sys.server_principals rol ON me.role_principal_id = rol.principal_id
+	JOIN sys.server_principals pri ON me.member_principal_id = pri.principal_id
+	WHERE rol.type_desc = 'SERVER_ROLE'
+		AND rol.name = '<%= role %>'
+		AND pri.name = '<%= @login %>') != <%= enable_bit %>
 BEGIN
 	<% if enable_bit == '1' || enable_bit == 1 -%>
 	ALTER SERVER ROLE [<%= role %>] ADD MEMBER [<%= @login %>];

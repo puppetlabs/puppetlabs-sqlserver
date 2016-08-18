@@ -288,11 +288,23 @@ describe "Test sqlserver::login", :node => host do
         end
 
         it "should have the specified sysadmin role" do
-          query = "SELECT 'is_sysadmin' AS result WHERE IS_SRVROLEMEMBER('sysadmin','#{@login_under_test}') = 1"
+          # Note - IS_SRVROLEMEMBER always returns false for a disabled WINDOWS_LOGIN user login
+          query = "SELECT pri.name from sys.server_role_members member
+                    JOIN sys.server_principals rol ON member.role_principal_id = rol.principal_id
+                    JOIN sys.server_principals pri ON member.member_principal_id = pri.principal_id
+                    WHERE rol.type_desc = 'SERVER_ROLE'
+                    AND rol.name = 'sysadmin'
+                    AND pri.name = '#{@login_under_test}'"
           run_sql_query(host, run_sql_query_opts_as_sa(query, expected_row_count = 1))
         end
         it "should have the specified serveradmin role" do
-          query = "SELECT 'is_serveradmin' AS result WHERE IS_SRVROLEMEMBER('serveradmin','#{@login_under_test}') = 1"
+          # Note - IS_SRVROLEMEMBER always returns false for a disabled WINDOWS_LOGIN user login
+          query = "SELECT pri.name from sys.server_role_members member
+                    JOIN sys.server_principals rol ON member.role_principal_id = rol.principal_id
+                    JOIN sys.server_principals pri ON member.member_principal_id = pri.principal_id
+                    WHERE rol.type_desc = 'SERVER_ROLE'
+                    AND rol.name = 'serveradmin'
+                    AND pri.name = '#{@login_under_test}'"
           run_sql_query(host, run_sql_query_opts_as_sa(query, expected_row_count = 1))
         end
 
