@@ -39,22 +39,32 @@ class Puppet::Provider::Sqlserver < Puppet::Provider
     !obj.nil? and !obj.empty?
   end
 
-  def self.run_install_dot_net
-    install_dot_net = <<-DOTNET
-Install-WindowsFeature  NET-Framework-Core
+  def self.run_install_dot_net(source_location = nil)
+    if (!source_location.nil?)
+      warn("The specified windows_source_location directory for sqlserver of \"#{source_location}\" does not exist") unless Puppet::FileSystem.directory?(source_location)
+    end
 
-Write-Host "Installing .Net Framework 3.5, do not close this prompt..."
-DISM /Online /Enable-Feature /FeatureName:NetFx3 /All /LimitAccess /Source:$LocalSource | Out-Null
+    install_dot_net = <<-DOTNET
 $Result = Dism /online /Get-featureinfo /featurename:NetFx3
 If($Result -contains "State : Enabled")
 {
-    Write-Host "Install .Net Framework 3.5 successfully."
+  Write-Host ".Net Framework 3.5 is already installed."
 }
 Else
 {
-    Write-Host "Failed to install Install .Net Framework 3.5,please make sure the local source is correct."
+  Write-Host "Installing .Net Framework 3.5, do not close this prompt..."
+  DISM /Online /Enable-Feature /FeatureName:NetFx3 /All /NoRestart /Quiet /LimitAccess #{ "/Source:\"#{source_location}\"" unless source_location.nil? } | Out-Null
+  $Result = Dism /online /Get-featureinfo /featurename:NetFx3
+  If($Result -contains "State : Enabled")
+  {
+      Write-Host "Install .Net Framework 3.5 successfully."
+  }
+  Else
+  {
+      Write-Host "Failed to install Install .Net Framework 3.5#{ ", please make sure the windows_feature_source is correct" unless source_location.nil?}."
+  }
 }
-    DOTNET
+DOTNET
     powershell([install_dot_net])
   end
 end

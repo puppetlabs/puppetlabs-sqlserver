@@ -204,6 +204,10 @@ Installs and configures features such as SSMS and Master Data Service.
 
 * `pid`: *Optional.* Supplies a product key to configure which edition of SQL Server to use. Valid options: a string containing a valid product key. Default: undef (if not specified, SQL Server runs in Evaluation mode).
 
+* `source`: *Required.* Locates the SQL Server installer. Valid options: a string containing the path to an executable. Puppet must have permission to execute the installer.
+
+* `windows_feature_source`: *Optional.* Specifies the location of the Windows Feature source files.  This may be needed to install the .Net Framework. See https://support.microsoft.com/en-us/kb/2734782 for more information.
+
 Please note that if an option is set in both its own specific parameter and `install_switches`, the specifically named parameter takes precedence. For example, if you set the product key in both `pid` and in `install_switches`, SQL Server honors the `pid` parameter.
 
 For more information about installer switches and configuring SQL Server, see the links below:
@@ -258,6 +262,8 @@ Installs and configures a SQL Server instance.
 * `sql_svc_password`: *Required if `sql_svc_account` points to a domain account. Invalid for system accounts.* Supplies the password for the SQL Server service's user account. Valid options: a string containing a valid password.
 
 * `sql_sysadmin_accounts`: *Required.* Specifies one or more SQL or system accounts to receive sysadmin status. Valid options: an array containing one or more valid usernames.
+
+* `windows_feature_source`: *Optional.* Specifies the location of the Windows Feature source files.  This may be needed to install the .Net Framework. See https://support.microsoft.com/en-us/kb/2734782 for more information.
 
 Please note that if an option is set in both its own specific parameter and `install_switches`, the specifically named parameter takes precedence. For example, if you set the product key in both `pid` and in `install_switches`, SQL Server honors the `pid` parameter.
 
