@@ -11,15 +11,16 @@ end
 describe "sqlserver_instance", :node => host do
   version = host['sql_version'].to_s
 
-
-  def ensure_sqlserver_instance(host, features, inst_name, ensure_val = 'present')
+  def ensure_sqlserver_instance(host, features, inst_name, ensure_val = 'present', sysadmin_accounts = "['Administrator']")
     manifest = <<-MANIFEST
     sqlserver_instance{'#{inst_name}':
       name                  => '#{inst_name}',
       ensure                => <%= ensure_val %>,
       source                => 'H:',
+      security_mode         => 'SQL',
+      sa_pwd                => 'Pupp3t1@',
       features              => [ <%= mssql_features %> ],
-      sql_sysadmin_accounts => ['Administrator'],
+      sql_sysadmin_accounts => #{sysadmin_accounts},
       agt_svc_account       => 'Administrator',
       agt_svc_password      => 'Qu@lity!',
     }
@@ -34,16 +35,67 @@ describe "sqlserver_instance", :node => host do
     end
   end
 
+  #Return options for run_sql_query
+  def run_sql_query_opts (inst_name, query, expected_row_count)
+    run_sql_query_opt = {
+        :query => query,
+        :instance => inst_name,
+        :server => '.',
+        :sql_admin_user => 'sa',
+        :sql_admin_pass => 'Pupp3t1@',
+        :expected_row_count => expected_row_count,
+    }
+  end
+
+  def sql_query_is_user_sysadmin(username)
+    <<-QUERY
+    Select [Name]
+      FROM SYS.Server_Principals
+      WHERE (type = 'S' or type = 'U')
+      AND [Name] like '%\\#{username}'
+      AND is_disabled = 0 AND IS_SRVROLEMEMBER('sysadmin', name) = 1;
+    QUERY
+  end
+
   context "Create an instance", {:testrail => ['88978', '89028', '89031', '89043', '89061']} do
+
+    before(:context) do
+      @ExtraAdminUser = 'ExtraSQLAdmin'
+      pp = <<-MANIFEST
+      user { '#{@ExtraAdminUser}':
+        ensure => present,
+        password => 'Puppet01!',
+      }
+      MANIFEST
+      apply_manifest_on(host,pp)
+    end
+
+    after(:context) do
+      pp = <<-MANIFEST
+      user { '#{@ExtraAdminUser}':
+        ensure => absent,
+      }
+      MANIFEST
+      apply_manifest_on(host,pp)
+    end
+
     inst_name = new_random_instance_name
     features = ['SQL', 'SQLEngine', 'Replication', 'FullText', 'DQ']
 
     it "create #{inst_name} instance" do
-      ensure_sqlserver_instance(host, features, inst_name)
+      ensure_sqlserver_instance(host, features, inst_name,'present',"['Administrator','ExtraSQLAdmin']")
 
       validate_sql_install(host, {:version => version}) do |r|
         expect(r.stdout).to match(/#{Regexp.new(inst_name)}/)
       end
+    end
+
+    it "#{inst_name} instance has Administrator as a sysadmin" do
+      run_sql_query(host, run_sql_query_opts(inst_name, sql_query_is_user_sysadmin('Administrator'), expected_row_count = 1))
+    end
+
+    it "#{inst_name} instance has ExtraSQLAdmin as a sysadmin" do
+      run_sql_query(host, run_sql_query_opts(inst_name, sql_query_is_user_sysadmin('ExtraSQLAdmin'), expected_row_count = 1))
     end
 
     it "remove #{inst_name} instance" do

@@ -57,8 +57,8 @@ Puppet::Type::type(:sqlserver_instance).provide(:mssql, :parent => Puppet::Provi
     end
   end
 
-  def installNet35
-    result = Puppet::Provider::Sqlserver.run_install_dot_net
+  def installNet35(source_location = nil)
+    result = Puppet::Provider::Sqlserver.run_install_dot_net(source_location)
   end
 
   def create
@@ -66,7 +66,7 @@ Puppet::Type::type(:sqlserver_instance).provide(:mssql, :parent => Puppet::Provi
       warn "Uninstalling all features for instance #{@resource[:name]} because an empty array was passed, please use ensure absent instead."
       destroy
     else
-      installNet35
+      installNet35(@resource[:windows_feature_source])
       add_features(@resource[:features])
       # cmd_args = build_cmd_args(@resource[:features])
       # begin
@@ -125,16 +125,32 @@ may be overridden by some command line arguments")
         end
       end
 
-      format_cmd_args_array('/SQLSYSADMINACCOUNTS', @resource[:sql_sysadmin_accounts], cmd_args)
+      format_cmd_args_array('/SQLSYSADMINACCOUNTS', @resource[:sql_sysadmin_accounts], cmd_args, true)
       format_cmd_args_array('/ASSYSADMINACCOUNTS', @resource[:as_sysadmin_accounts], cmd_args)
     end
     cmd_args
   end
 
-  def format_cmd_args_array(switch, arr, cmd_args)
+  def format_cmd_args_array(switch, arr, cmd_args, use_discrete = false)
     if not_nil_and_not_empty? arr
       arr = [arr] if !arr.kind_of?(Array)
-      cmd_args << "#{switch}=#{arr.collect { |item| "\"#{item}\"" }.join(' ')}"
+
+      # The default action is to join the array elements with a space ' ' so the cmd_args ends up like;
+      # ["/SWITCH=\"Element1\" \"Element2\""]
+      # Whereas if use_discrete is set, the args are appended as discrete elements in the cmd_args array e.g.;
+      # ["/SWITCH=\"Element1\"","\"Element2\""]
+
+      if use_discrete
+        arr.map.with_index { |var,i|
+          if i == 0
+            cmd_args << "#{switch}=\"#{var}\""
+          else
+            cmd_args << "\"#{var}\""
+          end
+        }
+      else
+        cmd_args << "#{switch}=#{arr.collect { |item| "\"#{item}\"" }.join(' ')}"
+      end
     end
   end
 
