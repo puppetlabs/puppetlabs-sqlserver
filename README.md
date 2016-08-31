@@ -1,6 +1,6 @@
 # sqlserver
 
-####Table of Contents
+#### Table of contents
 
 1. [Overview](#overview)
 2. [Module Description - What the module does and why it is useful](#module-description)
@@ -18,34 +18,34 @@
 6. [Limitations - OS compatibility, etc.](#limitations)
 7. [Development - Guide for contributing to the module](#development)
 
-##Overview
+## Overview
 
 The sqlserver module installs and manages Microsoft SQL Server 2012 and 2014 on Windows systems.
 
-##Module Description
+## Module description
 
 Microsoft SQL Server is a database platform for Windows. The sqlserver module lets you use Puppet to install multiple instances of SQL Server, add SQL features and client tools, execute TSQL statements, and manage databases, users, roles, and server configuration options.
 
-##Setup
+## Setup
 
-###Setup Requirements
+### Setup requirements
 
 The sqlserver module requires the following:
 
 * Puppet Enterprise 3.7 or later.
-* .NET 3.5 (installed automatically if not present. This might require an internet connection).
+* .NET 3.5. (Installed automatically if not present. This might require an internet connection.)
 * The contents of the SQL Server ISO file, mounted or extracted either locally or on a network share.
-* Windows Server 2012 or 2012R2.
+* Windows Server 2012 or 2012 R2.
 
-###Beginning with sqlserver
+### Beginning with sqlserver
 
 To get started with the sqlserver module, include these settings in your manifest:
 
 ~~~puppet
-sqlserver_instance{'MSSQLSERVER':
-    features                => ['SQL'],
-    source                  => 'E:/',
-    sql_sysadmin_accounts   => ['myuser'],
+sqlserver_instance{ 'MSSQLSERVER':
+  features              => ['SQL'],
+  source                => 'E:/',
+  sql_sysadmin_accounts => ['myuser'],
 }
 ~~~
 
@@ -54,7 +54,7 @@ This example installs MS SQL and creates an MS SQL instance named MSSQLSERVER. I
 A more advanced configuration, including installer switches:
 
 ~~~puppet
-sqlserver_instance{'MSSQLSERVER':
+sqlserver_instance{ 'MSSQLSERVER':
   source                  => 'E:/',
   features                => ['SQL'],
   security_mode           => 'SQL',
@@ -74,11 +74,11 @@ sqlserver_instance{'MSSQLSERVER':
 
 This example creates the same MS SQL instance as shown above with additional options: security mode (requiring password to be set) and other optional install switches. This is specified using a hash syntax.
 
-##Usage
+## Usage
 
 Note: For clarification on Microsoft SQL Server terminology, please see [Microsoft SQL Server Terms](#microsoft-sql-server-terms) below.
 
-###Install SQL Server tools and features not specific to a SQL Server instance
+### Install SQL Server tools and features not specific to a SQL Server instance
 
 ~~~puppet
 sqlserver_features { 'Generic Features':
@@ -89,98 +89,98 @@ sqlserver_features { 'Generic Features':
 
 ~~~puppet
 sqlserver_features { 'Generic Features':
-  source    => 'E:/',
-  features  => ['ADV_SSMS', 'BC', 'Conn', 'SDK', 'SSMS'],
+  source   => 'E:/',
+  features => ['ADV_SSMS', 'BC', 'Conn', 'SDK', 'SSMS'],
 }
 ~~~
 
-###Create a new database on an instance of SQL Server
+### Create a new database on an instance of SQL Server
 
 ~~~puppet
 sqlserver::database{ 'minviable':
-    instance => 'MSSQLSERVER',
+  instance => 'MSSQLSERVER',
 }
 ~~~
 
-###Set up a new login
+### Set up a new login
 
 ~~~puppet
-SQL Login
-sqlserver::login{'vagrant':
+# SQL Login
+sqlserver::login{ 'vagrant':
   instance => 'MSSQLSERVER',
   password => 'Pupp3t1@',
 }
 
-Windows Login
-sqlserver::login{'WIN-D95P1A3V103\localAccount':
+# Windows Login
+sqlserver::login{ 'WIN-D95P1A3V103\localAccount':
   instance   => 'MSSQLSERVER',
   login_type => 'WINDOWS_LOGIN',
 }
 ~~~
 
-###Create a new login and a user for a given database
+### Create a new login and a user for a given database
 
 ~~~puppet
-sqlserver::login{'loggingUser':
-    password => 'Pupp3t1@',
+sqlserver::login{ 'loggingUser':
+  password => 'Pupp3t1@',
 }
 
-sqlserver::user{'rp_logging-loggingUser':
-    user     => 'loggingUser',
-    database => 'rp_logging',
-    require  => Sqlserver::Login['loggingUser'],
+sqlserver::user{ 'rp_logging-loggingUser':
+  user     => 'loggingUser',
+  database => 'rp_logging',
+  require  => Sqlserver::Login['loggingUser'],
 }
 ~~~
 
-###Manage the above user's permissions
+### Manage the above user's permissions
 
 ~~~puppet
-sqlserver::user::permissions{'INSERT-loggingUser-On-rp_logging':
-    user       => 'loggingUser',
-    database   => 'rp_logging',
-    permissions => 'INSERT',
-    require    => Sqlserver::User['rp_logging-loggingUser'],
+sqlserver::user::permissions{ 'INSERT-loggingUser-On-rp_logging':
+  user        => 'loggingUser',
+  database    => 'rp_logging',
+  permissions => 'INSERT',
+  require     => Sqlserver::User['rp_logging-loggingUser'],
 }
 
-sqlserver::user::permissions{'Deny the Update as we should only insert':
-    user       => 'loggingUser',
-    database   => 'rp_logging',
-    permissions => 'UPDATE',
-    state      => 'DENY',
-    require    => Sqlserver::User['rp_logging-loggingUser'],
+sqlserver::user::permissions{ 'Deny the Update as we should only insert':
+  user        => 'loggingUser',
+  database    => 'rp_logging',
+  permissions => 'UPDATE',
+  state       => 'DENY',
+  require     => Sqlserver::User['rp_logging-loggingUser'],
 }
 ~~~
 
-###Run custom TSQL statements
+### Run custom TSQL statements
 
-####Use `sqlserver_tsql` to trigger other classes or defines
+#### Use `sqlserver_tsql` to trigger other classes or defines
 
 ~~~puppet
 sqlserver_tsql{ 'Query Logging DB Status':
-    instance => 'MSSQLSERVER',
-    onlyif   => "IF (SELECT count(*) FROM myDb.dbo.logging_table WHERE
-        message like 'FATAL%') > 1000  THROW 50000, 'Fatal Exceptions in Logging', 10",
-    notify   => Exec['Too Many Fatal Errors']
+  instance => 'MSSQLSERVER',
+  onlyif   => "IF (SELECT count(*) FROM myDb.dbo.logging_table WHERE
+      message like 'FATAL%') > 1000  THROW 50000, 'Fatal Exceptions in Logging', 10",
+  notify   => Exec['Too Many Fatal Errors']
 }
 ~~~
 
-####Clean up regular logs with conditional checks
+#### Clean up regular logs with conditional checks
 
 ~~~puppet
 sqlserver_tsql{ 'Cleanup Old Logs':
-    instance => 'MSSQLSERVER',
-    command  => "DELETE FROM myDb.dbo.logging_table WHERE log_date < '${log_max_date}'",
-    onlyif   => "IF exists(SELECT * FROM myDb.dbo.logging_table WHERE log_date < '${log_max_date}')
-        THROW 50000, 'need log cleanup', 10",
+  instance => 'MSSQLSERVER',
+  command  => "DELETE FROM myDb.dbo.logging_table WHERE log_date < '${log_max_date}'",
+  onlyif   => "IF exists(SELECT * FROM myDb.dbo.logging_table WHERE log_date < '${log_max_date}')
+      THROW 50000, 'need log cleanup', 10",
 }
 ~~~
 
-####If you want your statement to always execute, leave out the `onlyif` parameter
+#### Always execute a statement by omitting the `onlyif` parameter
 
 ~~~puppet
 sqlserver_tsql{ 'Always running':
-    instance => 'MSSQLSERVER',
-    command  => 'EXEC notified_executor()',
+  instance => 'MSSQLSERVER',
+  command  => 'EXEC notified_executor()',
 }
 ~~~
 
@@ -206,7 +206,7 @@ Installs and configures features such as SSMS and Master Data Service.
 
 * `source`: *Required.* Locates the SQL Server installer. Valid options: a string containing the path to an executable. Puppet must have permission to execute the installer.
 
-* `windows_feature_source`: *Optional.* Specifies the location of the Windows Feature source files.  This may be needed to install the .Net Framework. See https://support.microsoft.com/en-us/kb/2734782 for more information.
+* `windows_feature_source`: *Optional.* Specifies the location of the Windows Feature source files, which might be needed to install the .NET Framework. See https://support.microsoft.com/en-us/kb/2734782 for more information.
 
 Please note that if an option is set in both its own specific parameter and `install_switches`, the specifically named parameter takes precedence. For example, if you set the product key in both `pid` and in `install_switches`, SQL Server honors the `pid` parameter.
 
@@ -263,7 +263,7 @@ Installs and configures a SQL Server instance.
 
 * `sql_sysadmin_accounts`: *Required.* Specifies one or more SQL or system accounts to receive sysadmin status. Valid options: an array containing one or more valid usernames.
 
-* `windows_feature_source`: *Optional.* Specifies the location of the Windows Feature source files.  This may be needed to install the .Net Framework. See https://support.microsoft.com/en-us/kb/2734782 for more information.
+* `windows_feature_source`: *Optional.* Specifies the location of the Windows Feature source files, which might be needed to install the .NET Framework. See https://support.microsoft.com/en-us/kb/2734782 for more information.
 
 Please note that if an option is set in both its own specific parameter and `install_switches`, the specifically named parameter takes precedence. For example, if you set the product key in both `pid` and in `install_switches`, SQL Server honors the `pid` parameter.
 
@@ -272,7 +272,7 @@ For more information about installer switches and configuring SQL Server, see th
 * [Installer Switches](https://msdn.microsoft.com/en-us/library/ms144259.aspx)
 * [Configuration File](https://msdn.microsoft.com/en-us/library/dd239405.aspx)
 
-####`sqlserver_tsql`
+#### `sqlserver_tsql`
 
 Executes a TSQL query against a SQL Server instance.
 
@@ -292,7 +292,7 @@ Requires the `sqlserver::config` define for access to the parent instance.
 
 Stores credentials for Puppet to use when managing a given SQL Server instance.
 
-* `admin_login_type`: *Optional.* Specifies the type of login used to manage to SQL Server instace. The login type affects the `admin_user` and admin_pass` parameters which are described below. Valid options: 'SQL_LOGIN' and 'WINDOWS_LOGIN'. Default: 'SQL_LOGIN'.
+* `admin_login_type`: *Optional.* Specifies the type of login used to manage to SQL Server instance. The login type affects the `admin_user` and `admin_pass` parameters which are described below. Valid options: 'SQL_LOGIN' and 'WINDOWS_LOGIN'. Default: 'SQL_LOGIN'.
 
 - When using SQL Server based authentication - `SQL_LOGIN`
 
@@ -302,9 +302,9 @@ Stores credentials for Puppet to use when managing a given SQL Server instance.
 
 - When using Windows based authentication - `WINDOWS_LOGIN`
 
-    * `admin_pass`: *Optional.* Valid options: undefined or an empty string `''`
+    * `admin_pass`: *Optional.* Valid options: undefined or an empty string (`''`).
 
-    * `admin_user`: *Optional.* Valid options: undefined or an empty string `''`
+    * `admin_user`: *Optional.* Valid options: undefined or an empty string (`''`).
 
 * `instance_name`: *Optional.* Specifies a SQL Server instance to manage. Valid options: a string containing the name of an existing instance. Default: the title of your declared resource.
 
@@ -549,14 +549,14 @@ Terminology differs somewhat between various database systems; please refer to t
 * **Role:** a database-level or server-level permissions group.
 * **User:** a database-level account, typically mapped to a login.
 
-##Limitations
+## Limitations
 
-This module is available only for Windows Server 2012 or 2012R2, and works with Puppet Enterprise 3.7 and later.
+This module is available only for Windows Server 2012 or 2012 R2, and works with Puppet Enterprise 3.7 and later.
 
 ## Development
 
-This module was built by Puppet Inc specifically for use with Puppet Enterprise (PE).
+This module was built by Puppet Inc. specifically for use with Puppet Enterprise (PE).
 
 If you run into an issue with this module, or if you would like to request a feature, please [file a ticket](https://tickets.puppet.com/browse/MODULES/).
 
-If you are having problems getting this module up and running, please [contact Support](http://puppet.com/services/customer-support).
+If you have problems getting this module up and running, please [contact Support](https://puppet.com/support-services/customer-support).
