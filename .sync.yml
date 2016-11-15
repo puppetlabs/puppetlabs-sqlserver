@@ -9,7 +9,6 @@
 CONTRIBUTING.md:
   unmanaged: true
 Gemfile:
-  supports_windows: true
   optional:
     ':development':
       - gem: yard
