@@ -1,5 +1,6 @@
 fixtures:
-  forge_modules:
-    stdlib: "puppetlabs/stdlib"
+  repositories:
+    "stdlib":
+      "repo": "git://github.com/puppetlabs/puppetlabs-stdlib.git"
   symlinks:
     sqlserver: "#{source_dir}"
