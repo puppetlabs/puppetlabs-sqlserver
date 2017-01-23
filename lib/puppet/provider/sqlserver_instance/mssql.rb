@@ -43,11 +43,12 @@ Puppet::Type::type(:sqlserver_instance).provide(:mssql, :parent => Puppet::Provi
   def modify_features(features, action)
     if not_nil_and_not_empty? features
       debug "#{action.capitalize}ing features '#{features.join(',')}'"
-      cmd_args = build_cmd_args(features, action)
+      cmd_args, obfuscated_strings = build_cmd_args(features, action)
+
       begin
         config_file = create_temp_for_install_switch unless action == 'uninstall'
         cmd_args << "/ConfigurationFile=\"#{config_file.path}\"" unless config_file.nil?
-        try_execute(cmd_args, "Error trying to #{action} features (#{features.join(', ')}")
+        try_execute(cmd_args, "Error trying to #{action} features (#{features.join(', ')}", obfuscated_strings)
       ensure
         if config_file
           config_file.close
@@ -118,17 +119,21 @@ may be overridden by some command line arguments")
 
   def build_cmd_args(features, action="install")
     cmd_args = basic_cmd_args(features, action)
+    obfuscated_strings = []
     if action == 'install'
       %w(pid sa_pwd sql_svc_account sql_svc_password agt_svc_account agt_svc_password as_svc_account as_svc_password rs_svc_account rs_svc_password security_mode).map(&:to_sym).sort.collect do |key|
         if not_nil_and_not_empty? @resource[key]
           cmd_args << "/#{key.to_s.gsub(/_/, '').upcase}=\"#{@resource[key]}\""
+          if key.to_s =~ /(_pwd|_password)$/i
+            obfuscated_strings.push(@resource[key])
+          end
         end
       end
 
       format_cmd_args_array('/SQLSYSADMINACCOUNTS', @resource[:sql_sysadmin_accounts], cmd_args, true)
       format_cmd_args_array('/ASSYSADMINACCOUNTS', @resource[:as_sysadmin_accounts], cmd_args)
     end
-    cmd_args
+    return cmd_args, obfuscated_strings
   end
 
   def format_cmd_args_array(switch, arr, cmd_args, use_discrete = false)
