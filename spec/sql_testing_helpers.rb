@@ -1,19 +1,20 @@
+
 def mount_iso(host, opts = {})
-  # This method mounts the ISO on a given host
-  qa_iso_resource_root = opts[:qa_iso_resource_root]
-  sqlserver_iso = opts[:sqlserver_iso]
-  sqlserver_version = opts[:sqlserver_version]
+  folder = opts[:folder];
+  file = opts[:file];
+  drive_letter = opts[:drive_letter];
+
   pp = <<-MANIFEST
-  $p_src  = '#{qa_iso_resource_root}/#{sqlserver_iso}'
-  $source = 'C:\\#{sqlserver_iso}'
-  pget{"Download #{sqlserver_version} Iso":
+  $p_src  = '#{folder}/#{file}'
+  $source = 'C:\\#{file}'
+  pget{"Download #{file} Iso":
     source  => $p_src,
     target  => 'C:',
     timeout => 150000,
   }
   mount_iso{$source:
-    require      => Pget['Download #{sqlserver_version} Iso'],
-    drive_letter => 'H',
+    require      => Pget['Download #{file} Iso'],
+    drive_letter => '#{drive_letter}',
   }
   MANIFEST
   apply_manifest_on(host, pp)
@@ -37,7 +38,8 @@ def install_sqlserver(host, opts = {})
         'INSTANCEDIR'         => 'C:\\Program Files\\Microsoft SQL Server',
         'INSTALLSHAREDDIR'    => 'C:\\Program Files\\Microsoft SQL Server',
         'INSTALLSHAREDWOWDIR' => 'C:\\Program Files (x86)\\Microsoft SQL Server',
-      }
+      },
+      windows_feature_source => 'I:\\sources\\sxs',
     }
     MANIFEST
     apply_manifest_on(host, pp)
@@ -83,15 +85,15 @@ def base_install(sql_version)
   case sql_version.to_i
   when 2012
     iso_opts = {
-      :qa_iso_resource_root   => QA_RESOURCE_ROOT,
-      :sqlserver_iso          => SQL_2012_ISO,
-      :sqlserver_version      => '2012',
+      :folder       => QA_RESOURCE_ROOT,
+      :file         => SQL_2012_ISO,
+      :drive_letter => 'H'
     }
   when 2014
     iso_opts = {
-      :qa_iso_resource_root   => QA_RESOURCE_ROOT,
-      :sqlserver_iso          => SQL_2014_ISO,
-      :sqlserver_version      => '2014',
+      :folder       => QA_RESOURCE_ROOT,
+      :file         => SQL_2014_ISO,
+      :drive_letter => 'H'
     }
   end
   host = find_only_one('sql_host')

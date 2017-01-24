@@ -23,6 +23,7 @@ describe "sqlserver_instance", :node => host do
       sql_sysadmin_accounts => #{sysadmin_accounts},
       agt_svc_account       => 'Administrator',
       agt_svc_password      => 'Qu@lity!',
+      windows_feature_source => 'I:\\sources\\sxs',
     }
     MANIFEST
 
