@@ -18,6 +18,7 @@ describe "sqlserver_features", :node => host do
       is_svc_account    => "$::hostname\\\\Administrator",
       is_svc_password   => 'Qu@lity!',
       features          => [ <%= mssql_features %> ],
+      windows_feature_source => 'I:\\sources\\sxs',
     }
     MANIFEST
 
