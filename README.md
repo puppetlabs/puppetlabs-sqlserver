@@ -42,7 +42,7 @@ The sqlserver module requires the following:
 To get started with the sqlserver module, include in your manifest:
 
 ```puppet
-sqlserver_instance{'MSSQLSERVER':
+sqlserver_instance{ 'MSSQLSERVER':
     features                => ['SQL'],
     source                  => 'E:/',
     sql_sysadmin_accounts   => ['myuser'],
@@ -54,7 +54,7 @@ This example installs MS SQL and creates an MS SQL instance named MSSQLSERVER. I
 A more advanced configuration, including installer switches:
 
 ```puppet
-sqlserver_instance{'MSSQLSERVER':
+sqlserver_instance{ 'MSSQLSERVER':
   source                  => 'E:/',
   features                => ['SQL'],
   security_mode           => 'SQL',
@@ -106,7 +106,7 @@ sqlserver::database{ 'minviable':
 
 ```puppet
 SQL Login
-sqlserver::login{'vagrant':
+sqlserver::login{ 'vagrant':
   instance => 'MSSQLSERVER',
   password => 'Pupp3t1@',
 }
@@ -121,8 +121,8 @@ sqlserver::login{ 'WIN-D95P1A3V103\localAccount':
 ### Create a new login and a user for a given database
 
 ```puppet
-sqlserver::login{'loggingUser':
-    password => 'Pupp3t1@',
+sqlserver::login{ 'loggingUser':
+  password => 'Pupp3t1@',
 }
 
 sqlserver::user{ 'rp_logging-loggingUser':
@@ -136,10 +136,10 @@ sqlserver::user{ 'rp_logging-loggingUser':
 
 ```puppet
 sqlserver::user::permissions{'INSERT-loggingUser-On-rp_logging':
-    user       => 'loggingUser',
-    database   => 'rp_logging',
+    user        => 'loggingUser',
+    database    => 'rp_logging',
     permissions => 'INSERT',
-    require    => Sqlserver::User['rp_logging-loggingUser'],
+    require     => Sqlserver::User['rp_logging-loggingUser'],
 }
 
 sqlserver::user::permissions{ 'Deny the Update as we should only insert':
@@ -411,7 +411,7 @@ Stores credentials for Puppet to use when managing a given SQL Server instance.
 
 ##### `admin_login_type`
 
-Specifies the type of login used to manage to SQL Server instace. The login type affects the `admin_user` and `admin_pass` parameters which are described below. Valid options: 'SQL_LOGIN' and 'WINDOWS_LOGIN'.
+Specifies the type of login used to manage to SQL Server instance. The login type affects the `admin_user` and `admin_pass` parameters which are described below. Valid options: 'SQL_LOGIN' and 'WINDOWS_LOGIN'.
 
 Default: 'SQL_LOGIN'.
 

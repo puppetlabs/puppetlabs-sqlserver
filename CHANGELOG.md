@@ -1,3 +1,19 @@
+## 2017-02-15 - Supported Release 1.1.5
+
+### Summary
+
+- Small release with several bug fixes and a minor feature.
+
+#### Features
+
+- Obfuscate passwords in logs if sqlserver_instance raises an error ([MODULES-4255](https://tickets.puppet.com/browse/MODULES-4255)).
+
+#### Bug Fixes
+
+- Fix issues with installing .Net 3.5 in acceptance tests
+- Fix various issues with test environment in AppVeyor, Travis CI and Jenkins
+- Fix documentation for localization
+
 ## 2016-08-31 - Supported Release 1.1.4
 
 ### Summary
