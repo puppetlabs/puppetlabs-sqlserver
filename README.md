@@ -1,6 +1,6 @@
 # sqlserver
 
-####Table of Contents
+#### Table of contents
 
 1. [Overview](#overview)
 2. [Module Description - What the module does and why it is useful](#module-description)
@@ -33,9 +33,9 @@ Microsoft SQL Server is a database platform for Windows. The sqlserver module le
 The sqlserver module requires the following:
 
 * Puppet Enterprise 3.7 or later.
-* .NET 3.5 (installed automatically if not present. This might require an internet connection).
+* .NET 3.5. (Installed automatically if not present. This might require an internet connection.)
 * The contents of the SQL Server ISO file, mounted or extracted either locally or on a network share.
-* Windows Server 2012 or 2012R2.
+* Windows Server 2012 or 2012 R2.
 
 ### Beginning with sqlserver
 
@@ -89,8 +89,8 @@ sqlserver_features { 'Generic Features':
 
 ```puppet
 sqlserver_features { 'Generic Features':
-  source    => 'E:/',
-  features  => ['ADV_SSMS', 'BC', 'Conn', 'SDK', 'SSMS'],
+  source   => 'E:/',
+  features => ['ADV_SSMS', 'BC', 'Conn', 'SDK', 'SSMS'],
 }
 ```
 
@@ -98,7 +98,7 @@ sqlserver_features { 'Generic Features':
 
 ```puppet
 sqlserver::database{ 'minviable':
-    instance => 'MSSQLSERVER',
+  instance => 'MSSQLSERVER',
 }
 ```
 
@@ -111,8 +111,8 @@ sqlserver::login{'vagrant':
   password => 'Pupp3t1@',
 }
 
-Windows Login
-sqlserver::login{'WIN-D95P1A3V103\localAccount':
+# Windows Login
+sqlserver::login{ 'WIN-D95P1A3V103\localAccount':
   instance   => 'MSSQLSERVER',
   login_type => 'WINDOWS_LOGIN',
 }
@@ -125,10 +125,10 @@ sqlserver::login{'loggingUser':
     password => 'Pupp3t1@',
 }
 
-sqlserver::user{'rp_logging-loggingUser':
-    user     => 'loggingUser',
-    database => 'rp_logging',
-    require  => Sqlserver::Login['loggingUser'],
+sqlserver::user{ 'rp_logging-loggingUser':
+  user     => 'loggingUser',
+  database => 'rp_logging',
+  require  => Sqlserver::Login['loggingUser'],
 }
 ```
 
@@ -142,12 +142,12 @@ sqlserver::user::permissions{'INSERT-loggingUser-On-rp_logging':
     require    => Sqlserver::User['rp_logging-loggingUser'],
 }
 
-sqlserver::user::permissions{'Deny the Update as we should only insert':
-    user       => 'loggingUser',
-    database   => 'rp_logging',
-    permissions => 'UPDATE',
-    state      => 'DENY',
-    require    => Sqlserver::User['rp_logging-loggingUser'],
+sqlserver::user::permissions{ 'Deny the Update as we should only insert':
+  user        => 'loggingUser',
+  database    => 'rp_logging',
+  permissions => 'UPDATE',
+  state       => 'DENY',
+  require     => Sqlserver::User['rp_logging-loggingUser'],
 }
 ```
 
@@ -157,10 +157,10 @@ sqlserver::user::permissions{'Deny the Update as we should only insert':
 
 ```puppet
 sqlserver_tsql{ 'Query Logging DB Status':
-    instance => 'MSSQLSERVER',
-    onlyif   => "IF (SELECT count(*) FROM myDb.dbo.logging_table WHERE
-        message like 'FATAL%') > 1000  THROW 50000, 'Fatal Exceptions in Logging', 10",
-    notify   => Exec['Too Many Fatal Errors']
+  instance => 'MSSQLSERVER',
+  onlyif   => "IF (SELECT count(*) FROM myDb.dbo.logging_table WHERE
+      message like 'FATAL%') > 1000  THROW 50000, 'Fatal Exceptions in Logging', 10",
+  notify   => Exec['Too Many Fatal Errors']
 }
 ```
 
@@ -168,10 +168,10 @@ sqlserver_tsql{ 'Query Logging DB Status':
 
 ```puppet
 sqlserver_tsql{ 'Cleanup Old Logs':
-    instance => 'MSSQLSERVER',
-    command  => "DELETE FROM myDb.dbo.logging_table WHERE log_date < '${log_max_date}'",
-    onlyif   => "IF exists(SELECT * FROM myDb.dbo.logging_table WHERE log_date < '${log_max_date}')
-        THROW 50000, 'need log cleanup', 10",
+  instance => 'MSSQLSERVER',
+  command  => "DELETE FROM myDb.dbo.logging_table WHERE log_date < '${log_max_date}'",
+  onlyif   => "IF exists(SELECT * FROM myDb.dbo.logging_table WHERE log_date < '${log_max_date}')
+      THROW 50000, 'need log cleanup', 10",
 }
 ```
 
@@ -179,8 +179,8 @@ sqlserver_tsql{ 'Cleanup Old Logs':
 
 ```puppet
 sqlserver_tsql{ 'Always running':
-    instance => 'MSSQLSERVER',
-    command  => 'EXEC notified_executor()',
+  instance => 'MSSQLSERVER',
+  command  => 'EXEC notified_executor()',
 }
 ```
 
@@ -985,7 +985,7 @@ Terminology differs somewhat between various database systems; please refer to t
 
 ## Limitations
 
-This module is available only for Windows Server 2012 or 2012R2, and works with Puppet Enterprise 3.7 and later.
+This module is available only for Windows Server 2012 or 2012 R2, and works with Puppet Enterprise 3.7 and later.
 
 ## Development
 
@@ -993,4 +993,4 @@ This module was built by Puppet specifically for use with Puppet Enterprise (PE)
 
 If you run into an issue with this module, or if you would like to request a feature, please [file a ticket](https://tickets.puppet.com/browse/MODULES/).
 
-If you are having problems getting this module up and running, please [contact Support](http://puppet.com/services/customer-support).
+If you have problems getting this module up and running, please [contact Support](https://puppet.com/support-services/customer-support).
