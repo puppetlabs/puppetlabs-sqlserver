@@ -21,6 +21,7 @@ describe "sqlserver::config test", :node => host do
       sql_sysadmin_accounts => ['Administrator'],
       security_mode         => 'SQL',
       sa_pwd                => 'Pupp3t1@',
+      windows_feature_source => 'I:\\sources\\sxs',
     }
     MANIFEST
 

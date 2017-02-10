@@ -28,7 +28,7 @@ RSpec.describe 'sqlserver::database', :type => :define do
     it_behaves_like 'validation error' do
       let(:additional_params) { {
           :filespec_filename => 'c:/test/test.mdf'} }
-      let(:raise_error_check) { 'filespec_name must not be null if specifying filespec_filename' }
+      let(:raise_error_check) { /(input needs to be a String|filespec_name must not be null if specifying filespec_filename)/ }
     end
     describe 'filespec_name can not be more than 128 characters' do
       it_behaves_like 'validation error' do
