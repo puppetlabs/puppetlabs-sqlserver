@@ -17,17 +17,19 @@ class Puppet::Provider::Sqlserver < Puppet::Provider
                  'powershell.exe'
                end
 
-  def try_execute(command, msg = nil, obfuscate_strings = nil)
-    begin
-      execute(command.compact)
-    rescue Puppet::ExecutionFailure => error
+  def try_execute(command, msg = nil, obfuscate_strings = nil, acceptable_exit_codes = [0])
+    res = execute(command.compact, failonfail: false)
+
+    unless acceptable_exit_codes.include?(res.exitstatus)
       msg = "Failure occured when trying to install SQL Server #{@resource[:name]}" if msg.nil?
-      msg += " \n #{error}"
+      msg += " \n Execution of '#{command}' returned #{res.exitstatus}: #{res.strip}"
 
       obfuscate_strings.each {|str| msg.gsub!(str, '**HIDDEN VALUE**') } unless obfuscate_strings.nil?
 
       raise Puppet::Error, msg
     end
+
+    res
   end
 
   private
