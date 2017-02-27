@@ -1,4 +1,5 @@
 require 'spec_helper'
+require File.expand_path(File.join(File.join(File.dirname(__FILE__),'..'),'manifest_shared_examples.rb'))
 
 RSpec.describe 'sqlserver::role::permissions' do
   include_context 'manifests' do
