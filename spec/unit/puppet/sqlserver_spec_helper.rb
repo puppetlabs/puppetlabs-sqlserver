@@ -7,15 +7,15 @@ def stub_powershell_call(subject)
   Puppet::Provider::Sqlserver.stubs(:run_install_dot_net).returns()
 end
 
-def stub_add_features(args, features, additional_switches = [])
-  stub_modify_features('install', args, features, additional_switches)
+def stub_add_features(args, features, additional_switches = [], exit_code = 0)
+  stub_modify_features('install', args, features, additional_switches, exit_code)
 end
 
-def stub_remove_features(args, features)
-  stub_modify_features('uninstall', args, features)
+def stub_remove_features(args, features, exit_code = 0)
+  stub_modify_features('uninstall', args, features, [], exit_code)
 end
 
-def stub_modify_features(action, args, features, additional_switches = [])
+def stub_modify_features(action, args, features, additional_switches = [], exit_code = 0)
   cmds = ["#{args[:source]}/setup.exe",
           "/ACTION=#{action}",
           '/Q',
@@ -31,5 +31,8 @@ def stub_modify_features(action, args, features, additional_switches = [])
   additional_switches.each do |switch|
     cmds << switch
   end
-  Puppet::Util::Execution.stubs(:execute).with(cmds).returns(0)
+
+  result = Puppet::Util::Execution::ProcessOutput.new('', exit_code)
+
+  Puppet::Util::Execution.stubs(:execute).with(cmds, failonfail: false).returns(result)
 end

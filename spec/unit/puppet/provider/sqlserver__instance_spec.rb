@@ -10,14 +10,16 @@ RSpec.describe provider_class do
   subject { provider_class }
   let(:additional_install_switches) { [] }
 
-  def stub_uninstall(args, installed_features)
+  def stub_uninstall(args, installed_features, exit_code = 0)
     cmd_args = ["#{args[:source]}/setup.exe",
                 "/ACTION=uninstall",
                 '/Q',
                 '/IACCEPTSQLSERVERLICENSETERMS',
                 "/INSTANCENAME=#{args[:name]}",
                 "/FEATURES=#{installed_features.join(',')}",]
-    Puppet::Util::Execution.stubs(:execute).with(cmd_args.compact).returns(0)
+
+    result = Puppet::Util::Execution::ProcessOutput.new('', exit_code)
+    Puppet::Util::Execution.stubs(:execute).with(cmd_args.compact, failonfail: false).returns(result)
   end
 
   shared_examples 'run' do |args, munged_values = {}|
@@ -46,7 +48,7 @@ RSpec.describe provider_class do
       @provider.create
     }
   end
-  shared_examples 'create' do
+  shared_examples 'create' do |exit_code, warning_matcher|
     it {
       execute_args = args.merge(munged_values)
       @resource = Puppet::Type::Sqlserver_instance.new(args)
@@ -77,20 +79,27 @@ RSpec.describe provider_class do
       additional_install_switches.each do |switch|
         cmd_args << switch
       end
-      Puppet::Util::Execution.stubs(:execute).with(cmd_args.compact).returns(0)
+
+      # If warning_matcher supplied ensure warnings raised match, otherwise no warnings raised
+      @provider.stubs(:warn).with(regexp_matches(warning_matcher)).returns(nil).times(1) if warning_matcher
+      @provider.stubs(:warn).with(anything).times(0) unless warning_matcher
+
+      result = Puppet::Util::Execution::ProcessOutput.new('', exit_code || 0)
+      Puppet::Util::Execution.stubs(:execute).with(cmd_args.compact, failonfail: false).returns(result)
       @provider.create
     }
   end
 
 
-  shared_examples 'destroy' do
+  shared_examples 'destroy' do |exit_code, warning_matcher|
     it {
       @resource = Puppet::Type::Sqlserver_instance.new(args)
       @provider = provider_class.new(@resource)
 
       stub_source_which_call args[:source]
       @provider.expects(:current_installed_features).returns(installed_features)
-      stub_uninstall args, installed_features
+      stub_uninstall args, installed_features, exit_code || 0
+      @provider.stubs(:warn).with(regexp_matches(warning_matcher)).returns(nil).times(1) if warning_matcher
       @provider.destroy
     }
   end
@@ -108,6 +117,30 @@ RSpec.describe provider_class do
   end
   describe 'it should provide the correct command default command' do
     it_behaves_like 'create' do
+      args = get_basic_args
+      let(:args) { args }
+      munged = {:features => Array.new(args[:features])}
+      munged[:features].delete('SQL')
+      munged[:features] += %w(DQ FullText Replication SQLEngine)
+      munged[:features].sort!
+      let(:munged_values) { munged }
+    end
+  end
+
+  describe 'it should raise warning on install when 1641 exit code returned' do
+    it_behaves_like 'create', 1641, /reboot initiated/i do
+      args = get_basic_args
+      let(:args) { args }
+      munged = {:features => Array.new(args[:features])}
+      munged[:features].delete('SQL')
+      munged[:features] += %w(DQ FullText Replication SQLEngine)
+      munged[:features].sort!
+      let(:munged_values) { munged }
+    end
+  end
+
+  describe 'it should raise warning on install when 3010 exit code returned' do
+    it_behaves_like 'create', 3010, /reboot required/i do
       args = get_basic_args
       let(:args) { args }
       munged = {:features => Array.new(args[:features])}
@@ -140,6 +173,29 @@ RSpec.describe provider_class do
     end
 
   end
+
+  describe 'it should raise warning on uninstall when 1641 exit code returned' do
+    it_behaves_like 'destroy', 1641, /reboot initiated/i do
+      let(:args) { {
+          :name => 'MYSQLSERVER',
+          :source => 'C:\myinstallexecs',
+          :features => []
+      } }
+      let(:installed_features) { %w(SQLEngine Replication) }
+    end
+  end
+
+  describe 'it should raise warning on uninstall when 3010 exit code returned' do
+    it_behaves_like 'destroy', 3010, /reboot required/i do
+      let(:args) { {
+          :name => 'MYSQLSERVER',
+          :source => 'C:\myinstallexecs',
+          :features => []
+      } }
+      let(:installed_features) { %w(SQLEngine Replication) }
+    end
+  end
+
   describe 'installed features even if provided features' do
     it_behaves_like 'destroy' do
       let(:args) { {

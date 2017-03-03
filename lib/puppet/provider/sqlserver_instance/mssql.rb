@@ -48,7 +48,10 @@ Puppet::Type::type(:sqlserver_instance).provide(:mssql, :parent => Puppet::Provi
       begin
         config_file = create_temp_for_install_switch unless action == 'uninstall'
         cmd_args << "/ConfigurationFile=\"#{config_file.path}\"" unless config_file.nil?
-        try_execute(cmd_args, "Error trying to #{action} features (#{features.join(', ')}", obfuscated_strings)
+        res = try_execute(cmd_args, "Error trying to #{action} features (#{features.join(', ')}", obfuscated_strings, [0, 1641, 3010])
+
+        warn("#{action} of features (#{features.join(', ')}) returned exit code 3010 - reboot required")  if res.exitstatus == 3010
+        warn("#{action} of features (#{features.join(', ')}) returned exit code 1641 - reboot initiated") if res.exitstatus == 1641
       ensure
         if config_file
           config_file.close
@@ -161,7 +164,11 @@ may be overridden by some command line arguments")
 
   def destroy
     cmd_args = basic_cmd_args(current_installed_features, 'uninstall')
-    try_execute(cmd_args, "Unable to uninstall instance #{@resource[:name]}")
+    res = try_execute(cmd_args, "Unable to uninstall instance #{@resource[:name]}", nil, [0, 1641, 3010])
+
+    warn("Uninstall of instance #{@resource[:name]} returned exit code 3010 - reboot required")  if res.exitstatus == 3010
+    warn("Uninstall of instance #{@resource[:name]} returned exit code 1641 - reboot initiated") if res.exitstatus == 1641
+
     @property_hash.clear
     exists? ? (return false) : (return true)
   end

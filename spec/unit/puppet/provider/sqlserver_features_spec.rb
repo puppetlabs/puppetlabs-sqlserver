@@ -15,7 +15,7 @@ RSpec.describe provider_class do
   let(:additional_params) { {} }
   let(:munged_args) { {} }
   let(:additional_switches) { [] }
-  shared_examples 'create' do
+  shared_examples 'create' do |exit_code, warning_matcher|
     it {
       params.merge!(additional_params)
       @resource = Puppet::Type::Sqlserver_features.new(params)
@@ -24,7 +24,8 @@ RSpec.describe provider_class do
       stub_powershell_call(subject)
 
       executed_args = params.merge(munged_args)
-      stub_add_features(executed_args, executed_args[:features], additional_switches)
+      stub_add_features(executed_args, executed_args[:features], additional_switches, exit_code || 0)
+      @provider.stubs(:warn).with(regexp_matches(warning_matcher)).returns(nil).times(1) if warning_matcher
       @provider.create
     }
   end
@@ -65,7 +66,7 @@ RSpec.describe provider_class do
     it_should_behave_like 'create'
   end
 
-  shared_examples 'features=' do |args|
+  shared_examples 'features=' do |args, exit_code, warning_matcher|
     it {
       @resource = Puppet::Type::Sqlserver_features.new(args)
       @provider = provider_class.new(@resource)
@@ -73,12 +74,15 @@ RSpec.describe provider_class do
       stub_powershell_call(subject)
       stub_source_which_call args
       if !feature_remove.empty?
-        stub_remove_features(args, feature_remove)
+        stub_remove_features(args, feature_remove, exit_code || 0)
       end
       if !feature_add.empty?
-        stub_add_features(args, feature_add)
+        stub_add_features(args, feature_add, [], exit_code || 0)
       end
 
+      # If warning_matcher supplied ensure warnings raised match, otherwise no warnings raised
+      @provider.stubs(:warn).with(regexp_matches(warning_matcher)).returns(nil).times(1) if warning_matcher
+      @provider.stubs(:warn).with(anything).times(0) unless warning_matcher
       @provider.create
     }
   end
@@ -106,6 +110,20 @@ RSpec.describe provider_class do
     it_should_behave_like 'features=', @feature_params
   end
 
+  context 'it should raise warning on feature install when 1641 exit code returned' do
+    include_context 'features'
+    @feature_params[:features] = %w(SSMS)
+    let(:feature_add) { %w(SSMS) }
+    it_should_behave_like 'features=', @feature_params, 1641, /reboot initiated/i
+  end
+
+  context 'it should raise warning on feature install when 3010 exit code returned' do
+    include_context 'features'
+    @feature_params[:features] = %w(SSMS)
+    let(:feature_add) { %w(SSMS) }
+    it_should_behave_like 'features=', @feature_params, 3010, /reboot required/i
+  end
+
   context 'it should install the expanded tools set' do
     include_context 'features'
     @feature_params[:features] = %w(Tools)
@@ -131,13 +149,14 @@ RSpec.describe provider_class do
       @provider = provider_class.new(@resource)
       @provider.stubs(:current_installed_features).returns(%w(SSMS ADV_SSMS Conn))
       Puppet::Util.stubs(:which).with("#{feature_params[:source]}/setup.exe").returns("#{feature_params[:source]}/setup.exe")
+      result = Puppet::Util::Execution::ProcessOutput.new('', 0)
       Puppet::Util::Execution.expects(:execute).with(
         ["#{feature_params[:source]}/setup.exe",
          "/ACTION=uninstall",
          '/Q',
          '/IACCEPTSQLSERVERLICENSETERMS',
          "/FEATURES=#{%w(SSMS ADV_SSMS Conn).join(',')}",
-        ]).returns(0)
+        ], failonfail: false).returns(result)
       @provider.create
     }
   end
