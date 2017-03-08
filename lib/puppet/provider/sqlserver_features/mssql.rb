@@ -64,7 +64,10 @@ Puppet::Type::type(:sqlserver_features).provide(:mssql, :parent => Puppet::Provi
       begin
         config_file = create_temp_for_install_switch unless action == 'uninstall'
         cmd_args << "/ConfigurationFile=\"#{config_file.path}\"" unless config_file.nil?
-        try_execute(cmd_args, "Unable to #{action} features (#{features.join(', ')})")
+        res = try_execute(cmd_args, "Unable to #{action} features (#{features.join(', ')})", nil, [0, 1641, 3010])
+
+        warn("#{action} of features (#{features.join(', ')} returned exit code 3010 - reboot required")  if res.exitstatus == 3010
+        warn("#{action} of features (#{features.join(', ')} returned exit code 1641 - reboot initiated") if res.exitstatus == 1641
       ensure
         if config_file
           config_file.close

@@ -1,3 +1,13 @@
+## 2017-03-07 - Supported Release 1.1.6
+
+### Summary
+
+- Minor release with a small bug fix.
+
+#### Bug Fixes
+
+- Fix issue where error was raised when adding or removing features if setup.exe returned 1641 (Reboot initiated) or 3010 (Reboot required) exit codes, only a warning is raised now ([MODULES-4468](https://tickets.puppetlabs.com/browse/MODULES-4468)).
+
 ## 2017-02-15 - Supported Release 1.1.5
 
 ### Summary
