@@ -27,7 +27,7 @@ run_puppet_install_helper
 install_pe_license(master)
 
 unless ENV['MODULE_provision'] == 'no'
-  agents.each do |agent|
+  hosts_as("sql_host").each do |agent|
     # Emit CommonProgramFiles environment variable
     common_program_files = agent.get_env_var('CommonProgramFiles')
 
@@ -55,7 +55,7 @@ unless ENV['MODULE_provision'] == 'no'
     end
 
     # Install Forge certs to allow for PMT installation.
-    install_ca_certs(agent)
+    install_ca_certs
 
     # Install test helper modules onto agent.
     %w(puppetlabs-mount_iso cyberious-pget).each do |dep|
