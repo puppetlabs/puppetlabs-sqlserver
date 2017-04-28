@@ -18,3 +18,4 @@ msgid ""
 "The `sqlserver` module installs and manages MS SQL Server 2012 and 2014 on "
 "Windows systems."
 msgstr ""
+
