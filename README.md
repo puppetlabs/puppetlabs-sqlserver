@@ -682,7 +682,7 @@ Assigns one or more pre-installed server roles to the login. Valid options: a ha
 Configures the permissions associated with a given login account.
 
 ##### `instance`
-a string specifying an existing username
+
 Specifies a SQL Server instance on which to manage the permissions. Valid options: a string containing the name of an existing instance.
 
 Default: 'MSSQLSERVER'.
