@@ -1,3 +1,17 @@
+## 2017-05-08 - Supported Release 1.2.0
+### Summary
+
+This release adds support for internationalization of the module. It also contains Japanese translations for the README, summary and description of the metadata.json and major cleanups in the README. Additional folders have been introduced called locales and readmes where translation files can be found. A number of features and bug fixes are also included in this release.
+
+#### Features
+- (MODULES-4334) - Adding locales directory, config.yaml and POT file for i18n.
+- Puppet-module-gems now implemented
+
+#### Bug Fixes
+- (MODULES-4528) Replace Puppet.version comparison with Puppet::Util::Package.versioncmp
+- (MODULES-4667) Update beaker tests for Jenkins CI
+
+
 ## 2017-03-07 - Supported Release 1.1.6
 
 ### Summary
