@@ -146,7 +146,7 @@ def remove_sql_instances(host, opts = {})
 end
 
 def get_install_paths(version)
-  vers = { '2012' => '110', '2014' => '120' }
+  vers = { '2012' => '110', '2014' => '120', '2016' => '130' }
 
   raise 'Valid version must be specified' if ! vers.keys.include?(version)
 
