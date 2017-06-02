@@ -72,17 +72,6 @@ Puppet::Type::type(:sqlserver_instance).provide(:mssql, :parent => Puppet::Provi
     else
       installNet35(@resource[:windows_feature_source])
       add_features(@resource[:features])
-      # cmd_args = build_cmd_args(@resource[:features])
-      # begin
-      #   config_file = create_temp_for_install_switch
-      #   cmd_args << "/ConfigurationFile=\"#{config_file.path}\"" unless config_file.nil?
-      #   try_execute(cmd_args)
-      # ensure
-      #   if config_file
-      #     config_file.close
-      #     config_file.unlink
-      #   end
-      # end
     end
   end
 
