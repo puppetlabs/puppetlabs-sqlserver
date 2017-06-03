@@ -1,6 +1,7 @@
 require 'json'
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'sqlserver'))
-
+require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', '..', 'puppet_x/sqlserver/server_helper'))
+require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', '..', 'puppet_x/sqlserver/features'))
 
 INSTANCE_RESERVED_SWITCHES =
   %w(AGTSVCACCOUNT AGTSVCPASSWORD ASSVCACCOUNT AGTSVCPASSWORD PID
@@ -70,7 +71,11 @@ Puppet::Type::type(:sqlserver_instance).provide(:mssql, :parent => Puppet::Provi
       warn "Uninstalling all features for instance #{@resource[:name]} because an empty array was passed, please use ensure absent instead."
       destroy
     else
-      installNet35(@resource[:windows_feature_source])
+      instance_version = PuppetX::Sqlserver::ServerHelper.sql_version_from_install_source(@resource[:source])
+      Puppet.debug("Installation source detected as version #{instance_version}") unless instance_version.nil?
+
+      installNet35(@resource[:windows_feature_source]) unless instance_version == SQL_2016
+
       add_features(@resource[:features])
     end
   end
@@ -80,8 +85,7 @@ Puppet::Type::type(:sqlserver_instance).provide(:mssql, :parent => Puppet::Provi
       config_file = ["[OPTIONS]"]
       @resource[:install_switches].each_pair do |k, v|
         if INSTANCE_RESERVED_SWITCHES.include? k
-          warn("Reserved switch [#{k}] found for `install_switches`, please know the provided value
-may be overridden by some command line arguments")
+          warn("Reserved switch [#{k}] found for `install_switches`, please know the provided value may be overridden by some command line arguments")
         end
         if v.is_a?(Numeric) || (v.is_a?(String) && v =~ /^(true|false|1|0)$/i)
           config_file << "#{k}=#{v}"

@@ -31,6 +31,20 @@ RSpec.describe Puppet::Type.type(:sqlserver_instance) do
     end
   end
 
+  describe "features" do
+    ['SQL'].each do |feature_name|
+      it "should raise deprecation warning with super feature #{feature_name}" do
+        args = {
+          :name => 'MSSQLSERVER',
+          :ensure => 'present',
+          :features => [feature_name],
+        }
+        Puppet.expects(:deprecation_warning).at_least_once
+        subject = Puppet::Type.type(:sqlserver_instance).new(args)
+      end
+    end
+  end
+
   describe "agt_svc_password required when using domain account" do
     it_should_behave_like 'fail validation' do
       args = get_basic_args

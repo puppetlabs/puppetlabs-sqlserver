@@ -81,7 +81,7 @@ describe "sqlserver_instance", :node => host do
     end
 
     inst_name = new_random_instance_name
-    features = ['SQL', 'SQLEngine', 'Replication', 'FullText', 'DQ']
+    features = ['SQLEngine', 'Replication', 'FullText', 'DQ']
 
     it "create #{inst_name} instance" do
       ensure_sqlserver_instance(host, features, inst_name,'present',"['Administrator','ExtraSQLAdmin']")
@@ -110,25 +110,6 @@ describe "sqlserver_instance", :node => host do
         expect(r.stdout).not_to match(/#{inst_name}\s+Database Engine Services/)
         expect(r.stdout).not_to match(/#{inst_name}\s+SQL Server Replication/)
         expect(r.stdout).not_to match(/#{inst_name}\s+Data Quality Services/)
-      end
-    end
-  end
-
-  context "Feature has only one 'SQL'", {:testrail => ['89032']} do
-    inst_name = new_random_instance_name
-    features = ['SQL']
-
-    after(:all) do
-      ensure_sqlserver_instance(host, features, inst_name, 'absent')
-    end
-
-    it "create #{inst_name} instance with only one SQL feature" do
-      ensure_sqlserver_instance(host, features, inst_name)
-
-      validate_sql_install(host, {:version => version}) do |r|
-        expect(r.stdout).to match(/#{inst_name}\s+Database Engine Services/)
-        expect(r.stdout).to match(/#{inst_name}\s+SQL Server Replication/)
-        expect(r.stdout).to match(/#{inst_name}\s+Data Quality Services/)
       end
     end
   end
