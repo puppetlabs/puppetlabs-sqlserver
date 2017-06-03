@@ -15,6 +15,11 @@ Puppet::Type::newtype(:sqlserver_instance) do
 
   end
 
+  newparam(:instance_version) do
+    desc 'auto-detect from media otherwise give a hint at the instance version'
+    newvalues(:auto, :sql2012, :sql2014, :sql2016)
+  end
+
   newparam(:windows_feature_source) do
     desc 'Specify the location of the Windows Feature source files.  This may be needed to install the .Net Framework.
           See https://support.microsoft.com/en-us/kb/2734782 for more information.'
@@ -29,7 +34,7 @@ Puppet::Type::newtype(:sqlserver_instance) do
     desc 'Specifies features to install, uninstall, or upgrade. The list of top-level features include
           SQL, SQLEngine, Replication, FullText, DQ AS, and RS. The SQL feature will install the Database Engine,
           Replication, Full-Text, and Data Quality Services (DQS) server.'
-    newvalues(:SQL, :SQLEngine, :Replication, :FullText, :DQ, :AS, :RS)
+    newvalues(:SQL, :SQLEngine, :Replication, :FullText, :DQ, :AS, :RS, :POLYBASE, :ADVANCEDANALYTICS)
     munge do |value|
       if PuppetX::Sqlserver::ServerHelper.is_super_feature(value)
         PuppetX::Sqlserver::ServerHelper.get_sub_features(value).collect { |v| v.to_s }

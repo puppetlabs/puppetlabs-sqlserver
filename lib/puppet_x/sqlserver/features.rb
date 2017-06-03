@@ -116,6 +116,18 @@ module PuppetX
         }
       end
 
+      def self.valid_instance_features(instance_version)
+        allowed_features = []
+        if instance_version.nil? || instance_version == :sql2012 || instance_version == :sql2014
+          allowed_features += ['Replication','SQLEngine','FullText','DQ','AS','RS']
+        end
+        if instance_version.nil? || instance_version == :sql2016
+          allowed_features += ['Replication','SQLEngine','FullText','DQ','AS','RS','ADVANCEDANALYTICS','POLYBASE']
+        end
+
+        allowed_features.uniq
+      end
+
       def self.get_instance_features(reg_root, instance_name)
         instance_features = {
           # also reg Replication/IsInstalled set to 1
