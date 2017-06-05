@@ -50,6 +50,7 @@ Puppet::Type::type(:sqlserver_instance).provide(:mssql, :parent => Puppet::Provi
         config_file = create_temp_for_install_switch unless action == 'uninstall'
         cmd_args << "/ConfigurationFile=\"#{config_file.path}\"" unless config_file.nil?
 
+# TODO: Kill this
 fail "WOOP WOOP WOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOP"
 
         res = try_execute(cmd_args, "Error trying to #{action} features (#{features.join(', ')}", obfuscated_strings, [0, 1641, 3010])
@@ -79,6 +80,7 @@ fail "WOOP WOOP WOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPW
     end
     # Check if features have been requested but cannot be installed, as they don't exist in this version
     invalid_features = @resource[:features] - PuppetX::Sqlserver::Features.valid_instance_features(instance_version)
+    # TODO: Need a better error message
     fail "#{invalid_features.join(', ')} are not valid for the sqlserver_instance of '#{instance_version}'" unless invalid_features.length == 0
 
     if @resource[:features].empty?
