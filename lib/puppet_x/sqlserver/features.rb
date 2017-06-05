@@ -159,6 +159,18 @@ module PuppetX
         features + parent_features
       end
 
+      def self.valid_shared_features(server_version)
+        allowed_features = ['Conn','SDK','MDS','BC','DQC','BOL','DREPLAY_CTLR','DREPLAY_CLT','IS']
+        if server_version.nil? || server_version == :sql2012 || server_version == :sql2014
+          allowed_features += ['ADV_SSMS','SSMS']
+        end
+        if server_version.nil? || server_version == :sql2016
+          allowed_features += ['SQL_SHARED_MR']
+        end
+
+        allowed_features.uniq
+      end
+
       def self.get_shared_features(version)
         shared_features = {
           'Connectivity_Full'      => 'Conn', # Client Tools Connectivity

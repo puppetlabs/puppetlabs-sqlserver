@@ -11,7 +11,8 @@ module PuppetX
       end
 
       def self.is_super_feature(feature)
-        @super_feature_hash.has_key?(feature.to_sym)
+        return false unless feature.length == 1
+        @super_feature_hash.has_key?(feature[0])
       end
 
       def self.is_domain_or_local_user?(user, hostname)
