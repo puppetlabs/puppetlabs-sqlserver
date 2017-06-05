@@ -77,9 +77,9 @@ fail "WOOP WOOP WOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPW
       instance_version = @resource[:instance_version]
       Puppet.debug("Instance version set as #{instance_version}")
     end
-    # Check if features have been requested but cannot be installed as they don't exist in this version
+    # Check if features have been requested but cannot be installed, as they don't exist in this version
     invalid_features = @resource[:features] - PuppetX::Sqlserver::Features.valid_instance_features(instance_version)
-    fail "Feature/s #{invalid_features.join(', ')} are not valid for the sqlserver_instance" unless invalid_features.length == 0
+    fail "#{invalid_features.join(', ')} are not valid for the sqlserver_instance of '#{instance_version}'" unless invalid_features.length == 0
 
     if @resource[:features].empty?
       warn "Uninstalling all features for instance #{@resource[:name]} because an empty array was passed, please use ensure absent instead."
