@@ -14,6 +14,11 @@ Puppet::Type::newtype(:sqlserver_features) do
 
   newparam(:source)
 
+  newparam(:instance_version) do
+    desc 'auto-detect from media otherwise give a hint at the instance version'
+    newvalues(:auto, :sql2012, :sql2014, :sql2016)
+  end
+
   newparam(:windows_feature_source) do
     desc 'Specify the location of the Windows Feature source files.  This may be needed to install the .Net Framework.
           See https://support.microsoft.com/en-us/kb/2734782 for more information.'
@@ -38,14 +43,7 @@ Puppet::Type::newtype(:sqlserver_features) do
     desc 'Specifies features to install, uninstall, or upgrade. The list of top-level features include
          Tools, BC, Conn, SSMS, ADV_SSMS, SDK, IS and MDS. The Tools feature will install Management
           Tools, Books online components, SQL Server Data Tools, and other shared components.'
-    newvalues(:Tools, :BC, :Conn, :SSMS, :ADV_SSMS, :SDK, :IS, :MDS)
-    munge do |value|
-      if PuppetX::Sqlserver::ServerHelper.is_super_feature(value)
-        PuppetX::Sqlserver::ServerHelper.get_sub_features(value).collect { |v| v.to_s }
-      else
-        value
-      end
-    end
+    newvalues(:Tools, :BC, :Conn, :SSMS, :ADV_SSMS, :SDK, :IS, :MDS, :BOL, :DREPLAY_CTLR, :DREPLAY_CLT)
   end
 
   newparam(:install_switches) do

@@ -1,5 +1,7 @@
 require 'json'
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'sqlserver'))
+require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', '..', 'puppet_x/sqlserver/server_helper'))
+require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', '..', 'puppet_x/sqlserver/features'))
 
 FEATURE_RESERVED_SWITCHES =
   %w(AGTSVCACCOUNT AGTSVCPASSWORD ASSVCACCOUNT AGTSVCPASSWORD PID
@@ -10,6 +12,7 @@ Puppet::Type::type(:sqlserver_features).provide(:mssql, :parent => Puppet::Provi
     instances = []
     result = Facter.value(:sqlserver_features)
     debug "Parsing result #{result}"
+    # TODO: What about this?
     result = !result[SQL_2014].empty? ? result[SQL_2014] : result[SQL_2012]
     if !result.empty?
       existing_instance = {:name => "Generic Features",
@@ -64,6 +67,9 @@ Puppet::Type::type(:sqlserver_features).provide(:mssql, :parent => Puppet::Provi
       begin
         config_file = create_temp_for_install_switch unless action == 'uninstall'
         cmd_args << "/ConfigurationFile=\"#{config_file.path}\"" unless config_file.nil?
+
+fail "WOOP WOOP WOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOP"
+
         res = try_execute(cmd_args, "Unable to #{action} features (#{features.join(', ')})", nil, [0, 1641, 3010])
 
         warn("#{action} of features (#{features.join(', ')} returned exit code 3010 - reboot required")  if res.exitstatus == 3010
@@ -82,8 +88,7 @@ Puppet::Type::type(:sqlserver_features).provide(:mssql, :parent => Puppet::Provi
       config_file = ["[OPTIONS]"]
       @resource[:install_switches].each_pair do |k, v|
         if FEATURE_RESERVED_SWITCHES.include? k
-          warn("Reserved switch [#{k}] found for `install_switches`, please know the provided value
-may be overridden by some command line arguments")
+          warn("Reserved switch [#{k}] found for `install_switches`, please know the provided value may be overridden by some command line arguments")
         end
         if v.is_a?(Numeric) || (v.is_a?(String) && v =~ /^(true|false|1|0)$/i)
           config_file << "#{k}=#{v}"
@@ -107,14 +112,34 @@ may be overridden by some command line arguments")
   end
 
   def create
-    if @resource[:features].empty?
+    if @resource[:instance_version].nil? || @resource[:instance_version] == :auto
+      instance_version = PuppetX::Sqlserver::ServerHelper.sql_version_from_install_source(@resource[:source])
+      Puppet.debug("Instance version detected as #{instance_version}")
+    else
+      instance_version = @resource[:instance_version]
+      Puppet.debug("Instance version set as #{instance_version}")
+    end
+    # Check if a super feature was passed
+    feature_list = @resource[:features]
+    if PuppetX::Sqlserver::ServerHelper.is_super_feature(@resource[:features])
+      # Get the actual features for the super feature and then remove any features from the
+      # list that aren't applicable to this sql server version
+      feature_list = PuppetX::Sqlserver::ServerHelper.get_sub_features(@resource[:features][0]).collect { |v| v.to_s } &
+                      PuppetX::Sqlserver::Features.valid_shared_features(instance_version)
+    end
+
+    # Check if features have been requested but cannot be installed, as they don't exist in this version
+    invalid_features = feature_list - PuppetX::Sqlserver::Features.valid_shared_features(instance_version)
+    fail "#{invalid_features.join(', ')} are not valid for the sqlserver_features of type '#{instance_version}'" unless invalid_features.length == 0
+
+    if feature_list.empty?
       warn "Uninstalling all sql server features not tied into an instance because an empty array was passed, please use ensure absent instead."
       destroy
     else
-      installNet35(@resource[:windows_feature_source])
-      debug "Installing features #{@resource[:features]}"
-      add_features(@resource[:features])
-      @property_hash[:features] = @resource[:features]
+      installNet35(@resource[:windows_feature_source]) unless instance_version == :sql2016
+      debug "Installing features #{feature_list}"
+      add_features(feature_list)
+      @property_hash[:features] = feature_list
     end
   end
 
