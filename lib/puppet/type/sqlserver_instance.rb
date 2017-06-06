@@ -17,7 +17,7 @@ Puppet::Type::newtype(:sqlserver_instance) do
 
   newparam(:instance_version) do
     desc 'auto-detect from media otherwise give a hint at the instance version'
-    newvalues(:auto, :sql2012, :sql2014, :sql2016)
+    newvalues(:auto, :sql_2012, :sql_2014, :sql_2016)
   end
 
   newparam(:windows_feature_source) do

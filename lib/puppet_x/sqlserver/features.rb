@@ -118,10 +118,10 @@ module PuppetX
 
       def self.valid_instance_features(instance_version)
         allowed_features = []
-        if instance_version.nil? || instance_version == :sql2012 || instance_version == :sql2014
+        if instance_version.nil? || instance_version == SQL_2012 || instance_version == SQL_2014
           allowed_features += ['Replication','SQLEngine','FullText','DQ','AS','RS']
         end
-        if instance_version.nil? || instance_version == :sql2016
+        if instance_version.nil? || instance_version == SQL_2016
           allowed_features += ['Replication','SQLEngine','FullText','DQ','AS','RS','ADVANCEDANALYTICS','POLYBASE']
         end
 
@@ -161,10 +161,10 @@ module PuppetX
 
       def self.valid_shared_features(server_version)
         allowed_features = ['Conn','SDK','MDS','BC','DQC','BOL','DREPLAY_CTLR','DREPLAY_CLT','IS']
-        if server_version.nil? || server_version == :sql2012 || server_version == :sql2014
+        if server_version.nil? || server_version == SQL_2012 || server_version == SQL_2014
           allowed_features += ['ADV_SSMS','SSMS']
         end
-        if server_version.nil? || server_version == :sql2016
+        if server_version.nil? || server_version == SQL_2016
           allowed_features += ['SQL_SHARED_MR']
         end
 
@@ -273,6 +273,10 @@ module PuppetX
       def self.get_instance_info(version, instance_name)
         return nil if version.nil?
         sql_instance = get_wmi_instance_info(version, instance_name)
+        # Instance names are unique on a single host, but not for a particular SQL Server version therefore
+        # it's possibly to request information for a valid instance_name but not for version.  In this case
+        # we just reuturn nil.
+        return nil if sql_instance['reg_root'].nil?
         feats = get_instance_features(sql_instance['reg_root'], sql_instance['name'])
         sql_instance.merge({'features' => feats})
       end

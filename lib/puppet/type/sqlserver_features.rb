@@ -16,7 +16,7 @@ Puppet::Type::newtype(:sqlserver_features) do
 
   newparam(:instance_version) do
     desc 'auto-detect from media otherwise give a hint at the instance version'
-    newvalues(:auto, :sql2012, :sql2014, :sql2016)
+    newvalues(:auto, :sql_2012, :sql_2014, :sql_2016)
   end
 
   newparam(:windows_feature_source) do
@@ -44,6 +44,13 @@ Puppet::Type::newtype(:sqlserver_features) do
          Tools, BC, Conn, SSMS, ADV_SSMS, SDK, IS and MDS. The Tools feature will install Management
           Tools, Books online components, SQL Server Data Tools, and other shared components.'
     newvalues(:Tools, :BC, :Conn, :SSMS, :ADV_SSMS, :SDK, :IS, :MDS, :BOL, :DREPLAY_CTLR, :DREPLAY_CLT)
+    munge do |value|
+      if PuppetX::Sqlserver::ServerHelper.is_super_feature(value)
+        PuppetX::Sqlserver::ServerHelper.get_sub_features(value).collect { |v| v.to_s }
+      else
+        value
+      end
+    end
   end
 
   newparam(:install_switches) do

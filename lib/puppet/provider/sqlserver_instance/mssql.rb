@@ -51,7 +51,7 @@ Puppet::Type::type(:sqlserver_instance).provide(:mssql, :parent => Puppet::Provi
         cmd_args << "/ConfigurationFile=\"#{config_file.path}\"" unless config_file.nil?
 
 # TODO: Kill this
-#fail "WOOP WOOP WOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOP"
+fail "#{cmd_args} WOOP WOOP WOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOP"
 
         res = try_execute(cmd_args, "Error trying to #{action} features (#{features.join(', ')}", obfuscated_strings, [0, 1641, 3010])
 
@@ -78,6 +78,7 @@ Puppet::Type::type(:sqlserver_instance).provide(:mssql, :parent => Puppet::Provi
       instance_version = @resource[:instance_version]
       Puppet.debug("Instance version set as #{instance_version}")
     end
+
     # Check if features have been requested but cannot be installed, as they don't exist in this version
     invalid_features = @resource[:features] - PuppetX::Sqlserver::Features.valid_instance_features(instance_version)
     # TODO: Need a better error message
@@ -87,7 +88,7 @@ Puppet::Type::type(:sqlserver_instance).provide(:mssql, :parent => Puppet::Provi
       warn "Uninstalling all features for instance #{@resource[:name]} because an empty array was passed, please use ensure absent instead."
       destroy
     else
-      installNet35(@resource[:windows_feature_source]) unless instance_version == :sql2016
+      installNet35(@resource[:windows_feature_source]) unless instance_version == SQL_2016
       add_features(@resource[:features])
     end
   end

@@ -11,8 +11,7 @@ module PuppetX
       end
 
       def self.is_super_feature(feature)
-        return false unless feature.length == 1
-        @super_feature_hash.has_key?(feature[0])
+        @super_feature_hash.has_key?(feature.to_sym)
       end
 
       def self.is_domain_or_local_user?(user, hostname)
@@ -23,7 +22,7 @@ module PuppetX
         end
       end
 
-      # Returns either :sql2012, :sql2014 or :sql2016 if it can determine the SQL Version from the install source
+      # Returns either SQL_2016, SQL_2014 or SQL_2012 if it can determine the SQL Version from the install source
       # Returns nil if it can not be determined
       def self.sql_version_from_install_source(source_dir)
         # Attempt to read the Mediainfo.xml file in the root of the install media
@@ -43,9 +42,9 @@ module PuppetX
         ver = content.match('"(.+)"')
         return nil if ver.nil?
 
-        return :sql2016 if ver[1].start_with?('13.')
-        return :sql2014 if ver[1].start_with?('12.')
-        return :sql2012 if ver[1].start_with?('11.')
+        return SQL_2016 if ver[1].start_with?('13.')
+        return SQL_2014 if ver[1].start_with?('12.')
+        return SQL_2012 if ver[1].start_with?('11.')
 
         nil
       end

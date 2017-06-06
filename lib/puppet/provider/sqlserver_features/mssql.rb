@@ -12,19 +12,20 @@ Puppet::Type::type(:sqlserver_features).provide(:mssql, :parent => Puppet::Provi
     instances = []
     result = Facter.value(:sqlserver_features)
     debug "Parsing result #{result}"
-    # TODO: What about this?
-    result = !result[SQL_2014].empty? ? result[SQL_2014] : result[SQL_2012]
-    if !result.empty?
-      existing_instance = {:name => "Generic Features",
-                           :ensure => :present,
-                           :features => result.sort
-      }
-      debug "Parsed features = #{existing_instance[:features]}"
 
-      instance = new(existing_instance)
+    [SQL_2012, SQL_2014, SQL_2016].each do |sql_version|
+      next if result[sql_version].empty?
+      instance_props = {:name => "Generic Features #{sql_version}",
+                        :ensure => :present,
+                        :features => result[sql_version].sort
+      }
+      debug "Parsed features = #{instance_props[:features]}"
+
+      instance = new(instance_props)
       debug "Created instance #{instance}"
       instances << instance
     end
+
     instances
   end
 
@@ -68,7 +69,7 @@ Puppet::Type::type(:sqlserver_features).provide(:mssql, :parent => Puppet::Provi
         config_file = create_temp_for_install_switch unless action == 'uninstall'
         cmd_args << "/ConfigurationFile=\"#{config_file.path}\"" unless config_file.nil?
 
-#fail "WOOP WOOP WOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOP"
+fail "#{cmd_args} WOOP WOOP WOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOP"
 
         res = try_execute(cmd_args, "Unable to #{action} features (#{features.join(', ')})", nil, [0, 1641, 3010])
 
@@ -119,14 +120,6 @@ Puppet::Type::type(:sqlserver_features).provide(:mssql, :parent => Puppet::Provi
       instance_version = @resource[:instance_version]
       Puppet.debug("Instance version set as #{instance_version}")
     end
-    # Check if a super feature was passed
-    feature_list = @resource[:features]
-    if PuppetX::Sqlserver::ServerHelper.is_super_feature(@resource[:features])
-      # Get the actual features for the super feature and then remove any features from the
-      # list that aren't applicable to this sql server version
-      feature_list = PuppetX::Sqlserver::ServerHelper.get_sub_features(@resource[:features][0]).collect { |v| v.to_s } &
-                      PuppetX::Sqlserver::Features.valid_shared_features(instance_version)
-    end
 
     # Check if features have been requested but cannot be installed, as they don't exist in this version
     invalid_features = feature_list - PuppetX::Sqlserver::Features.valid_shared_features(instance_version)
@@ -136,7 +129,7 @@ Puppet::Type::type(:sqlserver_features).provide(:mssql, :parent => Puppet::Provi
       warn "Uninstalling all sql server features not tied into an instance because an empty array was passed, please use ensure absent instead."
       destroy
     else
-      installNet35(@resource[:windows_feature_source]) unless instance_version == :sql2016
+      installNet35(@resource[:windows_feature_source]) unless instance_version == SQL_2016
       debug "Installing features #{feature_list}"
       add_features(feature_list)
       @property_hash[:features] = feature_list
