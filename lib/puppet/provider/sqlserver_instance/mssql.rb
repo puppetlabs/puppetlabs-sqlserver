@@ -1,6 +1,7 @@
 require 'json'
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'sqlserver'))
-
+require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', '..', 'puppet_x/sqlserver/server_helper'))
+require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', '..', 'puppet_x/sqlserver/features'))
 
 INSTANCE_RESERVED_SWITCHES =
   %w(AGTSVCACCOUNT AGTSVCPASSWORD ASSVCACCOUNT AGTSVCPASSWORD PID
@@ -48,6 +49,10 @@ Puppet::Type::type(:sqlserver_instance).provide(:mssql, :parent => Puppet::Provi
       begin
         config_file = create_temp_for_install_switch unless action == 'uninstall'
         cmd_args << "/ConfigurationFile=\"#{config_file.path}\"" unless config_file.nil?
+
+# TODO: Kill this
+fail "#{cmd_args} WOOP WOOP WOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOPWOOP WOOP"
+
         res = try_execute(cmd_args, "Error trying to #{action} features (#{features.join(', ')}", obfuscated_strings, [0, 1641, 3010])
 
         warn("#{action} of features (#{features.join(', ')}) returned exit code 3010 - reboot required")  if res.exitstatus == 3010
@@ -66,23 +71,25 @@ Puppet::Type::type(:sqlserver_instance).provide(:mssql, :parent => Puppet::Provi
   end
 
   def create
+    if @resource[:instance_version].nil? || @resource[:instance_version] == :auto
+      instance_version = PuppetX::Sqlserver::ServerHelper.sql_version_from_install_source(@resource[:source])
+      Puppet.debug("Instance version detected as #{instance_version}")
+    else
+      instance_version = @resource[:instance_version]
+      Puppet.debug("Instance version set as #{instance_version}")
+    end
+
+    # Check if features have been requested but cannot be installed, as they don't exist in this version
+    invalid_features = @resource[:features] - PuppetX::Sqlserver::Features.valid_instance_features(instance_version)
+    # TODO: Need a better error message
+    fail "#{invalid_features.join(', ')} are not valid for the sqlserver_instance of '#{instance_version}'" unless invalid_features.length == 0
+
     if @resource[:features].empty?
       warn "Uninstalling all features for instance #{@resource[:name]} because an empty array was passed, please use ensure absent instead."
       destroy
     else
-      installNet35(@resource[:windows_feature_source])
+      installNet35(@resource[:windows_feature_source]) unless instance_version == SQL_2016
       add_features(@resource[:features])
-      # cmd_args = build_cmd_args(@resource[:features])
-      # begin
-      #   config_file = create_temp_for_install_switch
-      #   cmd_args << "/ConfigurationFile=\"#{config_file.path}\"" unless config_file.nil?
-      #   try_execute(cmd_args)
-      # ensure
-      #   if config_file
-      #     config_file.close
-      #     config_file.unlink
-      #   end
-      # end
     end
   end
 
@@ -91,8 +98,7 @@ Puppet::Type::type(:sqlserver_instance).provide(:mssql, :parent => Puppet::Provi
       config_file = ["[OPTIONS]"]
       @resource[:install_switches].each_pair do |k, v|
         if INSTANCE_RESERVED_SWITCHES.include? k
-          warn("Reserved switch [#{k}] found for `install_switches`, please know the provided value
-may be overridden by some command line arguments")
+          warn("Reserved switch [#{k}] found for `install_switches`, please know the provided value may be overridden by some command line arguments")
         end
         if v.is_a?(Numeric) || (v.is_a?(String) && v =~ /^(true|false|1|0)$/i)
           config_file << "#{k}=#{v}"
