@@ -83,13 +83,6 @@ This example creates the same MS SQL instance as shown above with additional opt
 ```puppet
 sqlserver_features { 'Generic Features':
   source   => 'E:/',
-  features => ['Tools'],
-}
-```
-
-```puppet
-sqlserver_features { 'Generic Features':
-  source   => 'E:/',
   features => ['ADV_SSMS', 'BC', 'Conn', 'SDK', 'SSMS'],
 }
 ```
@@ -203,8 +196,10 @@ Default: 'present'.
 ##### `features`
 
 *Required.*
-  
-Specifies one or more features to manage. Valid options: 'BC', 'Conn', 'SSMS', 'ADV_SSMS', 'SDK', 'IS', 'MDS', and 'Tools' (the Tools feature includes SSMS, ADV_SSMS, and Conn).
+
+Specifies one or more features to manage. Valid options: 'BC', 'Conn', 'SSMS', 'ADV_SSMS', 'SDK', 'IS', 'MDS', 'BOL', 'DREPLAY_CTLR', 'DREPLAY_CLT'.
+
+The 'Tools' feature is deprecated.  Instead specify 'BC', 'SSMS', 'ADV_SSMS', 'Conn', and 'SDK' explicitly.
 
 ##### `install_switches`
 
@@ -294,7 +289,9 @@ Default: 'present'.
 
 ##### `features`
 
-*Required.* Specifies one or more features to manage. The list of top-level features includes 'SQL', 'AS', and 'RS'. The 'SQL' feature includes the Database Engine, Replication, Full-Text, and Data Quality Services (DQS) server. Valid options: an array containing one or more of the strings 'SQL', 'SQLEngine', 'Replication', 'FullText', 'DQ', 'AS', and 'RS'.
+*Required.* Specifies one or more features to manage. The list of top-level features includes 'AS' and 'RS'. Valid options: an array containing one or more of the strings 'SQL', 'SQLEngine', 'Replication', 'FullText', 'DQ', 'AS', 'RS', 'POLYBASE', and 'ADVANCEDANALYTICS'.
+
+The 'SQL' feature is deprecated.  Instead specify 'DQ', 'FullText', 'Replication', and 'SQLEngine' explicitly.
 
 ##### `install_switches`
 
