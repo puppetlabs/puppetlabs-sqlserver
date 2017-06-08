@@ -1,5 +1,7 @@
 require 'json'
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'sqlserver'))
+require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', '..', 'puppet_x/sqlserver/server_helper'))
+require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', '..', 'puppet_x/sqlserver/features'))
 
 FEATURE_RESERVED_SWITCHES =
   %w(AGTSVCACCOUNT AGTSVCPASSWORD ASSVCACCOUNT AGTSVCPASSWORD PID
@@ -10,18 +12,25 @@ Puppet::Type::type(:sqlserver_features).provide(:mssql, :parent => Puppet::Provi
     instances = []
     result = Facter.value(:sqlserver_features)
     debug "Parsing result #{result}"
-    result = !result[SQL_2014].empty? ? result[SQL_2014] : result[SQL_2012]
-    if !result.empty?
-      existing_instance = {:name => "Generic Features",
-                           :ensure => :present,
-                           :features => result.sort
-      }
-      debug "Parsed features = #{existing_instance[:features]}"
 
-      instance = new(existing_instance)
+    ALL_SQL_VERSIONS.each do |sql_version|
+      next if result[sql_version].empty?
+      instance_props = {:name => "Generic Features",
+                        :ensure => :present,
+                        :features => result[sql_version].sort
+      }
+      debug "Parsed features = #{instance_props[:features]}"
+
+      instance = new(instance_props)
       debug "Created instance #{instance}"
       instances << instance
+
+      # Due to MODULES-5060 we can only output one feature set.  If we output
+      # multiple then it is not possible to install or uninstall due to multiple
+      # resources with the same name.
+      break
     end
+
     instances
   end
 
@@ -82,8 +91,7 @@ Puppet::Type::type(:sqlserver_features).provide(:mssql, :parent => Puppet::Provi
       config_file = ["[OPTIONS]"]
       @resource[:install_switches].each_pair do |k, v|
         if FEATURE_RESERVED_SWITCHES.include? k
-          warn("Reserved switch [#{k}] found for `install_switches`, please know the provided value
-may be overridden by some command line arguments")
+          warn("Reserved switch [#{k}] found for `install_switches`, please know the provided value may be overridden by some command line arguments")
         end
         if v.is_a?(Numeric) || (v.is_a?(String) && v =~ /^(true|false|1|0)$/i)
           config_file << "#{k}=#{v}"
@@ -111,7 +119,11 @@ may be overridden by some command line arguments")
       warn "Uninstalling all sql server features not tied into an instance because an empty array was passed, please use ensure absent instead."
       destroy
     else
-      installNet35(@resource[:windows_feature_source])
+      instance_version = PuppetX::Sqlserver::ServerHelper.sql_version_from_install_source(@resource[:source])
+      Puppet.debug("Installation source detected as version #{instance_version}") unless instance_version.nil?
+
+      installNet35(@resource[:windows_feature_source]) unless instance_version == SQL_2016
+
       debug "Installing features #{@resource[:features]}"
       add_features(@resource[:features])
       @property_hash[:features] = @resource[:features]

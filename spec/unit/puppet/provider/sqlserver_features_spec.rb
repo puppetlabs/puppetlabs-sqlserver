@@ -59,12 +59,12 @@ RSpec.describe provider_class do
     end
   end
 
-  context 'it should expand the superset for features' do
-    include_context 'features'
-    let(:additional_params) { {:features => %w(Tools)} }
-    let(:munged_args) { {:features => %w(ADV_SSMS BC Conn SDK SSMS)} }
-    it_should_behave_like 'create'
-  end
+  # context 'it should expand the superset for features' do
+  #   include_context 'features'
+  #   let(:additional_params) { {:features => %w(Tools)} }
+  #   let(:munged_args) { {:features => %w(ADV_SSMS BC Conn SDK SSMS)} }
+  #   it_should_behave_like 'create'
+  # end
 
   shared_examples 'features=' do |args, exit_code, warning_matcher|
     it {
@@ -124,20 +124,13 @@ RSpec.describe provider_class do
     it_should_behave_like 'features=', @feature_params, 3010, /reboot required/i
   end
 
-  context 'it should install the expanded tools set' do
-    include_context 'features'
-    @feature_params[:features] = %w(Tools)
-    let(:feature_add) { %w(ADV_SSMS BC Conn SDK SSMS) }
-    it_should_behave_like 'features=', @feature_params
-  end
+  # context 'it should install the expanded tools set' do
+  #   include_context 'features'
+  #   @feature_params[:features] = %w(Tools)
+  #   let(:feature_add) { %w(ADV_SSMS BC Conn SDK SSMS) }
+  #   it_should_behave_like 'features=', @feature_params
+  # end
 
-  context 'it should' do
-    include_context 'features'
-    @feature_params[:features] = %w(Tools IS)
-    @feature_params[:is_svc_account] = 'nexus/domainuser'
-    # let(:feature_params) { @feature_params }
-    it_should_behave_like 'fail on', @feature_params
-  end
   describe 'it should call destroy on empty array' do
     it {
       feature_params = {

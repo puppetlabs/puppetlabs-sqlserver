@@ -1,5 +1,8 @@
 SQL_2012 ||= 'SQL_2012'
 SQL_2014 ||= 'SQL_2014'
+SQL_2016 ||= 'SQL_2016'
+
+ALL_SQL_VERSIONS = [SQL_2012, SQL_2014, SQL_2016]
 
 module PuppetX
   module Sqlserver
@@ -7,9 +10,22 @@ module PuppetX
     class Features
       private
 
-      SQL_WMI_PATH ||= {
-        SQL_2012 => 'ComputerManagement11',
-        SQL_2014 => 'ComputerManagement12',
+      SQL_CONFIGURATION ||= {
+        SQL_2012 => {
+          :major_version => 11,
+          :wmi_path => 'ComputerManagement11',
+          :registry_path => '110',
+        },
+        SQL_2014 => {
+          :major_version => 12,
+          :wmi_path => 'ComputerManagement12',
+          :registry_path => '120',
+        },
+        SQL_2016 => {
+          :major_version => 13,
+          :wmi_path => 'ComputerManagement13',
+          :registry_path => '130',
+        }
       }
 
       SQL_REG_ROOT ||= 'Software\Microsoft\Microsoft SQL Server'
@@ -20,11 +36,12 @@ module PuppetX
 
       def self.connect(version)
         require 'win32ole'
-        ver = SQL_WMI_PATH[version]
+        ver = SQL_CONFIGURATION[version][:wmi_path]
         context = WIN32OLE.new('WbemScripting.SWbemNamedValueSet')
         context.Add("__ProviderArchitecture", 64)
         locator = WIN32OLE.new('WbemScripting.SWbemLocator')
-        locator.ConnectServer('', "root/Microsoft/SqlServer/#{ver}", '', '', nil, nil, nil, context)
+        # WMI Path must use backslashes.   Ruby 2.3 can cause crashes with forward slashes
+        locator.ConnectServer(nil, "root\\Microsoft\\SqlServer\\#{ver}", nil, nil, nil, nil, nil, context)
       end
 
       def self.get_parent_path(key_path)
@@ -118,9 +135,11 @@ module PuppetX
           # also reg Replication/IsInstalled set to 1
           'SQL_Replication_Core_Inst' => 'Replication', # SQL Server Replication
           # also WMI: SqlService WHERE SQLServiceType = 1 # MSSQLSERVER
-          'SQL_Engine_Core_Inst' => 'SQLEngine', # Database Engine Services
-          'SQL_FullText_Adv' => 'FullText', # Full-Text and Semantic Extractions for Search
-          'SQL_DQ_Full' => 'DQ', # Data Quality Services
+          'SQL_Engine_Core_Inst'      => 'SQLEngine', # Database Engine Services
+          'SQL_FullText_Adv'          => 'FullText', # Full-Text and Semantic Extractions for Search
+          'SQL_DQ_Full'               => 'DQ', # Data Quality Services
+          'sql_inst_mr'               => 'ADVANCEDANALYTICS', # R Services (In-Database)
+          'SQL_Polybase_Core_Inst'    => 'POLYBASE', # PolyBase Query Service for External Data
         }
 
         feat_root = "#{reg_root}\\ConfigurationState"
@@ -144,18 +163,25 @@ module PuppetX
 
       def self.get_shared_features(version)
         shared_features = {
-          'Connectivity_Full' => 'Conn', # Client Tools Connectivity
-          'SDK_Full' => 'SDK', # Client Tools SDK
-          'MDSCoreFeature' => 'MDS', # Master Data Services
-          'Tools_Legacy_Full' => 'BC', # Client Tools Backwards Compatibility
-          'SQL_SSMS_Full' => 'ADV_SSMS', # Management Tools - Complete
-          'SQL_SSMS_Adv' => 'SSMS', # Management Tools - Basic
+          'Connectivity_Full'      => 'Conn', # Client Tools Connectivity
+          'SDK_Full'               => 'SDK', # Client Tools SDK
+          'MDSCoreFeature'         => 'MDS', # Master Data Services
+          'Tools_Legacy_Full'      => 'BC', # Client Tools Backwards Compatibility
+          'SQL_SSMS_Full'          => 'ADV_SSMS', # Management Tools - Complete (Does not exist in SQL 2016)
+          'SQL_SSMS_Adv'           => 'SSMS', # Management Tools - Basic  (Does not exist in SQL 2016)
+          'SQL_DQ_CLIENT_Full'     => 'DQC', # Data Quality Client
+          'SQL_BOL_Components'     => 'BOL', # Documentation Components
+          'SQL_DReplay_Controller' => 'DREPLAY_CTLR', # Distributed Replay Controller
+          'SQL_DReplay_Client'     => 'DREPLAY_CLT', # Distributed Replay Client
+          'sql_shared_mr'          => 'SQL_SHARED_MR', # R Server (Standalone)
+
           # also WMI: SqlService WHERE SQLServiceType = 4 # MsDtsServer
-          'SQL_DTS_Full' => 'IS', # Integration Services
+          'SQL_DTS_Full'           => 'IS', # Integration Services
           # currently ignoring Reporting Services Shared
+          # currently ignoring R Server Standalone
         }
 
-        reg_ver = (version == SQL_2014 ? '120' : '110')
+        reg_ver = SQL_CONFIGURATION[version][:registry_path]
         reg_root = "#{SQL_REG_ROOT}\\#{reg_ver}\\ConfigurationState"
 
         get_sql_reg_val_features(reg_root, shared_features)
@@ -185,10 +211,26 @@ module PuppetX
       #   }
       # }
       def self.get_instances
-        version_instance_map = [SQL_2012, SQL_2014]
+        version_instance_map = ALL_SQL_VERSIONS
           .map do |version|
+            major_version = SQL_CONFIGURATION[version][:major_version]
+
             instances = get_instance_names_by_ver(version)
               .map { |name| [ name, get_instance_info(version, name) ] }
+
+            # Instance names are unique on a single host, but not for a particular SQL Server version therefore
+            # it's possible to request information for a valid instance_name but not for version.  In this case
+            # we just reject any instances that have no information
+            instances.reject! { |value| value[1].nil? }
+
+            # Unfortunately later SQL versions can return previous version SQL instances.  We can weed these out
+            # by inspecting the major version of the instance_version
+            instances.reject! do |value|
+              return true if value[1]['version'].nil?
+              ver = Gem::Version.new(value[1]['version'])
+              # Segment 0 is the major version number of the SQL Instance
+              ver.segments[0] != major_version
+            end
 
             [ version, Hash[instances] ]
           end
@@ -203,10 +245,9 @@ module PuppetX
       #   "SQL_2014" => []
       # }
       def self.get_features
-        {
-          SQL_2012 => get_shared_features(SQL_2012),
-          SQL_2014 => get_shared_features(SQL_2014),
-        }
+        features = {}
+        ALL_SQL_VERSIONS.each { |version| features[version] = get_shared_features(version) }
+        features
       end
 
       # returns a hash containing instance details
@@ -225,8 +266,13 @@ module PuppetX
       #     "RS"
       #   ]
       # }
-      def self.get_instance_info(version = SQL_2014, instance_name)
+      def self.get_instance_info(version, instance_name)
+        return nil if version.nil?
         sql_instance = get_wmi_instance_info(version, instance_name)
+        # Instance names are unique on a single host, but not for a particular SQL Server version therefore
+        # it's possible to request information for a valid instance_name but not for version.  In this case
+        # we just return nil.
+        return nil if sql_instance['reg_root'].nil?
         feats = get_instance_features(sql_instance['reg_root'], sql_instance['name'])
         sql_instance.merge({'features' => feats})
       end
