@@ -340,10 +340,6 @@ Specifies a security mode for SQL Server. Valid options: 'SQL'. If not specified
 
 Default: `undef`.
 
-##### `service_ensure`
-
-Specifies whether the SQL Server service should be running. Valid options: 'automatic' (Puppet starts the service if it's not running), 'manual' (Puppet takes no action), and 'disable' (Puppet stops the service if it's running).
-
 ##### `source`
 
 *Required.*

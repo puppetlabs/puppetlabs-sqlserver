@@ -44,11 +44,6 @@ Puppet::Type::newtype(:sqlserver_instance) do
 
   end
 
-  newparam(:service_ensure) do
-    desc 'Automatic will ensure running if stopped, Manual will set to manual and take no action on current state, :diable will stop and change to service disabled'
-    newvalues(:automatic, :manual, :disable)
-  end
-
   newparam(:sql_svc_account, :parent => Puppet::Property::SqlserverLogin) do
     desc 'Account for SQL Server service: Domain\User or system account.'
     # Default to "NT Service\SQLAGENT$#{instance_name}"
