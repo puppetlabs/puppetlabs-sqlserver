@@ -59,7 +59,7 @@ If($Result -contains "State : Enabled")
 Else
 {
   Write-Host "Installing .Net Framework 3.5, do not close this prompt..."
-  DISM /Online /Enable-Feature /FeatureName:NetFx3 /All /NoRestart /Quiet /LimitAccess #{ "/Source:\"#{source_location}\"" unless source_location.nil? } | Out-Null
+  $InstallResult = DISM /Online /Enable-Feature /FeatureName:NetFx3 /All /NoRestart /Quiet /LimitAccess #{ "/Source:\"#{source_location}\"" unless source_location.nil? }
   $Result = Dism /online /Get-featureinfo /featurename:NetFx3
   If($Result -contains "State : Enabled")
   {
@@ -68,6 +68,10 @@ Else
   Else
   {
       Write-Host "Failed to install Install .Net Framework 3.5#{ ", please make sure the windows_feature_source is correct" unless source_location.nil?}."
+      Write-Host "DISM Install Result"
+      Write-Host "-----------"
+      Write-Host ($InstallResult -join "`n")
+      #exit 1
   }
 }
 DOTNET
