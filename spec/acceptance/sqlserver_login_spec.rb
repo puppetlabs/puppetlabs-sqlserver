@@ -8,8 +8,8 @@ table_name  = 'Tables_' + SecureRandom.hex(3)
 # Covers testrail => ['89118', '89119', '89120', '89121', '89122', '89123', '89124', '89125', '89540']
 describe "Test sqlserver::login", :node => host do
 
-  def ensure_manifest_apply(host, pp)
-    apply_manifest_on(host, pp) do |r|
+  def ensure_manifest_execute(pp)
+    execute_manifest(pp) do |r|
       expect(r.stderr).not_to match(/Error/i)
     end
   end
@@ -46,7 +46,7 @@ describe "Test sqlserver::login", :node => host do
         ensure    => 'absent',
       }
     MANIFEST
-    ensure_manifest_apply(host, pp)
+    ensure_manifest_execute(pp)
   end
 
   def create_login_manifest (testcase,login_name,login_password,options = {})
@@ -114,7 +114,7 @@ describe "Test sqlserver::login", :node => host do
         ensure  => 'present',
       }
     MANIFEST
-    ensure_manifest_apply(host, pp)
+    ensure_manifest_execute(pp)
   end
 
   # Delete all test fixtures
@@ -137,7 +137,7 @@ describe "Test sqlserver::login", :node => host do
         ensure  => 'absent',
       }
     MANIFEST
-    ensure_manifest_apply(host, pp)
+    ensure_manifest_execute(pp)
   end
 
   ['SQL_LOGIN user', 'WINDOWS_LOGIN user', 'WINDOWS_LOGIN group'].each do |testcase|
@@ -163,7 +163,7 @@ describe "Test sqlserver::login", :node => host do
 
         it "can create a default #{testcase}" do
           pp = create_login_manifest(testcase,@login_under_test,@login_passwd)
-          ensure_manifest_apply(host, pp)
+          ensure_manifest_execute(pp)
         end
 
         it "should exist in the principals table" do
@@ -181,7 +181,7 @@ describe "Test sqlserver::login", :node => host do
 
         it "is idempotent" do
           pp = create_login_manifest(testcase,@login_under_test,@login_passwd)
-          ensure_manifest_apply(host, pp)
+          ensure_manifest_execute(pp)
         end
       end
 
@@ -192,7 +192,7 @@ describe "Test sqlserver::login", :node => host do
         it "can create an #{testcase} with 'check_expiration','check_policy' set" do
           options = { 'check_expiration' => true, 'check_policy' => true }
           pp = create_login_manifest(testcase,@login_under_test,@login_passwd,options)
-          ensure_manifest_apply(host, pp)
+          ensure_manifest_execute(pp)
         end
 
         it "should have is_expiration_checked set" do
@@ -212,7 +212,7 @@ describe "Test sqlserver::login", :node => host do
         it "can create a #{testcase} with 'default_database','default_language'" do
           options = { 'default_database' => "#{db_name}", 'default_language' => 'Spanish' }
           pp = create_login_manifest(testcase,@login_under_test,@login_passwd,options)
-          ensure_manifest_apply(host, pp)
+          ensure_manifest_execute(pp)
         end
 
         it "should exist in the principals table" do
@@ -237,7 +237,7 @@ describe "Test sqlserver::login", :node => host do
         it "can create #{testcase} with optional 'disabled'" do
           options = { 'disabled' => true }
           pp = create_login_manifest(testcase,@login_under_test,@login_passwd,options)
-          ensure_manifest_apply(host, pp)
+          ensure_manifest_execute(pp)
         end
 
         if testcase == 'WINDOWS_LOGIN group'
@@ -261,7 +261,7 @@ describe "Test sqlserver::login", :node => host do
         it "should create an initial #{testcase}" do
           options = { 'svrroles' => '{\'sysadmin\' => 1}' }
           pp = create_login_manifest(testcase,@login_under_test,@login_passwd,options)
-          ensure_manifest_apply(host, pp)
+          ensure_manifest_execute(pp)
         end
 
         it "should exist in the principals table on creation" do
@@ -272,7 +272,7 @@ describe "Test sqlserver::login", :node => host do
         it "should modify a #{testcase} login" do
           options = { 'disabled' => true, 'default_database' => "#{db_name}", 'default_language' => 'Spanish', 'check_expiration' => true, 'check_policy' => true, 'svrroles' => '{\'sysadmin\' => 1, \'serveradmin\' => 1}' }
           pp = create_login_manifest(testcase,@login_under_test,@login_passwd,options)
-          ensure_manifest_apply(host, pp)
+          ensure_manifest_execute(pp)
         end
 
         if testcase == 'SQL_LOGIN user'
@@ -338,7 +338,7 @@ describe "Test sqlserver::login", :node => host do
 
         it "should create an initial #{testcase}" do
           pp = create_login_manifest(testcase,@login_under_test,@login_passwd)
-          ensure_manifest_apply(host, pp)
+          ensure_manifest_execute(pp)
         end
 
         it "should exist in the principals table on creation" do
@@ -349,7 +349,7 @@ describe "Test sqlserver::login", :node => host do
         it "should remove a #{testcase} on ensure => absent" do
           options = { 'ensure' => 'absent' }
           pp = create_login_manifest(testcase,@login_under_test,@login_passwd,options)
-          ensure_manifest_apply(host, pp)
+          ensure_manifest_execute(pp)
         end
 
         it "should not exist in the principals table after deletion" do
