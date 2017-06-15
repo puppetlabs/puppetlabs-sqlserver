@@ -174,6 +174,7 @@ module PuppetX
           'SQL_DReplay_Controller' => 'DREPLAY_CTLR', # Distributed Replay Controller
           'SQL_DReplay_Client'     => 'DREPLAY_CLT', # Distributed Replay Client
           'sql_shared_mr'          => 'SQL_SHARED_MR', # R Server (Standalone)
+          'SQL_SNAC_SDK'           => 'SNAC_SDK', # SQL Client Connectivity SDK
 
           # also WMI: SqlService WHERE SQLServiceType = 4 # MsDtsServer
           'SQL_DTS_Full'           => 'IS', # Integration Services
