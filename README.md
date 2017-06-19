@@ -980,6 +980,8 @@ Terminology differs somewhat between various database systems; please refer to t
 
 This module is available only for Windows Server 2012 or 2012 R2, and works with Puppet Enterprise 3.7 and later.
 
+This module can only manage a single SQL Server version on a host (one and only one of SQL Server 2012, 2014 or 2016). The module is able to manage multiple SQL Server instances of the same version.
+
 ## Development
 
 This module was built by Puppet specifically for use with Puppet Enterprise (PE).
