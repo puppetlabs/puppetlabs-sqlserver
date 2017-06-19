@@ -71,6 +71,10 @@ Puppet::Type::type(:sqlserver_instance).provide(:mssql, :parent => Puppet::Provi
       warn "Uninstalling all features for instance #{@resource[:name]} because an empty array was passed, please use ensure absent instead."
       destroy
     else
+      unless @resource[:as_sysadmin_accounts].nil? || @resource[:features].include?('AS')
+        fail('The parameter as_sysadmin_accounts was specified however the AS feature was not included in the installed features.  Either remove the as_sysadmin_accounts parameter or add AS as a feature to the instance.')
+      end
+
       instance_version = PuppetX::Sqlserver::ServerHelper.sql_version_from_install_source(@resource[:source])
       Puppet.debug("Installation source detected as version #{instance_version}") unless instance_version.nil?
 
