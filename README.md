@@ -197,7 +197,7 @@ Default: 'present'.
 
 *Required.*
 
-Specifies one or more features to manage. Valid options: 'BC', 'Conn', 'SSMS', 'ADV_SSMS', 'SDK', 'IS', 'MDS', 'BOL', 'DREPLAY_CTLR', 'DREPLAY_CLT', 'SNAC_SDK'.
+Specifies one or more features to manage. Valid options: 'BC', 'Conn', 'SSMS', 'ADV_SSMS', 'SDK', 'IS', 'MDS', 'BOL', 'DREPLAY_CTLR', 'DREPLAY_CLT'.
 
 The 'Tools' feature is deprecated.  Instead specify 'BC', 'SSMS', 'ADV_SSMS', 'Conn', and 'SDK' explicitly.
 
