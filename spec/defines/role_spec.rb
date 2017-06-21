@@ -171,17 +171,10 @@ BEGIN
 END"
         ] }
         let(:should_contain_onlyif) { [
-          "DECLARE @purge_members TABLE (
-ID int IDENTITY(1,1),
-member varchar(128)
-)",
-          "INSERT INTO @purge_members (member) (
-SELECT m.name FROM sys.server_role_members rm
+"SELECT m.name FROM sys.server_role_members rm
     JOIN sys.server_principals r ON rm.role_principal_id = r.principal_id
-	JOIN sys.server_principals m ON rm.member_principal_id = m.principal_id
-	WHERE r.name = 'myCustomRole'",
-          "IF 0 != (SELECT COUNT(*) FROM @purge_members)
-    THROW 51000, 'Unlisted Members in Role, will be purged', 10",
+    JOIN sys.server_principals m ON rm.member_principal_id = m.principal_id
+    WHERE r.name = 'myCustomRole'"
         ] }
         it_behaves_like 'sqlserver_tsql command'
         it_behaves_like 'sqlserver_tsql onlyif'
@@ -201,17 +194,10 @@ BEGIN
 END"
         ] }
         let(:should_contain_onlyif) { [
-          "DECLARE @purge_members TABLE (
-ID int IDENTITY(1,1),
-member varchar(128)
-)",
-          "INSERT INTO @purge_members (member) (
-SELECT m.name FROM sys.database_role_members rm
+"SELECT m.name FROM sys.database_role_members rm
     JOIN sys.database_principals r ON rm.role_principal_id = r.principal_id
-	JOIN sys.database_principals m ON rm.member_principal_id = m.principal_id
-	WHERE r.name = 'myCustomRole'",
-          "IF 0 != (SELECT COUNT(*) FROM @purge_members)
-    THROW 51000, 'Unlisted Members in Role, will be purged', 10",
+    JOIN sys.database_principals m ON rm.member_principal_id = m.principal_id
+    WHERE r.name = 'myCustomRole'",
         ] }
         it_behaves_like 'sqlserver_tsql command'
         it_behaves_like 'sqlserver_tsql onlyif'

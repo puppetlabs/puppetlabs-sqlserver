@@ -157,8 +157,7 @@ describe "Test sqlserver::role", :node => host do
       run_sql_query(host, { :query => query, :server => hostname, :expected_row_count => 6 })
     end
 
-    # temporarily skip this test because of ticket MODULES-2543
-    xit "Create server role #{@role} with optional members and optional members-purge" do
+    it "Create server role #{@role} with optional members and optional members-purge" do
       pp = <<-MANIFEST
       sqlserver::config{'MSSQLSERVER':
         admin_user    => 'sa',
