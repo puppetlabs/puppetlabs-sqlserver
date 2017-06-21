@@ -90,6 +90,45 @@ RSpec.describe provider_class do
     }
   end
 
+  shared_examples 'create_failure' do |exit_code, error_matcher|
+    it {
+      execute_args = args.merge(munged_values)
+      @resource = Puppet::Type::Sqlserver_instance.new(args)
+      @provider = provider_class.new(@resource)
+
+      stub_powershell_call(subject)
+      stub_source_which_call args[:source]
+
+      cmd_args = ["#{execute_args[:source]}/setup.exe",
+                  "/ACTION=install",
+                  '/Q',
+                  '/IACCEPTSQLSERVERLICENSETERMS',
+                  "/INSTANCENAME=#{execute_args[:name]}",
+                  "/FEATURES=#{execute_args[:features].join(',')}",]
+      (execute_args.keys - %w( ensure loglevel features name source sql_sysadmin_accounts sql_security_mode install_switches).map(&:to_sym)).sort.collect do |key|
+        cmd_args << "/#{key.to_s.gsub(/_/, '').upcase}=\"#{@resource[key]}\""
+      end
+      if execute_args[:sql_security_mode]
+        cmd_args << "/SECURITYMODE=SQL"
+      end
+
+      # wrap each arg in doublequotes
+      admin_args = execute_args[:sql_sysadmin_accounts].map { |a| "\"#{a}\"" }
+      # prepend first arg only with CLI switch
+      admin_args[0] = "/SQLSYSADMINACCOUNTS=" + admin_args[0]
+      cmd_args += admin_args
+
+      additional_install_switches.each do |switch|
+        cmd_args << switch
+      end
+
+      @provider.stubs(:warn).with(anything).times(0)
+
+      result = Puppet::Util::Execution::ProcessOutput.new('', exit_code || 0)
+      Puppet::Util::Execution.stubs(:execute).with(cmd_args.compact, failonfail: false).returns(result)
+      expect{ @provider.create }.to raise_error(error_matcher)
+    }
+  end
 
   shared_examples 'destroy' do |exit_code, warning_matcher|
     it {
@@ -123,6 +162,18 @@ RSpec.describe provider_class do
       munged[:features].delete('SQL')
       munged[:features] += %w(DQ FullText Replication SQLEngine)
       munged[:features].sort!
+      let(:munged_values) { munged }
+    end
+  end
+
+  describe 'it should raise error if as_sysadmin_accounts is specified without AS feature' do
+    it_behaves_like 'create_failure', 1, /as_sysadmin_accounts was specified however the AS feature was not included/i do
+      args = get_basic_args
+      args[:features] = ['SQLEngine']
+      args[:as_sysadmin_accounts] = 'username'
+
+      let(:args) { args }
+      munged = {:features => Array.new(args[:features])}
       let(:munged_values) { munged }
     end
   end
