@@ -41,9 +41,15 @@ RSpec.describe 'sqlserver::database', :type => :define do
     end
     it_behaves_like 'sqlserver_tsql command' do
       let(:additional_params) { {
-          :filespec_filename => 'c:/test/test.mdf', :filespec_name => 'myCreCre',
-          :log_filename => "c:/test/logfile.ldf", :log_name => "myCrazyLog"} }
-      let(:should_contain_command) { [/c\:\/test\/logfile\.ldf/] }
+          :filespec_filename => 'c:/test/test.mdf', :filespec_name => 'myCre-Cre',
+          :log_filename => "c:/test/logfile.ldf", :log_name => "myCrazy_Log"} }
+      # Ensure that the parameters are in the TSQL and are correctly escaped
+      let(:should_contain_command) {[
+        /NAME = N'myCre-Cre'/,
+        /FILENAME = N'c\:\/test\/test\.mdf'/,
+        /NAME = N'myCrazy_Log'/,
+        /FILENAME = N'c\:\/test\/logfile\.ldf'/
+      ]}
     end
   end
   describe 'collation_name' do
