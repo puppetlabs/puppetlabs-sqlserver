@@ -197,7 +197,7 @@ Default: 'present'.
 
 *Required.*
 
-Specifies one or more features to manage. Valid options: 'BC', 'Conn', 'SSMS', 'ADV_SSMS', 'SDK', 'IS', 'MDS', 'BOL', 'DREPLAY_CTLR', 'DREPLAY_CLT', 'SNAC_SDK'.
+Specifies one or more features to manage. Valid options: 'BC', 'Conn', 'SSMS', 'ADV_SSMS', 'SDK', 'IS', 'MDS', 'BOL', 'DREPLAY_CTLR', 'DREPLAY_CLT'.
 
 The 'Tools' feature is deprecated.  Instead specify 'BC', 'SSMS', 'ADV_SSMS', 'Conn', and 'SDK' explicitly.
 
@@ -979,6 +979,10 @@ Terminology differs somewhat between various database systems; please refer to t
 ## Limitations
 
 This module is available only for Windows Server 2012 or 2012 R2, and works with Puppet Enterprise 3.7 and later.
+
+This module can only manage a single SQL Server version on a host (one and only one of SQL Server 2012, 2014 or 2016). The module is able to manage multiple SQL Server instances of the same version.
+
+The SQL Server Native Client SDK (also known as SNAC_SDK) can not be managed by this module.  The SQL Server installation media is able to install the SDK but is not able to uninstall the SDK. Note that the 'sqlserver_features' fact will detect the presence of the SDK.
 
 ## Development
 

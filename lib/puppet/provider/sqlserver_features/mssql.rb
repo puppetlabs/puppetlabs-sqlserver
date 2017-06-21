@@ -13,22 +13,25 @@ Puppet::Type::type(:sqlserver_features).provide(:mssql, :parent => Puppet::Provi
     result = Facter.value(:sqlserver_features)
     debug "Parsing result #{result}"
 
+    # Due to MODULES-5060 we can only output one feature set.  If we output
+    # multiple then it is not possible to install or uninstall due to multiple
+    # resources with the same name.  Also due to the SQL Native Client not
+    # being unique across SQL Server versions (e.g. SQL 2016 installs Native Client
+    # with a version that matches for SQL 2012) the features need to be collated
+    # across all versions and then aggregated into a single resource
+    featurelist = []
     ALL_SQL_VERSIONS.each do |sql_version|
       next if result[sql_version].empty?
+      featurelist += result[sql_version]
+    end
+
+    unless featurelist.count.zero?
       instance_props = {:name => "Generic Features",
                         :ensure => :present,
-                        :features => result[sql_version].sort
+                        :features => featurelist.uniq.sort
       }
       debug "Parsed features = #{instance_props[:features]}"
-
-      instance = new(instance_props)
-      debug "Created instance #{instance}"
-      instances << instance
-
-      # Due to MODULES-5060 we can only output one feature set.  If we output
-      # multiple then it is not possible to install or uninstall due to multiple
-      # resources with the same name.
-      break
+      instances = [new(instance_props)]
     end
 
     instances
