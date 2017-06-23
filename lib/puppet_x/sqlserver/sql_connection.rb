@@ -32,7 +32,7 @@ module PuppetX
           'Provider'         => 'SQLOLEDB.1',
           'Initial Catalog'  => config[:database] || 'master',
           'Application Name' => 'Puppet',
-          'Data Source'      => 'localhost'
+          'Data Source'      => '.'
         }
 
         admin_user = config[:admin_user] || ''
@@ -52,7 +52,7 @@ module PuppetX
         end
 
         if config[:instance_name] != nil && config[:instance_name] !~ /^MSSQLSERVER$/
-          params['Data Source'] = "localhost\\#{config[:instance_name]}"
+          params['Data Source'] = ".\\#{config[:instance_name]}"
         end
 
         params.map { |k, v| "#{k}=#{v}" }.join(';')
