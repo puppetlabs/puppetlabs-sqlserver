@@ -11,7 +11,7 @@ CREATE DATABASE [<%= @db_name %>]
     CONTAINMENT = <%= @containment %>
     <% if @filespec_name && @filespec_filename -%>
     ON (
-        NAME = <%= @filespec_name %>,
+        NAME = N'<%= @filespec_name %>',
         FILENAME = N'<%= @filespec_filename %>'
         <% if @filespec_size %>, SIZE = <%= @filespec_size %><% end %>
         <% if @filespec_maxsize %>, MAXSIZE = <%= @filespec_maxsize %><% end %>
@@ -21,7 +21,7 @@ CREATE DATABASE [<%= @db_name %>]
     <% if @log_name && @log_filename -%>
         LOG ON
         (
-          NAME = <%= @log_name %>,
+          NAME = N'<%= @log_name %>',
           FILENAME = N'<%= @log_filename %>'
           <% if @log_size %>, SIZE = <%= @log_size %> <% end %>
           <% if @log_maxsize %>, MAXSIZE = <%= @log_maxsize %><% end %>
