@@ -9,10 +9,6 @@ Rakefile:
   unmanaged: true
 spec/spec_helper.rb:
   unmanaged: true
-appveyor.yml:
-  matrix_extras:
-    - PUPPET_GEM_VERSION: 4.2.3
-      RUBY_VER: 21-x64
 LICENSE:
   license_type: 'puppetpe'
 NOTICE:
