@@ -12,7 +12,7 @@ db_name   = ("DB" + SecureRandom.hex(4)).upcase
 
 describe "sqlserver::config test", :node => host do
 
-  def ensure_sqlserver_instance(host,inst_name, ensure_val = 'present')
+  def ensure_sqlserver_instance(inst_name, ensure_val = 'present')
     create_new_instance= <<-MANIFEST
       sqlserver_instance{'#{inst_name}':
       ensure                => '#{ensure_val}',
@@ -25,7 +25,7 @@ describe "sqlserver::config test", :node => host do
     }
     MANIFEST
 
-    apply_manifest_on(host, create_new_instance) do |r|
+    execute_manifest(create_new_instance) do |r|
       expect(r.stderr).not_to match(/Error/i)
     end
   end
@@ -34,7 +34,7 @@ describe "sqlserver::config test", :node => host do
 
     before(:all) do
       # Create new instance
-      ensure_sqlserver_instance(host, inst_name)
+      ensure_sqlserver_instance(inst_name)
 
       # get credentials for new config
       @admin_user = "admin" + SecureRandom.hex(2)
@@ -46,7 +46,7 @@ describe "sqlserver::config test", :node => host do
 
     after(:all) do
       # remove the newly created instance
-      ensure_sqlserver_instance(host, 'absent')
+      ensure_sqlserver_instance('absent')
     end
 
     it "Create New Admin Login:" do
@@ -64,7 +64,7 @@ describe "sqlserver::config test", :node => host do
         svrroles    => {'sysadmin' => 1},
       }
       MANIFEST
-      apply_manifest_on(host, create_new_login) do |r|
+      execute_manifest(create_new_login) do |r|
         expect(r.stderr).not_to match(/Error/i)
       end
     end
@@ -80,7 +80,7 @@ describe "sqlserver::config test", :node => host do
         instance => '#{inst_name}',
       }
       MANIFEST
-      apply_manifest_on(host, pp) do |r|
+      execute_manifest(pp) do |r|
         expect(r.stderr).not_to match(/Error/i)
       end
     end
@@ -103,7 +103,7 @@ describe "sqlserver::config test", :node => host do
         instance => '#{inst_name}',
       }
       MANIFEST
-      apply_manifest_on(host, pp) do |r|
+      execute_manifest(pp) do |r|
         expect(r.stderr).not_to match(/Error/i)
       end
     end

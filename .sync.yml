@@ -5,6 +5,10 @@ Gemfile:
   optional:
     ':development':
       - gem: yard
+    ':system_tests':
+          - gem: beaker-testmode_switcher
+            version: '<= 0.2.0'
+          - gem: master_manipulator
 Rakefile:
   unmanaged: true
 spec/spec_helper.rb:

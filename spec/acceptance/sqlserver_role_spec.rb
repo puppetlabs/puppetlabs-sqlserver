@@ -14,7 +14,7 @@ USER1     = "User1_" + SecureRandom.hex(2)
 
 describe "Test sqlserver::role", :node => host do
 
-  def ensure_sqlserver_logins_users(host, db_name)
+  def ensure_sqlserver_logins_users(db_name)
     pp = <<-MANIFEST
     sqlserver::config{'MSSQLSERVER':
       admin_user   => 'sa',
@@ -42,7 +42,7 @@ describe "Test sqlserver::role", :node => host do
       require         => Sqlserver::Login['#{LOGIN1}'],
     }
     MANIFEST
-    apply_manifest_on(host, pp) do |r|
+    execute_manifest(pp, opts = {}) do |r|
       expect(r.stderr).not_to match(/Error/i)
     end
   end
@@ -50,7 +50,7 @@ describe "Test sqlserver::role", :node => host do
   context "Start testing sqlserver::role", {:testrail => ['89161', '89162', '89163', '89164', '89165']} do
     before(:all) do
       # Create database users
-      ensure_sqlserver_logins_users(host, db_name)
+      ensure_sqlserver_logins_users(db_name)
     end
     before(:each) do
       @role = "Role_" + SecureRandom.hex(2)
@@ -65,7 +65,7 @@ describe "Test sqlserver::role", :node => host do
         ensure  => 'absent',
       }
       MANIFEST
-      apply_manifest_on(host, pp) do |r|
+      execute_manifest(pp, opts = {}) do |r|
         expect(r.stderr).not_to match(/Error/i)
       end
     end
@@ -82,7 +82,7 @@ describe "Test sqlserver::role", :node => host do
         ensure    => 'absent',
       }
       MANIFEST
-      apply_manifest_on(host, pp) do |r|
+      execute_manifest(pp, opts = {}) do |r|
         expect(r.stderr).not_to match(/Error/i)
       end
     end
@@ -101,7 +101,7 @@ describe "Test sqlserver::role", :node => host do
         type          => 'SERVER',
       }
       MANIFEST
-      apply_manifest_on(host, pp) do |r|
+      execute_manifest(pp, opts = {}) do |r|
         expect(r.stderr).not_to match(/Error/i)
       end
 
@@ -141,7 +141,7 @@ describe "Test sqlserver::role", :node => host do
         type        => 'DATABASE',
       }
       MANIFEST
-      apply_manifest_on(host, pp) do |r|
+      execute_manifest(pp, opts = {}) do |r|
         expect(r.stderr).not_to match(/Error/i)
       end
 
@@ -172,7 +172,7 @@ describe "Test sqlserver::role", :node => host do
         members     => ['#{LOGIN1}', '#{LOGIN2}', '#{LOGIN3}'],
       }
       MANIFEST
-      apply_manifest_on(host, pp) do |r|
+      execute_manifest(pp, opts = {}) do |r|
         expect(r.stderr).not_to match(/Error/i)
       end
 
@@ -216,7 +216,7 @@ describe "Test sqlserver::role", :node => host do
         members_purge => true,
       }
       MANIFEST
-      apply_manifest_on(host, pp) do |r|
+      execute_manifest(pp, opts = {}) do |r|
         expect(r.stderr).not_to match(/Error/i)
       end
 

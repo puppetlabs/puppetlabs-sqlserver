@@ -2,6 +2,9 @@ require 'beaker-rspec/spec_helper'
 require 'beaker-rspec/helpers/serverspec'
 require 'sql_testing_helpers'
 require 'beaker/puppet_install_helper'
+require 'beaker/testmode_switcher'
+require 'beaker/testmode_switcher/dsl'
+
 
 WIN_ISO_ROOT = "http://int-resources.ops.puppetlabs.net/ISO/Windows/2012"
 WIN_2012R2_ISO = "en_windows_server_2012_r2_with_update_x64_dvd_6052708.iso"
@@ -72,6 +75,7 @@ unless ENV['MODULE_provision'] == 'no'
 
     # Install sqlserver dependencies.
     on(agent, puppet('module install puppetlabs-stdlib'))
+    on(master, puppet('module install puppetlabs-stdlib'))
 
     # Mount windows 2012R2 ISO to allow install of .NET 3.5 Windows Feature
     iso_opts = {
@@ -84,5 +88,6 @@ unless ENV['MODULE_provision'] == 'no'
     # Install sqlserver module from local source.
     # See FM-5062 for more details.
     copy_module_to(agent, local)
+    copy_module_to(master, local)
   end
 end

@@ -12,7 +12,7 @@ DB_LOGIN_USER   = "loginuser" + SecureRandom.hex(2)
 
 describe "sqlserver_tsql test", :node => host do
 
-  def ensure_sqlserver_database(host,db_name, ensure_val = 'present')
+  def ensure_sqlserver_database(db_name, ensure_val = 'present')
     pp = <<-MANIFEST
     sqlserver::config{'MSSQLSERVER':
       admin_user   => 'sa',
@@ -23,7 +23,7 @@ describe "sqlserver_tsql test", :node => host do
     }
     MANIFEST
 
-    apply_manifest_on(host, pp) do |r|
+    execute_manifest(pp) do |r|
       expect(r.stderr).not_to match(/Error/i)
     end
   end
@@ -35,12 +35,12 @@ describe "sqlserver_tsql test", :node => host do
       @table_name = 'Tables_' + SecureRandom.hex(3)
       @query = "USE #{db_name}; SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE table_name = '#{@table_name}';"
 
-      ensure_sqlserver_database(host, db_name)
+      ensure_sqlserver_database(db_name)
     end
 
     after(:all) do
       # remove the newly created instance
-      ensure_sqlserver_database(host, 'absent')
+      ensure_sqlserver_database('absent')
     end
 
     it "Run a simple tsql command via sqlserver_tsql:" do
@@ -55,7 +55,7 @@ describe "sqlserver_tsql test", :node => host do
         command  => "CREATE TABLE #{@table_name} (id INT, name VARCHAR(20), email VARCHAR(20));",
       }
       MANIFEST
-      apply_manifest_on(host, pp) do |r|
+      execute_manifest(pp) do |r|
         expect(r.stderr).not_to match(/Error/i)
       end
 
@@ -77,12 +77,12 @@ describe "sqlserver_tsql test", :node => host do
       @table_name = 'Tables_' + SecureRandom.hex(3)
       @query = "USE #{db_name}; SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE table_name = '#{@table_name}';"
 
-      ensure_sqlserver_database(host, db_name)
+      ensure_sqlserver_database(db_name)
     end
 
     after(:all) do
       # remove the newly created instance
-      ensure_sqlserver_database(host, 'absent')
+      ensure_sqlserver_database('absent')
     end
 
     it "Run a simple tsql command via sqlserver_tsql:" do
@@ -98,7 +98,7 @@ describe "sqlserver_tsql test", :node => host do
         command => "CREATE TABLE #{@table_name} (id INT, name VARCHAR(20), email VARCHAR(20));",
       }
       MANIFEST
-      apply_manifest_on(host, pp) do |r|
+      execute_manifest(pp) do |r|
         expect(r.stderr).not_to match(/Error/i)
       end
 
@@ -130,7 +130,7 @@ describe "sqlserver_tsql test", :node => host do
       }
       MANIFEST
 
-      apply_manifest_on(host, pp) do |r|
+      execute_manifest(pp) do |r|
         expect(r.stderr).not_to match(/Error/i)
       end
 
@@ -163,7 +163,7 @@ describe "sqlserver_tsql test", :node => host do
       }
       MANIFEST
 
-      apply_manifest_on(host, pp) do |r|
+      execute_manifest(pp) do |r|
         expect(r.stderr).not_to match(/Error/i)
       end
 
@@ -190,7 +190,7 @@ describe "sqlserver_tsql test", :node => host do
         command => "invalid-tsql-command",
       }
       MANIFEST
-      apply_manifest_on(host, pp, {:acceptable_exit_codes => [0,1]}) do |r|
+      execute_manifest(pp, {:acceptable_exit_codes => [0,1]}) do |r|
         expect(r.stderr).to match(/Error/i)
       end
     end
@@ -209,7 +209,7 @@ describe "sqlserver_tsql test", :node => host do
         command => "CREATE TABLE #{@table_name} (id INT, name VARCHAR(20), email VARCHAR(20));",
       }
       MANIFEST
-      apply_manifest_on(host, pp, {:acceptable_exit_codes => [0,1]}) do |r|
+      execute_manifest(pp, {:acceptable_exit_codes => [0,1]}) do |r|
         expect(r.stderr).to match(/Error/i)
       end
     end

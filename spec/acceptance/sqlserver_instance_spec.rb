@@ -11,7 +11,7 @@ end
 describe "sqlserver_instance", :node => host do
   version = host['sql_version'].to_s
 
-  def ensure_sqlserver_instance(host, features, inst_name, ensure_val = 'present', sysadmin_accounts = "['Administrator']")
+  def ensure_sqlserver_instance(features, inst_name, ensure_val = 'present', sysadmin_accounts = "['Administrator']")
     manifest = <<-MANIFEST
     sqlserver_instance{'#{inst_name}':
       name                  => '#{inst_name}',
@@ -31,7 +31,7 @@ describe "sqlserver_instance", :node => host do
 
     pp = ERB.new(manifest).result(binding)
 
-    apply_manifest_on(host, pp) do |r|
+    execute_manifest(pp) do |r|
       expect(r.stderr).not_to match(/Error/i)
     end
   end
@@ -68,7 +68,7 @@ describe "sqlserver_instance", :node => host do
         password => 'Puppet01!',
       }
       MANIFEST
-      apply_manifest_on(host,pp)
+      execute_manifest(pp)
     end
 
     after(:context) do
@@ -77,14 +77,14 @@ describe "sqlserver_instance", :node => host do
         ensure => absent,
       }
       MANIFEST
-      apply_manifest_on(host,pp)
+      execute_manifest(pp)
     end
 
     inst_name = new_random_instance_name
     features = ['SQLEngine', 'Replication', 'FullText', 'DQ']
 
     it "create #{inst_name} instance" do
-      ensure_sqlserver_instance(host, features, inst_name,'present',"['Administrator','ExtraSQLAdmin']")
+      ensure_sqlserver_instance(features, inst_name,'present',"['Administrator','ExtraSQLAdmin']")
 
       validate_sql_install(host, {:version => version}) do |r|
         expect(r.stdout).to match(/#{Regexp.new(inst_name)}/)
@@ -100,7 +100,7 @@ describe "sqlserver_instance", :node => host do
     end
 
     it "remove #{inst_name} instance" do
-      ensure_sqlserver_instance(host, features, inst_name, 'absent')
+      ensure_sqlserver_instance(features, inst_name, 'absent')
 
       # Ensure all features for this instance are removed and the defaults are left alone
       validate_sql_install(host, {:version => version}) do |r|
@@ -115,15 +115,15 @@ describe "sqlserver_instance", :node => host do
   end
 
   context "Feature has only one 'RS'", {:testrail => ['89034']} do
-   inst_name = new_random_instance_name
-   features = ['RS']
+    inst_name = new_random_instance_name
+    features = ['RS']
 
     after(:all) do
-      ensure_sqlserver_instance(host, features, inst_name, 'absent')
+      ensure_sqlserver_instance(features, inst_name, 'absent')
     end
 
     it "create #{inst_name} instance with only one RS feature" do
-      ensure_sqlserver_instance(host, features, inst_name)
+      ensure_sqlserver_instance(features, inst_name)
 
       validate_sql_install(host, {:version => version}) do |r|
         expect(r.stdout).to match(/#{inst_name}\s+Reporting Services/)
@@ -136,13 +136,13 @@ describe "sqlserver_instance", :node => host do
     features = ['AS']
 
     after(:all) do
-      ensure_sqlserver_instance(host, features, inst_name, 'absent')
+      ensure_sqlserver_instance(features, inst_name, 'absent')
     end
 
     #skip below test due to ticket MODULES-2379, when the ticket was resolved
     # will change xit to it
     xit "create #{inst_name} instance with only one AS feature" do
-      ensure_sqlserver_instance(host, features, inst_name)
+      ensure_sqlserver_instance(features, inst_name)
 
       validate_sql_install(host, {:version => version}) do |r|
         expect(r.stdout).to match(/#{Regexp.new(inst_name)}/)

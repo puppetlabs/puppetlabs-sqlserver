@@ -10,7 +10,7 @@ db_name   = ("DB" + SecureRandom.hex(4)).upcase
 
 describe "sqlserver::user test", :node => host do
 
-  def ensure_sqlserver_database(host, db_name, ensure_val = 'present')
+  def ensure_sqlserver_database(db_name, ensure_val = 'present')
     pp = <<-MANIFEST
     sqlserver::config{'MSSQLSERVER':
       admin_user   => 'sa',
@@ -31,7 +31,7 @@ describe "sqlserver::user test", :node => host do
     }
     MANIFEST
 
-    apply_manifest_on(host, pp) do |r|
+    execute_manifest(pp) do |r|
       expect(r.stderr).not_to match(/Error/i)
     end
   end
@@ -39,7 +39,7 @@ describe "sqlserver::user test", :node => host do
   context "Create database users with optional attributes", {:testrail => ['89143', '89144', '89145', '89146', '89149']} do
     before(:all) do
       # Create new database
-      ensure_sqlserver_database(host, db_name)
+      ensure_sqlserver_database(db_name)
     end
     before(:each) do
       @new_sql_login = "Login" + SecureRandom.hex(2)
@@ -70,7 +70,7 @@ describe "sqlserver::user test", :node => host do
         require         => Sqlserver::Login['#{@db_user}'],
       }
       MANIFEST
-      apply_manifest_on(host, pp) do |r|
+      execute_manifest(pp) do |r|
         expect(r.stderr).not_to match(/Error/i)
       end
 
@@ -102,7 +102,7 @@ describe "sqlserver::user test", :node => host do
         require         => Sqlserver::Login['#{@db_user}'],
       }
         MANIFEST
-        apply_manifest_on(host, pp) do |r|
+        execute_manifest(pp) do |r|
           expect(r.stderr).not_to match(/Error/i)
         end
 
@@ -133,7 +133,7 @@ describe "sqlserver::user test", :node => host do
         require         => Sqlserver::Login['#{@new_sql_login}'],
       }
       MANIFEST
-      apply_manifest_on(host, pp) do |r|
+      execute_manifest(pp) do |r|
         expect(r.stderr).not_to match(/Error/i)
       end
 
@@ -166,7 +166,7 @@ describe "sqlserver::user test", :node => host do
         require         => Sqlserver::Login['#{@new_sql_login}'],
       }
       MANIFEST
-      apply_manifest_on(host, pp) do |r|
+      execute_manifest(pp) do |r|
         expect(r.stderr).not_to match(/Error/i)
       end
 
@@ -191,7 +191,7 @@ describe "sqlserver::user test", :node => host do
         require         => Sqlserver::Login['#{@db_user}'],
       }
       MANIFEST
-      apply_manifest_on(host, pp) do |r|
+      execute_manifest(pp) do |r|
         expect(r.stderr).not_to match(/Error/i)
       end
 
@@ -209,7 +209,7 @@ describe "sqlserver::user test", :node => host do
         database        => '#{db_name}',
       }
       MANIFEST
-      apply_manifest_on(host, pp) do |r|
+      execute_manifest(pp) do |r|
         expect(r.stderr).not_to match(/Error/i)
       end
       #validate that the database user '#{@db_user}' should be deleted:

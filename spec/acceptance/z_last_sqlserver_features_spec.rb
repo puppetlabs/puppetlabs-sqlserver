@@ -6,7 +6,7 @@ host = find_only_one("sql_host")
 describe "sqlserver_features", :node => host do
   sql_version = host['sql_version'].to_s
 
-  def ensure_sql_features(host, features, ensure_val = 'present')
+  def ensure_sql_features(features, ensure_val = 'present')
     manifest = <<-MANIFEST
     sqlserver::config{ 'MSSQLSERVER':
       admin_pass        => '<%= SQL_ADMIN_PASS %>',
@@ -27,7 +27,7 @@ describe "sqlserver_features", :node => host do
 
     pp = ERB.new(manifest).result(binding)
 
-    apply_manifest_on(host, pp) do |r|
+    execute_manifest(pp) do |r|
       expect(r.stderr).not_to match(/Error/i)
     end
   end
@@ -44,7 +44,7 @@ describe "sqlserver_features", :node => host do
     end
 
     it 'all possible features' do
-      ensure_sql_features(host, features)
+      ensure_sql_features(features)
 
       validate_sql_install(host, {:version => sql_version}) do |r|
         expect(r.stdout).to match(/Client Tools Connectivity/)
@@ -61,7 +61,7 @@ describe "sqlserver_features", :node => host do
     features = ['BC', 'Conn', 'SDK', 'IS', 'MDS']
 
     before(:all) do
-      ensure_sql_features(host, features)
+      ensure_sql_features(features)
     end
 
     after(:all) do
@@ -70,7 +70,7 @@ describe "sqlserver_features", :node => host do
     end
 
     it 'all possible features' do
-      ensure_sql_features(host, features, 'absent')
+      ensure_sql_features(features, 'absent')
 
       validate_sql_install(host, {:version => sql_version}) do |r|
         expect(r.stdout).not_to match(/Client Tools Connectivity/)
@@ -97,7 +97,7 @@ describe "sqlserver_features", :node => host do
     end
 
     before(:each) do
-      ensure_sql_features(host, features)
+      ensure_sql_features(features)
     end
 
     after(:all) do
@@ -106,7 +106,7 @@ describe "sqlserver_features", :node => host do
     end
 
     it "'BC'" do
-      ensure_sql_features(host, features - ['BC'])
+      ensure_sql_features(features - ['BC'])
 
       validate_sql_install(host, {:version => sql_version}) do |r|
         expect(r.stdout).not_to match(/Client Tools Backwards Compatibility/)
@@ -114,7 +114,7 @@ describe "sqlserver_features", :node => host do
     end
 
     it "'Conn'" do
-      ensure_sql_features(host, features - ['Conn'])
+      ensure_sql_features(features - ['Conn'])
 
       validate_sql_install(host, {:version => sql_version}) do |r|
         expect(r.stdout).not_to match(/Client Tools Connectivity/)
@@ -123,7 +123,7 @@ describe "sqlserver_features", :node => host do
 
     # TODO: Guard on SQL 2016
     it "'ADV_SSMS'", :unless => sql_version == '2016' do
-      ensure_sql_features(host, features - ['ADV_SSMS'])
+      ensure_sql_features(features - ['ADV_SSMS'])
 
       validate_sql_install(host, {:version => sql_version}) do |r|
         expect(r.stdout).not_to match(/Management Tools - Complete/)
@@ -134,7 +134,7 @@ describe "sqlserver_features", :node => host do
     end
 
     it "'SDK'" do
-      ensure_sql_features(host, features - ['SDK'])
+      ensure_sql_features(features - ['SDK'])
 
       validate_sql_install(host, {:version => sql_version}) do |r|
         expect(r.stdout).not_to match(/Client Tools SDK/)
@@ -142,7 +142,7 @@ describe "sqlserver_features", :node => host do
     end
 
     it "'IS'" do
-      ensure_sql_features(host, features - ['IS'])
+      ensure_sql_features(features - ['IS'])
 
       validate_sql_install(host, {:version => sql_version}) do |r|
         expect(r.stdout).not_to match(/Integration Services/)
@@ -150,7 +150,7 @@ describe "sqlserver_features", :node => host do
     end
 
     it "'MDS'" do
-      ensure_sql_features(host, features - ['MDS'])
+      ensure_sql_features(features - ['MDS'])
 
       validate_sql_install(host, {:version => sql_version}) do |r|
         expect(r.stdout).not_to match(/Master Data Services/)
@@ -159,7 +159,7 @@ describe "sqlserver_features", :node => host do
   end
 
   context 'with negative test cases' do
-    def bind_and_apply_failing_manifest(host, features, ensure_val = 'present')
+    def bind_and_apply_failing_manifest(features, ensure_val = 'present')
 
       failing_manifest = <<-MANIFEST
       sqlserver::config{ 'MSSQLSERVER':
@@ -179,20 +179,20 @@ describe "sqlserver_features", :node => host do
 
       pp = ERB.new(failing_manifest).result(binding)
 
-      apply_manifest_on(host, pp) do |r|
+      execute_manifest(pp) do |r|
         expect(r.stderr).to match(/error/i)
       end
     end
 
     it 'fails when an is_svc_account is supplied and a password is not' do
       features = ['IS']
-      bind_and_apply_failing_manifest(host, features)
+      bind_and_apply_failing_manifest(features)
     end
 
     it 'fails when ADV_SSMS is supplied but SSMS is not' do
       skip('This test is blocked by FM-2712')
       features = ['BC', 'Conn', 'ADV_SSMS', 'SDK']
-      ensure_sql_features(host, features)
+      ensure_sql_features(features)
     end
   end
 
@@ -223,7 +223,7 @@ describe "sqlserver_features", :node => host do
       end
 
       it 'all possible features' do
-        ensure_sql_features(host, features)
+        ensure_sql_features(features)
 
         validate_sql_install(host, {:version => sql_version}) do |r|
           expect(r.stdout).to match(/Client Tools Connectivity/)

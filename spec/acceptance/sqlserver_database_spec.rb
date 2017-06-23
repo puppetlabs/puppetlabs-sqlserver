@@ -5,8 +5,8 @@ host = find_only_one("sql_host")
 
 describe "Test sqlserver::database", :node => host do
 
-  def ensure_sqlserver_database(host, pp)
-    apply_manifest_on(host, pp) do |r|
+  def ensure_sqlserver_database(pp)
+    execute_manifest(pp) do |r|
       expect(r.stderr).not_to match(/Error/i)
     end
   end
@@ -39,7 +39,7 @@ describe "Test sqlserver::database", :node => host do
           ensure  => 'absent',
         }
       MANIFEST
-      ensure_sqlserver_database(host, pp)
+      ensure_sqlserver_database(pp)
     end
 
     it "Test Case C89019: Create a database" do
@@ -57,7 +57,7 @@ describe "Test sqlserver::database", :node => host do
           require => Sqlserver::Database['#{@db_name}'],
         }
       MANIFEST
-      ensure_sqlserver_database(host, pp)
+      ensure_sqlserver_database(pp)
 
       puts "Validate the Database '#{@db_name}' and table '#{@table_name}' are successfully created:"
       query = "USE #{@db_name}; SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE table_name = '#{@table_name}';"
@@ -73,7 +73,7 @@ describe "Test sqlserver::database", :node => host do
         sqlserver::database{'#{@db_name}':
         }
       MANIFEST
-      ensure_sqlserver_database(host, pp)
+      ensure_sqlserver_database(pp)
 
       puts "Validate the Database '#{@db_name}' exists"
       query = "SELECT database_id from sys.databases WHERE name = '#{@db_name}';"
@@ -88,7 +88,7 @@ describe "Test sqlserver::database", :node => host do
           ensure => absent,
         }
       MANIFEST
-      ensure_sqlserver_database(host, pp)
+      ensure_sqlserver_database(pp)
 
       puts "Validate the Database '#{@db_name}' does not exist"
       query = "SELECT database_id from sys.databases WHERE name = '#{@db_name}';"
@@ -111,7 +111,7 @@ describe "Test sqlserver::database", :node => host do
           require => Sqlserver::Database['#{@db_name}'],
         }
       MANIFEST
-      ensure_sqlserver_database(host, pp)
+      ensure_sqlserver_database(pp)
 
       puts "Validate that a table can be created in the database:"
       query = "USE #{@db_name}; SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE table_name = '#{@table_name}';"
@@ -142,7 +142,7 @@ describe "Test sqlserver::database", :node => host do
           require => Sqlserver::Database['#{@db_name}'],
         }
       MANIFEST
-      ensure_sqlserver_database(host, pp)
+      ensure_sqlserver_database(pp)
 
       puts "Validate that a table can be created in the database:"
       query = "USE #{@db_name}; SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE table_name = '#{@table_name}';"
@@ -180,7 +180,7 @@ describe "Test sqlserver::database", :node => host do
             require => Sqlserver::Database['#{@db_name}'],
         }
       MANIFEST
-      ensure_sqlserver_database(host, pp)
+      ensure_sqlserver_database(pp)
 
       puts "Validate that a table can be created in the database:"
       query = "USE #{@db_name}; SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE table_name = '#{@table_name}';"
@@ -219,7 +219,7 @@ describe "Test sqlserver::database", :node => host do
             require => Sqlserver::Database['#{@db_name}'],
         }
       MANIFEST
-      ensure_sqlserver_database(host, pp)
+      ensure_sqlserver_database(pp)
 
       puts "Validate that a table can be created in the database:"
       query = "USE #{@db_name}; SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE table_name = '#{@table_name}';"
@@ -258,7 +258,7 @@ describe "Test sqlserver::database", :node => host do
             require => Sqlserver::Database['#{@db_name}'],
         }
       MANIFEST
-      ensure_sqlserver_database(host, pp)
+      ensure_sqlserver_database(pp)
 
       puts "Validate that a table can be created in the database:"
       query = "USE #{@db_name}; SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE table_name = '#{@table_name}';"
@@ -297,7 +297,7 @@ describe "Test sqlserver::database", :node => host do
             require => Sqlserver::Database['#{@db_name}'],
         }
       MANIFEST
-      ensure_sqlserver_database(host, pp)
+      ensure_sqlserver_database(pp)
 
       puts "Validate that a table can be created in the database:"
       query = "USE #{@db_name}; SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE table_name = '#{@table_name}';"
