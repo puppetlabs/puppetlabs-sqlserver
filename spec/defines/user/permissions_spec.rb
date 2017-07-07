@@ -13,13 +13,9 @@ describe 'sqlserver::user::permissions' do
           :permissions => ['SELECT'],
           :database => 'loggingDb',
       } }
-      let(:raise_error_check) { 'User must be between 1 and 128 characters' }
+      let(:raise_error_check) { "'user' expects a String[1, 128] value" }
       describe 'missing' do
-        if Puppet::Util::Package.versioncmp(Puppet.version, '4.3.0') < 0
-          let(:raise_error_check) { 'Must pass user to Sqlserver::User::Permissions[myTitle]' }
-        else
-          let(:raise_error_check) { "expects a value for parameter 'user'" }
-        end
+        let(:raise_error_check) { "expects a value for parameter 'user'" }
 
         it_behaves_like 'validation error'
       end
@@ -37,9 +33,10 @@ describe 'sqlserver::user::permissions' do
           :user => 'loggingUser',
           :database => 'loggingDb',
       } }
-      let(:raise_error_check) { 'Permission must be between 4 and 128 characters' }
+      let(:raise_error_check) { /'permissions' .+ expects a String.+ value/ }
       describe 'empty' do
         let(:additional_params) { {:permissions => ''} }
+        let(:raise_error_check) { /'permissions' expects an Array value/ }
         it_behaves_like 'validation error'
       end
       describe 'under limit' do
@@ -59,7 +56,7 @@ describe 'sqlserver::user::permissions' do
       } }
       describe 'invalid' do
         let(:additional_params) { {:state => 'invalide'} }
-        let(:raise_error_check) { "State can only be of 'GRANT', 'REVOKE' or 'DENY' you passed invalide" }
+        let(:raise_error_check) { "'state' expects" }
         it_behaves_like 'validation error'
       end
     end
@@ -77,7 +74,7 @@ describe 'sqlserver::user::permissions' do
       end
       describe 'invalid' do
         let(:additional_params) { {:with_grant_option => 'invalid'} }
-        let(:raise_error_check) { '"invalid" is not a boolean' }
+        let(:raise_error_check) { "'with_grant_option' expects" }
         it_behaves_like 'validation error'
       end
     end

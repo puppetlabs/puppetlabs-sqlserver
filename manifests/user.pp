@@ -39,14 +39,14 @@
 #
 ##
 define sqlserver::user (
-  $database,
-  $ensure         = 'present',
-  $user           = $title,
-  $default_schema = undef,
-  $instance       = 'MSSQLSERVER',
-  $login          = undef,
-  $password       = undef,
-  $permissions    = { },
+  String[1,128] $database,
+  Enum['present', 'absent'] $ensure = 'present',
+  String[1] $user = $title,
+  Optional[String] $default_schema = undef,
+  String[1,16] $instance = 'MSSQLSERVER',
+  Optional[String[1]] $login = undef,
+  Optional[String[1,128]] $password = undef,
+  Optional[Hash] $permissions = { },
 )
 {
   sqlserver_validate_instance_name($instance)
@@ -54,12 +54,10 @@ define sqlserver::user (
   $is_windows_user = sqlserver_is_domain_or_local_user($login)
 
   if $password {
-    sqlserver_validate_range($password, 1, 128, 'Password must be equal or less than 128 characters')
     if $is_windows_user and $login != undef{
       fail('Can not provide password when using a Windows Login')
     }
   }
-  sqlserver_validate_range($database, 1, 128, 'Database name must be between 1 and 128 characters')
 
   $create_delete = $ensure ? {
     present => 'create',
@@ -74,7 +72,6 @@ define sqlserver::user (
   }
 
   if $ensure == present {
-    validate_hash($permissions)
     $_upermissions = sqlserver_upcase($permissions)
     sqlserver_validate_hash_uniq_values($_upermissions, "Duplicate permissions found for sqlserver::user[${title}]")
 

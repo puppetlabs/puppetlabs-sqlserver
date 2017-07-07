@@ -51,22 +51,20 @@
 ##
 define sqlserver::login (
   $login = $title,
-  $instance = 'MSSQLSERVER',
-  $ensure = 'present',
-  $password = undef,
-  $svrroles = { },
-  $login_type = 'SQL_LOGIN',
-  $default_database = 'master',
-  $default_language = 'us_english',
-  $check_expiration = false,
-  $check_policy = true,
-  $disabled = false,
-  $permissions = { },
+  String[1,16] $instance = 'MSSQLSERVER',
+  Enum['SQL_LOGIN', 'WINDOWS_LOGIN'] $login_type = 'SQL_LOGIN',
+  Enum['present', 'absent'] $ensure = 'present',
+  Optional[String] $password = undef,
+  Optional[Hash] $svrroles = { },
+  String $default_database = 'master',
+  String $default_language = 'us_english',
+  Boolean $check_expiration = false,
+  Boolean $check_policy = true,
+  Boolean $disabled = false,
+  Optional[Hash] $permissions = { },
 ) {
 
   sqlserver_validate_instance_name($instance)
-
-  validate_re($login_type,['^(SQL_LOGIN|WINDOWS_LOGIN)$'])
 
   if $check_expiration and !$check_policy {
     fail ('Can not have check expiration enabled when check_policy is disabled')
@@ -85,7 +83,6 @@ define sqlserver::login (
   }
 
   if $ensure == present {
-    validate_hash($permissions)
     $_upermissions = sqlserver_upcase($permissions)
     sqlserver_validate_hash_uniq_values($_upermissions, "Duplicate permissions found for sqlserver::login[${title}]")
 

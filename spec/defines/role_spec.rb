@@ -12,7 +12,7 @@ RSpec.describe 'sqlserver::role', :type => :define do
       let(:additional_params) { {
         :type => 'invalid',
       } }
-      let(:raise_error_check) { "Type must be either 'SERVER' or 'DATABASE', provided 'invalid'" }
+      let(:raise_error_check) { "'type' expects" }
       it_behaves_like 'validation error'
     end
     describe 'SERVER' do
@@ -80,7 +80,7 @@ RSpec.describe 'sqlserver::role', :type => :define do
     end
     describe 'empty instance' do
       let(:additional_params) { {'instance' => ''} }
-      let(:raise_error_check) { 'Instance name must be between 1 to 16 characters' }
+      let(:raise_error_check) { "instance' expects a String[1, 16]" }
       it_behaves_like 'validation error'
     end
   end

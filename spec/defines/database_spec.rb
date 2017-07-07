@@ -23,12 +23,12 @@ RSpec.describe 'sqlserver::database', :type => :define do
   describe 'Providing log filespec it should compile with valid log on params and' do
     it_behaves_like 'validation error' do
       let(:additional_params) { {:log_filename => "c:/test/logfile.ldf", :log_name => "myCrazyLog"} }
-      let(:raise_error_check) { 'filespec_name and filespec_filename must be specified when specifying any log attributes' }
+      let(:raise_error_check) { /(filespec_filename|filespec_name)/ }
     end
     it_behaves_like 'validation error' do
       let(:additional_params) { {
           :filespec_filename => 'c:/test/test.mdf'} }
-      let(:raise_error_check) { /(input needs to be a String|filespec_name must not be null if specifying filespec_filename)/ }
+      let(:raise_error_check) { /filespec_name must also be specified when specifying filespec_filename/ }
     end
     describe 'filespec_name can not be more than 128 characters' do
       it_behaves_like 'validation error' do
@@ -36,7 +36,7 @@ RSpec.describe 'sqlserver::database', :type => :define do
             :filespec_filename => 'c:/test/test.mdf',
             :filespec_name =>
                 'OMGthisISsoReallyLongAndBoringProcessImeanAReallyOMGthisISsoReallyLongAndBoringProcessMakeItOMGthisISsoReallyLongAndBoringProcess'} }
-        let(:raise_error_check) { 'filespec_name can not be more than 128 characters' }
+        let(:raise_error_check) { "'filespec_name' expects" }
       end
     end
     it_behaves_like 'sqlserver_tsql command' do

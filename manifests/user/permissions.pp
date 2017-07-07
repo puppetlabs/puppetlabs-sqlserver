@@ -27,31 +27,19 @@
 #
 ##
 define sqlserver::user::permissions (
-  $user,
-  $database,
-  $permissions,
-  $state             = 'GRANT',
-  $with_grant_option = false,
-  $instance          = 'MSSQLSERVER',
+  String[1,128] $user,
+  Array[String[4,128]] $permissions,
+  String[1,128] $database = 'master',
+  Pattern[/(?i)^(GRANT|REVOKE|DENY)$/] $state = 'GRANT',
+  Optional[Boolean] $with_grant_option = false,
+  String[1,16] $instance = 'MSSQLSERVER',
 ){
   sqlserver_validate_instance_name($instance)
 
-## Validate Permissions
-  sqlserver_validate_range($permissions, 4, 128, 'Permission must be between 4 and 128 characters')
-  validate_array($permissions)
-
-## Validate state
   $_state = upcase($state)
-  validate_re($_state,'^(GRANT|REVOKE|DENY)$',"State can only be of 'GRANT', 'REVOKE' or 'DENY' you passed ${state}")
-
-  validate_bool($with_grant_option)
   if $with_grant_option and $_state != 'GRANT' {
     fail("Can not use with_grant_option and state ${_state}, must be 'GRANT'")
   }
-
-  sqlserver_validate_range($database, 1, 128, 'Database must be between 1 and 128 characters')
-
-  sqlserver_validate_range($user, 1, 128, 'User must be between 1 and 128 characters')
 
   $_grant_option =  $with_grant_option ? {
     true => '-WITH_GRANT_OPTION',
