@@ -25,7 +25,7 @@ describe "sqlserver::user test", :node => host do
     sqlserver::database{ '#{db_name}':
       instance            => 'MSSQLSERVER',
       collation_name      => 'SQL_Estonian_CP1257_CS_AS',
-      compatibility       => '100',
+      compatibility       => 100,
       containment         => 'PARTIAL',
       require             => Sqlserver::Sp_configure['spconfig1']
     }
