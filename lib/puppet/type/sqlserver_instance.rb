@@ -109,6 +109,16 @@ Puppet::Type::newtype(:sqlserver_instance) do
     end
   end
 
+  newparam(:polybase_svc_account, :parent => Puppet::Property::SqlserverLogin) do
+    desc 'The account used by the Polybase Engine service. Only applicable for SQL Server 2016.'
+
+  end
+
+  newparam(:polybase_svc_password) do
+    desc 'The password for the Polybase Engine service account. Only applicable for SQL Server 2016.'
+
+  end
+
   newparam(:security_mode) do
     desc 'Specifies the security mode for SQL Server.
           If this parameter is not supplied, then Windows-only authentication mode is supported.

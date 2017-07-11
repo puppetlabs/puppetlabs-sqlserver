@@ -10,6 +10,22 @@ RSpec.describe provider_class do
   subject { provider_class }
   let(:additional_install_switches) { [] }
 
+  let(:resourcekey_to_cmdarg) {{
+    'agt_svc_account'       => 'AGTSVCACCOUNT',
+    'agt_svc_password'      => 'AGTSVCPASSWORD',
+    'as_svc_account'        => 'ASSVCACCOUNT',
+    'as_svc_password'       => 'ASSVCPASSWORD',
+    'pid'                   => 'PID',
+    'rs_svc_account'        => 'RSSVCACCOUNT',
+    'rs_svc_password'       => 'RSSVCPASSWORD',
+    'polybase_svc_account'  => 'PBENGSVCACCOUNT',
+    'polybase_svc_password' => 'PBDMSSVCPASSWORD',
+    'sa_pwd'                => 'SAPWD',
+    'security_mode'         => 'SECURITYMODE',
+    'sql_svc_account'       => 'SQLSVCACCOUNT',
+    'sql_svc_password'      => 'SQLSVCPASSWORD',
+  }}
+
   def stub_uninstall(args, installed_features, exit_code = 0)
     cmd_args = ["#{args[:source]}/setup.exe",
                 "/ACTION=uninstall",
@@ -22,32 +38,6 @@ RSpec.describe provider_class do
     Puppet::Util::Execution.stubs(:execute).with(cmd_args.compact, failonfail: false).returns(result)
   end
 
-  shared_examples 'run' do |args, munged_values = {}|
-    it {
-      execute_args = args.merge(munged_values)
-      @resource = Puppet::Type::Sqlserver_instance.new(args)
-      @provider = provider_class.new(@resource)
-
-      stub_powershell_call(subject)
-      stub_source_which_call args[:source]
-
-      cmd_args = ["#{execute_args[:source]}/setup.exe",
-                  "/ACTION=install",
-                  '/Q',
-                  '/IACCEPTSQLSERVERLICENSETERMS',
-                  "/INSTANCENAME=#{execute_args[:name]}",
-                  "/FEATURES=#{execute_args[:features].join(',')}",]
-      (execute_args.keys - %w(ensure loglevel features name source sql_sysadmin_accounts sql_security_mode install_switches).map(&:to_sym)).sort.collect do |key|
-        cmd_args << "/#{key.to_s.gsub(/_/, '').upcase}=\"#{@resource[key]}\""
-      end
-      if execute_args[:sql_security_mode]
-        cmd_args << "/SECURITYMODE=SQL"
-      end
-      cmd_args << "/SQLSYSADMINACCOUNTS=#{ Array.new(@resource[:sql_sysadmin_accounts]).collect { |account| "\"#{account}\"" }.join(' ')}"
-      Puppet::Util::Execution.stubs(:execute).with(cmd_args.compact).returns(0)
-      @provider.create
-    }
-  end
   shared_examples 'create' do |exit_code, warning_matcher|
     it {
       execute_args = args.merge(munged_values)
@@ -64,7 +54,7 @@ RSpec.describe provider_class do
                   "/INSTANCENAME=#{execute_args[:name]}",
                   "/FEATURES=#{execute_args[:features].join(',')}",]
       (execute_args.keys - %w( ensure loglevel features name source sql_sysadmin_accounts sql_security_mode install_switches).map(&:to_sym)).sort.collect do |key|
-        cmd_args << "/#{key.to_s.gsub(/_/, '').upcase}=\"#{@resource[key]}\""
+        cmd_args << "/#{resourcekey_to_cmdarg[key.to_s]}=\"#{@resource[key]}\""
       end
       if execute_args[:sql_security_mode]
         cmd_args << "/SECURITYMODE=SQL"
@@ -106,7 +96,7 @@ RSpec.describe provider_class do
                   "/INSTANCENAME=#{execute_args[:name]}",
                   "/FEATURES=#{execute_args[:features].join(',')}",]
       (execute_args.keys - %w( ensure loglevel features name source sql_sysadmin_accounts sql_security_mode install_switches).map(&:to_sym)).sort.collect do |key|
-        cmd_args << "/#{key.to_s.gsub(/_/, '').upcase}=\"#{@resource[key]}\""
+        cmd_args << "/#{resourcekey_to_cmdarg[key.to_s]}=\"#{@resource[key]}\""
       end
       if execute_args[:sql_security_mode]
         cmd_args << "/SECURITYMODE=SQL"
@@ -154,6 +144,7 @@ RSpec.describe provider_class do
       provider.create
     }
   end
+
   describe 'it should provide the correct command default command' do
     it_behaves_like 'create' do
       args = get_basic_args
@@ -177,6 +168,33 @@ RSpec.describe provider_class do
       let(:munged_values) { munged }
     end
   end
+
+  describe 'it should raise error if polybase_svc_account is specified without POLYBASE feature' do
+    it_behaves_like 'create_failure', 1, /polybase_svc_account was specified however the POLYBASE feature was not included/i do
+      args = get_basic_args
+      args[:features] = ['SQLEngine']
+      args[:polybase_svc_account] = 'username'
+      args.delete(:polybase_svc_password)
+
+      let(:args) { args }
+      munged = {:features => Array.new(args[:features])}
+      let(:munged_values) { munged }
+    end
+  end
+
+  describe 'it should raise error if polybase_svc_password is specified without POLYBASE feature' do
+    it_behaves_like 'create_failure', 1, /polybase_svc_password was specified however the POLYBASE feature was not included/i do
+      args = get_basic_args
+      args[:features] = ['SQLEngine']
+      args.delete(:polybase_svc_account)
+      args[:polybase_svc_password] = 'password'
+
+      let(:args) { args }
+      munged = {:features => Array.new(args[:features])}
+      let(:munged_values) { munged }
+    end
+  end
+
 
   describe 'it should raise warning on install when 1641 exit code returned' do
     it_behaves_like 'create', 1641, /reboot initiated/i do
