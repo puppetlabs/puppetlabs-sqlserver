@@ -9,6 +9,11 @@ RSpec.describe 'sqlserver::sp_configure', :type => :define do
         :config_name => 'filestream access level',
         :value => 1,
     } }
+    let(:pre_condition) { <<-EOF
+      define sqlserver::config{}
+      sqlserver::config {'MSSQLSERVER': }
+    EOF
+    }
   end
   describe 'basic usage' do
     let(:should_contain_command) { [
