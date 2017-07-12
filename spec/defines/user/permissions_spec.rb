@@ -3,6 +3,12 @@ require File.expand_path(File.join(File.dirname(__FILE__), '..', 'manifest_share
 
 describe 'sqlserver::user::permissions' do
   let(:facts) { {:osfamily => 'windows'} }
+  let(:pre_condition) { <<-EOF
+    define sqlserver::config{}
+    sqlserver::config {'MSSQLSERVER': }
+  EOF
+  }
+
   context 'validation errors' do
     include_context 'manifests' do
       let(:title) { 'myTitle' }

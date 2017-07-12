@@ -9,14 +9,14 @@ RSpec.describe 'sqlserver::database', :type => :define do
         :db_name => 'myTestDb',
         :instance => 'MSSQLSERVER',
     } }
-  end
-
-  describe 'Minimal Params' do
     let(:pre_condition) { <<-EOF
       define sqlserver::config{}
       sqlserver::config {'MSSQLSERVER': }
     EOF
     }
+  end
+
+  describe 'Minimal Params' do
     it_behaves_like 'compile'
   end
 

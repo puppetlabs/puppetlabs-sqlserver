@@ -6,6 +6,11 @@ RSpec.describe 'sqlserver::user', :type => :define do
     let(:title) { 'loggingUser' }
     let(:sqlserver_tsql_title) { 'user-MSSQLSERVER-myDatabase-loggingUser' }
     let(:params) { {:user => 'loggingUser', :database => 'myDatabase'} }
+    let(:pre_condition) { <<-EOF
+      define sqlserver::config{}
+      sqlserver::config {'MSSQLSERVER': }
+    EOF
+    }
   end
 
   describe 'should fail when password above 128 characters' do
