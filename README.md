@@ -391,6 +391,22 @@ Specifies a product key for SQL Server. Valid options: a string containing a val
 
 Default: `undef`.
 
+##### `polybase_svc_account`
+
+*Only applicable if the POLYBASE feature for SQL Server 2016 is being installed*
+
+Specifies a domain or system account for the Polybase Engine service.
+
+Valid options: a string specifying an existing username.
+
+##### `polybase_svc_password`
+
+*Only applicable if the POLYBASE feature for SQL Server 2016 is being installed*
+
+Specifies the password for the Polybase Engine service
+
+Valid options: a string specifying a valid password.
+
 ##### `rs_svc_account`
 
 Specifies a domain or system account to be used by the report service. Valid options: a string; cannot include any of the following characters: `'"/ \ [ ] : ; | = , + * ? < >'`.  If you specify a domain user account, the domain must be less than 254 characters and the username must be less than 20 characters.

@@ -3,11 +3,28 @@ require File.expand_path(File.join(File.dirname(__FILE__), '..', 'sqlserver'))
 require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', '..', 'puppet_x/sqlserver/server_helper'))
 require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', '..', 'puppet_x/sqlserver/features'))
 
-INSTANCE_RESERVED_SWITCHES =
-  %w(AGTSVCACCOUNT AGTSVCPASSWORD ASSVCACCOUNT AGTSVCPASSWORD PID
-       RSSVCACCOUNT RSSVCPASSWORD SAPWD SECURITYMODE SQLSYSADMINACCOUNTS FEATURES)
-
 Puppet::Type::type(:sqlserver_instance).provide(:mssql, :parent => Puppet::Provider::Sqlserver) do
+  RESOURCEKEY_TO_CMDARG = {
+    'agt_svc_account'       => 'AGTSVCACCOUNT',
+    'agt_svc_password'      => 'AGTSVCPASSWORD',
+    'as_svc_account'        => 'ASSVCACCOUNT',
+    'as_svc_password'       => 'ASSVCPASSWORD',
+    'pid'                   => 'PID',
+    'rs_svc_account'        => 'RSSVCACCOUNT',
+    'rs_svc_password'       => 'RSSVCPASSWORD',
+    'polybase_svc_account'  => 'PBENGSVCACCOUNT',
+    'polybase_svc_password' => 'PBDMSSVCPASSWORD',
+    'sa_pwd'                => 'SAPWD',
+    'security_mode'         => 'SECURITYMODE',
+    'sql_svc_account'       => 'SQLSVCACCOUNT',
+    'sql_svc_password'      => 'SQLSVCPASSWORD',
+  }
+
+  def instance_reserved_switches
+    # List of all puppet managed install switches
+    RESOURCEKEY_TO_CMDARG.values + ['FEATURES','SQLSYSADMINACCOUNTS']
+  end
+
   def self.instances
     instances = []
     result = Facter.value(:sqlserver_instances)
@@ -74,6 +91,12 @@ Puppet::Type::type(:sqlserver_instance).provide(:mssql, :parent => Puppet::Provi
       unless @resource[:as_sysadmin_accounts].nil? || @resource[:features].include?('AS')
         fail('The parameter as_sysadmin_accounts was specified however the AS feature was not included in the installed features.  Either remove the as_sysadmin_accounts parameter or add AS as a feature to the instance.')
       end
+      unless @resource[:polybase_svc_account].nil? || @resource[:features].include?('POLYBASE')
+        fail('The parameter polybase_svc_account was specified however the POLYBASE feature was not included in the installed features.  Either remove the polybase_svc_account parameter or add POLYBASE as a feature to the instance.')
+      end
+      unless @resource[:polybase_svc_password].nil? || @resource[:features].include?('POLYBASE')
+        fail('The parameter polybase_svc_password was specified however the POLYBASE feature was not included in the installed features.  Either remove the polybase_svc_password parameter or add POLYBASE as a feature to the instance.')
+      end
 
       instance_version = PuppetX::Sqlserver::ServerHelper.sql_version_from_install_source(@resource[:source])
       Puppet.debug("Installation source detected as version #{instance_version}") unless instance_version.nil?
@@ -88,7 +111,7 @@ Puppet::Type::type(:sqlserver_instance).provide(:mssql, :parent => Puppet::Provi
     if not_nil_and_not_empty? @resource[:install_switches]
       config_file = ["[OPTIONS]"]
       @resource[:install_switches].each_pair do |k, v|
-        if INSTANCE_RESERVED_SWITCHES.include? k
+        if instance_reserved_switches.include? k
           warn("Reserved switch [#{k}] found for `install_switches`, please know the provided value may be overridden by some command line arguments")
         end
         if v.is_a?(Numeric) || (v.is_a?(String) && v =~ /^(true|false|1|0)$/i)
@@ -121,9 +144,9 @@ Puppet::Type::type(:sqlserver_instance).provide(:mssql, :parent => Puppet::Provi
     cmd_args = basic_cmd_args(features, action)
     obfuscated_strings = []
     if action == 'install'
-      %w(pid sa_pwd sql_svc_account sql_svc_password agt_svc_account agt_svc_password as_svc_account as_svc_password rs_svc_account rs_svc_password security_mode).map(&:to_sym).sort.collect do |key|
+      RESOURCEKEY_TO_CMDARG.keys.sort.collect do |key|
         if not_nil_and_not_empty? @resource[key]
-          cmd_args << "/#{key.to_s.gsub(/_/, '').upcase}=\"#{@resource[key]}\""
+          cmd_args << "/#{RESOURCEKEY_TO_CMDARG[key]}=\"#{@resource[key.to_sym]}\""
           if key.to_s =~ /(_pwd|_password)$/i
             obfuscated_strings.push(@resource[key])
           end
