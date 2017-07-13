@@ -177,21 +177,21 @@ sqlserver_tsql{ 'Always running':
 }
 ```
 
-### Advanced Example
+### Advanced example
 
-This advanced example will:
+This advanced example:
 
-* Install the basic SQL Server Engine from installation media mounted at 'D:\' with TCP Enabled and various directories set.
+* Installs the basic SQL Server Engine from installation media mounted at 'D:\' with TCP Enabled and various directories set.
 
-* Uses only Windows based authentication and installs with only the user that Puppet is executing as. Note that the 'sql_sysadmin_accounts' is only applicable during the instance installation and is not actively enforced.
+* Uses only Windows-based authentication and installs with only the user that Puppet is executing as. Note that the 'sql_sysadmin_accounts' is only applicable during the instance installation and is not actively enforced.
 
-* Creates a sqlserver::config resource which is used in later resources to connect to the newly created instance. As we only support Windows based authentication , a username and password is not required.
+* Creates a `sqlserver::config` resource, which is used in later resources to connect to the newly created instance. As we support only Windows-based authentication, a username and password is not required.
 
-* Create a local group called 'DB Administrators', and ensure that it is SQL System Administrator (sysadmin role) along with the account used to install the instance, and that Puppet uses to manage the database instance.
+* Creates a local group called 'DB Administrators' and ensures that it is SQL System Administrator (sysadmin role); also creates the account that Puppet uses to install and manage the instance.
 
-* Ensure that the advanced options for sp_configure are enabled so we can manage the Max Memory setting for the instance.
+* Ensures that the advanced options for `sp_configure` are enabled, so that Puppet can manage the `max memory` setting for the instance.
 
-* Ensure that the Max Memory (MB) configuration item is set to 2048 megabytes.
+* Ensure that the `max memory` (MB) configuration item is set to 2048 megabytes.
 
 ```puppet
 $sourceloc = 'D:/'
@@ -274,7 +274,7 @@ Default: 'present'.
 
 Specifies one or more features to manage. Valid options: 'BC', 'Conn', 'SSMS', 'ADV_SSMS', 'SDK', 'IS', 'MDS', 'BOL', 'DREPLAY_CTLR', 'DREPLAY_CLT'.
 
-The 'Tools' feature is deprecated.  Instead specify 'BC', 'SSMS', 'ADV_SSMS', 'Conn', and 'SDK' explicitly.
+The 'Tools' value for this setting is deprecated. Specify 'BC', 'SSMS', 'ADV_SSMS', 'Conn', and 'SDK' explicitly.
 
 ##### `install_switches`
 
@@ -366,7 +366,7 @@ Default: 'present'.
 
 *Required.* Specifies one or more features to manage. The list of top-level features includes 'AS' and 'RS'. Valid options: an array containing one or more of the strings 'SQL', 'SQLEngine', 'Replication', 'FullText', 'DQ', 'AS', 'RS', 'POLYBASE', and 'ADVANCEDANALYTICS'.
 
-The 'SQL' feature is deprecated.  Instead specify 'DQ', 'FullText', 'Replication', and 'SQLEngine' explicitly.
+The 'SQL' value for this setting is deprecated. Specify 'DQ', 'FullText', 'Replication', and 'SQLEngine' explicitly.
 
 ##### `install_switches`
 
@@ -393,7 +393,7 @@ Default: `undef`.
 
 ##### `polybase_svc_account`
 
-*Only applicable if the POLYBASE feature for SQL Server 2016 is being installed*
+**Applicable only if the POLYBASE feature for SQL Server 2016 is being installed.**
 
 Specifies a domain or system account for the Polybase Engine service.
 
@@ -401,7 +401,7 @@ Valid options: a string specifying an existing username.
 
 ##### `polybase_svc_password`
 
-*Only applicable if the POLYBASE feature for SQL Server 2016 is being installed*
+**Applicable only if the POLYBASE feature for SQL Server 2016 is being installed.**
 
 Specifies the password for the Polybase Engine service
 
@@ -1071,9 +1071,9 @@ Terminology differs somewhat between various database systems; please refer to t
 
 This module is available only for Windows Server 2012 or 2012 R2, and works with Puppet Enterprise 3.7 and later.
 
-This module can only manage a single SQL Server version on a host (one and only one of SQL Server 2012, 2014 or 2016). The module is able to manage multiple SQL Server instances of the same version.
+This module can manage only a single version of SQL Server on a given host (one and only one of SQL Server 2012, 2014 or 2016). The module is able to manage multiple SQL Server instances of the same version.
 
-The SQL Server Native Client SDK (also known as SNAC_SDK) can not be managed by this module.  The SQL Server installation media is able to install the SDK but is not able to uninstall the SDK. Note that the 'sqlserver_features' fact will detect the presence of the SDK.
+This module cannot manage the SQL Server Native Client SDK (also known as SNAC_SDK). The SQL Server installation media can install the SDK, but it is not able to uninstall the SDK. Note that the 'sqlserver_features' fact detects the presence of the SDK.
 
 ## Development
 
