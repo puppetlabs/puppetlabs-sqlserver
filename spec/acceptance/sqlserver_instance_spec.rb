@@ -83,7 +83,7 @@ describe "sqlserver_instance", :node => host do
     inst_name = new_random_instance_name
     features = ['SQLEngine', 'Replication', 'FullText', 'DQ']
 
-    it "create #{inst_name} instance" do
+    it "create #{inst_name} instance", :tier_low => true do
       ensure_sqlserver_instance(features, inst_name,'present',"['Administrator','ExtraSQLAdmin']")
 
       validate_sql_install(host, {:version => version}) do |r|
@@ -91,15 +91,15 @@ describe "sqlserver_instance", :node => host do
       end
     end
 
-    it "#{inst_name} instance has Administrator as a sysadmin" do
+    it "#{inst_name} instance has Administrator as a sysadmin", :tier_low => true do
       run_sql_query(host, run_sql_query_opts(inst_name, sql_query_is_user_sysadmin('Administrator'), expected_row_count = 1))
     end
 
-    it "#{inst_name} instance has ExtraSQLAdmin as a sysadmin" do
+    it "#{inst_name} instance has ExtraSQLAdmin as a sysadmin", :tier_low => true do
       run_sql_query(host, run_sql_query_opts(inst_name, sql_query_is_user_sysadmin('ExtraSQLAdmin'), expected_row_count = 1))
     end
 
-    it "remove #{inst_name} instance" do
+    it "remove #{inst_name} instance", :tier_low => true do
       ensure_sqlserver_instance(features, inst_name, 'absent')
 
       # Ensure all features for this instance are removed and the defaults are left alone
@@ -122,7 +122,7 @@ describe "sqlserver_instance", :node => host do
       ensure_sqlserver_instance(features, inst_name, 'absent')
     end
 
-    it "create #{inst_name} instance with only one RS feature" do
+    it "create #{inst_name} instance with only one RS feature", :tier_low => true do
       ensure_sqlserver_instance(features, inst_name)
 
       validate_sql_install(host, {:version => version}) do |r|

@@ -42,7 +42,7 @@ describe "Test sqlserver::database", :node => host do
       ensure_sqlserver_database(pp)
     end
 
-    it "Test Case C89019: Create a database" do
+    it "Test Case C89019: Create a database", :tier_low => true do
       pp = <<-MANIFEST
         sqlserver::config{'MSSQLSERVER':
           admin_user    => 'sa',
@@ -64,7 +64,7 @@ describe "Test sqlserver::database", :node => host do
       run_sql_query(host, run_sql_query_opts(query, 1))
     end
 
-    it "Delete a database" do
+    it "Delete a database", :tier_low => true do
       pp = <<-MANIFEST
         sqlserver::config{'MSSQLSERVER':
           admin_user    => 'sa',
@@ -95,7 +95,7 @@ describe "Test sqlserver::database", :node => host do
       run_sql_query(host, run_sql_query_opts(query, 0))
     end
 
-    it "Test Case C89076: Create database with optional collation_name" do
+    it "Test Case C89076: Create database with optional collation_name", :tier_low => true do
       pp = <<-MANIFEST
         sqlserver::config{'MSSQLSERVER':
           admin_user    => 'sa',
@@ -126,7 +126,7 @@ describe "Test sqlserver::database", :node => host do
       run_sql_query(host, run_sql_query_opts(query, 1))
     end
 
-    it "Test Case C89077: Create database with optional compatibility" do
+    it "Test Case C89077: Create database with optional compatibility", :tier_low => true do
       pp = <<-MANIFEST
         sqlserver::config{'MSSQLSERVER':
           admin_user    => 'sa',
@@ -157,7 +157,7 @@ describe "Test sqlserver::database", :node => host do
       run_sql_query(host, run_sql_query_opts(query, 1))
     end
 
-    it "Test Case C89078: Create database with optional containment" do
+    it "Test Case C89078: Create database with optional containment", :tier_low => true do
       pp = <<-MANIFEST
         sqlserver::config{'MSSQLSERVER':
           admin_user   => 'sa',
@@ -195,7 +195,7 @@ describe "Test sqlserver::database", :node => host do
       run_sql_query(host, run_sql_query_opts(query, 1))
     end
 
-    it "Test Case C89079: Create database with optional db_chaining" do
+    it "Test Case C89079: Create database with optional db_chaining", :tier_low => true do
       pp = <<-MANIFEST
         sqlserver::config{'MSSQLSERVER':
           admin_user   => 'sa',
@@ -234,7 +234,7 @@ describe "Test sqlserver::database", :node => host do
       run_sql_query(host, run_sql_query_opts(query, 1))
     end
 
-    it "Test Case C89080: Create database with optional default_fulltext_language" do
+    it "Test Case C89080: Create database with optional default_fulltext_language", :tier_low => true do
       pp = <<-MANIFEST
         sqlserver::config{'MSSQLSERVER':
           admin_user   => 'sa',
@@ -273,7 +273,7 @@ describe "Test sqlserver::database", :node => host do
       run_sql_query(host, run_sql_query_opts(query, 1))
     end
 
-    it "Test Case C89081: Create database with optional default_language" do
+    it "Test Case C89081: Create database with optional default_language", :tier_low => true do
       pp = <<-MANIFEST
         sqlserver::config{'MSSQLSERVER':
           admin_user   => 'sa',

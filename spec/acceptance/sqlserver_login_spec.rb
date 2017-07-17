@@ -161,25 +161,25 @@ describe "Test sqlserver::login", :node => host do
       describe "Create deafult #{testcase} login" do
         before(:all) { remove_test_logins(host) }
 
-        it "can create a default #{testcase}" do
+        it "can create a default #{testcase}", :tier_low => true  do
           pp = create_login_manifest(testcase,@login_under_test,@login_passwd)
           ensure_manifest_execute(pp)
         end
 
-        it "should exist in the principals table" do
+        it "should exist in the principals table", :tier_low => true do
          query = "SELECT principal_id FROM SYS.server_principals WHERE name = '#{@login_under_test}' AND [type] = '#{@sql_principal_type}'";
          run_sql_query(host, run_sql_query_opts_as_sa(query, expected_row_count = 1))
         end
 
         if testcase == 'SQL_LOGIN user'
-          it "can login to SQL Server" do
+          it "can login to SQL Server", :tier_low => true do
             puts "Validate the login '#{@login_under_test}' is successfully created and able to access database '#{db_name}':"
             query = "USE #{db_name}; SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE table_name = '#{table_name}';"
             run_sql_query(host, run_sql_query_opts(@login_under_test, @login_passwd, query, expected_row_count = 1))
           end
         end
 
-        it "is idempotent" do
+        it "is idempotent", :tier_low => true do
           pp = create_login_manifest(testcase,@login_under_test,@login_passwd)
           ensure_manifest_execute(pp)
         end
@@ -189,18 +189,18 @@ describe "Test sqlserver::login", :node => host do
         # check_expiration and check_policy are only applicable to SQL based logins
 
         before(:all) { remove_test_logins(host) }
-        it "can create an #{testcase} with 'check_expiration','check_policy' set" do
+        it "can create an #{testcase} with 'check_expiration','check_policy' set", :tier_low => true do
           options = { 'check_expiration' => true, 'check_policy' => true }
           pp = create_login_manifest(testcase,@login_under_test,@login_passwd,options)
           ensure_manifest_execute(pp)
         end
 
-        it "should have is_expiration_checked set" do
+        it "should have is_expiration_checked set", :tier_low => true do
           query = "SELECT name as LOGIN_NAME, is_expiration_checked FROM SYS.SQL_LOGINS WHERE is_expiration_checked = '1' AND name = '#{@login_under_test}';"
           run_sql_query(host, run_sql_query_opts_as_sa(query, expected_row_count = 1))
         end
 
-        it "should have is_policy_checked set" do
+        it "should have is_policy_checked set", :tier_low => true do
           query = "SELECT name as LOGIN_NAME, is_policy_checked FROM SYS.SQL_LOGINS WHERE is_policy_checked = '1' AND name = '#{@login_under_test}';"
           run_sql_query(host, run_sql_query_opts_as_sa(query, expected_row_count = 1))
         end
@@ -209,23 +209,23 @@ describe "Test sqlserver::login", :node => host do
       describe "Create #{testcase} login with 'default_database','default_language'" do
         before(:all) { remove_test_logins(host) }
 
-        it "can create a #{testcase} with 'default_database','default_language'" do
+        it "can create a #{testcase} with 'default_database','default_language'", :tier_low => true do
           options = { 'default_database' => "#{db_name}", 'default_language' => 'Spanish' }
           pp = create_login_manifest(testcase,@login_under_test,@login_passwd,options)
           ensure_manifest_execute(pp)
         end
 
-        it "should exist in the principals table" do
+        it "should exist in the principals table", :tier_low => true do
           query = "SELECT principal_id FROM SYS.server_principals WHERE name = '#{@login_under_test}' AND [type] = '#{@sql_principal_type}'";
           run_sql_query(host, run_sql_query_opts_as_sa(query, expected_row_count = 1))
         end
 
-        it "should have the specified default database" do
+        it "should have the specified default database", :tier_low => true do
           query = "SELECT principal_id FROM SYS.server_principals WHERE name = '#{@login_under_test}' AND [type] = '#{@sql_principal_type}' AND default_database_name = '#{db_name}'";
           run_sql_query(host, run_sql_query_opts_as_sa(query, expected_row_count = 1))
         end
 
-        it "should have the specified default langauge" do
+        it "should have the specified default langauge", :tier_low => true do
           query = "SELECT principal_id FROM SYS.server_principals WHERE name = '#{@login_under_test}' AND [type] = '#{@sql_principal_type}' AND default_language_name = 'Spanish'";
           run_sql_query(host, run_sql_query_opts_as_sa(query, expected_row_count = 1))
         end
@@ -234,14 +234,14 @@ describe "Test sqlserver::login", :node => host do
       describe "Create #{testcase} login with 'disabled'" do
         before(:all) { remove_test_logins(host) }
 
-        it "can create #{testcase} with optional 'disabled'" do
+        it "can create #{testcase} with optional 'disabled'", :tier_low => true do
           options = { 'disabled' => true }
           pp = create_login_manifest(testcase,@login_under_test,@login_passwd,options)
           ensure_manifest_execute(pp)
         end
 
         if testcase == 'WINDOWS_LOGIN group'
-          it "should have DENY CONNECT SQL set" do
+          it "should have DENY CONNECT SQL set", :tier_low => true do
             query = "SELECT sp.[state] FROM sys.server_principals p
                     INNER JOIN sys.server_permissions sp ON p.principal_id = sp.grantee_principal_id
                     WHERE sp.permission_name = 'CONNECT SQL' AND sp.class = 100 AND sp.state = 'D' AND p.name = '#{@login_under_test}' AND p.[type] = '#{@sql_principal_type}'"
@@ -258,36 +258,36 @@ describe "Test sqlserver::login", :node => host do
       describe "Modify a #{testcase} login" do
         before(:all) { remove_test_logins(host) }
 
-        it "should create an initial #{testcase}" do
+        it "should create an initial #{testcase}", :tier_low => true do
           options = { 'svrroles' => '{\'sysadmin\' => 1}' }
           pp = create_login_manifest(testcase,@login_under_test,@login_passwd,options)
           ensure_manifest_execute(pp)
         end
 
-        it "should exist in the principals table on creation" do
+        it "should exist in the principals table on creation", :tier_low => true do
           query = "SELECT principal_id FROM SYS.server_principals WHERE name = '#{@login_under_test}' AND [type] = '#{@sql_principal_type}'";
           run_sql_query(host, run_sql_query_opts_as_sa(query, expected_row_count = 1))
         end
 
-        it "should modify a #{testcase} login" do
+        it "should modify a #{testcase} login", :tier_low => true do
           options = { 'disabled' => true, 'default_database' => "#{db_name}", 'default_language' => 'Spanish', 'check_expiration' => true, 'check_policy' => true, 'svrroles' => '{\'sysadmin\' => 1, \'serveradmin\' => 1}' }
           pp = create_login_manifest(testcase,@login_under_test,@login_passwd,options)
           ensure_manifest_execute(pp)
         end
 
         if testcase == 'SQL_LOGIN user'
-          it "should have is_expiration_checked set" do
+          it "should have is_expiration_checked set", :tier_low => true do
             query = "SELECT name as LOGIN_NAME, is_expiration_checked FROM SYS.SQL_LOGINS WHERE is_expiration_checked = '1' AND name = '#{@login_under_test}';"
             run_sql_query(host, run_sql_query_opts_as_sa(query, expected_row_count = 1))
           end
 
-          it "should have is_policy_checked set" do
+          it "should have is_policy_checked set", :tier_low => true do
             query = "SELECT name as LOGIN_NAME, is_policy_checked FROM SYS.SQL_LOGINS WHERE is_policy_checked = '1' AND name = '#{@login_under_test}';"
             run_sql_query(host, run_sql_query_opts_as_sa(query, expected_row_count = 1))
           end
         end
 
-        it "should have the specified sysadmin role" do
+        it "should have the specified sysadmin role", :tier_low => true do
           # Note - IS_SRVROLEMEMBER always returns false for a disabled WINDOWS_LOGIN user login
           query = "SELECT pri.name from sys.server_role_members member
                     JOIN sys.server_principals rol ON member.role_principal_id = rol.principal_id
@@ -297,7 +297,7 @@ describe "Test sqlserver::login", :node => host do
                     AND pri.name = '#{@login_under_test}'"
           run_sql_query(host, run_sql_query_opts_as_sa(query, expected_row_count = 1))
         end
-        it "should have the specified serveradmin role" do
+        it "should have the specified serveradmin role", :tier_low => true do
           # Note - IS_SRVROLEMEMBER always returns false for a disabled WINDOWS_LOGIN user login
           query = "SELECT pri.name from sys.server_role_members member
                     JOIN sys.server_principals rol ON member.role_principal_id = rol.principal_id
@@ -308,25 +308,25 @@ describe "Test sqlserver::login", :node => host do
           run_sql_query(host, run_sql_query_opts_as_sa(query, expected_row_count = 1))
         end
 
-        it "should have the specified default database" do
+        it "should have the specified default database", :tier_low => true do
           query = "SELECT principal_id FROM SYS.server_principals WHERE name = '#{@login_under_test}' AND [type] = '#{@sql_principal_type}' AND default_database_name = '#{db_name}'";
           run_sql_query(host, run_sql_query_opts_as_sa(query, expected_row_count = 1))
         end
 
-        it "should have the specified default langauge" do
+        it "should have the specified default langauge", :tier_low => true do
           query = "SELECT principal_id FROM SYS.server_principals WHERE name = '#{@login_under_test}' AND [type] = '#{@sql_principal_type}' AND default_language_name = 'Spanish'";
           run_sql_query(host, run_sql_query_opts_as_sa(query, expected_row_count = 1))
         end
 
         if testcase == 'WINDOWS_LOGIN group'
-          it "should have DENY CONNECT SQL set" do
+          it "should have DENY CONNECT SQL set", :tier_low => true do
             query = "SELECT sp.[state] FROM sys.server_principals p
                     INNER JOIN sys.server_permissions sp ON p.principal_id = sp.grantee_principal_id
                     WHERE sp.permission_name = 'CONNECT SQL' AND sp.class = 100 AND sp.state = 'D' AND p.name = '#{@login_under_test}' AND p.[type] = '#{@sql_principal_type}'"
             run_sql_query(host, run_sql_query_opts_as_sa(query, expected_row_count = 1))
           end
         else
-          it "should have is_disabled set" do
+          it "should have is_disabled set", :tier_low => true do
             query = "SELECT principal_id FROM SYS.server_principals WHERE name = '#{@login_under_test}' AND [type] = '#{@sql_principal_type}' AND is_disabled = '1';"
             run_sql_query(host, run_sql_query_opts_as_sa(query, expected_row_count = 1))
           end
@@ -336,23 +336,23 @@ describe "Test sqlserver::login", :node => host do
       describe "Delete #{testcase} login" do
         before(:all) { remove_test_logins(host) }
 
-        it "should create an initial #{testcase}" do
+        it "should create an initial #{testcase}", :tier_low => true do
           pp = create_login_manifest(testcase,@login_under_test,@login_passwd)
           ensure_manifest_execute(pp)
         end
 
-        it "should exist in the principals table on creation" do
+        it "should exist in the principals table on creation", :tier_low => true do
           query = "SELECT principal_id FROM SYS.server_principals WHERE name = '#{@login_under_test}' AND [type] = '#{@sql_principal_type}'";
           run_sql_query(host, run_sql_query_opts_as_sa(query, expected_row_count = 1))
         end
 
-        it "should remove a #{testcase} on ensure => absent" do
+        it "should remove a #{testcase} on ensure => absent", :tier_low => true do
           options = { 'ensure' => 'absent' }
           pp = create_login_manifest(testcase,@login_under_test,@login_passwd,options)
           ensure_manifest_execute(pp)
         end
 
-        it "should not exist in the principals table after deletion" do
+        it "should not exist in the principals table after deletion", :tier_low => true do
           query = "SELECT principal_id FROM SYS.server_principals WHERE name = '#{@login_under_test}' AND [type] = '#{@sql_principal_type}'";
           run_sql_query(host, run_sql_query_opts_as_sa(query, expected_row_count = 0))
         end

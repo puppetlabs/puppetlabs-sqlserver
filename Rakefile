@@ -21,3 +21,25 @@ task :validate do
     sh "erb -P -x -T '-' #{template} | ruby -c"
   end
 end
+
+require 'rspec/core/rake_task'
+desc 'test tiering'
+RSpec::Core::RakeTask.new(:test_tier) do |t|
+  # Setup rspec opts
+  t.rspec_opts = ['--color']
+
+  # TEST_TIERS env variable is a comma separated list of tiers to run. e.g. low, medium, high
+  if ENV['TEST_TIERS']
+    test_tiers = ENV['TEST_TIERS'].split(',')
+    raise 'TEST_TIERS env variable must have at least 1 tier specified. low, medium or high (comma separated).' if test_tiers.count == 0
+    test_tiers.each do |tier|
+      raise "#{tier} not a valid test tier." unless %w(low medium high).include?(tier)
+      t.rspec_opts.push("--tag tier_#{tier}")
+    end
+  else
+    puts 'TEST_TIERS env variable not defined. Defaulting to run all tests.'
+  end
+
+  # Implement an override for the pattern with BEAKER_PATTERN env variable.
+  t.pattern = ENV['BEAKER_PATTERN'] ? ENV['BEAKER_PATTERN'] : 'spec/acceptance'
+end

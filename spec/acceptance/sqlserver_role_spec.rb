@@ -87,7 +87,7 @@ describe "Test sqlserver::role", :node => host do
       end
     end
 
-    it "Create server role #{@role} with optional authorization" do
+    it "Create server role #{@role} with optional authorization", :tier_low => true do
       pp = <<-MANIFEST
       sqlserver::config{'MSSQLSERVER':
         admin_user    => 'sa',
@@ -127,7 +127,7 @@ describe "Test sqlserver::role", :node => host do
       run_sql_query(host, { :query => query, :server => hostname, :expected_row_count => 1 })
     end
 
-    it "Create database-specific role #{@role}" do
+    it "Create database-specific role #{@role}", :tier_low => true do
       pp = <<-MANIFEST
       sqlserver::config{'MSSQLSERVER':
         admin_user    => 'sa',
@@ -157,7 +157,7 @@ describe "Test sqlserver::role", :node => host do
       run_sql_query(host, { :query => query, :server => hostname, :expected_row_count => 6 })
     end
 
-    it "Create server role #{@role} with optional members and optional members-purge" do
+    it "Create server role #{@role} with optional members and optional members-purge", :tier_low => true do
       pp = <<-MANIFEST
       sqlserver::config{'MSSQLSERVER':
         admin_user    => 'sa',

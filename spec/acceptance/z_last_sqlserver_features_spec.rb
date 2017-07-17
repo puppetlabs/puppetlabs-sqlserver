@@ -43,7 +43,7 @@ describe "sqlserver_features", :node => host do
       remove_sql_features(host, {:features => features, :version => sql_version})
     end
 
-    it 'all possible features' do
+    it 'all possible features', :tier_low => true do
       ensure_sql_features(features)
 
       validate_sql_install(host, {:version => sql_version}) do |r|
@@ -69,7 +69,7 @@ describe "sqlserver_features", :node => host do
       remove_sql_features(host, {:features => features, :version => sql_version})
     end
 
-    it 'all possible features' do
+    it 'all possible features', :tier_low => true do
       ensure_sql_features(features, 'absent')
 
       validate_sql_install(host, {:version => sql_version}) do |r|
@@ -105,7 +105,7 @@ describe "sqlserver_features", :node => host do
       remove_sql_features(host, {:features => all_possible_features, :version => sql_version})
     end
 
-    it "'BC'" do
+    it "'BC'", :tier_low => true do
       ensure_sql_features(features - ['BC'])
 
       validate_sql_install(host, {:version => sql_version}) do |r|
@@ -113,7 +113,7 @@ describe "sqlserver_features", :node => host do
       end
     end
 
-    it "'Conn'" do
+    it "'Conn'", :tier_low => true do
       ensure_sql_features(features - ['Conn'])
 
       validate_sql_install(host, {:version => sql_version}) do |r|
@@ -122,7 +122,7 @@ describe "sqlserver_features", :node => host do
     end
 
     # TODO: Guard on SQL 2016
-    it "'ADV_SSMS'", :unless => sql_version == '2016' do
+    it "'ADV_SSMS'", :unless => sql_version == '2016', :tier_low => true do
       ensure_sql_features(features - ['ADV_SSMS'])
 
       validate_sql_install(host, {:version => sql_version}) do |r|
@@ -133,7 +133,7 @@ describe "sqlserver_features", :node => host do
       end
     end
 
-    it "'SDK'" do
+    it "'SDK'", :tier_low => true do
       ensure_sql_features(features - ['SDK'])
 
       validate_sql_install(host, {:version => sql_version}) do |r|
@@ -141,7 +141,7 @@ describe "sqlserver_features", :node => host do
       end
     end
 
-    it "'IS'" do
+    it "'IS'", :tier_low => true do
       ensure_sql_features(features - ['IS'])
 
       validate_sql_install(host, {:version => sql_version}) do |r|
@@ -149,7 +149,7 @@ describe "sqlserver_features", :node => host do
       end
     end
 
-    it "'MDS'" do
+    it "'MDS'", :tier_low => true do
       ensure_sql_features(features - ['MDS'])
 
       validate_sql_install(host, {:version => sql_version}) do |r|
@@ -184,12 +184,12 @@ describe "sqlserver_features", :node => host do
       end
     end
 
-    it 'fails when an is_svc_account is supplied and a password is not' do
+    it 'fails when an is_svc_account is supplied and a password is not', :tier_low => true do
       features = ['IS']
       bind_and_apply_failing_manifest(features)
     end
 
-    it 'fails when ADV_SSMS is supplied but SSMS is not' do
+    it 'fails when ADV_SSMS is supplied but SSMS is not', :tier_low => true do
       skip('This test is blocked by FM-2712')
       features = ['BC', 'Conn', 'ADV_SSMS', 'SDK']
       ensure_sql_features(features)
@@ -222,7 +222,7 @@ describe "sqlserver_features", :node => host do
         remove_sql_features(host, {:features => features, :version => sql_version})
       end
 
-      it 'all possible features' do
+      it 'all possible features', :tier_low => true do
         ensure_sql_features(features)
 
         validate_sql_install(host, {:version => sql_version}) do |r|
