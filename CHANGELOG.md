@@ -1,13 +1,41 @@
+## 2017-08-10 - Supported Release 2.0.0
+
+### Summary
+
+This major release adds support for Microsoft SQL Server 2016
+
+#### Features
+
+- Deprecates the use of `Tools` and `SQL` as installation features ([MODULES-4257](https://tickets.puppet.com/browse/MODULES-4257))
+- Added more detailed examples to the README
+- Updated with Puppet 4 data types ([MODULES-5126](https://tickets.puppet.com/browse/MODULES-5126))
+- Added parameters to manage PolyBase ([MODULES-5070](https://tickets.puppet.com/browse/MODULES-5070))
+
+#### Bug Fixes
+
+- Make .Net installation errors more obvious ([MODULES-5092](https://tickets.puppet.com/browse/MODULES-5092))
+- Remove service_ensure parameter as it had no use ([MODULES-5030](https://tickets.puppet.com/browse/MODULES-5030))
+- Using as_sysadmin_accounts without AS feature will error ([MODULES-2386](https://tickets.puppet.com/browse/MODULES-2386))
+- SNAC_SDK shared feature can not be managed by the module ([FM-5389](https://tickets.puppet.com/browse/FM-5389))
+- Purge members from SQL Server Role should actually purge ([MODULES-2543](https://tickets.puppet.com/browse/MODULES-2543))
+- Identifiers are properly escaped during database creation ([FM-5021](https://tickets.puppet.com/browse/FM-5021))
+- Remove forced TCP connection for SQL management ([MODULES-4915](https://tickets.puppet.com/browse/MODULES-4915))
+- Update metadata for Puppet 4 and Puppet 5 ([MODULES-4842](https://tickets.puppet.com/browse/MODULES-4842), [MODULES-5144](https://tickets.puppet.com/browse/MODULES-5144))
+- Add test tiering and test mode switcher ([FM-5062](https://tickets.puppet.com/browse/FM-5062), [FM-6141](https://tickets.puppet.com/browse/FM-6141))
+
 ## 2017-05-08 - Supported Release 1.2.0
+
 ### Summary
 
 This release adds support for internationalization of the module. It also contains Japanese translations for the README, summary and description of the metadata.json and major cleanups in the README. Additional folders have been introduced called locales and readmes where translation files can be found. A number of features and bug fixes are also included in this release.
 
 #### Features
+
 - (MODULES-4334) - Adding locales directory, config.yaml and POT file for i18n.
 - Puppet-module-gems now implemented
 
 #### Bug Fixes
+
 - (MODULES-4528) Replace Puppet.version comparison with Puppet::Util::Package.versioncmp
 - (MODULES-4667) Update beaker tests for Jenkins CI
 
