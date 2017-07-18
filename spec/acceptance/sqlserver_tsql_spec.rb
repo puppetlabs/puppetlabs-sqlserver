@@ -43,7 +43,7 @@ describe "sqlserver_tsql test", :node => host do
       ensure_sqlserver_database('absent')
     end
 
-    it "Run a simple tsql command via sqlserver_tsql:" do
+    it "Run a simple tsql command via sqlserver_tsql:", :tier_low => true do
       pp = <<-MANIFEST
       sqlserver::config{'MSSQLSERVER':
         instance_name    => 'MSSQLSERVER',
@@ -85,7 +85,7 @@ describe "sqlserver_tsql test", :node => host do
       ensure_sqlserver_database('absent')
     end
 
-    it "Run a simple tsql command via sqlserver_tsql:" do
+    it "Run a simple tsql command via sqlserver_tsql:", :tier_low => true do
       pp = <<-MANIFEST
       sqlserver::config{'MSSQLSERVER':
         instance_name => 'MSSQLSERVER',
@@ -112,7 +112,7 @@ describe "sqlserver_tsql test", :node => host do
       run_sql_query(host, run_sql_query_opts)
     end
 
-    it "Run sqlserver_tsql WITH onlyif is true:" do
+    it "Run sqlserver_tsql WITH onlyif is true:", :tier_low => true do
       #Initilize a new table name:
       @table_name = 'Table_' + SecureRandom.hex(3)
       @query = "USE #{db_name}; SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE table_name = '#{@table_name}';"
@@ -144,7 +144,7 @@ describe "sqlserver_tsql test", :node => host do
       run_sql_query(host, run_sql_query_opts)
     end
 
-    it "Run sqlserver_tsql WITH onlyif is false:" do
+    it "Run sqlserver_tsql WITH onlyif is false:", :tier_low => true do
       #Initilize a new table name:
       @table_name = 'Table_' + SecureRandom.hex(3)
       @query = "USE #{db_name}; SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE table_name = '#{@table_name}';"
@@ -177,7 +177,7 @@ describe "sqlserver_tsql test", :node => host do
       run_sql_query(host, run_sql_query_opts)
     end
 
-    it "Negative test: Run tsql with invalid command:" do
+    it "Negative test: Run tsql with invalid command:", :tier_low => true do
       pp = <<-MANIFEST
       sqlserver::config{'MSSQLSERVER':
         instance_name => 'MSSQLSERVER',
@@ -195,7 +195,7 @@ describe "sqlserver_tsql test", :node => host do
       end
     end
 
-    it "Negative test: Run tsql with non-existing database:" do
+    it "Negative test: Run tsql with non-existing database:", :tier_low => true do
       @table_name = 'Table_' + SecureRandom.hex(3)
       pp = <<-MANIFEST
       sqlserver::config{'MSSQLSERVER':

@@ -52,7 +52,7 @@ describe "sqlserver::user test", :node => host do
       #ensure_sqlserver_database(host, 'absent')
     end
 
-    it "Create database user with optional default_schema" do
+    it "Create database user with optional default_schema", :tier_low => true do
       pp = <<-MANIFEST
       sqlserver::config{'MSSQLSERVER':
         admin_user    => 'sa',
@@ -84,7 +84,7 @@ describe "sqlserver::user test", :node => host do
       run_sql_query(host, { :query => query, :server => hostname, :expected_row_count => 1 })
     end
 
-    it "Create database user with optional instance" do
+    it "Create database user with optional instance", :tier_low => true do
         pp = <<-MANIFEST
       sqlserver::config{'MSSQLSERVER':
         admin_user    => 'sa',
@@ -114,7 +114,7 @@ describe "sqlserver::user test", :node => host do
         run_sql_query(host, { :query => query, :server => hostname, :expected_row_count => 1 })
     end
 
-    it "Create database user with optional login" do
+    it "Create database user with optional login", :tier_low => true do
       pp = <<-MANIFEST
       sqlserver::config{'MSSQLSERVER':
         admin_user    => 'sa',
@@ -146,7 +146,7 @@ describe "sqlserver::user test", :node => host do
       run_sql_query(host, { :query => query, :server => hostname, :expected_row_count => 1 })
     end
 
-    it "Create database user with optional password" do
+    it "Create database user with optional password", :tier_low => true do
       pp = <<-MANIFEST
       sqlserver::config{'MSSQLSERVER':
         admin_user    => 'sa',
@@ -175,7 +175,7 @@ describe "sqlserver::user test", :node => host do
       run_sql_query(host, { :query => query, :server => hostname, :expected_row_count => 1 })
     end
 
-    it "Delete database user" do
+    it "Delete database user", :tier_low => true do
       pp = <<-MANIFEST
       sqlserver::config{'MSSQLSERVER':
         admin_user    => 'sa',
