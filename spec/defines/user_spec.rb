@@ -6,13 +6,18 @@ RSpec.describe 'sqlserver::user', :type => :define do
     let(:title) { 'loggingUser' }
     let(:sqlserver_tsql_title) { 'user-MSSQLSERVER-myDatabase-loggingUser' }
     let(:params) { {:user => 'loggingUser', :database => 'myDatabase'} }
+    let(:pre_condition) { <<-EOF
+      define sqlserver::config{}
+      sqlserver::config {'MSSQLSERVER': }
+    EOF
+    }
   end
 
   describe 'should fail when password above 128 characters' do
     o = [('a'..'z'), ('A'..'Z'), (0..9)].map { |i| i.to_a }.flatten
     string = (0...129).map { o[rand(o.length)] }.join
     let(:additional_params) { {:password => string} }
-    let(:raise_error_check) { 'Password must be equal or less than 128 characters' }
+    let(:raise_error_check) { "'password' expects" }
     it_should_behave_like 'validation error'
   end
 
@@ -20,7 +25,7 @@ RSpec.describe 'sqlserver::user', :type => :define do
     o = [('a'..'z'), ('A'..'Z'), (0..9)].map { |i| i.to_a }.flatten
     string = (0...129).map { o[rand(o.length)] }.join
     let(:additional_params) { {:database => string} }
-    let(:raise_error_check) { 'Database name must be between 1 and 128 characters' }
+    let(:raise_error_check) { "'database' expects a String[1, 128]" }
     let(:sqlserver_tsql_title) { "user-MSSQLSERVER-#{string}-loggingUser" }
     it_should_behave_like 'validation error'
   end
@@ -180,7 +185,6 @@ RSpec.describe 'sqlserver::user', :type => :define do
       let(:additional_params) { {
         :permissions => {'GRANT' => ['CONNECT SQL'], 'REVOKE' => ['CONNECT SQL']}
       } }
-      let(:raise_error_check) { "Duplicate permissions found for sqlserver::user[#{title}" }
       let(:raise_error_check) { "Duplicate permissions found for sqlserver::user[#{title}" }
       it_behaves_like 'validation error'
     end

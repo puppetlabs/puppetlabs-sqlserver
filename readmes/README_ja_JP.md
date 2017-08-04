@@ -5,7 +5,7 @@
 1. [概要](#概要)
 2. [モジュールの説明 - モジュールの機能とその有益性](#モジュールの説明)
 3. [セットアップ - sqlserver導入の基本](#セットアップ)
-    * [セットアップ要件](#setup-requirements)
+    * [セットアップ要件](#セットアップ要件)
     * [sqlserverを開始する](#sqlserverを開始する)
 4. [使用方法 - 構成オプションと追加機能](#使用方法)
     * [SQL Serverツールおよび機能のインストール](#sql-serverインスタンス専用ではないsql-serverツールおよび機能をインストールする)
@@ -79,13 +79,6 @@ sqlserver_instance{ 'MSSQLSERVER':
 **注**: Microsoft SQL Server用語の明確な定義については、後述の[Microsoft SQL Serverの用語](#microsoft-sql-serverの用語)を参照してください。
 
 ### SQL Serverインスタンス専用ではないSQL Serverツールおよび機能をインストールする
-
-```puppet
-sqlserver_features { 'Generic Features':
-  source   => 'E:/',
-  features => ['Tools'],
-}
-```
 
 ```puppet
 sqlserver_features { 'Generic Features':
@@ -184,7 +177,82 @@ sqlserver_tsql{ 'Always running':
 }
 ```
 
-## リファレンス
+### 高度な例
+
+この高度な例について:
+
+* 基本的なSQL Server Engineを、'D:\'にマウントされたインストールメディアを使ってインストールします。インストールの際は、TCPを有効にし、各種ディレクトリを設定します。
+
+* Windowsベースの認証のみを使用し、Puppetを実行しているユーザとしてのみインストールします。'sql_sysadmin_accounts'はインスタンスのインストール時にのみ適用され、その後は選択しない限り適用されないので注意が必要です。
+
+* 後続のリソースが新規作成されたリソースに接続するために使われる、`sqlserver::config`リソースを作成します。Windowsベースの認証のみサポートしているため、ユーザ名とパスワードは必要ありません。
+
+* 'DB Administrators'という名前のローカルグループを作成し、このグループがSQLシステム管理者(sysadminロール)であることを確認します。また、Puppetがインスタンスのインストールと管理に使用するアカウントも作成します。
+
+* Puppetがインスタンスの'max memory'設定を管理できるように、`sp_configure`の詳細オプションが有効になっていることを確認します。
+
+* `max memory` (MB)構成アイテムが2048メガバイトに設定されていることを確認します。
+
+```puppet
+$sourceloc = 'D:/'
+
+# SQL Serverのデフォルトインスタンスをインストールする
+sqlserver_instance{'MSSQLSERVER':
+  source                => $sourceloc,
+  features              => ['SQLEngine'],
+  sql_sysadmin_accounts => [$facts['id']],
+  install_switches      => {
+    'TCPENABLED'          => 1,
+    'SQLBACKUPDIR'        => 'C:\\MSSQLSERVER\\backupdir',
+    'SQLTEMPDBDIR'        => 'C:\\MSSQLSERVER\\tempdbdir',
+    'INSTALLSQLDATADIR'   => 'C:\\MSSQLSERVER\\datadir',
+    'INSTANCEDIR'         => 'C:\\Program Files\\Microsoft SQL Server',
+    'INSTALLSHAREDDIR'    => 'C:\\Program Files\\Microsoft SQL Server',
+    'INSTALLSHAREDWOWDIR' => 'C:\\Program Files (x86)\\Microsoft SQL Server'
+  }
+}
+
+# DBインスタンスに接続するためのリソース
+sqlserver::config { 'MSSQLSERVER':
+  admin_login_type => 'WINDOWS_LOGIN'
+}
+
+# SQL Server Administratorsを適用する
+$local_dba_group_name = 'DB Administrators'
+$local_dba_group_netbios_name = "${facts['hostname']}\\DB Administrators"
+
+group { $local_dba_group_name:
+  ensure => present
+}
+
+-> sqlserver::login { $local_dba_group_netbios_name :
+  login_type  => 'WINDOWS_LOGIN',
+}
+
+-> sqlserver::role { 'sysadmin':
+  ensure   => 'present',
+  instance => 'MSSQLSERVER',
+  type     => 'SERVER',
+  members  => [$local_dba_group_netbios_name, $facts['id']],
+}
+
+# メモリ消費を適用する
+sqlserver_tsql {'check advanced sp_configure':
+  command => 'EXEC sp_configure \'show advanced option\', \'1\'; RECONFIGURE;',
+  onlyif => 'sp_configure @configname=\'max server memory (MB)\'',
+  instance => 'MSSQLSERVER'
+}
+
+-> sqlserver::sp_configure { 'MSSQLSERVER-max memory':
+  config_name => 'max server memory (MB)',
+  instance => 'MSSQLSERVER',
+  reconfigure => true,
+  restart => true,
+  value => 2048
+}
+```
+
+## 参考
 
 ### タイプ
 
@@ -202,15 +270,17 @@ SSMSやMaster Data Serviceなどの機能をインストールおよび構成し
 
 ##### `features`
 
-*必須指定です。*
-  
-管理する機能を1つまたは複数指定します。有効なオプション: 'BC'、'Conn'、'SSMS'、'ADV_SSMS'、'SDK'、'IS'、'MDS'、'Tools' (Toolsの機能にはSSMS、ADV_SSMS、Connが含まれます)。
+*必須。*
+
+管理する機能を1つまたは複数指定します。有効なオプション: 'BC'、'Conn'、'SSMS'、'ADV_SSMS'、'SDK'、'IS'、'MDS'、'BOL'、'DREPLAY_CTLR'、'DREPLAY_CLT'。
+
+この設定の'Tools'値は廃止されました。'BC'、'SSMS'、'ADV_SSMS'、'Conn'、'SDK'のいずれかのみを指定してください。
 
 ##### `install_switches`
 
-1つまたは複数のインストーラスイッチをSQL Serverセットアップに受け渡します。あるオプションが個別のパラメータと`install_switches`の両方で指定されている場合、個別に指定されたパラメータが優先されます。たとえば、`pid`と`install_switches`の両方にプロダクトキーが設定されている場合、SQL Serverは`pid`パラメータを優先します。有効なオプション: 配列。
+1つまたは複数のインストーラスイッチをSQL Serverセットアップに受け渡します。あるオプションが個別のパラメータと`install_switches`の両方で指定されている場合、個別に指定されたパラメータが優先されます。例えば、`pid`と`install_switches`の両方にプロダクトキーが設定されている場合、SQL Serverは`pid`パラメータを優先します。有効なオプション: 配列。
 
-> **注**: あるオプションが個別のパラメータと`install_switches`の両方で指定されている場合、個別に指定されたパラメータが優先されます。たとえば、`pid`と`install_switches`の両方にプロダクトキーが設定されている場合、SQL Serverは`pid`パラメータを優先します。
+> **注**: あるオプションが個別のパラメータと`install_switches`の両方で指定されている場合、個別に指定されたパラメータが優先されます。例えば、`pid`と`install_switches`の両方にプロダクトキーが設定されている場合、SQL Serverは`pid`パラメータを優先します。
 >
 > インストーラスイッチの詳細とSQL Serverの構成方法については、次のリンクを参照してください。
 >
@@ -238,7 +308,7 @@ SQL Serverのプロダクトキーを指定します。有効なオプション:
 
 ##### `source`
 
-*必須指定です。*
+*必須。*
 
 SQL Server installerの場所を指定します。有効なオプション: 実行ファイルへのパスを含む文字列。Puppetは、インストーラを実行可能なパーミッションを持つ必要があります。
 
@@ -294,13 +364,15 @@ sysadminステータスを受け取る1つまたは複数のSQLアカウント�
 
 ##### `features`
 
-*必須指定です。* 1つまたは複数の管理対象の機能を指定します。最上位機能のリストには、'SQL'、'AS'、'RS'が含まれます。'SQL'機能には、Database Engine、Replication、Full-Text、Data Quality Services (DQS)サーバが含まれます。有効なオプション: 'SQL'、'SQLEngine'、'Replication'、'FullText'、'DQ'、'AS'、'RS'の文字列うち1つまたは複数を含む配列。
+*必須。* 管理する機能を1つまたは複数指定します。最上位機能のリストには、AS'と'RS'が含まれます。有効なオプション: 'SQL'、'SQLEngine'、'Replication'、'FullText'、'DQ'、'AS'、'RS'、'POLYBASE'、'ADVANCEDANALYTICS'の文字列のうち、1つまたは複数を含む配列。
+
+この設定の'SQL'値は廃止されました。'DQ'、'FullText'、'Replication'、'SQLEngine'のいずれかのみを指定してください。
 
 ##### `install_switches`
 
 SQL Server Instance Setupに1つまたは複数の追加インストーラスイッチを受け渡します。有効なオプション: [インストーラスイッチ](https://msdn.microsoft.com/en-us/library/ms144259.aspx)のハッシュ値。
 
-> **注**: あるオプションが個別のパラメータと`install_switches`の両方で指定されている場合、個別に指定されたパラメータが優先されます。たとえば、`pid`と`install_switches`の両方にプロダクトキーが設定されている場合、SQL Serverは`pid`パラメータを優先します。
+> **注**: あるオプションが個別のパラメータと`install_switches`の両方で指定されている場合、個別に指定されたパラメータが優先されます。例えば、`pid`と`install_switches`の両方にプロダクトキーが設定されている場合、SQL Serverは`pid`パラメータを優先します。
 >
 > インストーラスイッチの詳細とSQL Serverの構成方法については、次のリンクを参照してください。
 >
@@ -318,6 +390,22 @@ SQL Server Instance Setupに1つまたは複数の追加インストーラスイ
 SQL Serverのプロダクトキーを指定します。有効なオプション: 有効なプロダクトキーを含む文字列。指定しない場合、SQL Serverは評価モードで動作します。
 
 デフォルト値: `undef`。
+
+##### `polybase_svc_account`
+
+** SQL Server 2016のPOLYBASE 機能がインストールされている場合にのみ該当します。**
+
+Polybase Engineサービスによって使用されるドメインアカウントまたはシステムアカウントを指定します。
+
+有効なオプション: 既存のユーザ名を指定する文字列。
+
+##### `polybase_svc_password`
+
+** SQL Server 2016のPOLYBASE 機能がインストールされている場合にのみ該当します。**
+
+Polybase Engineサービスのパスワードを指定します。
+
+有効なオプション: 有効なパスワードを指定する文字列。
 
 ##### `rs_svc_account`
 
@@ -343,13 +431,9 @@ SQL Serverのセキュリティモードを指定します。有効なオプシ�
 
 デフォルト値: `undef`。
 
-##### `service_ensure`
-
-SQL Serverサービスを実行中にするかどうかを指定します。有効なオプション: 'automatic' (実行されていない場合、Puppetがサービスを起動)、'manual' (Puppetは何もしない)、'disable' (実行されている場合、Puppetがサービスを停止)。
-
 ##### `source`
 
-*必須指定です。*
+*必須。*
 
 SQL Server installerの場所を指定します。有効なオプション: 実行ファイルへのパスを含む文字列。Puppetは、インストーラを実行可能なパーミッションを持つ必要があります。
 
@@ -367,7 +451,7 @@ SQL Serverサービスユーザアカウントのパスワードを提供しま�
 
 ##### `sql_sysadmin_accounts`
 
-*必須指定です。*
+*必須。*
 
 sysadminステータスを受け取る1つまたは複数のSQLアカウントまたはシステムアカウントを指定します。有効なオプション: 1つまたは複数の有効なユーザ名を指定する配列。
 
@@ -387,7 +471,7 @@ SQL Serverインスタンスに対し、TSQLクエリを実行します。
 
 ##### `instance`
 
-*必須指定です。*
+*必須。*
 
 ステートメントを実行するSQL Serverインスタンスを指定します。有効なオプション: 既存のインスタンス名を含む文字列。
 
@@ -417,9 +501,9 @@ SQL Serverインスタンスを管理するために使用するログインの�
 
 - SQL Serverベースの認証を使用する場合 - `SQL_LOGIN`
 
-    * `admin_pass`: *必須指定です。* 指定された`admin_user`アカウントのパスワードを提供します。有効なオプション: 有効なパスワードを指定する文字列。
+    * `admin_pass`: *必須。* 指定された`admin_user`アカウントのパスワードを提供します。有効なオプション: 有効なパスワードを指定する文字列。
 
-    * `admin_user`: *必須指定です。* サーバのsysadmin権限をもつログインアカウントを指定します。これは、インスタンスの管理に使用します。有効なオプション: ユーザ名を含む文字列。
+    * `admin_user`: *必須。* サーバのsysadmin権限をもつログインアカウントを指定します。これは、インスタンスの管理に使用します。有効なオプション: ユーザ名を含む文字列。
 
 - Windowsベースの認証を使用する場合 - `WINDOWS_LOGIN`
 
@@ -447,11 +531,11 @@ SQL Serverインスタンスを管理するために使用するログインの�
 
 ##### `compatibility`:
 
-データベースが互換性をもつSQL Serverのバージョンを1つまたは複数指定します。有効なオプション: 互換性レベル番号(例: SQL Server 2008～SQL Server 2014では100)。値の一覧については[SQL Serverドキュメンテーション](http://msdn.microsoft.com/en-us/library/bb510680.aspx)を参照してください。
+データベースが互換性をもつSQL Serverのバージョンを1つまたは複数指定します。有効なオプション: 互換性レベル番号(例: SQL Server 2008～SQL Server 2014では100)。値の一覧については[SQL Serverドキュメント](http://msdn.microsoft.com/en-us/library/bb510680.aspx)を参照してください。
 
 ##### `containment`
 
-データベースのコンテインメントの種類を設定します。コンテインメントの詳細については、[SQL Serverドキュメンテーション](http://msdn.microsoft.com/en-us/library/ff929071.aspx)を参照してください。有効なオプション: 'NONE'および'PARTIAL' ('PARTIAL'には`sqlserver::sp_configure`定義タイプが必要です)。
+データベースのコンテインメントの種類を設定します。コンテインメントの詳細については、[SQL Serverドキュメント](http://msdn.microsoft.com/en-us/library/ff929071.aspx)を参照してください。有効なオプション: 'NONE'および'PARTIAL' ('PARTIAL'には`sqlserver::sp_configure`定義タイプが必要です)。
 
 デフォルト値: 'NONE'。
 
@@ -461,7 +545,7 @@ SQL Serverインスタンスを管理するために使用するログインの�
 
 デフォルト値: 'OFF'。
 
-##### `db_name`: *必須指定です。*
+##### `db_name`: *必須。*
 
 管理対象のデータベースを指定します。有効なオプション: データベース名を含む文字列。
 
@@ -469,13 +553,13 @@ SQL Serverインスタンスを管理するために使用するログインの�
 
 ##### `default_fulltext_language`
 
-デフォルトのフルテキスト言語を設定します。`containment`が'PARTIAL'に設定されている場合のみ有効です。有効なオプション: [SQL Serverドキュメンテーション](http://msdn.microsoft.com/en-us/library/ms190303.aspx)を参照してください。
+デフォルトのフルテキスト言語を設定します。`containment`が'PARTIAL'に設定されている場合のみ有効です。有効なオプション: [SQL Serverドキュメント](http://msdn.microsoft.com/en-us/library/ms190303.aspx)を参照してください。
 
 デフォルト値: 'English'。
 
 ##### `default_language`
 
-デフォルト言語を設定します。`containment`が'PARTIAL'に設定されている場合のみ有効です。有効なオプション: [SQL Serverドキュメンテーション](http://msdn.microsoft.com/en-us/library/ms190303.aspx)を参照してください。
+デフォルト言語を設定します。`containment`が'PARTIAL'に設定されている場合のみ有効です。有効なオプション: [SQL Serverドキュメント](http://msdn.microsoft.com/en-us/library/ms190303.aspx)を参照してください。
 
 デフォルト値: 'us_english'。
 
@@ -515,7 +599,7 @@ SQL Serverインスタンス内のfilespecオブジェクトの論理名を指�
 
 ##### `filespec_size`
 
-filespecファイルのサイズを指定します。このパラメータは作成時のみに設定され、アップデートの影響を受けません。有効なオプション: 2147483647以下の数値。オプションで接尾文字'KB'、'MB'、'GB'または'TB'を含めることができます。接尾文字を付けない場合、SQL Serverは単位をMBとみなします。
+filespecファイルのサイズを指定します。このパラメータは作成時のみに設定され、アップデートの影響を受けません。有効なオプション: 2147483647以下の数値。オプションで接尾文字'KB'、'MB'、'GB'または'TB'を含めることができます。接尾文字を付けない場合、SQL Serverでは単位をMBとみなされます。
 
 デフォルト値: `undef`。
 
@@ -572,7 +656,7 @@ SQL Server内のログオブジェクトの論理名を指定します。この�
 
 ##### `nested_triggers`
 
-カスケーディングトリガを有効にするかどうかを指定します。`containment`が'PARTIAL'に設定されている場合のみ有効です。トリガのネストの詳細については、[SQL Serverドキュメンテーション](http://msdn.microsoft.com/en-us/library/ms178101.aspx)を参照してください。有効なオプション: 'ON'および'OFF'。
+カスケーディングトリガを有効にするかどうかを指定します。`containment`が'PARTIAL'に設定されている場合のみ有効です。トリガのネストの詳細については、[SQL Serverドキュメント](http://msdn.microsoft.com/en-us/library/ms178101.aspx)を参照してください。有効なオプション: 'ON'および'OFF'。マニュアル
 
 デフォルト値: `undef`。
 
@@ -601,7 +685,7 @@ SQL Server内のログオブジェクトの論理名を指定します。この�
 > * [データベースのTSQLを変更する](http://msdn.microsoft.com/en-us/library/ms174269.aspx)
 > * [システム言語](http://msdn.microsoft.com/en-us/library/ms190303.aspx)
 >
-> FILESTREAMを使用するには、SQL Serverの手作業による構成が必要となる場合があります。詳細については、[FILESTREAMの有効化と構成](http://msdn.microsoft.com/en-us/library/cc645923.aspx)を参照してください。
+> FILESTREAMを使用するには、SQL Serverを手動で構成する作業が必要になる場合があります。詳細については、[FILESTREAMの有効化と構成](http://msdn.microsoft.com/en-us/library/cc645923.aspx)を参照してください。
 
 #### `sqlserver::login`
 
@@ -627,7 +711,7 @@ SQL Server内のログオブジェクトの論理名を指定します。この�
 
 ##### `default_language`
 
-デフォルト言語を指定します。有効なオプション: [SQL Serverドキュメンテーション](http://msdn.microsoft.com/en-us/library/ms190303.aspx)を参照してください。
+デフォルト言語を指定します。有効なオプション: [SQL Serverドキュメント](http://msdn.microsoft.com/en-us/library/ms190303.aspx)を参照してください。
 
 デフォルト値: 'us_english'。
 
@@ -651,7 +735,7 @@ SQL Server内のログオブジェクトの論理名を指定します。この�
 
 ##### `login`
 
-*必須指定です。*
+*必須。*
 
 管理対象のWindowsログインまたはSQLログインを指定します。有効なオプション: 既存のログインを含む文字列。
 
@@ -669,7 +753,7 @@ SQL Server内のログオブジェクトの論理名を指定します。この�
 
 ##### `svrroles`
 
-ログインに1つまたは複数の事前インストールされたサーバロールを割り当てます。有効なオプション: `permission => value`ペアのハッシュ値。ここで値0は無効、値1は有効であることを示します。たとえば、`{'diskadmin' => 1、'dbcreator' => 1、'sysadmin' => 0}`などです。有効なパーミッションの一覧については、[SQL Serverドキュメンテーション](http://msdn.microsoft.com/en-us/library/ms188659.aspx)を参照してください。
+ログインに1つまたは複数の事前インストールされたサーバロールを割り当てます。有効なオプション: `permission => value`ペアのハッシュ値。ここで値0は無効、値1は有効であることを示します。たとえば、`{'diskadmin' => 1、'dbcreator' => 1、'sysadmin' => 0}`などです。有効なパーミッションの一覧については、[SQL Serverドキュメント](http://msdn.microsoft.com/en-us/library/ms188659.aspx)を参照してください。
 
 > **SQL Serverにおけるこれらの設定の詳細については、以下を参照してください。**
 > 
@@ -689,13 +773,13 @@ SQL Server内のログオブジェクトの論理名を指定します。この�
 
 ##### `login`
 
-*必須指定です。*
+*必須。*
 
 管理対象のSQLまたはWindowsログインを指定します。有効なオプション: 既存のログインを含む文字列。
 
 ##### `permissions`
 
-*必須指定です。*
+*必須。*
 
 管理対象の1つまたは複数のパーミッションを指定します。有効なオプション: 文字列または文字列の配列。各文字列には[SQL Serverパーミッション](https://technet.microsoft.com/en-us/library/ms191291%28v=sql.105%29.aspx) (例: 'SELECT'、'INSERT'、'UPDATE'、'DELETE'など)を含みます。
 
@@ -719,7 +803,7 @@ SQL Server内のログオブジェクトの論理名を指定します。この�
 
 ##### `database`
 
-*必須指定です。*
+*必須。*
 
 ユーザを管理するデータベースを指定します。有効なオプション: 既存のデータベース名を含む文字列。
 
@@ -753,7 +837,7 @@ SQL Server内のログオブジェクトの論理名を指定します。この�
 
 ##### `user`
 
-*必須指定です。*
+*必須。*
 
 管理対象のユーザを指定します。有効なオプション: ユーザ名を含む文字列。
 
@@ -767,7 +851,7 @@ SQL Server内のログオブジェクトの論理名を指定します。この�
 
 ##### `database`
 
-*必須指定です。*
+*必須。*
 
 ユーザのパーミッションを管理するデータベースを指定します。有効なオプション: 既存のデータベースの名前を含む文字列。
 
@@ -779,7 +863,7 @@ SQL Server内のログオブジェクトの論理名を指定します。この�
 
 ##### `permissions`
 
-*必須指定です。*
+*必須。*
 
 管理対象の1つまたは複数のパーミッションを指定します。有効なオプション: 1つまたは複数の文字列形式の[SQL Serverパーミッション](https://technet.microsoft.com/en-us/library/ms191291%28v=sql.105%29.aspx)を含む配列(例: `['SELECT', 'INSERT', 'UPDATE', 'DELETE']`)。
 
@@ -791,7 +875,7 @@ SQL Server内のログオブジェクトの論理名を指定します。この�
 
 ##### `user`
 
-*必須指定です。*
+*必須。*
 
 パーミッションを管理するユーザを指定します。有効なオプション: ユーザ名を含む文字列。
 
@@ -852,7 +936,7 @@ SQL Server内のログオブジェクトの論理名を指定します。この�
 
 ##### `permissions`
 
-*必須指定です。*
+*必須。*
 
 1つまたは複数のパーミッションをそのロールに関連付けます。有効なオプション: 1つまたは複数のkey => valueペアのハッシュ値。ここで、各キーは望ましいパーミッション状態で、各値は管理対象のパーミッションを指定する文字列の配列です。
 
@@ -898,13 +982,13 @@ SQL Server内のログオブジェクトの論理名を指定します。この�
 
 ##### `permissions`
 
-*必須指定です。*
+*必須。*
 
 管理対象の1つ又は複数のパーミッションを指定します。有効なオプション: 1つまたは複数の[SQL Serverパーミッション](https://technet.microsoft.com/en-us/library/ms191291%28v=sql.105%29.aspx)(例: 'SELECT'、'INSERT'、'UPDATE'、'DELETE')を含む配列。
 
 ##### `role`
 
-*必須指定です。*
+*必須。*
 
 パーミッションを管理するロールを指定します。有効なオプション: 既存のロール名を含む文字列。
 
@@ -958,7 +1042,7 @@ sys.configurationsで管理するオプションを指定します。有効な�
 
 ##### `value`
 
-*必須指定です。*
+*必須。*
 
 指定されたオプションの値を提供します。有効なオプション: 整数値。
 
@@ -975,7 +1059,7 @@ sys.configurationsで管理するオプションを指定します。有効な�
 
 ### Microsoft SQL Serverの用語
 
-各種データベースシステムにより、用語が少し異なる場合があります。明確な定義については、以下のリストを参照してください。
+使用される用語はデータベースシステムごとに若干異なる場合があります。明確な定義については、以下のリストを参照してください。
 
 * **データベース:** 関係性のあるデータテーブルとして整理された情報の集まりとデータオブジェクトの定義。
 * **インスタンス:** インストールされ、実行されているデータベースサービス。
@@ -987,9 +1071,13 @@ sys.configurationsで管理するオプションを指定します。有効な�
 
 本モジュールは、Windows Server 2012または2012 R2のみで使用でき、Puppet Enterprise 3.7以降でのみ動作します。
 
+このモジュールは、指定ホスト上のSQL Serverの単独バージョンのみ管理できます(SQL Server 2012、2014、2016のうちいずれか1つのみ)。このモジュールでは同一バージョンの複数のSQL Serverインスタンスを管理できます。
+
+このモジュールは、SQL Server Native Client SDK (別名SNAC_SDK)を管理できません。SQL ServerのインストールメディアはSDKをインストールできますが、SDKをアンインストールすることはできません。'sqlserver_features' factはSDKの存在を検出します。
+
 ## 開発
 
-本モジュールは、Puppet Enterprise (PE)用にPuppetによって設計されました。
+本モジュールは、PuppetによってPuppet Enterprise (PE)用に設計されました。
 
 本モジュールで問題が発生した場合、またはリクエストしたい機能がある場合、[チケットを送信](https://tickets.puppet.com/browse/MODULES/)してください。
 

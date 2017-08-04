@@ -9,26 +9,26 @@ RSpec.describe 'sqlserver::database', :type => :define do
         :db_name => 'myTestDb',
         :instance => 'MSSQLSERVER',
     } }
-  end
-
-  describe 'Minimal Params' do
     let(:pre_condition) { <<-EOF
       define sqlserver::config{}
       sqlserver::config {'MSSQLSERVER': }
     EOF
     }
+  end
+
+  describe 'Minimal Params' do
     it_behaves_like 'compile'
   end
 
   describe 'Providing log filespec it should compile with valid log on params and' do
     it_behaves_like 'validation error' do
       let(:additional_params) { {:log_filename => "c:/test/logfile.ldf", :log_name => "myCrazyLog"} }
-      let(:raise_error_check) { 'filespec_name and filespec_filename must be specified when specifying any log attributes' }
+      let(:raise_error_check) { /(filespec_filename|filespec_name)/ }
     end
     it_behaves_like 'validation error' do
       let(:additional_params) { {
           :filespec_filename => 'c:/test/test.mdf'} }
-      let(:raise_error_check) { /(input needs to be a String|filespec_name must not be null if specifying filespec_filename)/ }
+      let(:raise_error_check) { /filespec_name must also be specified when specifying filespec_filename/ }
     end
     describe 'filespec_name can not be more than 128 characters' do
       it_behaves_like 'validation error' do
@@ -36,14 +36,20 @@ RSpec.describe 'sqlserver::database', :type => :define do
             :filespec_filename => 'c:/test/test.mdf',
             :filespec_name =>
                 'OMGthisISsoReallyLongAndBoringProcessImeanAReallyOMGthisISsoReallyLongAndBoringProcessMakeItOMGthisISsoReallyLongAndBoringProcess'} }
-        let(:raise_error_check) { 'filespec_name can not be more than 128 characters' }
+        let(:raise_error_check) { "'filespec_name' expects" }
       end
     end
     it_behaves_like 'sqlserver_tsql command' do
       let(:additional_params) { {
-          :filespec_filename => 'c:/test/test.mdf', :filespec_name => 'myCreCre',
-          :log_filename => "c:/test/logfile.ldf", :log_name => "myCrazyLog"} }
-      let(:should_contain_command) { [/c\:\/test\/logfile\.ldf/] }
+          :filespec_filename => 'c:/test/test.mdf', :filespec_name => 'myCre-Cre',
+          :log_filename => "c:/test/logfile.ldf", :log_name => "myCrazy_Log"} }
+      # Ensure that the parameters are in the TSQL and are correctly escaped
+      let(:should_contain_command) {[
+        /NAME = N'myCre-Cre'/,
+        /FILENAME = N'c\:\/test\/test\.mdf'/,
+        /NAME = N'myCrazy_Log'/,
+        /FILENAME = N'c\:\/test\/logfile\.ldf'/
+      ]}
     end
   end
   describe 'collation_name' do

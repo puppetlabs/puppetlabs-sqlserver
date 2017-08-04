@@ -5,14 +5,14 @@ require 'erb'
 host = find_only_one("sql_host")
 
 # Get instance name
-inst_name = ("MSSQL" + SecureRandom.hex(4)).upcase
+inst_name = ('MSSQL' + SecureRandom.hex(4)).upcase
 
 # Get database name
-db_name   = ("DB" + SecureRandom.hex(4)).upcase
+db_name   = ('DB' + SecureRandom.hex(4)).upcase
 
 describe "sqlserver::config test", :node => host do
 
-  def ensure_sqlserver_instance(host,inst_name, ensure_val = 'present')
+  def ensure_sqlserver_instance(inst_name, ensure_val = 'present')
     create_new_instance= <<-MANIFEST
       sqlserver_instance{'#{inst_name}':
       ensure                => '#{ensure_val}',
@@ -25,31 +25,31 @@ describe "sqlserver::config test", :node => host do
     }
     MANIFEST
 
-    apply_manifest_on(host, create_new_instance) do |r|
+    execute_manifest(create_new_instance) do |r|
       expect(r.stderr).not_to match(/Error/i)
     end
   end
 
-  context "Testing sqlserver::config", {:testrail => ['89070', '89071', '89072', '89073']} do
+  context 'Testing sqlserver::config', {:testrail => ['89070', '89071', '89072', '89073']} do
 
     before(:all) do
       # Create new instance
-      ensure_sqlserver_instance(host, inst_name)
+      ensure_sqlserver_instance(inst_name)
 
       # get credentials for new config
-      @admin_user = "admin" + SecureRandom.hex(2)
+      @admin_user = 'admin' + SecureRandom.hex(2)
       @admin_pass = 'Pupp3t1@'
 
       # get database user
-      @db_user    = "dbuser" + SecureRandom.hex(2)
+      @db_user    = 'dbuser' + SecureRandom.hex(2)
     end
 
     after(:all) do
       # remove the newly created instance
-      ensure_sqlserver_instance(host, 'absent')
+      ensure_sqlserver_instance('absent')
     end
 
-    it "Create New Admin Login:" do
+    it 'Create New Admin Login:', :tier_low => true do
       create_new_login = <<-MANIFEST
       sqlserver::config{'#{inst_name}':
         instance_name => '#{inst_name}',
@@ -64,12 +64,12 @@ describe "sqlserver::config test", :node => host do
         svrroles    => {'sysadmin' => 1},
       }
       MANIFEST
-      apply_manifest_on(host, create_new_login) do |r|
+      execute_manifest(create_new_login) do |r|
         expect(r.stderr).not_to match(/Error/i)
       end
     end
 
-    it "Validate New Config WITH using instance_name in sqlserver::config" do
+    it 'Validate New Config WITH using instance_name in sqlserver::config', :tier_low => true do
       pp = <<-MANIFEST
       sqlserver::config{'#{inst_name}':
         admin_user    => '#{@admin_user}',
@@ -80,12 +80,12 @@ describe "sqlserver::config test", :node => host do
         instance => '#{inst_name}',
       }
       MANIFEST
-      apply_manifest_on(host, pp) do |r|
+      execute_manifest(pp) do |r|
         expect(r.stderr).not_to match(/Error/i)
       end
     end
 
-    it "Validate new login and database actualy created" do
+    it 'Validate new login and database actualy created', :tier_low => true do
       hostname = host.hostname
       query = "USE #{db_name}; SELECT * from master..sysdatabases WHERE name = '#{db_name}'"
 
@@ -93,7 +93,7 @@ describe "sqlserver::config test", :node => host do
       :sql_admin_user => @admin_user, :sql_admin_pass => @admin_pass, :expected_row_count => 1})
     end
 
-    it "Validate New Config WITHOUT using instance_name in sqlserver::config" do
+    it 'Validate New Config WITHOUT using instance_name in sqlserver::config', :tier_low => true do
       pp = <<-MANIFEST
       sqlserver::config{'#{inst_name}':
         admin_user    => '#{@admin_user}',
@@ -103,7 +103,7 @@ describe "sqlserver::config test", :node => host do
         instance => '#{inst_name}',
       }
       MANIFEST
-      apply_manifest_on(host, pp) do |r|
+      execute_manifest(pp) do |r|
         expect(r.stderr).not_to match(/Error/i)
       end
     end

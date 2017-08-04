@@ -83,13 +83,6 @@ This example creates the same MS SQL instance as shown above with additional opt
 ```puppet
 sqlserver_features { 'Generic Features':
   source   => 'E:/',
-  features => ['Tools'],
-}
-```
-
-```puppet
-sqlserver_features { 'Generic Features':
-  source   => 'E:/',
   features => ['ADV_SSMS', 'BC', 'Conn', 'SDK', 'SSMS'],
 }
 ```
@@ -184,6 +177,81 @@ sqlserver_tsql{ 'Always running':
 }
 ```
 
+### Advanced example
+
+This advanced example:
+
+* Installs the basic SQL Server Engine from installation media mounted at 'D:\' with TCP Enabled and various directories set.
+
+* Uses only Windows-based authentication and installs with only the user that Puppet is executing as. Note that the 'sql_sysadmin_accounts' is only applicable during the instance installation and is not actively enforced.
+
+* Creates a `sqlserver::config` resource, which is used in later resources to connect to the newly created instance. As we support only Windows-based authentication, a username and password is not required.
+
+* Creates a local group called 'DB Administrators' and ensures that it is SQL System Administrator (sysadmin role); also creates the account that Puppet uses to install and manage the instance.
+
+* Ensures that the advanced options for `sp_configure` are enabled, so that Puppet can manage the `max memory` setting for the instance.
+
+* Ensure that the `max memory` (MB) configuration item is set to 2048 megabytes.
+
+```puppet
+$sourceloc = 'D:/'
+
+# Install a SQL Server default instance
+sqlserver_instance{'MSSQLSERVER':
+  source                => $sourceloc,
+  features              => ['SQLEngine'],
+  sql_sysadmin_accounts => [$facts['id']],
+  install_switches      => {
+    'TCPENABLED'          => 1,
+    'SQLBACKUPDIR'        => 'C:\\MSSQLSERVER\\backupdir',
+    'SQLTEMPDBDIR'        => 'C:\\MSSQLSERVER\\tempdbdir',
+    'INSTALLSQLDATADIR'   => 'C:\\MSSQLSERVER\\datadir',
+    'INSTANCEDIR'         => 'C:\\Program Files\\Microsoft SQL Server',
+    'INSTALLSHAREDDIR'    => 'C:\\Program Files\\Microsoft SQL Server',
+    'INSTALLSHAREDWOWDIR' => 'C:\\Program Files (x86)\\Microsoft SQL Server'
+  }
+}
+
+# Resource to connect to the DB instance
+sqlserver::config { 'MSSQLSERVER':
+  admin_login_type => 'WINDOWS_LOGIN'
+}
+
+# Enforce SQL Server Administrators
+$local_dba_group_name = 'DB Administrators'
+$local_dba_group_netbios_name = "${facts['hostname']}\\DB Administrators"
+
+group { $local_dba_group_name:
+  ensure => present
+}
+
+-> sqlserver::login { $local_dba_group_netbios_name :
+  login_type  => 'WINDOWS_LOGIN',
+}
+
+-> sqlserver::role { 'sysadmin':
+  ensure   => 'present',
+  instance => 'MSSQLSERVER',
+  type     => 'SERVER',
+  members  => [$local_dba_group_netbios_name, $facts['id']],
+}
+
+# Enforce memory consumption
+sqlserver_tsql {'check advanced sp_configure':
+  command => 'EXEC sp_configure \'show advanced option\', \'1\'; RECONFIGURE;',
+  onlyif => 'sp_configure @configname=\'max server memory (MB)\'',
+  instance => 'MSSQLSERVER'
+}
+
+-> sqlserver::sp_configure { 'MSSQLSERVER-max memory':
+  config_name => 'max server memory (MB)',
+  instance => 'MSSQLSERVER',
+  reconfigure => true,
+  restart => true,
+  value => 2048
+}
+```
+
 ## Reference
 
 ### Types
@@ -203,8 +271,10 @@ Default: 'present'.
 ##### `features`
 
 *Required.*
-  
-Specifies one or more features to manage. Valid options: 'BC', 'Conn', 'SSMS', 'ADV_SSMS', 'SDK', 'IS', 'MDS', and 'Tools' (the Tools feature includes SSMS, ADV_SSMS, and Conn).
+
+Specifies one or more features to manage. Valid options: 'BC', 'Conn', 'SSMS', 'ADV_SSMS', 'SDK', 'IS', 'MDS', 'BOL', 'DREPLAY_CTLR', 'DREPLAY_CLT'.
+
+The 'Tools' value for this setting is deprecated. Specify 'BC', 'SSMS', 'ADV_SSMS', 'Conn', and 'SDK' explicitly.
 
 ##### `install_switches`
 
@@ -294,7 +364,9 @@ Default: 'present'.
 
 ##### `features`
 
-*Required.* Specifies one or more features to manage. The list of top-level features includes 'SQL', 'AS', and 'RS'. The 'SQL' feature includes the Database Engine, Replication, Full-Text, and Data Quality Services (DQS) server. Valid options: an array containing one or more of the strings 'SQL', 'SQLEngine', 'Replication', 'FullText', 'DQ', 'AS', and 'RS'.
+*Required.* Specifies one or more features to manage. The list of top-level features includes 'AS' and 'RS'. Valid options: an array containing one or more of the strings 'SQL', 'SQLEngine', 'Replication', 'FullText', 'DQ', 'AS', 'RS', 'POLYBASE', and 'ADVANCEDANALYTICS'.
+
+The 'SQL' value for this setting is deprecated. Specify 'DQ', 'FullText', 'Replication', and 'SQLEngine' explicitly.
 
 ##### `install_switches`
 
@@ -319,6 +391,22 @@ Specifies a product key for SQL Server. Valid options: a string containing a val
 
 Default: `undef`.
 
+##### `polybase_svc_account`
+
+**Applicable only if the POLYBASE feature for SQL Server 2016 is being installed.**
+
+Specifies a domain or system account for the Polybase Engine service.
+
+Valid options: a string specifying an existing username.
+
+##### `polybase_svc_password`
+
+**Applicable only if the POLYBASE feature for SQL Server 2016 is being installed.**
+
+Specifies the password for the Polybase Engine service
+
+Valid options: a string specifying a valid password.
+
 ##### `rs_svc_account`
 
 Specifies a domain or system account to be used by the report service. Valid options: a string; cannot include any of the following characters: `'"/ \ [ ] : ; | = , + * ? < >'`.  If you specify a domain user account, the domain must be less than 254 characters and the username must be less than 20 characters.
@@ -342,10 +430,6 @@ Sets a password for the SQL Server sa account. Valid options: a string specifyin
 Specifies a security mode for SQL Server. Valid options: 'SQL'. If not specified, SQL Server uses Windows authentication.
 
 Default: `undef`.
-
-##### `service_ensure`
-
-Specifies whether the SQL Server service should be running. Valid options: 'automatic' (Puppet starts the service if it's not running), 'manual' (Puppet takes no action), and 'disable' (Puppet stops the service if it's running).
 
 ##### `source`
 
@@ -985,7 +1069,9 @@ Terminology differs somewhat between various database systems; please refer to t
 
 ## Limitations
 
-This module is available only for Windows Server 2012 or 2012 R2, and works with Puppet Enterprise 3.7 and later.
+This module can manage only a single version of SQL Server on a given host (one and only one of SQL Server 2012, 2014 or 2016). The module is able to manage multiple SQL Server instances of the same version.
+
+This module cannot manage the SQL Server Native Client SDK (also known as SNAC_SDK). The SQL Server installation media can install the SDK, but it is not able to uninstall the SDK. Note that the 'sqlserver_features' fact detects the presence of the SDK.
 
 ## Development
 

@@ -83,32 +83,32 @@
 # @see http://msdn.microsoft.com/en-us/library/ms190303.aspx System Languages
 #
 define sqlserver::database (
-  $db_name = $title,
-  $instance = 'MSSQLSERVER',
-  $ensure = present,
-  $compatibility = 100,
-  $collation_name = undef,
-  $filestream_non_transacted_access = undef,
-  $filestream_directory_name = undef,
-  $filespec_name = undef,
-  $filespec_filename = undef,
-  $filespec_size = undef,
-  $filespec_maxsize = undef,
-  $filespec_filegrowth = undef,
-  $log_name = undef,
-  $log_filename = undef,
-  $log_size = undef,
-  $log_maxsize = undef,
-  $log_filegrowth = undef,
-  $containment = 'NONE',
+  String[1,128] $db_name = $title,
+  String[1,16] $instance = 'MSSQLSERVER',
+  Enum['present', 'absent'] $ensure = 'present',
+  Integer $compatibility = 100,
+  Optional[String[1]] $collation_name = undef,
+  Optional[Enum['OFF', 'READ_ONLY', 'FULL']] $filestream_non_transacted_access = undef,
+  Optional[Pattern[/^[\w|\s]+$/]] $filestream_directory_name = undef,
+  Optional[String[1,128]] $filespec_name = undef,
+  Optional[Stdlib::Absolutepath] $filespec_filename = undef,
+  Optional[String[1]] $filespec_size = undef,
+  Optional[String[1]] $filespec_maxsize = undef,
+  Optional[String[1]] $filespec_filegrowth = undef,
+  Optional[String[1,128]] $log_name = undef,
+  Optional[Stdlib::Absolutepath] $log_filename = undef,
+  Optional[String[1]] $log_size = undef,
+  Optional[String[1]] $log_maxsize = undef,
+  Optional[String[1]] $log_filegrowth = undef,
+  Enum['PARTIAL', 'NONE'] $containment = 'NONE',
 #require Containment = 'PARTIAL' for the following params to be executed
-  $default_fulltext_language = 'English',
-  $default_language = 'us_english',
-  $nested_triggers = undef,
-  $transform_noise_words = undef,
-  $two_digit_year_cutoff = 2049,
-  $db_chaining = 'OFF',
-  $trustworthy = 'OFF',
+  String[1] $default_fulltext_language = 'English',
+  String[1] $default_language = 'us_english',
+  Optional[Enum['ON', 'OFF']] $nested_triggers = undef,
+  Optional[Enum['ON', 'OFF']] $transform_noise_words = undef,
+  Integer[1753, 9999] $two_digit_year_cutoff = 2049,
+  Enum['ON', 'OFF'] $db_chaining = 'OFF',
+  Enum['ON', 'OFF'] $trustworthy = 'OFF',
 ){
 ##
 #  validate max size
@@ -123,49 +123,38 @@ define sqlserver::database (
   if $filespec_maxsize and $filespec_maxsize != 'UNLIMITED' {
     sqlserver_validate_size($filespec_maxsize)
   }
+
   if $filespec_filename or $filespec_name {
-    validate_re($filespec_filename, '^.+$', 'filespec_filename must not be null if specifying filespec_name')
-    validate_re($filespec_name, '^.+$', 'filespec_name must not be null if specifying filespec_filename')
-    sqlserver_validate_range($filespec_name, 1, 128, 'filespec_name can not be more than 128 characters and must be at least 1 character in length')
-    validate_absolute_path($filespec_filename)
+    assert_type(String[1], $filespec_filename) |$expected, $actual| {
+      fail('filespec_filename must also be specified when specifying filespec_name')
+    }
+    assert_type(String[1], $filespec_name) |$expected, $actual| {
+      fail('filespec_name must also be specified when specifying filespec_filename')
+    }
   }
-  if $log_filename {
-    sqlserver_validate_range($log_name, 1, 128, "${log_name} can not be more than 128 characters and must be at least 1 character in length")
-    validate_absolute_path($log_filename)
-  }
+
   if $log_size { sqlserver_validate_size($log_size) }
   if $log_maxsize { sqlserver_validate_size($log_maxsize) }
-  if $log_filename or $log_filegrowth or $log_maxsize or $log_name or $log_size {
-    sqlserver_validate_range($filespec_filename, 1, 128, 'filespec_name and filespec_filename must be specified when specifying any log attributes')
-    validate_absolute_path($filespec_filename)
-  }
-## VALIDATE FILESTREAM
-  if $filestream_non_transacted_access {
-    validate_re($filestream_non_transacted_access, '^(OFF|READ_ONLY|FULL)$',
-      "filestream_non_transacted_access can be OFF|READ_ONLY|FULL only, you provided ${filestream_non_transacted_access}")
 
+  if $log_filename or $log_name {
+    assert_type(String[1], $log_filename) |$expected, $actual| {
+      fail('log_filename must also be specified when specifying log_name')
+    }
+    assert_type(String[1], $log_name) |$expected, $actual| {
+      fail('log_name must also be specified when specifying log_filename')
+    }
   }
-  if $filestream_directory_name {
-    validate_re($filestream_directory_name,'^[\w|\s]+$',
-      "Filestream Directory Name should not be an absolute path but a directory name only, you provided ${filestream_directory_name}")
+
+  if $log_filename or $log_filegrowth or $log_maxsize or $log_name or $log_size {
+    assert_type(String[1], $filespec_filename) |$expected, $actual| {
+      fail('filespec_filename must also be specified when specifying any log attribute')
+    }
+    assert_type(String[1], $filespec_name) |$expected, $actual| {
+      fail('filespec_name must also be specified when specifying any log attribute')
+    }
   }
 
   sqlserver_validate_instance_name($instance)
-
-  validate_re($containment, '^(PARTIAL|NONE)$', "Containment must be either PARTIAL or NONE, you provided ${containment}")
-
-## Validate PARTIAL required variables switches
-  if $containment == 'PARTIAL' {
-    if $db_chaining { sqlserver_validate_on_off($db_chaining) }
-    if $nested_triggers { sqlserver_validate_on_off($nested_triggers) }
-    if $transform_noise_words { sqlserver_validate_on_off($transform_noise_words) }
-    if $trustworthy { sqlserver_validate_on_off($trustworthy) }
-    sqlserver_validate_range($two_digit_year_cutoff, 1753, 9999,
-      "Two digit year cutoff must be between 1753 and 9999, you provided ${two_digit_year_cutoff}")
-  }
-
-
-  validate_re($ensure,['^present$','^absent$'],"Ensure must be either present or absent, you provided ${ensure}")
 
   $create_delete = $ensure ? {
     present => 'create',
@@ -178,6 +167,4 @@ define sqlserver::database (
     onlyif   => template('sqlserver/query/database_exists.sql.erb'),
     require  => Sqlserver::Config[$instance],
   }
-
-
 }

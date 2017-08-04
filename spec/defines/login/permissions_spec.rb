@@ -2,7 +2,11 @@ require 'spec_helper'
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'manifest_shared_examples.rb'))
 
 describe 'sqlserver::login::permissions' do
-  let(:facts) { {:osfamily => 'windows'} }
+  let(:pre_condition) { <<-EOF
+    define sqlserver::config{}
+    sqlserver::config {'MSSQLSERVER': }
+  EOF
+  }
   context 'validation errors' do
     include_context 'manifests' do
       let(:title) { 'myTitle' }
@@ -12,7 +16,7 @@ describe 'sqlserver::login::permissions' do
       let(:params) { {
         :permissions => ['SELECT'],
       } }
-      let(:raise_error_check) { 'Login must be between 1 and 128 characters' }
+      let(:raise_error_check) { /'login' expects a String.+ value/ }
       describe 'missing' do
         if Puppet::Util::Package.versioncmp(Puppet.version, '4.3.0') < 0
           let(:raise_error_check) { 'Must pass login to Sqlserver::Login::Permissions[myTitle]' }
@@ -30,11 +34,11 @@ describe 'sqlserver::login::permissions' do
         it_behaves_like 'validation error'
       end
     end
-    context 'permission' do
+    context 'permissions' do
       let(:params) { {
         :login => 'loggingUser',
       } }
-      let(:raise_error_check) { 'Permission must be between 4 and 128 characters' }
+      let(:raise_error_check) { /'permissions' .+ expects a String.+ value/ }
       describe 'empty' do
         let(:additional_params) { {:permissions => ['']} }
         it_behaves_like 'validation error'
@@ -55,7 +59,7 @@ describe 'sqlserver::login::permissions' do
       } }
       describe 'invalid' do
         let(:additional_params) { {:state => 'invalid'} }
-        let(:raise_error_check) { "State parameter can only be one of 'GRANT', 'REVOKE' or 'DENY', you passed a value of invalid" }
+        let(:raise_error_check) { "'state' expects" }
         it_behaves_like 'validation error'
       end
     end

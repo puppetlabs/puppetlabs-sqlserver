@@ -27,22 +27,14 @@
 #  @see http://msdn.microsoft.com/en-us/library/ms189631.aspx Server Configuration Options
 ##
 define sqlserver::sp_configure (
-  $value,
-  $config_name   = $title,
-  $instance      = 'MSSQLSERVER',
-  $reconfigure   = true,
-  $with_override = false,
-  $restart       = false,
+  Integer $value,
+  Pattern['^\w+'] $config_name = $title,
+  String[1,16] $instance = 'MSSQLSERVER',
+  Boolean $reconfigure = true,
+  Boolean $with_override = false,
+  Boolean $restart = false,
 ){
   sqlserver_validate_instance_name($instance)
-  validate_re($config_name,'^\w+')
-  if !is_integer($value) {
-    fail("Value for ${config_name}, for instance ${instance}, must be a integer value, you provided ${value}")
-  }
-
-  validate_bool($reconfigure)
-  validate_bool($with_override)
-  validate_bool($restart)
 
   $service_name = $instance ? {
     'MSSQLSERVER' => 'MSSQLSERVER',

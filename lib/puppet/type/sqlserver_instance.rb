@@ -27,11 +27,11 @@ Puppet::Type::newtype(:sqlserver_instance) do
 
   newproperty(:features, :array_matching => :all) do
     desc 'Specifies features to install, uninstall, or upgrade. The list of top-level features include
-          SQL, SQLEngine, Replication, FullText, DQ AS, and RS. The SQL feature will install the Database Engine,
-          Replication, Full-Text, and Data Quality Services (DQS) server.'
-    newvalues(:SQL, :SQLEngine, :Replication, :FullText, :DQ, :AS, :RS)
+          SQLEngine, Replication, FullText, DQ AS, and RS.'
+    newvalues(:SQL, :SQLEngine, :Replication, :FullText, :DQ, :AS, :RS, :POLYBASE, :ADVANCEDANALYTICS)
     munge do |value|
       if PuppetX::Sqlserver::ServerHelper.is_super_feature(value)
+        Puppet.deprecation_warning("Using #{value} is deprecated for features in sql_instance resources")
         PuppetX::Sqlserver::ServerHelper.get_sub_features(value).collect { |v| v.to_s }
       else
         value
@@ -42,11 +42,6 @@ Puppet::Type::newtype(:sqlserver_instance) do
   newparam(:sa_pwd) do
     desc 'Required when :security_mode => "SQL"'
 
-  end
-
-  newparam(:service_ensure) do
-    desc 'Automatic will ensure running if stopped, Manual will set to manual and take no action on current state, :diable will stop and change to service disabled'
-    newvalues(:automatic, :manual, :disable)
   end
 
   newparam(:sql_svc_account, :parent => Puppet::Property::SqlserverLogin) do
@@ -112,6 +107,16 @@ Puppet::Type::newtype(:sqlserver_instance) do
     validate do |value|
 
     end
+  end
+
+  newparam(:polybase_svc_account, :parent => Puppet::Property::SqlserverLogin) do
+    desc 'The account used by the Polybase Engine service. Only applicable for SQL Server 2016.'
+
+  end
+
+  newparam(:polybase_svc_password) do
+    desc 'The password for the Polybase Engine service account. Only applicable for SQL Server 2016.'
+
   end
 
   newparam(:security_mode) do

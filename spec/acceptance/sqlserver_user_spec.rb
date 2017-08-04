@@ -10,7 +10,7 @@ db_name   = ("DB" + SecureRandom.hex(4)).upcase
 
 describe "sqlserver::user test", :node => host do
 
-  def ensure_sqlserver_database(host, db_name, ensure_val = 'present')
+  def ensure_sqlserver_database(db_name, ensure_val = 'present')
     pp = <<-MANIFEST
     sqlserver::config{'MSSQLSERVER':
       admin_user   => 'sa',
@@ -25,13 +25,13 @@ describe "sqlserver::user test", :node => host do
     sqlserver::database{ '#{db_name}':
       instance            => 'MSSQLSERVER',
       collation_name      => 'SQL_Estonian_CP1257_CS_AS',
-      compatibility       => '100',
+      compatibility       => 100,
       containment         => 'PARTIAL',
       require             => Sqlserver::Sp_configure['spconfig1']
     }
     MANIFEST
 
-    apply_manifest_on(host, pp) do |r|
+    execute_manifest(pp) do |r|
       expect(r.stderr).not_to match(/Error/i)
     end
   end
@@ -39,7 +39,7 @@ describe "sqlserver::user test", :node => host do
   context "Create database users with optional attributes", {:testrail => ['89143', '89144', '89145', '89146', '89149']} do
     before(:all) do
       # Create new database
-      ensure_sqlserver_database(host, db_name)
+      ensure_sqlserver_database(db_name)
     end
     before(:each) do
       @new_sql_login = "Login" + SecureRandom.hex(2)
@@ -52,7 +52,7 @@ describe "sqlserver::user test", :node => host do
       #ensure_sqlserver_database(host, 'absent')
     end
 
-    it "Create database user with optional default_schema" do
+    it "Create database user with optional default_schema", :tier_low => true do
       pp = <<-MANIFEST
       sqlserver::config{'MSSQLSERVER':
         admin_user    => 'sa',
@@ -70,7 +70,7 @@ describe "sqlserver::user test", :node => host do
         require         => Sqlserver::Login['#{@db_user}'],
       }
       MANIFEST
-      apply_manifest_on(host, pp) do |r|
+      execute_manifest(pp) do |r|
         expect(r.stderr).not_to match(/Error/i)
       end
 
@@ -84,7 +84,7 @@ describe "sqlserver::user test", :node => host do
       run_sql_query(host, { :query => query, :server => hostname, :expected_row_count => 1 })
     end
 
-    it "Create database user with optional instance" do
+    it "Create database user with optional instance", :tier_low => true do
         pp = <<-MANIFEST
       sqlserver::config{'MSSQLSERVER':
         admin_user    => 'sa',
@@ -102,7 +102,7 @@ describe "sqlserver::user test", :node => host do
         require         => Sqlserver::Login['#{@db_user}'],
       }
         MANIFEST
-        apply_manifest_on(host, pp) do |r|
+        execute_manifest(pp) do |r|
           expect(r.stderr).not_to match(/Error/i)
         end
 
@@ -114,7 +114,7 @@ describe "sqlserver::user test", :node => host do
         run_sql_query(host, { :query => query, :server => hostname, :expected_row_count => 1 })
     end
 
-    it "Create database user with optional login" do
+    it "Create database user with optional login", :tier_low => true do
       pp = <<-MANIFEST
       sqlserver::config{'MSSQLSERVER':
         admin_user    => 'sa',
@@ -133,7 +133,7 @@ describe "sqlserver::user test", :node => host do
         require         => Sqlserver::Login['#{@new_sql_login}'],
       }
       MANIFEST
-      apply_manifest_on(host, pp) do |r|
+      execute_manifest(pp) do |r|
         expect(r.stderr).not_to match(/Error/i)
       end
 
@@ -146,7 +146,7 @@ describe "sqlserver::user test", :node => host do
       run_sql_query(host, { :query => query, :server => hostname, :expected_row_count => 1 })
     end
 
-    it "Create database user with optional password" do
+    it "Create database user with optional password", :tier_low => true do
       pp = <<-MANIFEST
       sqlserver::config{'MSSQLSERVER':
         admin_user    => 'sa',
@@ -166,7 +166,7 @@ describe "sqlserver::user test", :node => host do
         require         => Sqlserver::Login['#{@new_sql_login}'],
       }
       MANIFEST
-      apply_manifest_on(host, pp) do |r|
+      execute_manifest(pp) do |r|
         expect(r.stderr).not_to match(/Error/i)
       end
 
@@ -175,7 +175,7 @@ describe "sqlserver::user test", :node => host do
       run_sql_query(host, { :query => query, :server => hostname, :expected_row_count => 1 })
     end
 
-    it "Delete database user" do
+    it "Delete database user", :tier_low => true do
       pp = <<-MANIFEST
       sqlserver::config{'MSSQLSERVER':
         admin_user    => 'sa',
@@ -191,7 +191,7 @@ describe "sqlserver::user test", :node => host do
         require         => Sqlserver::Login['#{@db_user}'],
       }
       MANIFEST
-      apply_manifest_on(host, pp) do |r|
+      execute_manifest(pp) do |r|
         expect(r.stderr).not_to match(/Error/i)
       end
 
@@ -209,7 +209,7 @@ describe "sqlserver::user test", :node => host do
         database        => '#{db_name}',
       }
       MANIFEST
-      apply_manifest_on(host, pp) do |r|
+      execute_manifest(pp) do |r|
         expect(r.stderr).not_to match(/Error/i)
       end
       #validate that the database user '#{@db_user}' should be deleted:

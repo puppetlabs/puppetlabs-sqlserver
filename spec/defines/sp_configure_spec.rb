@@ -9,6 +9,11 @@ RSpec.describe 'sqlserver::sp_configure', :type => :define do
         :config_name => 'filestream access level',
         :value => 1,
     } }
+    let(:pre_condition) { <<-EOF
+      define sqlserver::config{}
+      sqlserver::config {'MSSQLSERVER': }
+    EOF
+    }
   end
   describe 'basic usage' do
     let(:should_contain_command) { [
@@ -38,13 +43,13 @@ RSpec.describe 'sqlserver::sp_configure', :type => :define do
 
   describe 'reconfigure => invalid' do
     let(:additional_params) { {:reconfigure => 'invalid'} }
-    let(:raise_error_check) {'"invalid" is not a boolean.  It looks to be a String'}
+    let(:raise_error_check) { "'reconfigure' expects a Boolean value" }
     it_behaves_like 'validation error'
   end
 
   describe 'restart => invalid' do
     let(:additional_params) { {:restart => 'invalid'} }
-    let(:raise_error_check) {'"invalid" is not a boolean.  It looks to be a String'}
+    let(:raise_error_check) { "'restart' expects a Boolean value" }
     it_behaves_like 'validation error'
   end
 
@@ -62,7 +67,7 @@ RSpec.describe 'sqlserver::sp_configure', :type => :define do
 
   describe 'with_override => invalid' do
     let(:additional_params) { {:with_override => 'invalid'} }
-    let(:raise_error_check) {'"invalid" is not a boolean.  It looks to be a String'}
+    let(:raise_error_check) { "'with_override' expects a Boolean value" }
     it_behaves_like 'validation error'
   end
 

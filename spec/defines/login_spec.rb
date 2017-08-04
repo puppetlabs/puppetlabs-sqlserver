@@ -9,6 +9,11 @@ RSpec.describe 'sqlserver::login', :type => :define do
       :login => 'myTitle',
       :instance => 'MSSQLSERVER',
     } }
+    let(:pre_condition) { <<-EOF
+      define sqlserver::config{}
+      sqlserver::config {'MSSQLSERVER': }
+    EOF
+    }
   end
 
   describe 'Minimal Params' do

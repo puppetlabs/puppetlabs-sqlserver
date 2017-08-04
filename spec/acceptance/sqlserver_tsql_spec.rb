@@ -12,7 +12,7 @@ DB_LOGIN_USER   = "loginuser" + SecureRandom.hex(2)
 
 describe "sqlserver_tsql test", :node => host do
 
-  def ensure_sqlserver_database(host,db_name, ensure_val = 'present')
+  def ensure_sqlserver_database(db_name, ensure_val = 'present')
     pp = <<-MANIFEST
     sqlserver::config{'MSSQLSERVER':
       admin_user   => 'sa',
@@ -23,7 +23,7 @@ describe "sqlserver_tsql test", :node => host do
     }
     MANIFEST
 
-    apply_manifest_on(host, pp) do |r|
+    execute_manifest(pp) do |r|
       expect(r.stderr).not_to match(/Error/i)
     end
   end
@@ -35,15 +35,15 @@ describe "sqlserver_tsql test", :node => host do
       @table_name = 'Tables_' + SecureRandom.hex(3)
       @query = "USE #{db_name}; SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE table_name = '#{@table_name}';"
 
-      ensure_sqlserver_database(host, db_name)
+      ensure_sqlserver_database(db_name)
     end
 
     after(:all) do
       # remove the newly created instance
-      ensure_sqlserver_database(host, 'absent')
+      ensure_sqlserver_database('absent')
     end
 
-    it "Run a simple tsql command via sqlserver_tsql:" do
+    it "Run a simple tsql command via sqlserver_tsql:", :tier_low => true do
       pp = <<-MANIFEST
       sqlserver::config{'MSSQLSERVER':
         instance_name    => 'MSSQLSERVER',
@@ -55,7 +55,7 @@ describe "sqlserver_tsql test", :node => host do
         command  => "CREATE TABLE #{@table_name} (id INT, name VARCHAR(20), email VARCHAR(20));",
       }
       MANIFEST
-      apply_manifest_on(host, pp) do |r|
+      execute_manifest(pp) do |r|
         expect(r.stderr).not_to match(/Error/i)
       end
 
@@ -77,15 +77,15 @@ describe "sqlserver_tsql test", :node => host do
       @table_name = 'Tables_' + SecureRandom.hex(3)
       @query = "USE #{db_name}; SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE table_name = '#{@table_name}';"
 
-      ensure_sqlserver_database(host, db_name)
+      ensure_sqlserver_database(db_name)
     end
 
     after(:all) do
       # remove the newly created instance
-      ensure_sqlserver_database(host, 'absent')
+      ensure_sqlserver_database('absent')
     end
 
-    it "Run a simple tsql command via sqlserver_tsql:" do
+    it "Run a simple tsql command via sqlserver_tsql:", :tier_low => true do
       pp = <<-MANIFEST
       sqlserver::config{'MSSQLSERVER':
         instance_name => 'MSSQLSERVER',
@@ -98,7 +98,7 @@ describe "sqlserver_tsql test", :node => host do
         command => "CREATE TABLE #{@table_name} (id INT, name VARCHAR(20), email VARCHAR(20));",
       }
       MANIFEST
-      apply_manifest_on(host, pp) do |r|
+      execute_manifest(pp) do |r|
         expect(r.stderr).not_to match(/Error/i)
       end
 
@@ -112,7 +112,7 @@ describe "sqlserver_tsql test", :node => host do
       run_sql_query(host, run_sql_query_opts)
     end
 
-    it "Run sqlserver_tsql WITH onlyif is true:" do
+    it "Run sqlserver_tsql WITH onlyif is true:", :tier_low => true do
       #Initilize a new table name:
       @table_name = 'Table_' + SecureRandom.hex(3)
       @query = "USE #{db_name}; SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE table_name = '#{@table_name}';"
@@ -130,7 +130,7 @@ describe "sqlserver_tsql test", :node => host do
       }
       MANIFEST
 
-      apply_manifest_on(host, pp) do |r|
+      execute_manifest(pp) do |r|
         expect(r.stderr).not_to match(/Error/i)
       end
 
@@ -144,7 +144,7 @@ describe "sqlserver_tsql test", :node => host do
       run_sql_query(host, run_sql_query_opts)
     end
 
-    it "Run sqlserver_tsql WITH onlyif is false:" do
+    it "Run sqlserver_tsql WITH onlyif is false:", :tier_low => true do
       #Initilize a new table name:
       @table_name = 'Table_' + SecureRandom.hex(3)
       @query = "USE #{db_name}; SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE table_name = '#{@table_name}';"
@@ -163,7 +163,7 @@ describe "sqlserver_tsql test", :node => host do
       }
       MANIFEST
 
-      apply_manifest_on(host, pp) do |r|
+      execute_manifest(pp) do |r|
         expect(r.stderr).not_to match(/Error/i)
       end
 
@@ -177,7 +177,7 @@ describe "sqlserver_tsql test", :node => host do
       run_sql_query(host, run_sql_query_opts)
     end
 
-    it "Negative test: Run tsql with invalid command:" do
+    it "Negative test: Run tsql with invalid command:", :tier_low => true do
       pp = <<-MANIFEST
       sqlserver::config{'MSSQLSERVER':
         instance_name => 'MSSQLSERVER',
@@ -190,12 +190,12 @@ describe "sqlserver_tsql test", :node => host do
         command => "invalid-tsql-command",
       }
       MANIFEST
-      apply_manifest_on(host, pp, {:acceptable_exit_codes => [0,1]}) do |r|
+      execute_manifest(pp, {:acceptable_exit_codes => [0,1]}) do |r|
         expect(r.stderr).to match(/Error/i)
       end
     end
 
-    it "Negative test: Run tsql with non-existing database:" do
+    it "Negative test: Run tsql with non-existing database:", :tier_low => true do
       @table_name = 'Table_' + SecureRandom.hex(3)
       pp = <<-MANIFEST
       sqlserver::config{'MSSQLSERVER':
@@ -209,7 +209,7 @@ describe "sqlserver_tsql test", :node => host do
         command => "CREATE TABLE #{@table_name} (id INT, name VARCHAR(20), email VARCHAR(20));",
       }
       MANIFEST
-      apply_manifest_on(host, pp, {:acceptable_exit_codes => [0,1]}) do |r|
+      execute_manifest(pp, {:acceptable_exit_codes => [0,1]}) do |r|
         expect(r.stderr).to match(/Error/i)
       end
     end

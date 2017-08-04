@@ -17,7 +17,7 @@ RSpec.describe PuppetX::Sqlserver::SqlConnection do
     context 'command execution' do
       before :each do
         stub_connection
-        @connection.stubs(:Open).with('Provider=SQLOLEDB.1;Initial Catalog=master;Application Name=Puppet;Data Source=localhost;User ID=sa;Password=Pupp3t1@')
+        @connection.stubs(:Open).with('Provider=SQLOLEDB.1;Initial Catalog=master;Application Name=Puppet;Data Source=.;User ID=sa;Password=Pupp3t1@')
       end
       it 'should not raise an error but populate has_errors with message' do
         subject.stubs(:execute).raises(Exception.new("SQL Server\n error has happened"))
@@ -43,7 +43,7 @@ RSpec.describe PuppetX::Sqlserver::SqlConnection do
 
       context 'Use default authentication' do
         it 'should defaul to SQL_LOGIN if admin_login_type is not set' do
-          @connection.expects(:Open).with('Provider=SQLOLEDB.1;Initial Catalog=master;Application Name=Puppet;Data Source=localhost;User ID=sa;Password=Pupp3t1@')
+          @connection.expects(:Open).with('Provider=SQLOLEDB.1;Initial Catalog=master;Application Name=Puppet;Data Source=.;User ID=sa;Password=Pupp3t1@')
           subject.open_and_run_command('query', {:admin_user => 'sa', :admin_pass => 'Pupp3t1@' })
         end
       end
@@ -66,11 +66,11 @@ RSpec.describe PuppetX::Sqlserver::SqlConnection do
         end
 
         it 'should not add the default instance of MSSQLSERVER to connection string' do
-          @connection.expects(:Open).with('Provider=SQLOLEDB.1;Initial Catalog=master;Application Name=Puppet;Data Source=localhost;User ID=sa;Password=Pupp3t1@')
+          @connection.expects(:Open).with('Provider=SQLOLEDB.1;Initial Catalog=master;Application Name=Puppet;Data Source=.;User ID=sa;Password=Pupp3t1@')
           subject.open_and_run_command('query', {:admin_user => 'sa', :admin_pass => 'Pupp3t1@', :instance_name => 'MSSQLSERVER'})
         end
         it 'should add a non default instance to connection string' do
-          @connection.expects(:Open).with('Provider=SQLOLEDB.1;Initial Catalog=master;Application Name=Puppet;Data Source=localhost\\LOGGING;User ID=sa;Password=Pupp3t1@')
+          @connection.expects(:Open).with('Provider=SQLOLEDB.1;Initial Catalog=master;Application Name=Puppet;Data Source=.\\LOGGING;User ID=sa;Password=Pupp3t1@')
           subject.open_and_run_command('query', {:admin_user => 'sa', :admin_pass => 'Pupp3t1@', :instance_name => 'LOGGING'})
         end
       end
@@ -93,12 +93,12 @@ RSpec.describe PuppetX::Sqlserver::SqlConnection do
         end
 
         it 'should add integrated security to the connection string if admin and password are empty' do
-          @connection.expects(:Open).with('Provider=SQLOLEDB.1;Initial Catalog=master;Application Name=Puppet;Data Source=localhost;Integrated Security=SSPI')
+          @connection.expects(:Open).with('Provider=SQLOLEDB.1;Initial Catalog=master;Application Name=Puppet;Data Source=.;Integrated Security=SSPI')
           subject.open_and_run_command('query', {:admin_user => '', :admin_pass => '', :admin_login_type => 'WINDOWS_LOGIN'})
         end
 
         it 'should add integrated security to the connection string if admin and password are not defined' do
-          @connection.expects(:Open).with('Provider=SQLOLEDB.1;Initial Catalog=master;Application Name=Puppet;Data Source=localhost;Integrated Security=SSPI')
+          @connection.expects(:Open).with('Provider=SQLOLEDB.1;Initial Catalog=master;Application Name=Puppet;Data Source=.;Integrated Security=SSPI')
           subject.open_and_run_command('query', { :admin_login_type => 'WINDOWS_LOGIN' })
         end
       end
