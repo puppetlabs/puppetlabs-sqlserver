@@ -4,24 +4,33 @@
 
 This major release adds support for Microsoft SQL Server 2016
 
-#### Features
+#### Added
 
-- Deprecates the use of `Tools` and `SQL` as installation features ([MODULES-4257](https://tickets.puppet.com/browse/MODULES-4257))
 - Added more detailed examples to the README
 - Updated with Puppet 4 data types ([MODULES-5126](https://tickets.puppet.com/browse/MODULES-5126))
 - Added parameters to manage PolyBase ([MODULES-5070](https://tickets.puppet.com/browse/MODULES-5070))
+- Added support for Windows Server 2016
+- Updated metadata for Puppet 5 ([MODULES-5144](https://tickets.puppet.com/browse/MODULES-5144))
+- Added test tiering and test mode switcher ([FM-5062](https://tickets.puppet.com/browse/FM-5062), [FM-6141](https://tickets.puppet.com/browse/FM-6141))
 
-#### Bug Fixes
+#### Deprecated
+
+- Deprecated the use of `Tools` and `SQL` as installation features ([MODULES-4257](https://tickets.puppet.com/browse/MODULES-4257))
+
+#### Removed
+
+- Removed unsupported Puppet versions from metadata ([MODULES-4842](https://tickets.puppet.com/browse/MODULES-4842))
+- Removed support for Stdlib on unsupported Puppet versions, (Stdlib versions less than 4.13.0)
+
+#### Fixed
 
 - Make .Net installation errors more obvious ([MODULES-5092](https://tickets.puppet.com/browse/MODULES-5092))
-- Remove service_ensure parameter as it had no use ([MODULES-5030](https://tickets.puppet.com/browse/MODULES-5030))
+- Removed service_ensure parameter as it had no use ([MODULES-5030](https://tickets.puppet.com/browse/MODULES-5030))
 - Using as_sysadmin_accounts without AS feature will error ([MODULES-2386](https://tickets.puppet.com/browse/MODULES-2386))
 - SNAC_SDK shared feature can not be managed by the module ([FM-5389](https://tickets.puppet.com/browse/FM-5389))
 - Purge members from SQL Server Role should actually purge ([MODULES-2543](https://tickets.puppet.com/browse/MODULES-2543))
 - Identifiers are properly escaped during database creation ([FM-5021](https://tickets.puppet.com/browse/FM-5021))
-- Remove forced TCP connection for SQL management ([MODULES-4915](https://tickets.puppet.com/browse/MODULES-4915))
-- Update metadata for Puppet 4 and Puppet 5 ([MODULES-4842](https://tickets.puppet.com/browse/MODULES-4842), [MODULES-5144](https://tickets.puppet.com/browse/MODULES-5144))
-- Add test tiering and test mode switcher ([FM-5062](https://tickets.puppet.com/browse/FM-5062), [FM-6141](https://tickets.puppet.com/browse/FM-6141))
+- Removed forced TCP connection for SQL management ([MODULES-4915](https://tickets.puppet.com/browse/MODULES-4915))
 
 ## 2017-05-08 - Supported Release 1.2.0
 
