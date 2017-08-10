@@ -1069,8 +1069,6 @@ Terminology differs somewhat between various database systems; please refer to t
 
 ## Limitations
 
-This module is available only for Windows Server 2012 or 2012 R2, and works with Puppet Enterprise 3.7 and later.
-
 This module can manage only a single version of SQL Server on a given host (one and only one of SQL Server 2012, 2014 or 2016). The module is able to manage multiple SQL Server instances of the same version.
 
 This module cannot manage the SQL Server Native Client SDK (also known as SNAC_SDK). The SQL Server installation media can install the SDK, but it is not able to uninstall the SDK. Note that the 'sqlserver_features' fact detects the presence of the SDK.

@@ -2,7 +2,6 @@ require 'spec_helper'
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'manifest_shared_examples.rb'))
 
 describe 'sqlserver::user::permissions' do
-  let(:facts) { {:osfamily => 'windows'} }
   let(:pre_condition) { <<-EOF
     define sqlserver::config{}
     sqlserver::config {'MSSQLSERVER': }
