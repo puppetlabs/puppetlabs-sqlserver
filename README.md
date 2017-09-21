@@ -20,7 +20,7 @@
 
 ## Overview
 
-The sqlserver module installs and manages Microsoft SQL Server 2012 and 2014 on Windows systems.
+The sqlserver module installs and manages Microsoft SQL Server 2012, 2014 and 2016 on Windows systems.
 
 ## Module Description
 
