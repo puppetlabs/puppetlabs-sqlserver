@@ -46,7 +46,7 @@ describe "sqlserver::config test", :node => host do
 
     after(:all) do
       # remove the newly created instance
-      ensure_sqlserver_instance('absent')
+      ensure_sqlserver_instance(inst_name, 'absent')
     end
 
     it 'Create New Admin Login:', :tier_low => true do
