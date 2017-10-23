@@ -29,10 +29,11 @@ module PuppetX
 
       def get_connection_string(config)
         params = {
-          'Provider'         => 'SQLOLEDB.1',
-          'Initial Catalog'  => config[:database] || 'master',
-          'Application Name' => 'Puppet',
-          'Data Source'      => '.'
+          'Provider'             => 'SQLNCLI11',
+          'Initial Catalog'      => config[:database] || 'master',
+          'Application Name'     => 'Puppet',
+          'Data Source'          => '.',
+          'DataTypeComptibility' => 80
         }
 
         admin_user = config[:admin_user] || ''
