@@ -204,17 +204,8 @@ describe "sqlserver_features", :node => host do
 
       before(:all) do
         puppet_version = (on host, puppet('--version')).stdout.chomp
-
-        if puppet_version =~ /^4\.\d+\.\d+/
-          json_result = JSON.parse((on host, puppet('facts --render-as json')).raw_output)["values"]["sqlserver_instances"]
-          names = json_result.collect { |k, v| json_result[k].keys }.flatten
-        else
-          # use agents fact to get instance names
-          distmoduledir = on(host, "echo #{host['distmoduledir']}").raw_output.chomp
-          facter_opts = {:environment => {'FACTERLIB' => "#{distmoduledir}/sqlserver/lib/facter"}}
-
-          names = eval(fact_on(host, 'sqlserver_instances', facter_opts)).values.inject(:merge).keys
-        end
+        json_result = JSON.parse((on host, puppet('facts --render-as json')).raw_output)["values"]["sqlserver_instances"]
+        names = json_result.collect { |k, v| json_result[k].keys }.flatten
         remove_sql_instances(host, {:version => sql_version, :instance_names => names})
       end
 

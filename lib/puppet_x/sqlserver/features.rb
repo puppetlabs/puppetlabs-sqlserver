@@ -1,3 +1,5 @@
+require 'puppet/util/windows'
+
 SQL_2012 ||= 'SQL_2012'
 SQL_2014 ||= 'SQL_2014'
 SQL_2016 ||= 'SQL_2016'
@@ -10,39 +12,26 @@ module PuppetX
     class Features
       private
 
+      include Puppet::Util::Windows::Registry
+      extend Puppet::Util::Windows::Registry
+
       SQL_CONFIGURATION ||= {
         SQL_2012 => {
           :major_version => 11,
-          :wmi_path => 'ComputerManagement11',
           :registry_path => '110',
         },
         SQL_2014 => {
           :major_version => 12,
-          :wmi_path => 'ComputerManagement12',
           :registry_path => '120',
         },
         SQL_2016 => {
           :major_version => 13,
-          :wmi_path => 'ComputerManagement13',
           :registry_path => '130',
         }
       }
 
       SQL_REG_ROOT ||= 'Software\Microsoft\Microsoft SQL Server'
-
-      # http://msdn.microsoft.com/en-us/library/windows/desktop/aa384129(v=vs.85).aspx
-      KEY_WOW64_64KEY    ||= 0x100
-      KEY_READ           ||= 0x20019
-
-      def self.connect(version)
-        require 'win32ole'
-        ver = SQL_CONFIGURATION[version][:wmi_path]
-        context = WIN32OLE.new('WbemScripting.SWbemNamedValueSet')
-        context.Add("__ProviderArchitecture", 64)
-        locator = WIN32OLE.new('WbemScripting.SWbemLocator')
-        # WMI Path must use backslashes.   Ruby 2.3 can cause crashes with forward slashes
-        locator.ConnectServer(nil, "root\\Microsoft\\SqlServer\\#{ver}", nil, nil, nil, nil, nil, context)
-      end
+      HKLM         ||= 'HKEY_LOCAL_MACHINE'
 
       def self.get_parent_path(key_path)
         # should be the same as SQL_REG_ROOT
@@ -55,79 +44,64 @@ module PuppetX
           nil
       end
 
-      def self.get_sql_reg_val_features(key_name, reg_val_feat_hash)
-        require 'win32/registry'
-
-        vals = []
-
+      def self.key_exists?(path)
         begin
-          hklm = Win32::Registry::HKEY_LOCAL_MACHINE
-          vals = hklm.open(key_name, KEY_READ | KEY_WOW64_64KEY) do |key|
+          open(HKLM, path, KEY_READ | KEY64) {}
+          return true
+        rescue
+          return false
+        end
+      end
+
+      def self.get_sql_reg_val_features(key_name, reg_val_feat_hash)
+        vals = []
+        begin
+          vals = open(HKLM, key_name, KEY_READ | KEY64) do |key|
             reg_val_feat_hash
               .select { |val_name, _| get_reg_key_val(key, val_name, Win32::Registry::REG_DWORD) == 1 }
               .map { |_, feat_name| feat_name }
           end
-        rescue Win32::Registry::Error # subkey doesn't exist
+        rescue Puppet::Util::Windows::Error # subkey doesn't exist
         end
 
         vals
       end
 
-      def self.get_sql_reg_key_features(key_name, reg_key_feat_hash, instance_name)
-        require 'win32/registry'
+      def self.get_reg_instance_info(friendly_version)
+        instance_root = 'SOFTWARE\Microsoft\Microsoft SQL Server\Instance Names'
+        return [] unless key_exists?(instance_root)
+        discovered = {}
+        open(HKLM, "#{instance_root}", KEY_READ | KEY64) do |registry|
+          each_key(registry) do |instance_type, _|
+            open(HKLM, "#{instance_root}\\#{instance_type}", KEY_READ | KEY64) do |instance|
+              each_value(instance) do |short_name, _, long_name|
+                root = "Software\\Microsoft\\Microsoft SQL Server\\#{long_name}"
+                discovered[short_name] ||= {
+                  'name' => short_name,
+                  'reg_root' => [],
+                  'version' => open(HKLM, "#{root}\\MSSQLServer\\CurrentVersion", KEY_READ | KEY64) { |r| values(r)['CurrentVersion'] },
+                  'version_friendly' => friendly_version
+                }
+                
+                discovered[short_name]['reg_root'].push(root)
+              end
+            end
+          end
+        end
+        discovered.values
+      end
 
+      def self.get_sql_reg_key_features(key_name, reg_key_feat_hash, instance_name)
         installed = reg_key_feat_hash.select do |subkey, feat_name|
           begin
-            hklm = Win32::Registry::HKEY_LOCAL_MACHINE
-            hklm.open("#{key_name}\\#{subkey}", KEY_READ | KEY_WOW64_64KEY) do |feat_key|
+            open(HKLM, "#{key_name}\\#{subkey}", KEY_READ | KEY64) do |feat_key|
               get_reg_key_val(feat_key, instance_name, Win32::Registry::REG_SZ)
             end
-          rescue Win32::Registry::Error # subkey doesn't exist
+          rescue Puppet::Util::Windows::Error # subkey doesn't exist
           end
         end
 
         installed.values
-      end
-
-      def self.get_wmi_property_values(wmi, query, prop_name = 'PropertyStrValue')
-        vals = []
-
-        wmi.ExecQuery(query).each do |v|
-          vals.push(v.Properties_(prop_name).Value)
-        end
-
-        vals
-      end
-
-      def self.get_instance_names_by_ver(version)
-          query = 'SELECT InstanceName FROM ServerSettings'
-          get_wmi_property_values(connect(version), query, 'InstanceName')
-        rescue WIN32OLERuntimeError => e # version doesn't exist
-          # WBEM_E_INVALID_NAMESPACE from wbemcli.h
-          return [] if e.message =~ /8004100e/im
-          raise
-      end
-
-      def self.get_sql_property_values(version, instance_name, property_name)
-        query = <<-END
-          SELECT * FROM SqlServiceAdvancedProperty
-          WHERE PropertyName='#{property_name}'
-          AND SqlServiceType=1 AND ServiceName LIKE '%#{instance_name}'
-        END
-        # WMI LIKE query to substring match since ServiceName will be of the format
-        # MSSQLSERVER (first install) or MSSQL$MSSQLSERVER (second install)
-
-        get_wmi_property_values(connect(version), query)
-      end
-
-      def self.get_wmi_instance_info(version, instance_name)
-        {
-          'name' => instance_name,
-          'version_friendly' => version,
-          'version' => get_sql_property_values(version, instance_name, 'VERSION').first,
-          # typically Software\Microsoft\Microsoft SQL Server\MSSQL11.MSSQLSERVER
-          'reg_root' => get_sql_property_values(version, instance_name, 'REGROOT').first,
-        }
       end
 
       def self.get_instance_features(reg_root, instance_name)
@@ -215,8 +189,9 @@ module PuppetX
           .map do |version|
             major_version = SQL_CONFIGURATION[version][:major_version]
 
-            instances = get_instance_names_by_ver(version)
-              .map { |name| [ name, get_instance_info(version, name) ] }
+            instances = get_reg_instance_info(version).map do |instance|
+              [instance['name'], get_instance_info(version,instance)]
+            end
 
             # Instance names are unique on a single host, but not for a particular SQL Server version therefore
             # it's possible to request information for a valid instance_name but not for version.  In this case
@@ -266,15 +241,17 @@ module PuppetX
       #     "RS"
       #   ]
       # }
-      def self.get_instance_info(version, instance_name)
+      def self.get_instance_info(version, sql_instance)
         return nil if version.nil?
-        sql_instance = get_wmi_instance_info(version, instance_name)
         # Instance names are unique on a single host, but not for a particular SQL Server version therefore
         # it's possible to request information for a valid instance_name but not for version.  In this case
         # we just return nil.
         return nil if sql_instance['reg_root'].nil?
-        feats = get_instance_features(sql_instance['reg_root'], sql_instance['name'])
-        sql_instance.merge({'features' => feats})
+
+        feats = sql_instance['reg_root'].map do |reg_root|
+          get_instance_features(reg_root, sql_instance['name'])
+        end
+        sql_instance.merge({'features' => feats.uniq})
       end
     end
   end
