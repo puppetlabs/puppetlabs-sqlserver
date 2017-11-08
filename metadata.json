@@ -1,6 +1,6 @@
 {
   "name": "puppetlabs-sqlserver",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "author": "Puppet Inc",
   "summary": "The `sqlserver` module installs and manages MS SQL Server 2012, 2014 and 2016 on Windows systems.",
   "license": "proprietary",
