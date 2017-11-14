@@ -4,7 +4,7 @@
   "author": "Puppet Inc",
   "summary": "The `sqlserver` module installs and manages MS SQL Server 2012, 2014 and 2016 on Windows systems.",
   "license": "proprietary",
-  "source": "https://tickets.puppet.com/browse/MODULES/component/12400",
+  "source": "https://github.com/puppetlabs/puppetlabs-sqlserver",
   "project_page": "https://github.com/puppetlabs/puppetlabs-sqlserver",
   "issues_url": "https://tickets.puppet.com/browse/MODULES/component/12400",
   "tags": [
