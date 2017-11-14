@@ -1,3 +1,14 @@
+## 2017-11-15 - Supported Release 2.0.1
+
+### Summary
+Small release with bug fixes and documentation updates.
+
+#### Fixed
+
+- Allow connections over TLS 1.1+ by replacing OLEDB driver with SQL Native Client ([MODULES-5693](https://tickets.puppetlabs.com/browse/MODULES-5693))
+- Ensure instances without SQL Engine are discoverable ([MODULES-5566](https://tickets.puppetlabs.com/browse/MODULES-5566))
+- Updated documentation to include 2016 as a supported version of SQL Server
+
 ## 2017-08-10 - Supported Release 2.0.0
 
 ### Summary
