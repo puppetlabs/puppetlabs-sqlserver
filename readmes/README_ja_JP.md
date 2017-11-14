@@ -20,7 +20,7 @@
 
 ## 概要
 
-sqlserverモジュールは、WindowsシステムにMicrosoft SQL Server 2012および2014をインストールし、管理します。
+Microsoft SQL Server 2012、2014、2016は、sqlserverモジュールにより、Windowsシステムでインストールと管理を行います。
 
 ## モジュールの説明
 
@@ -32,10 +32,9 @@ Microsoft SQL Serverは、Windows用のデータベースプラットフォー�
 
 sqlserverモジュールの要件は次のとおりです。
 
-* Puppet Enterprise 3.7以降
 * .NET 3.5. (存在しない場合、自動的にインストールされます。そのためにインターネット接続が必要になる場合があります)
 * SQL Server ISOファイルの内容(ローカルまたはネットワーク共有上にマウントまたは展開されていること)
-* Windows Server 2012または2012 R2
+* Windows Server 2012、2012 R2、2016。
 
 ### sqlserverを開始する
 
@@ -1068,8 +1067,6 @@ sys.configurationsで管理するオプションを指定します。有効な�
 * **ユーザ:** データベースレベルのアカウント。通常、ログインにマッピングされています。
 
 ## 制限事項
-
-本モジュールは、Windows Server 2012または2012 R2のみで使用でき、Puppet Enterprise 3.7以降でのみ動作します。
 
 このモジュールは、指定ホスト上のSQL Serverの単独バージョンのみ管理できます(SQL Server 2012、2014、2016のうちいずれか1つのみ)。このモジュールでは同一バージョンの複数のSQL Serverインスタンスを管理できます。
 
