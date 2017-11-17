@@ -247,9 +247,9 @@ module PuppetX
         # it's possible to request information for a valid instance_name but not for version.  In this case
         # we just return nil.
         return nil if sql_instance['reg_root'].nil?
-
-        feats = sql_instance['reg_root'].map do |reg_root|
-          get_instance_features(reg_root, sql_instance['name'])
+        feats = []
+        sql_instance['reg_root'].each do |reg_root|
+          feats += get_instance_features(reg_root, sql_instance['name'])
         end
         sql_instance.merge({'features' => feats.uniq})
       end
