@@ -31,9 +31,8 @@ describe "sqlserver_instance", :node => host do
 
     pp = ERB.new(manifest).result(binding)
 
-    execute_manifest(pp) do |r|
-      expect(r.stderr).not_to match(/Error/i)
-    end
+    execute_manifest(pp,{:catch_failures => true})
+    execute_manifest(pp,{:catch_changes => true})
   end
 
   #Return options for run_sql_query
