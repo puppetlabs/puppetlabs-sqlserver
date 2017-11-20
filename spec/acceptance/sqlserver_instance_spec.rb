@@ -31,9 +31,8 @@ describe "sqlserver_instance", :node => host do
 
     pp = ERB.new(manifest).result(binding)
 
-    execute_manifest(pp) do |r|
-      expect(r.stderr).not_to match(/Error/i)
-    end
+    execute_manifest(pp,{:catch_failures => true})
+    execute_manifest(pp,{:catch_changes => true})
   end
 
   #Return options for run_sql_query
@@ -83,7 +82,7 @@ describe "sqlserver_instance", :node => host do
     inst_name = new_random_instance_name
     features = ['SQLEngine', 'Replication', 'FullText', 'DQ']
 
-    it "create #{inst_name} instance", :tier_low => true do
+    it "create #{inst_name} instance", :tier_high => true do
       ensure_sqlserver_instance(features, inst_name,'present',"['Administrator','ExtraSQLAdmin']")
 
       validate_sql_install(host, {:version => version}) do |r|
@@ -99,7 +98,7 @@ describe "sqlserver_instance", :node => host do
       run_sql_query(host, run_sql_query_opts(inst_name, sql_query_is_user_sysadmin('ExtraSQLAdmin'), expected_row_count = 1))
     end
 
-    it "remove #{inst_name} instance", :tier_low => true do
+    it "remove #{inst_name} instance", :tier_high => true do
       ensure_sqlserver_instance(features, inst_name, 'absent')
 
       # Ensure all features for this instance are removed and the defaults are left alone
@@ -122,7 +121,7 @@ describe "sqlserver_instance", :node => host do
       ensure_sqlserver_instance(features, inst_name, 'absent')
     end
 
-    it "create #{inst_name} instance with only one RS feature", :tier_low => true do
+    it "create #{inst_name} instance with only one RS feature", :tier_high => true do
       ensure_sqlserver_instance(features, inst_name)
 
       validate_sql_install(host, {:version => version}) do |r|
