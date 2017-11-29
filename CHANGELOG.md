@@ -1,3 +1,13 @@
+## 2017-11-29 - Supported Release 2.0.2
+
+### Summary
+Small release with critical bug fix for sql instance install idempotency.
+
+#### Fixed
+
+- Fix bug where Puppet will not detect existing sql instances properly
+attempt to reinstall an instance that already exists ([MODULES-6022](https://tickets.puppetlabs.com/browse/MODULES-6022))
+
 ## 2017-11-15 - Supported Release 2.0.1
 
 ### Summary
