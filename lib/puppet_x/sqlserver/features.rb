@@ -3,8 +3,9 @@ require 'puppet/util/windows'
 SQL_2012 ||= 'SQL_2012'
 SQL_2014 ||= 'SQL_2014'
 SQL_2016 ||= 'SQL_2016'
+SQL_2017 ||= 'SQL_2017'
 
-ALL_SQL_VERSIONS ||= [SQL_2012, SQL_2014, SQL_2016]
+ALL_SQL_VERSIONS ||= [SQL_2012, SQL_2014, SQL_2016, SQL_2017]
 
 module PuppetX
   module Sqlserver
@@ -27,6 +28,10 @@ module PuppetX
         SQL_2016 => {
           :major_version => 13,
           :registry_path => '130',
+        },
+        SQL_2017 => {
+          :major_version => 14,
+          :registry_path => '140',
         }
       }
 
