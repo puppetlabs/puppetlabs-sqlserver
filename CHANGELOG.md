@@ -1,4 +1,4 @@
-## 2017-11-29 - Supported Release 2.0.2
+## 2017-12-5 - Supported Release 2.0.2
 
 ### Summary
 Small release with critical bug fix for sql instance install idempotency.
