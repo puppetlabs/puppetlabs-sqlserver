@@ -1,3 +1,14 @@
+## 2017-12-8 - Supported Release 2.1.0
+
+### Summary
+Add support for detecting and installing SQL Server 2017.
+This release does not add any new SQL 2017 specific features.
+
+#### Added
+
+- Add support for installing and managing SQL 2017 instances. ([MODULES-6168](https://tickets.puppetlabs.com/browse/MODULES-6168))
+- Update documentation to reflect change that adds 2017 support. ([MODULES-6244](https://tickets.puppetlabs.com/browse/MODULES-6244))
+
 ## 2017-12-5 - Supported Release 2.0.2
 
 ### Summary
