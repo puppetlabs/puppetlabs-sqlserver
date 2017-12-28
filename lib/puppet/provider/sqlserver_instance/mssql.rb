@@ -171,9 +171,9 @@ Puppet::Type::type(:sqlserver_instance).provide(:mssql, :parent => Puppet::Provi
       if use_discrete
         arr.map.with_index { |var,i|
           if i == 0
-            cmd_args << "#{switch}=\"#{var}\""
+            cmd_args << "#{switch}=#{var}"
           else
-            cmd_args << "\"#{var}\""
+            cmd_args << "#{var}"
           end
         }
       else

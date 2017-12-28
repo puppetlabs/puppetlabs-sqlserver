@@ -60,7 +60,8 @@ describe "sqlserver_instance", :node => host do
   context "Create an instance", {:testrail => ['88978', '89028', '89031', '89043', '89061']} do
 
     before(:context) do
-      @ExtraAdminUser = 'ExtraSQLAdmin'
+      # Use a username with a space to test argument parsing works correctly
+      @ExtraAdminUser = 'Extra SQLAdmin'
       pp = <<-MANIFEST
       user { '#{@ExtraAdminUser}':
         ensure => present,
@@ -83,7 +84,8 @@ describe "sqlserver_instance", :node => host do
     features = ['SQLEngine', 'Replication', 'FullText', 'DQ']
 
     it "create #{inst_name} instance", :tier_high => true do
-      ensure_sqlserver_instance(features, inst_name,'present',"['Administrator','ExtraSQLAdmin']")
+      host_computer_name = on(host, 'CMD /C ECHO %COMPUTERNAME%').stdout.chomp
+      ensure_sqlserver_instance(features, inst_name,'present',"['Administrator','#{host_computer_name}\\#{@ExtraAdminUser}']")
 
       validate_sql_install(host, {:version => version}) do |r|
         expect(r.stdout).to match(/#{Regexp.new(inst_name)}/)
@@ -95,7 +97,7 @@ describe "sqlserver_instance", :node => host do
     end
 
     it "#{inst_name} instance has ExtraSQLAdmin as a sysadmin", :tier_low => true do
-      run_sql_query(host, run_sql_query_opts(inst_name, sql_query_is_user_sysadmin('ExtraSQLAdmin'), expected_row_count = 1))
+      run_sql_query(host, run_sql_query_opts(inst_name, sql_query_is_user_sysadmin(@ExtraAdminUser), expected_row_count = 1))
     end
 
     it "remove #{inst_name} instance", :tier_high => true do
