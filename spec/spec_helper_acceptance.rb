@@ -27,8 +27,14 @@ end
 # Install PE
 run_puppet_install_helper
 
-# Install PE License onto Master
-install_pe_license(master)
+# Install PE License onto Master, if one exists.
+install_pe_license(master) unless hosts_as("master").empty?
+
+# Determine root path of local module source.
+proj_root = File.expand_path(File.join(File.dirname(__FILE__), '..'))
+# In CI install from staging forge, otherwise from local
+staging = { :module_name => 'puppetlabs-sqlserver' }
+local = { :module_name => 'sqlserver', :source => proj_root }
 
 unless ENV['MODULE_provision'] == 'no'
   hosts_as("sql_host").each do |agent|
@@ -66,16 +72,8 @@ unless ENV['MODULE_provision'] == 'no'
       on(agent, puppet("module install #{dep}"))
     end
 
-    # Determine root path of local module source.
-    proj_root = File.expand_path(File.join(File.dirname(__FILE__), '..'))
-
-    # In CI install from staging forge, otherwise from local
-    staging = { :module_name => 'puppetlabs-sqlserver' }
-    local = { :module_name => 'sqlserver', :source => proj_root }
-
     # Install sqlserver dependencies.
     on(agent, puppet('module install puppetlabs-stdlib'))
-    on(master, puppet('module install puppetlabs-stdlib'))
 
     # Mount windows 2012R2 ISO to allow install of .NET 3.5 Windows Feature
     iso_opts = {
@@ -88,6 +86,15 @@ unless ENV['MODULE_provision'] == 'no'
     # Install sqlserver module from local source.
     # See FM-5062 for more details.
     copy_module_to(agent, local)
-    copy_module_to(master, local)
+  end
+
+  hosts_as("master").each do |host|
+    # Install sqlserver dependencies.
+    on(host, puppet('module install puppetlabs-stdlib'))
+
+    # Install sqlserver module from local source.
+    # See FM-5062 for more details.
+    local = { :module_name => 'sqlserver', :source => proj_root }
+    copy_module_to(host, local)
   end
 end
