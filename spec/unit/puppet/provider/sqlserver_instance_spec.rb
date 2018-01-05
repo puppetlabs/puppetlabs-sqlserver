@@ -60,8 +60,8 @@ RSpec.describe provider_class do
         cmd_args << "/SECURITYMODE=SQL"
       end
 
-      # wrap each arg in doublequotes
-      admin_args = execute_args[:sql_sysadmin_accounts].map { |a| "\"#{a}\"" }
+      # Extrace the SQL Sysadmins
+      admin_args = execute_args[:sql_sysadmin_accounts].map { |a| "#{a}" }
       # prepend first arg only with CLI switch
       admin_args[0] = "/SQLSYSADMINACCOUNTS=" + admin_args[0]
       cmd_args += admin_args
