@@ -1,3 +1,10 @@
+## Unreleased
+
+### Summary
+
+#### Fixed
+- Ensure that multiple accounts can be included in SQLSYSADMINACCOUNTS when installing SQL Server ([MODULES-6356](https://tickets.puppetlabs.com/browse/MODULES-6356))
+
 ## 2017-12-8 - Supported Release 2.1.0
 
 ### Summary
