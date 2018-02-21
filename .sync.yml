@@ -1,6 +1,4 @@
 ---
-CONTRIBUTING.md:
-  unmanaged: true
 Gemfile:
   optional:
     ':development':
