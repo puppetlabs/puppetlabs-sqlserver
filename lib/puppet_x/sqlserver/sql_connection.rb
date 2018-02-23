@@ -9,12 +9,12 @@ module PuppetX
           open(config)
           execute(query)
         rescue win32_exception => e
-          return ResultOutput.new(true, e.message)
+          return ResultOutput.new(true, e.message, @connection)
         ensure
           close
         end
 
-        ResultOutput.new(false, nil)
+        ResultOutput.new(false, nil, @connection)
       end
 
       private
@@ -90,24 +90,25 @@ module PuppetX
     end
 
     class ResultOutput
-      attr_reader :exitstatus, :error_message, :raw_error_message
 
-      def initialize(has_errors, error_message)
+      attr_reader :exitstatus, :error_message
+
+      def initialize(has_errors, error_message, connection)
         @exitstatus = has_errors ? 1 : 0
-        if error_message
-          @raw_error_message = error_message
-          @error_message = parse_for_error(error_message)
-        end
+
+        @error_message = extract_messages(connection) || error_message
+      end
+
+      def extract_messages(connection)
+        return nil if connection.nil? || connection.Errors.count == 0
+
+        error_count = connection.Errors.count - 1
+        
+        ((0..error_count).map { |i| connection.Errors(i).Description.to_s}).join("\n")
       end
 
       def has_errors
         @exitstatus != 0
-      end
-
-      private
-      def parse_for_error(result)
-        match = result.match(/SQL Server\n\s*(.*)/i)
-        match[1] unless match == nil
       end
     end
   end
