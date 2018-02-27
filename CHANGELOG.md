@@ -1,123 +1,121 @@
-## 2017-12-8 - Supported Release 2.1.0
+# Changelog
 
-### Summary
-Add support for detecting and installing SQL Server 2017.
-This release does not add any new SQL 2017 specific features.
+All notable changes to this project will be documented in this file.
 
-#### Added
+The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
+
+## [Unreleased]
+
+### Added
+- Add CONTRIBUTING.md ([FM-6605](https://tickets.puppetlabs.com/browse/FM-6605))
+
+### Fixed
+
+- Fix problem installing sql instance when an array of SQL Admins are specified. ([MODULES-6356](https://tickets.puppetlabs.com/browse/MODULES-6356))
+- Fix AppVeyor OpenSSL bug.([Modsync commit with discussion](https://github.com/puppetlabs/modulesync_configs/commit/f04d0d1119cb5cbd4c3aac76047c4c766ae1fcb2))
+- During acceptance testing, only execute master provisioning steps if there is
+  a master in the hosts array.
+- Stop running ```gem update bundler``` during Travis runs. ([MODULES-6339](https://tickets.puppetlabs.com/browse/MODULES6339))
+
+## [2.1.0] - 2017-12-8
+
+### Added
 
 - Add support for installing and managing SQL 2017 instances. ([MODULES-6168](https://tickets.puppetlabs.com/browse/MODULES-6168))
+
+### Changed
+
 - Update documentation to reflect change that adds 2017 support. ([MODULES-6244](https://tickets.puppetlabs.com/browse/MODULES-6244))
 
-## 2017-12-5 - Supported Release 2.0.2
+## [2.0.2]  - 2017-12-5
 
-### Summary
-Small release with critical bug fix for sql instance install idempotency.
+### Fixed
 
-#### Fixed
+- Fix bug where Puppet will not detect existing sql instances properly and
+attempts to reinstall an instance that already exists ([MODULES-6022](https://tickets.puppetlabs.com/browse/MODULES-6022))
 
-- Fix bug where Puppet will not detect existing sql instances properly
-attempt to reinstall an instance that already exists ([MODULES-6022](https://tickets.puppetlabs.com/browse/MODULES-6022))
+## [2.0.1] - 2017-11-15
 
-## 2017-11-15 - Supported Release 2.0.1
-
-### Summary
-Small release with bug fixes and documentation updates.
-
-#### Fixed
+### Changed
 
 - Allow connections over TLS 1.1+ by replacing OLEDB driver with SQL Native Client ([MODULES-5693](https://tickets.puppetlabs.com/browse/MODULES-5693))
-- Ensure instances without SQL Engine are discoverable ([MODULES-5566](https://tickets.puppetlabs.com/browse/MODULES-5566))
 - Updated documentation to include 2016 as a supported version of SQL Server
 
-## 2017-08-10 - Supported Release 2.0.0
+### Fixed
 
-### Summary
+- Ensure instances without SQL Engine are discoverable ([MODULES-5566](https://tickets.puppetlabs.com/browse/MODULES-5566))
 
-This major release adds support for Microsoft SQL Server 2016
+## [2.0.0] - 2017-08-10
 
-#### Added
+### Added
 
 - Added more detailed examples to the README
 - Updated with Puppet 4 data types ([MODULES-5126](https://tickets.puppet.com/browse/MODULES-5126))
 - Added parameters to manage PolyBase ([MODULES-5070](https://tickets.puppet.com/browse/MODULES-5070))
 - Added support for Windows Server 2016
-- Updated metadata for Puppet 5 ([MODULES-5144](https://tickets.puppet.com/browse/MODULES-5144))
 - Added test tiering and test mode switcher ([FM-5062](https://tickets.puppet.com/browse/FM-5062), [FM-6141](https://tickets.puppet.com/browse/FM-6141))
+- Make .Net installation errors more obvious ([MODULES-5092](https://tickets.puppet.com/browse/MODULES-5092))
 
-#### Deprecated
+### Changed
+
+- Updated metadata for Puppet 5 ([MODULES-5144](https://tickets.puppet.com/browse/MODULES-5144))
+
+### Deprecated
 
 - Deprecated the use of `Tools` and `SQL` as installation features ([MODULES-4257](https://tickets.puppet.com/browse/MODULES-4257))
 
-#### Removed
+### Removed
 
 - Removed unsupported Puppet versions from metadata ([MODULES-4842](https://tickets.puppet.com/browse/MODULES-4842))
 - Removed support for Stdlib on unsupported Puppet versions, (Stdlib versions less than 4.13.0)
-
-#### Fixed
-
-- Make .Net installation errors more obvious ([MODULES-5092](https://tickets.puppet.com/browse/MODULES-5092))
 - Removed service_ensure parameter as it had no use ([MODULES-5030](https://tickets.puppet.com/browse/MODULES-5030))
+
+### Fixed
+
 - Using as_sysadmin_accounts without AS feature will error ([MODULES-2386](https://tickets.puppet.com/browse/MODULES-2386))
 - SNAC_SDK shared feature can not be managed by the module ([FM-5389](https://tickets.puppet.com/browse/FM-5389))
 - Purge members from SQL Server Role should actually purge ([MODULES-2543](https://tickets.puppet.com/browse/MODULES-2543))
 - Identifiers are properly escaped during database creation ([FM-5021](https://tickets.puppet.com/browse/FM-5021))
 - Removed forced TCP connection for SQL management ([MODULES-4915](https://tickets.puppet.com/browse/MODULES-4915))
 
-## 2017-05-08 - Supported Release 1.2.0
+## [1.2.0] - 2017-05-08
 
-### Summary
+### Added
 
-This release adds support for internationalization of the module. It also contains Japanese translations for the README, summary and description of the metadata.json and major cleanups in the README. Additional folders have been introduced called locales and readmes where translation files can be found. A number of features and bug fixes are also included in this release.
-
-#### Features
-
-- (MODULES-4334) - Adding locales directory, config.yaml and POT file for i18n.
+- Added locales directory, config.yaml and POT file for i18n. ([MODULES-4334](https://tickets.puppet.com/browse/MODULES-4334))
 - Puppet-module-gems now implemented
 
-#### Bug Fixes
+### Fixed
 
-- (MODULES-4528) Replace Puppet.version comparison with Puppet::Util::Package.versioncmp
-- (MODULES-4667) Update beaker tests for Jenkins CI
+- Replace Puppet.version comparison with Puppet::Util::Package.versioncmp ([MODULES-4528](https://tickets.puppetlabs.com/browse/MODULES-4528))
+- Update beaker tests for Jenkins CI ([MODULES-4667](https://tickets.puppet.com/browse/MODULES-4667))
 
 
-## 2017-03-07 - Supported Release 1.1.6
+## [1.16] - 2017-03-07
 
-### Summary
-
-- Minor release with a small bug fix.
-
-#### Bug Fixes
+### Fixed
 
 - Fix issue where error was raised when adding or removing features if setup.exe returned 1641 (Reboot initiated) or 3010 (Reboot required) exit codes, only a warning is raised now ([MODULES-4468](https://tickets.puppetlabs.com/browse/MODULES-4468)).
 
-## 2017-02-15 - Supported Release 1.1.5
+## [1.1.5] - 2017-02-15
 
-### Summary
-
-- Small release with several bug fixes and a minor feature.
-
-#### Features
+### Added
 
 - Obfuscate passwords in logs if sqlserver_instance raises an error ([MODULES-4255](https://tickets.puppet.com/browse/MODULES-4255)).
 
-#### Bug Fixes
+### Fixed
 
 - Fix issues with installing .Net 3.5 in acceptance tests
 - Fix various issues with test environment in AppVeyor, Travis CI and Jenkins
-- Fix documentation for localization
+- Fix documentation for localizationb
 
-## 2016-08-31 - Supported Release 1.1.4
+## [1.1.4] - 2016-08-31
 
-### Summary
-
-- Small release with several bug fixes and a minor feature.
-
-#### Features
+### Added
 
 - Add `windows_feature_source` parameter to the `sqlserver_instance` and `sqlserver_features` resources. This specifies the location of the Windows Feature source files, which might be needed to install the .NET Framework. See https://support.microsoft.com/en-us/kb/2734782 for more information ([MODULES-3202](https://tickets.puppet.com/browse/MODULES-3202)).
 
-#### Bug Fixes
+### Fixed
 
 - Fix issues when adding multiple SYSADMIN role accounts on instance creation ([MODULES-3427](https://tickets.puppet.com/browse/MODULES-3427)).
 - Fix issues when creating and deleting Windows base logins ([MODULES-3256](https://tickets.puppet.com/browse/MODULES-3256)).
@@ -126,59 +124,58 @@ This release adds support for internationalization of the module. It also contai
 - Fix issues when modifying server roles for an existing login ([MODULES-3083](https://tickets.puppet.com/browse/MODULES-3083)).
 - Fix issues when modifying an existing Windows user login ([MODULES-3752](https://tickets.puppet.com/browse/MODULES-3752)).
 
-## 2016-07-12 - Supported Release 1.1.3
+## [1.1.3] - 2016-07-12
 
-### Summary
-
-- Small release with several bug fixes and minor features.
-- Update the supported Puppet version ranges.
-
-#### Features
+### Added
 
 - Update documentation with a more advanced SQL example.
 - Add Windows Based Authentication for `sqlserver::config`. Modifies the `sqlserver::config` class with an additional property called `login_type` which can be either `SQL_LOGIN` or `WINDOWS_LOGIN`, with a default of `SQL_LOGIN`.
 
-#### Bug Fixes
+### Changed
+- Minor refactoring of code which is not used or makes code path more obvious.
+
+### Fixed
 
 - Fix Role Name Collisions. This fix introduces the database name into the title created for the `sqlserver_tsql` statements so that it is unique.
-- Minor refactoring of code which is not used or makes code path more obvious.
 - Fix TSQL error propagation. Introduce a minor refactor so that the `returns` property captures errors properly from TSQL executions.
 - Emit debug output on failed `onlyif` TSQL. Previously, there was no way of getting the log output from SQL Server when executing TSQL during an `onlyif`.
 
-## 2016-04-11 - Supported Release 1.1.2
+## [1.1.2] - 2016-04-11
 
-### Summary
+### Changed
 
-Small release to update supported Puppet version ranges.
+- Update supported Puppet version ranges.
 
-## 2015-12-08 - Supported Release 1.1.1
+## [1.1.1] - 2015-12-08
 
-### Summary
+### Changed
 
-Small release to support newer PE versions.
+- Support newer PE versions.
 
-## 2015-09-08 - Supported Release 1.1.0
+## [1.1.0] - 2015-09-08
 
-### Summary
+### Added
 
-User, Roles, and Login, as well as the permissions associated with each, are now available.
-
-#### Features
-
-- `sqlserver_instance` and `sqlserver_features` have new parameter `install_switches`, which takes a hash of install switches and writes them to a temporary configuration file for the install process.
+- `sqlserver_instance` and `sqlserver_features` have new parameter `install_switches`, which takes a hash of install switches and writes them to a temporary configuration file for the install process. ([FM-2303](https://tickets.puppetlabs.com/browse/FM-2303))
 - Add define for permissions for Users, Roles, and Logins.
-- `sqlserver::config` no longer writes a file to the sytem.
 - New `sqlserver_tsql` provider available to execute custom scripts.
-- Remove dependency on 'sqlcmd.exe'.
+
+### Changed
+
+- Remove dependency on 'sqlcmd.exe'. ([FM-2577](https://tickets.puppetlabs.com/browse/FM2577))
+- `sqlserver::config` no longer writes a file to the sytem.
 - Performance discovery improvements.
+
+### Removed
+
 - Remove dependency for ACL modules.
 
-#### Bug Fixes
+### Fixed
 
 - Munge values for instance names to always be uppercase when comparing.
 - Change the way we look up logins to use sys.server_principals instead of a function that might not report correctly.
 - Fix issue with `collation_name` and databases where the variable was not named properly, causing it to never be set.
 
-## 2014-12-08 - 1.0.0
+## [1.0.0] - 2014-12-08
 
 Initial release.
