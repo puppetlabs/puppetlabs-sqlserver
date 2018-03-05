@@ -16,6 +16,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 - During acceptance testing, only execute master provisioning steps if there is
   a master in the hosts array.
 - Stop running ```gem update bundler``` during Travis runs. ([MODULES-6339](https://tickets.puppetlabs.com/browse/MODULES6339))
+- The `sqlserver_tsql` resource now returns errors from sql queries properly. ([MODULES-6281](https://tickets.puppetlabs.com/browse/MODULES-6281))
 
 ## [2.1.0] - 2017-12-8
 

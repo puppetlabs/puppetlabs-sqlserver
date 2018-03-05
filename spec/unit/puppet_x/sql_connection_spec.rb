@@ -8,8 +8,12 @@ RSpec.describe PuppetX::Sqlserver::SqlConnection do
 
   def stub_connection
     @connection = mock()
+    error_mock = mock()
+    error_mock.stubs(:count).returns(0)
+
     subject.stubs(:create_connection).returns(@connection)
     @connection.stubs(:State).returns(PuppetX::Sqlserver::CONNECTION_CLOSED)
+    @connection.stubs(:Errors).returns(error_mock)
     subject.stubs(:win32_exception).returns(Exception)
   end
 
@@ -20,11 +24,12 @@ RSpec.describe PuppetX::Sqlserver::SqlConnection do
         @connection.stubs(:Open).with('Provider=SQLNCLI11;Initial Catalog=master;Application Name=Puppet;Data Source=.;DataTypeComptibility=80;User ID=sa;Password=Pupp3t1@')
       end
       it 'should not raise an error but populate has_errors with message' do
-        subject.stubs(:execute).raises(Exception.new("SQL Server\n error has happened"))
+        @connection.Errors.stubs(:count).returns(1)
+        @connection.Errors.stubs(:Description).returns("SQL Error in Connection")
         expect {
           result = subject.open_and_run_command('whacka whacka whacka', config)
           expect(result.exitstatus).to eq(1)
-          expect(result.error_message).to eq('error has happened')
+          expect(result.error_message).to eq('SQL Error in Connection')
         }.to_not raise_error(Exception)
 
       end
@@ -114,20 +119,22 @@ RSpec.describe PuppetX::Sqlserver::SqlConnection do
     end
     context 'return result with errors' do
       it {
-        subject.stubs(:win32_exception).returns(Exception)
+        stub_connection
+        @connection.Errors.stubs(:count).returns(1)
+        @connection.Errors.stubs(:Description).returns("SQL Error in Connection")
+        @connection.stubs(:Execute).raises(Exception)
         subject.expects(:open).with({:admin_user => 'sa', :admin_pass => 'Pupp3t1@', :instance_name => 'MSSQLSERVER'})
-        subject.expects(:execute).with('SELECT * FROM sys.databases').raises(Exception.new("SQL Server\ninvalid syntax provider"))
         subject.expects(:close).once
-        result =
-          subject.open_and_run_command('SELECT * FROM sys.databases', config)
+        
+        result = subject.open_and_run_command('SELECT * FROM sys.databases', config)
         expect(result.exitstatus).to eq(1)
-        expect(result.error_message).to eq('invalid syntax provider')
+        expect(result.error_message).to eq('SQL Error in Connection')
       }
     end
     context 'open connection failure' do
       it {
         stub_connection
-        err_message = "SQL Server\n ConnectionFailed"
+        err_message = "ConnectionFailed"
         @connection.stubs(:Open).raises(Exception.new(err_message))
         expect {
           result = subject.open_and_run_command('whacka whacka whacka', config)

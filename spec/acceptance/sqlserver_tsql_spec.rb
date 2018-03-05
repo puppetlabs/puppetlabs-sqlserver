@@ -191,7 +191,7 @@ describe "sqlserver_tsql test", :node => host do
       }
       MANIFEST
       execute_manifest(pp, {:acceptable_exit_codes => [0,1]}) do |r|
-        expect(r.stderr).to match(/Error/i)
+        expect(r.stderr).to match(/Incorrect syntax/i)
       end
     end
 
@@ -210,7 +210,7 @@ describe "sqlserver_tsql test", :node => host do
       }
       MANIFEST
       execute_manifest(pp, {:acceptable_exit_codes => [0,1]}) do |r|
-        expect(r.stderr).to match(/Error/i)
+        expect(r.stderr).to match(/Non-Existing-Database/i)
       end
     end
   end
