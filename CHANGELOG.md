@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ## [Unreleased]
 
+## [2.1.1] - 2018-03-09
+
 ### Added
 - Add CONTRIBUTING.md ([FM-6605](https://tickets.puppetlabs.com/browse/FM-6605))
 
