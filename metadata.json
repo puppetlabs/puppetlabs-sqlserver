@@ -7,17 +7,11 @@
   "source": "https://github.com/puppetlabs/puppetlabs-sqlserver",
   "project_page": "https://github.com/puppetlabs/puppetlabs-sqlserver",
   "issues_url": "https://tickets.puppet.com/browse/MODULES/component/12400",
-  "tags": [
-    "sql",
-    "mssql",
-    "sqlserver",
-    "microsoft",
-    "sql2012",
-    "sql2014",
-    "sql2016",
-    "sql2017",
-    "tsql",
-    "database"
+  "dependencies": [
+    {
+      "name": "puppetlabs/stdlib",
+      "version_requirement": ">= 4.13.1 < 5.0.0"
+    }
   ],
   "operatingsystem_support": [
     {
@@ -35,7 +29,19 @@
       "version_requirement": ">=4.7.0 < 6.0.0"
     }
   ],
-  "dependencies": [
-    { "name":"puppetlabs/stdlib","version_requirement":">= 4.13.1 < 5.0.0" }
-  ]
+  "tags": [
+    "sql",
+    "mssql",
+    "sqlserver",
+    "microsoft",
+    "sql2012",
+    "sql2014",
+    "sql2016",
+    "sql2017",
+    "tsql",
+    "database"
+  ],
+  "pdk-version": "1.6.0",
+  "template-url": "file://C:/Program Files/Puppet Labs/DevelopmentKit/share/cache/pdk-templates.git",
+  "template-ref": "1.6.0-0-gf5564c0"
 }
