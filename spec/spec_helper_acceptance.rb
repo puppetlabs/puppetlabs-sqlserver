@@ -1,3 +1,5 @@
+require 'beaker-pe'
+require 'beaker-puppet'
 require 'beaker-rspec/spec_helper'
 require 'beaker-rspec/helpers/serverspec'
 require 'sql_testing_helpers'
@@ -26,6 +28,7 @@ end
 
 # Install PE
 run_puppet_install_helper
+configure_type_defaults_on(hosts)
 
 # Install PE License onto Master, if one exists.
 install_pe_license(master) unless hosts_as("master").empty?
