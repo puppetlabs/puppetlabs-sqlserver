@@ -24,12 +24,13 @@ RSpec.describe PuppetX::Sqlserver::SqlConnection do
         @connection.stubs(:Open).with('Provider=SQLNCLI11;Initial Catalog=master;Application Name=Puppet;Data Source=.;DataTypeComptibility=80;User ID=sa;Password=Pupp3t1@')
       end
       it 'should not raise an error but populate has_errors with message' do
-        @connection.Errors.stubs(:count).returns(1)
-        @connection.Errors.stubs(:Description).returns("SQL Error in Connection")
+        @connection.Errors.stubs(:count).returns(2)
+        @connection.expects(:Errors).with(0).returns(stub( { :Description => "SQL Error in Connection" }))
+        @connection.expects(:Errors).with(1).returns(stub( { :Description => "Rowdy Roddy Piper" }))
         expect {
           result = subject.open_and_run_command('whacka whacka whacka', config)
           expect(result.exitstatus).to eq(1)
-          expect(result.error_message).to eq('SQL Error in Connection')
+          expect(result.error_message).to eq("SQL Error in Connection\nRowdy Roddy Piper")
         }.to_not raise_error(Exception)
 
       end
