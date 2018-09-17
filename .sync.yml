@@ -5,11 +5,13 @@ Gemfile:
     ':system_tests':
       - gem: 'puppet-module-posix-system-r#{minor_version}'
         platforms: ruby
+        version: '>= 0.3.10'
       - gem: 'puppet-module-win-system-r#{minor_version}'
         platforms:
           - mswin
           - mingw
           - x64_mingw
+        version: '>= 0.3.10'
       - gem: beaker-testmode_switcher
         version: '~> 0.4'
       - gem: master_manipulator
