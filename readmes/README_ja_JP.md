@@ -2,27 +2,27 @@
 
 #### 目次
 
-1. [概要](#概要)
-2. [モジュールの説明 - モジュールの機能とその有益性](#モジュールの説明)
-3. [セットアップ - sqlserver導入の基本](#セットアップ)
-    * [セットアップ要件](#セットアップ要件)
-    * [sqlserverを開始する](#sqlserverを開始する)
-4. [使用方法 - 構成オプションと追加機能](#使用方法)
-    * [SQL Serverツールおよび機能のインストール](#sql-serverインスタンス専用ではないsql-serverツールおよび機能をインストールする)
-    * [新しいデータベースの作成](#sql-serverのインスタンス上に新しいデータベースを作成する)
-    * [新しいログインの作成](#新しいログインをセットアップする)
-    * [新しいログインおよびユーザの作成](#特定のデータベースに新しいログインとユーザを作成する)
-    * [ユーザのパーミッションの管理](#上記のユーザのパーミッションを管理する)
-    * [カスタムTSQLステートメントの実行](#カスタムのtsqlステートメントを実行する)
-5. [参考 - モジュールの機能と動作について](#参考)
-6. [制限事項 - OS互換性など](#制限事項)
-7. [開発 - モジュール貢献についてのガイド](#開発)
+1. [概要](#overview)
+2. [説明 - モジュールの機能とその有益性](#module-description)
+3. [セットアップ - sqlserver導入の基本](#setup)
+    * [セットアップ要件](#setup-requirements)
+    * [sqlserverを開始する](#beginning-with-sqlserver)
+4. [使用方法 - 設定オプションと追加機能](#usage)
+    * [SQL Serverツールおよび機能のインストール](#install-sql-server-tools-and-features-not-specific-to-a-sql-server-instance)
+    * [SQL Serverのインスタンス上に新しいデータベースを作成する](#create-a-new-database-on-an-instance-of-sql-server)
+    * [新しいログインの作成](#set-up-a-new-login)
+    * [特定のデータベースに新しいログインとユーザを作成する](#create-a-new-login-and-a-user-for-a-given-database)
+    * [ユーザのパーミッションの管理](#manage-the-above-users-permissions)
+    * [カスタムのTSQLステートメントを実行する](#run-custom-tsql-statements)
+5. [参考 - モジュールの機能と動作について](#reference)
+6. [制約事項 - OSの互換性など](#limitations)
+7. [開発 - モジュール貢献についてのガイド](#development)
 
 ## 概要
 
 Microsoft SQL Server 2012、2014、2016、2017は、sqlserverモジュールにより、Windowsシステムでインストールと管理を行います。
 
-## モジュールの説明
+## モジュールの概要
 
 Microsoft SQL Serverは、Windows用のデータベースプラットフォームです。sqlserverモジュールを利用すると、Puppetを使用して、複数インスタンスのSQL Serverをインストールし、SQL機能とクライアントツールを追加し、TSQLステートメントを実行し、データベース、ユーザ、ロール、サーバ構成オプションを管理できます。
 
@@ -34,7 +34,7 @@ sqlserverモジュールの要件は次のとおりです。
 
 * .NET 3.5. (存在しない場合、自動的にインストールされます。そのためにインターネット接続が必要になる場合があります)
 * SQL Server ISOファイルの内容(ローカルまたはネットワーク共有上にマウントまたは展開されていること)
-* Windows Server 2012、2012 R2、2016。
+* Windows Server 2012または2012 R2
 
 ### sqlserverを開始する
 
@@ -94,7 +94,7 @@ sqlserver::database{ 'minviable':
 }
 ```
 
-### 新しいログインをセットアップする
+### 新しいログインの作成
 
 ```puppet
 SQL Login
@@ -103,7 +103,7 @@ sqlserver::login{ 'vagrant':
   password => 'Pupp3t1@',
 }
 
-# Windowsのログイン
+# Windows Login
 sqlserver::login{ 'WIN-D95P1A3V103\localAccount':
   instance   => 'MSSQLSERVER',
   login_type => 'WINDOWS_LOGIN',
@@ -195,7 +195,7 @@ sqlserver_tsql{ 'Always running':
 ```puppet
 $sourceloc = 'D:/'
 
-# SQL Serverのデフォルトインスタンスをインストールする
+# Install a SQL Server default instance
 sqlserver_instance{'MSSQLSERVER':
   source                => $sourceloc,
   features              => ['SQLEngine'],
@@ -211,12 +211,12 @@ sqlserver_instance{'MSSQLSERVER':
   }
 }
 
-# DBインスタンスに接続するためのリソース
+# Resource to connect to the DB instance
 sqlserver::config { 'MSSQLSERVER':
   admin_login_type => 'WINDOWS_LOGIN'
 }
 
-# SQL Server Administratorsを適用する
+# Enforce SQL Server Administrators
 $local_dba_group_name = 'DB Administrators'
 $local_dba_group_netbios_name = "${facts['hostname']}\\DB Administrators"
 
@@ -235,7 +235,7 @@ group { $local_dba_group_name:
   members  => [$local_dba_group_netbios_name, $facts['id']],
 }
 
-# メモリ消費を適用する
+# Enforce memory consumption
 sqlserver_tsql {'check advanced sp_configure':
   command => 'EXEC sp_configure \'show advanced option\', \'1\'; RECONFIGURE;',
   onlyif => 'sp_configure @configname=\'max server memory (MB)\'',
@@ -251,7 +251,7 @@ sqlserver_tsql {'check advanced sp_configure':
 }
 ```
 
-## 参考
+## リファレンス
 
 ### タイプ
 
@@ -265,7 +265,7 @@ SSMSやMaster Data Serviceなどの機能をインストールおよび構成し
 
 管理対象の機能が存在するかどうかを指定します。有効なオプション: 'present'および'absent'。
 
-デフォルト値: 'present'。
+デフォルト値: 'present'。　
 
 ##### `features`
 
@@ -281,7 +281,7 @@ SSMSやMaster Data Serviceなどの機能をインストールおよび構成し
 
 > **注**: あるオプションが個別のパラメータと`install_switches`の両方で指定されている場合、個別に指定されたパラメータが優先されます。例えば、`pid`と`install_switches`の両方にプロダクトキーが設定されている場合、SQL Serverは`pid`パラメータを優先します。
 >
-> インストーラスイッチの詳細とSQL Serverの構成方法については、次のリンクを参照してください。
+> For more information about installer switches and configuring SQL Server, see the links below:
 >
 > * [インストーラスイッチ](https://msdn.microsoft.com/en-us/library/ms144259.aspx)
 > * [構成ファイル](https://msdn.microsoft.com/en-us/library/dd239405.aspx)
@@ -359,7 +359,7 @@ sysadminステータスを受け取る1つまたは複数のSQLアカウント�
 
 管理対象のインスタンスが存在するかどうかを指定します。有効なオプション: 'present'および'absent'。
 
-デフォルト値: 'present'。
+デフォルト値: 'present'。　
 
 ##### `features`
 
@@ -373,7 +373,7 @@ SQL Server Instance Setupに1つまたは複数の追加インストーラスイ
 
 > **注**: あるオプションが個別のパラメータと`install_switches`の両方で指定されている場合、個別に指定されたパラメータが優先されます。例えば、`pid`と`install_switches`の両方にプロダクトキーが設定されている場合、SQL Serverは`pid`パラメータを優先します。
 >
-> インストーラスイッチの詳細とSQL Serverの構成方法については、次のリンクを参照してください。
+> For more information about installer switches and configuring SQL Server, see the links below:
 >
 > * [インストーラスイッチ](https://msdn.microsoft.com/en-us/library/ms144259.aspx)
 > * [構成ファイル](https://msdn.microsoft.com/en-us/library/dd239405.aspx)
@@ -414,7 +414,7 @@ Polybase Engineサービスのパスワードを指定します。
 
 ##### `rs_svc_password`
 
-*`rs_svc_account`にドメインアカウントが指定されている場合、指定は必須です。システムアカウントの場合は無効です。* 
+*`rs_svc_account`にドメインアカウントが指定されている場合、指定は必須です。システムアカウントの場合は無効です。*
 
 レポートサーバのユーザアカウントのパスワードを提供します。有効なオプション: 強力なパスワードを成す文字列(8文字以上、大文字と小文字の両方と1つ以上の記号を含むこと。辞書に載っているような一般的な単語や名称は避けること)。
 
@@ -444,7 +444,7 @@ SQL Serverサービスによって使用されるドメインアカウントま�
 
 ##### `sql_svc_password`
 
-*`sql_svc_account`にドメインアカウントが指定されている場合、指定は必須です。システムアカウントの場合は無効です。* 
+*`sql_svc_account`にドメインアカウントが指定されている場合、指定は必須です。システムアカウントの場合は無効です。*
 
 SQL Serverサービスユーザアカウントのパスワードを提供します。有効なオプション: 有効なパスワードを指定する文字列。
 
@@ -484,7 +484,7 @@ SQL Serverインスタンスに対し、TSQLクエリを実行します。
 
 `command`ステートメントを実行する前に実行し、前進するかどうかを決定するTSQLステートメントを提供します。`onlyif`ステートメントがTHROWまたは何らかの非標準的な終了で終わる場合、Puppetは`command`ステートメントを実行します。有効なオプション: 文字列。
 
-### 定義タイプ
+### 定義できるタイプ
 
 特に指定のない限り、パラメータの指定は任意です。
 
@@ -566,7 +566,7 @@ SQL Serverインスタンスを管理するために使用するログインの�
 
 管理対象のデータベースが存在するかどうかを指定します。有効なオプション: 'present'および'absent'。
 
-デフォルト値: 'present'。
+デフォルト値: 'present'。　
 
 ##### `filespec_filegrowth`
 
@@ -610,7 +610,7 @@ filespecファイルのサイズを指定します。このパラメータは作
 
 ##### `filestream_non_transacted_access`
 
-データベースへのトランザクションなしのFILESTREAMアクセスのレベルを指定します。このパラメータは作成時のみに設定され、アップデートの影響を受けません。`sqlserver::sp_configure`定義タイプが必要です。有効なオプション: 'OFF'、'READ_ONLY'、'FULL'。 
+データベースへのトランザクションなしのFILESTREAMアクセスのレベルを指定します。このパラメータは作成時のみに設定され、アップデートの影響を受けません。`sqlserver::sp_configure`定義タイプが必要です。有効なオプション: 'OFF'、'READ_ONLY'、'FULL'。
 
 デフォルト値: `undef`。
 
@@ -667,7 +667,7 @@ SQL Server内のログオブジェクトの論理名を指定します。この�
 
 ##### `trustworthy`
 
-インパーソネーションコンテキストを使用するデータベースモジュール(ビュー、ユーザ定義関数、ストアドプロシージャなど)がデータベース外部のリソースにアクセスできるかどうかを指定します。`containment`が'PARTIAL'に設定されている場合のみ有効です。有効なオプション: 'ON'および'OFF'。 
+インパーソネーションコンテキストを使用するデータベースモジュール(ビュー、ユーザ定義関数、ストアドプロシージャなど)がデータベース外部のリソースにアクセスできるかどうかを指定します。`containment`が'PARTIAL'に設定されている場合のみ有効です。有効なオプション: 'ON'および'OFF'。
 
 デフォルト値: 'OFF'。
 
@@ -681,10 +681,11 @@ SQL Server内のログオブジェクトの論理名を指定します。この�
 >
 > * [包含データベース](http://msdn.microsoft.com/en-us/library/ff929071.aspx)
 > * [データベースのTSQLを作成する](http://msdn.microsoft.com/en-us/library/ms176061.aspx)
-> * [データベースのTSQLを変更する](http://msdn.microsoft.com/en-us/library/ms174269.aspx)
-> * [システム言語](http://msdn.microsoft.com/en-us/library/ms190303.aspx)
+>  * [データベースのTSQLを変更する](http://msdn.microsoft.com/en-us/library/ms174269.aspx)
+>  * [システム言語](http://msdn.microsoft.com/en-us/library/ms190303.aspx)
 >
-> FILESTREAMを使用するには、SQL Serverを手動で構成する作業が必要になる場合があります。詳細については、[FILESTREAMの有効化と構成](http://msdn.microsoft.com/en-us/library/cc645923.aspx)を参照してください。
+> FILESTREAM usage might require some manual configuration of SQL Server. Please see [Enable and Configure FILESTREAM](http://msdn.microsoft.com/en-us/library/cc645923.aspx) for details.
+
 
 #### `sqlserver::login`
 
@@ -716,7 +717,7 @@ SQL Server内のログオブジェクトの論理名を指定します。この�
 
 ##### `disabled`
 
-管理対象のログインを無効化するかどうかを指定します。有効なオプション: `true`および`false`。 
+管理対象のログインを無効化するかどうかを指定します。有効なオプション: `true`および`false`。
 
 デフォルト値: `false`。
 
@@ -724,7 +725,7 @@ SQL Server内のログオブジェクトの論理名を指定します。この�
 
 管理対象のログインが存在するかどうかを指定します。有効なオプション: 'present'および'absent'。
 
-デフォルト値: 'present'。
+デフォルト値: 'present'。　
 
 ##### `instance`
 
@@ -754,8 +755,8 @@ SQL Server内のログオブジェクトの論理名を指定します。この�
 
 ログインに1つまたは複数の事前インストールされたサーバロールを割り当てます。有効なオプション: `permission => value`ペアのハッシュ値。ここで値0は無効、値1は有効であることを示します。たとえば、`{'diskadmin' => 1、'dbcreator' => 1、'sysadmin' => 0}`などです。有効なパーミッションの一覧については、[SQL Serverドキュメント](http://msdn.microsoft.com/en-us/library/ms188659.aspx)を参照してください。
 
-> **SQL Serverにおけるこれらの設定の詳細については、以下を参照してください。**
-> 
+>SQL Serverにおけるこれらの設定の詳細については、以下を参照してください。
+>
 > * [サーバロールメンバ](http://msdn.microsoft.com/en-us/library/ms186320.aspx)
 > * [ログインを作成](http://technet.microsoft.com/en-us/library/ms189751.aspx)
 > * [ログインを変更](http://technet.microsoft.com/en-us/library/ms189828.aspx)
@@ -816,7 +817,7 @@ SQL Server内のログオブジェクトの論理名を指定します。この�
 
 管理対象のユーザが存在するかどうかを指定します。有効なオプション: 'present'および'absent'。
 
-デフォルト値: 'present'。
+デフォルト値: 'present'。　
 
 ##### `instance`
 
@@ -886,8 +887,8 @@ SQL Server内のログオブジェクトの論理名を指定します。この�
 
 デフォルト値: `false`。
 
-> **SQL Serverにおけるこれらの設定とパーミッションの詳細については、以下を参照してください。**
-> 
+>  **SQL Serverにおけるこれらの設定とパーミッションの詳細については、以下を参照してください。**
+>
 > * [パーミッション(データベースエンジン)](https://msdn.microsoft.com/en-us/library/ms191291.aspx)
 > * [データベースパーミッションを付与する](https://msdn.microsoft.com/en-us/library/ms178569.aspx)
 
@@ -899,7 +900,7 @@ SQL Server内のログオブジェクトの論理名を指定します。この�
 
 ##### `authorization`
 
-ロールの所有者を設定します。有効なオプション: 既存のログインまたはユーザ名を含む文字列。 
+ロールの所有者を設定します。有効なオプション: 既存のログインまたはユーザ名を含む文字列。
 
 デフォルト値: 対応する`sqlserver::config`リソースの`user`の値。
 
@@ -911,9 +912,9 @@ SQL Server内のログオブジェクトの論理名を指定します。この�
 
 ##### `ensure`
 
-管理対象のロールが存在するかどうかを指定します。有効なオプション: 'absent'および'present'。 
+管理対象のユーザが存在するかどうかを指定します。有効なオプション: 'present'および'absent'。
 
-デフォルト値: 'present'。
+デフォルト値: 'present'。　
 
 ##### `instance`
 
@@ -1051,8 +1052,8 @@ sys.configurationsで管理するオプションを指定します。有効な�
 
 デフォルト値: `false`。
 
-> **SQL Serverにおけるこれらの設定の詳細については、以下を参照してください。**
-> 
+>**SQL Serverにおけるこれらの設定とパーミッションの詳細については、以下を参照してください。**
+>
 > * [再構成](http://msdn.microsoft.com/en-us/library/ms176069.aspx)
 > * [サーバ構成オプション](http://msdn.microsoft.com/en-us/library/ms189631.aspx)
 
@@ -1066,7 +1067,7 @@ sys.configurationsで管理するオプションを指定します。有効な�
 * **ロール:** データベースレベルまたはサーバレベルのパーミッショングループ。
 * **ユーザ:** データベースレベルのアカウント。通常、ログインにマッピングされています。
 
-## 制限事項
+## 制約事項
 
 SQL 2017検出サポートが追加されました。このサポートはほかのバージョンの既存の機能に限定されます。SQL 2017に固有の新しい機能は、このリリースには追加されていません。
 
