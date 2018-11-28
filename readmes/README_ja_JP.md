@@ -281,7 +281,7 @@ SSMSやMaster Data Serviceなどの機能をインストールおよび構成し
 
 > **注**: あるオプションが個別のパラメータと`install_switches`の両方で指定されている場合、個別に指定されたパラメータが優先されます。例えば、`pid`と`install_switches`の両方にプロダクトキーが設定されている場合、SQL Serverは`pid`パラメータを優先します。
 >
-> For more information about installer switches and configuring SQL Server, see the links below:
+> インストーラスイッチの詳細とSQL Serverの構成方法については、次のリンクを参照してください。
 >
 > * [インストーラスイッチ](https://msdn.microsoft.com/en-us/library/ms144259.aspx)
 > * [構成ファイル](https://msdn.microsoft.com/en-us/library/dd239405.aspx)
@@ -373,7 +373,7 @@ SQL Server Instance Setupに1つまたは複数の追加インストーラスイ
 
 > **注**: あるオプションが個別のパラメータと`install_switches`の両方で指定されている場合、個別に指定されたパラメータが優先されます。例えば、`pid`と`install_switches`の両方にプロダクトキーが設定されている場合、SQL Serverは`pid`パラメータを優先します。
 >
-> For more information about installer switches and configuring SQL Server, see the links below:
+> インストーラスイッチの詳細とSQL Serverの構成方法については、次のリンクを参照してください。
 >
 > * [インストーラスイッチ](https://msdn.microsoft.com/en-us/library/ms144259.aspx)
 > * [構成ファイル](https://msdn.microsoft.com/en-us/library/dd239405.aspx)
@@ -684,8 +684,7 @@ SQL Server内のログオブジェクトの論理名を指定します。この�
 >  * [データベースのTSQLを変更する](http://msdn.microsoft.com/en-us/library/ms174269.aspx)
 >  * [システム言語](http://msdn.microsoft.com/en-us/library/ms190303.aspx)
 >
-> FILESTREAM usage might require some manual configuration of SQL Server. Please see [Enable and Configure FILESTREAM](http://msdn.microsoft.com/en-us/library/cc645923.aspx) for details.
-
+> FILESTREAMを使用するには、SQL Serverを手動で構成する作業が必要になる場合があります。詳細については、[FILESTREAMの有効化と構成](http://msdn.microsoft.com/en-us/library/cc645923.aspx)を参照してください。
 
 #### `sqlserver::login`
 
