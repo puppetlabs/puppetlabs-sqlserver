@@ -194,4 +194,4 @@ attempts to reinstall an instance that already exists ([MODULES-6022](https://ti
 
 Initial release.
 
-[2.2.0]: https://github.com/puppetlabs/puppetlabs-sqlserver/compare/2.1.0..2.2.0
+[2.2.0]: https://github.com/puppetlabs/puppetlabs-sqlserver/compare/2.1.1..2.2.0
