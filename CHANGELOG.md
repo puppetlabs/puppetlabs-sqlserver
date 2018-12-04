@@ -6,6 +6,17 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ## [Unreleased]
 
+## [2.2.0] - 2018-12-3
+
+### Added
+- Convert module for PDK ([MODULES-7406](https://tickets.puppetlabs.com/browse/MODULES-7406))
+
+### Changed
+- Update support for Puppet version 6. ([MODULES-7833](https://tickets.puppetlabs.com/browse/MODULES-7833))
+- Update README_ja_JP.md
+- Update stdlib version to 6. ([MODULES-7705](https://tickets.puppetlabs.com/browse/MODULES-7705))
+
+
 ## [2.1.1] - 2018-03-14
 
 ### Added
@@ -182,3 +193,5 @@ attempts to reinstall an instance that already exists ([MODULES-6022](https://ti
 ## [1.0.0] - 2014-12-08
 
 Initial release.
+
+[2.2.0]: https://github.com/puppetlabs/puppetlabs-sqlserver/compare/2.1.1..2.2.0
