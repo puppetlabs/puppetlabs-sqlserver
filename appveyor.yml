@@ -1,13 +1,17 @@
+---
 version: 1.1.x.{build}
+branches:
+  only:
+    - master
 skip_commits:
   message: /^\(?doc\)?.*/
 clone_depth: 10
 init:
-- SET
-- 'mkdir C:\ProgramData\PuppetLabs\code && exit 0'
-- 'mkdir C:\ProgramData\PuppetLabs\facter && exit 0'
-- 'mkdir C:\ProgramData\PuppetLabs\hiera && exit 0'
-- 'mkdir C:\ProgramData\PuppetLabs\puppet\var && exit 0'
+  - SET
+  - 'mkdir C:\ProgramData\PuppetLabs\code && exit 0'
+  - 'mkdir C:\ProgramData\PuppetLabs\facter && exit 0'
+  - 'mkdir C:\ProgramData\PuppetLabs\hiera && exit 0'
+  - 'mkdir C:\ProgramData\PuppetLabs\puppet\var && exit 0'
 environment:
   matrix:
     -
@@ -28,6 +32,14 @@ environment:
     -
       PUPPET_GEM_VERSION: ~> 5.0
       RUBY_VERSION: 24-x64
+      CHECK: parallel_spec
+    -
+      PUPPET_GEM_VERSION: ~> 6.0
+      RUBY_VERSION: 25
+      CHECK: parallel_spec
+    -
+      PUPPET_GEM_VERSION: ~> 6.0
+      RUBY_VERSION: 25-x64
       CHECK: parallel_spec
     -
       PUPPET_GEM_VERSION: ~> 6.0
