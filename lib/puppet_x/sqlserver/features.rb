@@ -63,7 +63,7 @@ module PuppetX
         begin
           vals = open(HKLM, key_name, KEY_READ | KEY64) do |key|
             reg_val_feat_hash
-              .select { |val_name, _| get_reg_key_val(key, val_name, Win32::Registry::REG_DWORD) == 1 }
+              .select { |val_name, _| get_reg_key_val(key, val_name, Win32::Registry::REG_DWORD).to_i >= 1 }
               .map { |_, feat_name| feat_name }
           end
         rescue Puppet::Util::Windows::Error # subkey doesn't exist
