@@ -101,7 +101,7 @@ Puppet::Type::type(:sqlserver_instance).provide(:mssql, :parent => Puppet::Provi
       instance_version = PuppetX::Sqlserver::ServerHelper.sql_version_from_install_source(@resource[:source])
       Puppet.debug("Installation source detected as version #{instance_version}") unless instance_version.nil?
 
-      installNet35(@resource[:windows_feature_source]) unless instance_version == SQL_2016
+      installNet35(@resource[:windows_feature_source]) unless [SQL_2016, SQL_2017, SQL_2019].include? instance_version
 
       add_features(@resource[:features])
     end

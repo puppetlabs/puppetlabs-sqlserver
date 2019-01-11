@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ## [Unreleased]
 
+## Added
+
+- Add support for installing and managing SQL 2019 instances ([MODULES-8438](https://tickets.puppetlabs.com/browse/MODULES-8438))
+
 ## [2.2.0] - 2018-12-3
 
 ### Added

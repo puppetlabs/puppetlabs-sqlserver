@@ -4,8 +4,9 @@ SQL_2012 ||= 'SQL_2012'
 SQL_2014 ||= 'SQL_2014'
 SQL_2016 ||= 'SQL_2016'
 SQL_2017 ||= 'SQL_2017'
+SQL_2019 ||= 'SQL_2019'
 
-ALL_SQL_VERSIONS ||= [SQL_2012, SQL_2014, SQL_2016, SQL_2017]
+ALL_SQL_VERSIONS ||= [SQL_2012, SQL_2014, SQL_2016, SQL_2017, SQL_2019]
 
 module PuppetX
   module Sqlserver
@@ -32,6 +33,10 @@ module PuppetX
         SQL_2017 => {
           :major_version => 14,
           :registry_path => '140',
+        },
+        SQL_2019 => {
+          :major_version => 15,
+          :registry_path => '150',
         }
       }
 

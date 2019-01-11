@@ -122,10 +122,11 @@ Puppet::Type::type(:sqlserver_features).provide(:mssql, :parent => Puppet::Provi
       warn "Uninstalling all sql server features not tied into an instance because an empty array was passed, please use ensure absent instead."
       destroy
     else
+
       instance_version = PuppetX::Sqlserver::ServerHelper.sql_version_from_install_source(@resource[:source])
       Puppet.debug("Installation source detected as version #{instance_version}") unless instance_version.nil?
 
-      installNet35(@resource[:windows_feature_source]) unless instance_version == SQL_2016
+      installNet35(@resource[:windows_feature_source]) unless [SQL_2016, SQL_2017, SQL_2019].include? instance_version
 
       debug "Installing features #{@resource[:features]}"
       add_features(@resource[:features])
