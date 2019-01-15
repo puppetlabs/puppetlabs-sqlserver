@@ -110,12 +110,12 @@ Puppet::Type::newtype(:sqlserver_instance) do
   end
 
   newparam(:polybase_svc_account, :parent => Puppet::Property::SqlserverLogin) do
-    desc 'The account used by the Polybase Engine service. Only applicable for SQL Server 2016.'
+    desc 'The account used by the Polybase Engine service. Only applicable for SQL Server 2016+.'
 
   end
 
   newparam(:polybase_svc_password) do
-    desc 'The password for the Polybase Engine service account. Only applicable for SQL Server 2016.'
+    desc 'The password for the Polybase Engine service account. Only applicable for SQL Server 2016+.'
 
   end
 

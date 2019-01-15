@@ -42,6 +42,8 @@ module PuppetX
         ver = content.match('"(.+)"')
         return nil if ver.nil?
 
+        return SQL_2019 if ver[1].start_with?('15.')
+        return SQL_2017 if ver[1].start_with?('14.')
         return SQL_2016 if ver[1].start_with?('13.')
         return SQL_2014 if ver[1].start_with?('12.')
         return SQL_2012 if ver[1].start_with?('11.')
