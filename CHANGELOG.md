@@ -6,9 +6,13 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ## [Unreleased]
 
-## Added
+### Added
 
 - Add support for installing and managing SQL 2019 instances ([MODULES-8438](https://tickets.puppetlabs.com/browse/MODULES-8438))
+
+### Fixed
+
+- Fixed bug where .NET 3.5 could be installed in cases where it was not necessary. ([MODULES-8438](https://tickets.puppetlabs.com/browse/MODULES-8438))
 
 ## [2.2.0] - 2018-12-3
 
