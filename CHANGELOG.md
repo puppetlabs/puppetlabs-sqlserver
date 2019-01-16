@@ -6,13 +6,20 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ## [Unreleased]
 
+## [2.3.0] - 2019-01-22
+
 ### Added
 
 - Add support for installing and managing SQL 2019 instances ([MODULES-8438](https://tickets.puppetlabs.com/browse/MODULES-8438))
 
+### Changed
+
+- License terms updated to allow a Bolt trial period ([License](https://github.com/puppetlabs/puppetlabs-sqlserver/blob/master/LICENSE))
+
 ### Fixed
 
-- Fixed bug where .NET 3.5 could be installed in cases where it was not necessary. ([MODULES-8438](https://tickets.puppetlabs.com/browse/MODULES-8438))
+- .NET 3.5 could be installed in cases where it was not necessary. ([MODULES-8438](https://tickets.puppetlabs.com/browse/MODULES-8438))
+- Features were not detected correctly if the registry keys were stored with a value other than 1. (Thanks [GrammatonKlaric](https://github.com/GrammatonKlaric)) ([MODULES-7734](https://tickets.puppetlabs.com/browse/MODULES-7734))
 
 ## [2.2.0] - 2018-12-3
 
@@ -203,3 +210,4 @@ attempts to reinstall an instance that already exists ([MODULES-6022](https://ti
 Initial release.
 
 [2.2.0]: https://github.com/puppetlabs/puppetlabs-sqlserver/compare/2.1.1..2.2.0
+[2.3.0]: https://github.com/puppetlabs/puppetlabs-sqlserver/compare/2.2.0..2.3.0
