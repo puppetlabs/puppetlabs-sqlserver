@@ -8,12 +8,12 @@ require 'beaker/testmode_switcher'
 require 'beaker/testmode_switcher/dsl'
 
 
-WIN_ISO_ROOT = "http://int-resources.ops.puppetlabs.net/ISO/Windows/2012"
+WIN_ISO_ROOT = "https://artifactory.delivery.puppetlabs.net/artifactory/generic__iso/iso/windows"
 WIN_2012R2_ISO = "en_windows_server_2012_r2_with_update_x64_dvd_6052708.iso"
-QA_RESOURCE_ROOT = "http://int-resources.ops.puppetlabs.net/QA_resources/microsoft_sql/iso/"
-SQL_2019_ISO = "en_sql_server_2019_developer_x64_CTP2.iso"
+QA_RESOURCE_ROOT = "https://artifactory.delivery.puppetlabs.net/artifactory/generic__iso/iso/SQLServer"
+SQL_2019_ISO = "SQLServer-2019-CTP2-x64-ENU.iso"
 SQL_2016_ISO = "en_sql_server_2016_enterprise_with_service_pack_1_x64_dvd_9542382.iso"
-SQL_2014_ISO = "SQLServer2014-x64-ENU.iso"
+SQL_2014_ISO = "SQLServer2014SP3-FullSlipstream-x64-ENU.iso"
 SQL_2012_ISO = "SQLServer2012SP1-FullSlipstream-ENU-x64.iso"
 SQL_ADMIN_USER = 'sa'
 SQL_ADMIN_PASS = 'Pupp3t1@'
