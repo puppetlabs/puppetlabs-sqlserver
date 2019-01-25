@@ -217,9 +217,10 @@ describe "sqlserver_features", :node => host do
         ensure_sql_features(features)
 
         validate_sql_install(host, {:version => sql_version}) do |r|
-          expect(r.stdout).to match(/Client Tools Connectivity/)
-          expect(r.stdout).to match(/Client Tools Backwards Compatibility/)
-          expect(r.stdout).to match(/Client Tools SDK/)
+          # SQL Server 2016 will not install the client tools features.
+          expect(r.stdout).to match(/Client Tools Connectivity/) unless sql_version.to_i >= 2016
+          expect(r.stdout).to match(/Client Tools Backwards Compatibility/) unless sql_version.to_i >= 2016
+          expect(r.stdout).to match(/Client Tools SDK/) unless sql_version.to_i >= 2016
           expect(r.stdout).to match(/Integration Services/)
           expect(r.stdout).to match(/Master Data Services/)
         end
