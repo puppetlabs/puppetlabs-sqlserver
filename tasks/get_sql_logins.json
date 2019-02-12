@@ -1,0 +1,24 @@
+{
+  "puppet_task_version": 1,
+  "supports_noop": false,
+  "input_method": "powershell",
+  "description": "Retrieve information about the logins configured for a SQL Server instance.",
+  "parameters": {
+    "instance_name": {
+      "description": "The name of the SQL Instance running on the machine to connect to. Leave blank for the default instance of MSSQLSERVER",
+      "type": "Optional[Variant[Array[String], String]]"
+    },
+    "login_name": {
+      "description": "The name of a particular login to search for. You can use partial names and any pattern that will work with the PowerShell '-match' operator.",
+      "type": "Optional[Variant[Array[String], String]]"
+    },
+    "exact_match": {
+      "description": "If set to true it will force names passed to the LoginName parameter to be an exact match to a SQL Login to pass the filter.",
+      "type": "Optional[Boolean]"
+    },
+    "detailed": {
+      "description": "Return more detailed information from the server instead of the default summary information",
+      "type": "Optional[Boolean]"
+    }
+  }
+}

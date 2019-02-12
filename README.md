@@ -15,6 +15,9 @@
     * [Manage the user's permissions](#manage-the-above-users-permissions)
     * [Run custom TSQL statements](#run-custom-tsql-statements)
 5. [Reference - An under-the-hood peek at what the module is doing and how](#reference)
+    * [Types](#types)
+    * [Defined Types](#defined-types)
+    * [Bolt Tasks](#bolt-tasks)
 6. [Limitations - OS compatibility, etc.](#limitations)
 7. [Development - Guide for contributing to the module](#development)
 
@@ -1055,6 +1058,108 @@ Default: `false`.
 > 
 > * [Reconfigure](http://msdn.microsoft.com/en-us/library/ms176069.aspx)
 > * [Server Configuration Options](http://msdn.microsoft.com/en-us/library/ms189631.aspx)
+
+### Bolt Tasks
+
+#### sqlserver::get_sql_logins
+
+This task will retrieve information about a login, or a set of logins, from the sql instances running on a given node.
+With no parameters specified it will return summary level information about all logins configured for all sql instances running on a given node or node set.
+Use the `detailed` parameter to return more detailed information including the SID's and the name of the instance a login was retrieved from.
+
+##### parameters
+
+* **instance_name**
+
+  The name of the instance to query for logins. By default, leave blank for all instances running on a node.
+  Pass the values `.`, `MSSQLSERVER`, or the node name to query just the default instance.
+  Named instances can be referred to by either the short name of the instance, or by `<COMPUTERNAME>\<INSTANCE_NAME>`.
+  This is an optional parameter which will accept a single string or array of strings as input.
+
+* **login_name**
+
+  The name of a particular login to search for, or the search pattern for a set of logins.
+  If no value is passed to this variable then all logins are returned.
+  By default any values passed to this parameter are treated like a search string.
+  Searches are done using the PowerShell `-match` operator.
+  For example, if the string `sql` is passed to this parameter, logins such as `NT SERVICE\SQLWriter`
+  and `##MS_PolicyTsqlExecutionLogin##` will be returned in the result set.
+  If the `exact_match` parameter is set to true, then only exact matches are accepted and neither of those logins would have been returned.
+  This is an optional parameter which will accept a single string or array of strings as input.
+
+* **exact_match**
+
+  Set this to true to change the behavior of the `login_name` parameter so that only logins exactly matching one of the provided login_names is returned in the result set.
+  This is an optional parameter which will accept either `true` or `false`. It's default value is false.
+
+* **detailed**
+
+  This parameter causes the task to return a more detailed level of information for each login.
+  By default the list of properties returned about each login is: `Name`,`isDisabled`,`isLocked`,`IsPasswordExpired`,`CreateDate`,`DateLastModified`.
+  Setting this parameter to true adds in the following properties: `DefaultDatabase`,`DenyWindowsLogin`,`HasAccess`,`ID`,`IsSystemObject`,`Language`,`LanguageAlias`,`,LoginType`,`MustChangePassword`,`PasswordExpirationEnabled`,`PasswordHashAlgorithm`,`PasswordPolicyEnforced`,`SQLSID`,`ADSid`,`WindowsLoginAccessType`,`UserData`,`State`,`IsDesignMode`,`InstanceName`
+
+> **A note about `SQLSID` and `ADSID`.**
+>
+> The `SQLSID` property is this module's property name for the binary representation of a SID that SQLServer keeps internally in tables like `sys.server_principals`.
+> It will look like `0x01` for accounts like `sa`, or something longer like `0x0106000000000009010000005FB6DAC7F7DB546D706711B128B5063888B01770` for other accounts.
+> This `sid` does not look like a normal `sid` you might see outside of SQLServer, but it is returned as part of the detailed information to make it easier to correlate the logins returned by this module and query results from SQLServer.
+> The `ADSID` property is a more normal looking `sid` you might get from PowerShell Active Directory query tools.
+> It is a direct translation of that `SQLSID` into the Microsoft string `sid` form and will look something like `S-1-5-80-1402415987-66678372-3059512406-1823130485-2345841878`.
+> This translation is done to make it easier to correlate SQLServer logins with AD users and detect when something like a user has been disconnected from its real AD SID.
+> If the detailed information for a login does not contain a value for the AD SID property, it means that the login is internal to SQLServer and does not have a valid AD format `sid`.
+
+#### sqlserver::set_sql_logins
+
+##### parameters
+
+* **instance_name**
+
+  The name of the instance to find the login you are setting properties on.
+  By default this parameter will use the default instance only.
+  Named instances can be referred to by either the short name of the instance, or by `<COMPUTERNAME>\<INSTANCE_NAME>`.
+  Specifying an instance name will access only that instance. To affect a login on more than one instance,
+  specify all of the required instance names as an array of values.
+  Pass the values `.`, `MSSQLSERVER`, or the node name to query only the default instance.
+  This is an optional parameter which will accept a single string or array of strings as input.
+
+* **login_name**
+
+  The name of a particular login to to set properties on.
+  By default this parameter expects an exact match. To use pattern matching see the `fuzzy_match` parameter.
+  This is an optional parameter which will accept a single string or array of strings as input.
+
+* **fuzzy_match**
+
+  Modifies the behavior of the `login_name` parameter so that the value given is a login name pattern to match.
+  Searches are done using the PowerShell `-match` operator.
+  For example, if the string `sql` is passed to the `login_name` parameter, while `fuzzy_match` is set to true, logins such as `NT SERVICE\SQLWriter`
+  and `##MS_PolicyTsqlExecutionLogin##` will be returned in the result set.
+  This is an
+   optional parameter which will accept either `true` or `false`. Its default value is false.
+
+* **enbabled**
+
+  Set this parameter to true to enable a login and set to false to disable it.
+  This is an optional boolean parameter. The return value will be an element in the json return
+  specifying that the new value for the `isDisabled` property of the login object will be either `true` or `false`.
+
+* **password**
+
+  Provide a value specifying the new password to use for a login.
+  Please note that there are possible string parsing issues when using this parameter.
+  For instance attempting to set a password `'pa$ssword#"'` may not parse correctly.
+  To get the double quote to end up in the password correctly you will need to triple quote escape the double quote,
+  like so `'pa$ssword#"""'`.
+  To ensure you password is interpreted and set correctly you may want to try to echo the password out using `bolt command run` first
+  to ensure the characters end up on the target node correctly like so, `bolt command run 'Write-Host ''This is """awesome""".'''`
+
+##### noop
+
+This task supports the `--noop` flag. The task will return json values indicating the
+actions it would have taken and the logins it would have affected without actually taking any action.
+It will not inspect and return to you what the state of a property was before taking the action.
+Use this parameter especially when using the `fuzzy_match` parameter to ensure you are affecting
+only the logins you intend to.
 
 ### Microsoft SQL Server terms
 
