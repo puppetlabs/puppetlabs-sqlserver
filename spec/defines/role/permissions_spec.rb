@@ -4,7 +4,7 @@ require File.expand_path(File.join(File.join(File.dirname(__FILE__),'..'),'manif
 RSpec.describe 'sqlserver::role::permissions' do
   include_context 'manifests' do
     let(:title) { 'myTitle' }
-    let(:sqlserver_tsql_title) { 'role-permissions-myCustomRole-GRANT-MSSQLSERVER' }
+    let(:sqlserver_tsql_title) { 'role-permissions-myCustomRole-GRANT-MSSQLSERVER-master' }
     let(:params) { {
         :role => 'myCustomRole',
         :permissions => %w(INSERT UPDATE DELETE SELECT),
@@ -116,6 +116,7 @@ RSpec.describe 'sqlserver::role::permissions' do
     describe 'customDatabase' do
       let(:additional_params) { {:database => 'customDatabase'} }
       let(:should_contain_command) { ['USE [customDatabase];'] }
+      let(:sqlserver_tsql_title) { 'role-permissions-myCustomRole-GRANT-MSSQLSERVER-customDatabase' }
       it_behaves_like 'sqlserver_tsql command'
       let(:should_contain_onlyif) { ['USE [customDatabase];'] }
       it_behaves_like 'sqlserver_tsql onlyif'
@@ -135,7 +136,7 @@ RSpec.describe 'sqlserver::role::permissions' do
             :instance => instance
         } }
         it {
-          should contain_sqlserver_tsql("role-permissions-myCustomRole-GRANT-#{instance}").with_instance(instance)
+          should contain_sqlserver_tsql("role-permissions-myCustomRole-GRANT-#{instance}-master").with_instance(instance)
         }
       end
     end

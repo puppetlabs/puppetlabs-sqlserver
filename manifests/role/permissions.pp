@@ -53,7 +53,7 @@ define sqlserver::role::permissions (
     ##
     # Parameters required in template are _state, role, _upermissions, database, type, with_grant_option
     ##
-    sqlserver_tsql{ "role-permissions-${role}-${_state}${_grant_option}-${instance}":
+    sqlserver_tsql{ "role-permissions-${role}-${_state}${_grant_option}-${instance}-${database}":
       instance => $instance,
       command  => template('sqlserver/create/role/permissions.sql.erb'),
       onlyif   => template('sqlserver/query/role/permission_exists.sql.erb'),

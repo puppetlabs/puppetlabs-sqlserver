@@ -157,6 +157,47 @@ describe "Test sqlserver::role", :node => host do
       run_sql_query(host, { :query => query, :server => hostname, :expected_row_count => 6 })
     end
 
+    it "Create a database-specific role with the same name on two databases", :tier_low => true do
+      pp = <<-MANIFEST
+      sqlserver::config{'MSSQLSERVER':
+        admin_user    => 'sa',
+        admin_pass    => 'Pupp3t1@',
+      }
+      sqlserver::role{'DatabaseRole_1':
+        ensure      => 'present',
+        role        => '#{@role}',
+        database    => '#{db_name}',
+        permissions => {'GRANT' => ['SELECT', 'INSERT', 'UPDATE', 'DELETE', 'CONTROL', 'ALTER']},
+        type        => 'DATABASE',
+      }
+      sqlserver::role{'DatabaseRole_2':
+        ensure      => 'present',
+        role        => '#{@role}',
+        database    => 'master',
+        permissions => {'GRANT' => ['SELECT', 'INSERT', 'UPDATE', 'DELETE', 'CONTROL', 'ALTER']},
+        type        => 'DATABASE',
+      }
+      MANIFEST
+      require 'pry'; binding.pry;
+      execute_manifest(pp, opts = {}) do |r|
+        expect(r.stderr).not_to match(/Error/i)
+      end
+
+      # validate that the database-specific role '#{@role}' is successfully created with specified permissions':
+      # and that it exists in both the MASTER database and the 'db_name' database.
+      query = "USE MASTER;
+      SELECT pr.principal_id, pr.name, pr.type_desc,
+              pr.authentication_type_desc, pe.state_desc, pe.permission_name, dbpr.name
+      FROM sys.database_principals AS pr
+      JOIN sys.database_permissions AS pe
+        ON pe.grantee_principal_id = pr.principal_id
+      JOIN #{db_name}.sys.database_principals as dbpr
+        on pr.name = dbpr.name
+      WHERE pr.name = '#{@role}';"
+
+      run_sql_query(host, { :query => query, :server => hostname, :expected_row_count => 6 })
+    end
+
     it "Create server role #{@role} with optional members and optional members-purge", :tier_low => true do
       pp = <<-MANIFEST
       sqlserver::config{'MSSQLSERVER':

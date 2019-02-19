@@ -134,7 +134,7 @@ RSpec.describe 'sqlserver::role', :type => :define do
   end
 
   context 'members =>' do
-    let(:sqlserver_tsql_title) { 'role-myCustomRole-members' }
+    let(:sqlserver_tsql_title) { 'role-MSSQLSERVER-master-myCustomRole-members' }
     describe '[test these users]' do
       let(:additional_params) { {
         :members => %w(test these users),
@@ -156,7 +156,7 @@ RSpec.describe 'sqlserver::role', :type => :define do
     end
   end
   context 'members_purge =>' do
-    let(:sqlserver_tsql_title) { 'role-myCustomRole-members' }
+    let(:sqlserver_tsql_title) { 'role-MSSQLSERVER-master-myCustomRole-members' }
     context 'true' do
       describe 'type => SERVER and members => []' do
         let(:additional_params) { {
