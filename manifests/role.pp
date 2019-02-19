@@ -107,7 +107,7 @@ define sqlserver::role(
     }
 
     if size($members) > 0 or $members_purge == true {
-      sqlserver_tsql{ "role-${role}-members":
+      sqlserver_tsql{ "${sqlserver_tsql_title}-members":
         command  => template('sqlserver/create/role/members.sql.erb'),
         onlyif   => template('sqlserver/query/role/member_exists.sql.erb'),
         instance => $instance,
