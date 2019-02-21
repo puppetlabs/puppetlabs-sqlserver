@@ -1,0 +1,29 @@
+{
+  "puppet_task_version": 1,
+  "supports_noop": true,
+  "input_method": "powershell",
+  "description": "Set IsDisabled, and Password properties of a SQL Login",
+  "parameters": {
+    "instance_name": {
+      "description": "Instance that has the login to be modified. Leave blank for default instance.",
+      "type": "Optional[Variant[Array[String],String]]"
+    },
+    "login_name": {
+      "description": "Name of the login to modify. Matches are exact only by default.",
+      "type": "Optional[Variant[Array[String],String]]"
+    },
+    "fuzzy_match": {
+      "description": "Allow -match operator matches on $login_name so that inputs like 'sql' will match any login with 'sql' anywhere in the name.",
+      "type": "Optional[Boolean]"
+    },
+    "enabled": {
+      "description": "Enable or disable an account. Set this to false to disable the account.",
+      "type": "Optional[Boolean]"
+    },
+    "password": {
+      "description": "The password to set for an account.",
+      "type": "Optional[String]",
+      "sensitive": true
+    }
+  }
+}
