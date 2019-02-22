@@ -1137,7 +1137,7 @@ Use the `detailed` parameter to return more detailed information including the S
   This is an
    optional parameter which will accept either `true` or `false`. Its default value is false.
 
-* **enbabled**
+* **enabled**
 
   Set this parameter to true to enable a login and set to false to disable it.
   This is an optional boolean parameter. The return value will be an element in the json return
@@ -1160,6 +1160,27 @@ actions it would have taken and the logins it would have affected without actual
 It will not inspect and return to you what the state of a property was before taking the action.
 Use this parameter especially when using the `fuzzy_match` parameter to ensure you are affecting
 only the logins you intend to.
+
+#### sqlserver::get_sqlagent_jobs
+
+##### parameters
+
+* **instance_name**
+
+  The name of the instance to get job information from. Leave this variable blank to return information from all instances by default.
+  Named instances can be referred to by either the short name of the instance, or by `<COMPUTERNAME>\<INSTANCE_NAME>`. Specifying an instance name will access only that instance.
+  Pass the values `.`, `MSSQLSERVER`, or the node name to query only the default instance.
+  This is an optional parameter which will accept a single string or array of strings as input.
+
+* **job_name**
+
+  The name of a job, or the pattern to match on a jobs name.
+  This is an optional parameter which will accept a single string or array of strings as input.
+
+* **exact_match**
+
+  Set this to true to change the behavior of the `job_name` parameter so that only jobs with names exactly matching one of the provided job_names is returned in the result set.
+  This is an optional parameter which will accept either `true` or `false`. It's default value is false.
 
 ### Microsoft SQL Server terms
 

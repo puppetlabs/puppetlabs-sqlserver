@@ -1,0 +1,19 @@
+{
+  "puppet_task_version": 1,
+  "supports_noop": false,
+  "input_method": "powershell",
+  "description": "Return information about SQL Agent jobs and job steps.",
+  "parameters": {
+    "instance_name": {
+      "description": "The instance to get job information from",
+      "type": "Optional[Variant[Array[String],String]]"
+    },
+    "job_name": {
+      "description": "The name or the pattern to match of the job to search for.",
+      "type": "Optional[Variant[Array[String],String]]"
+    },
+    "exact_match": {
+      "description": "Use only exact name matches for the job_name parameter instead of the default fuzzy matching."
+    }
+  }
+}
