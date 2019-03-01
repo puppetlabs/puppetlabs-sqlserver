@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 ### Fixed
 
 - Cannot manage a role with the same name on two instances or two databases ([MODULES-8677](https://tickets.puppetlabs.com/browse/MODULES-8677)) (Thanks [Dylan Ratcliffe](https://github.com/dylanratcliffe))
+- Removing a SQL Login via `ensure => absent` in a sqlserver::login resource is not idempotent. ([MODULES-8685](https://tickets.puppetlabs.com/browse/MODULES-8685)) (Thanks [Dylan Ratcliffe](https://github.com/dylanratcliffe))
 
 ## [2.3.0] - 2019-01-22
 

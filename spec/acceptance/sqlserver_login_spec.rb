@@ -352,6 +352,12 @@ describe "Test sqlserver::login", :node => host do
           ensure_manifest_execute(pp)
         end
 
+        it "remove a #{testcase} should be idempotent", :tier_low => true do
+          options = { 'ensure' => 'absent' }
+          pp = create_login_manifest(testcase,@login_under_test,@login_passwd,options)
+          execute_manifest(pp, :catch_changes => true)
+        end
+
         it "should not exist in the principals table after deletion", :tier_low => true do
           query = "SELECT principal_id FROM SYS.server_principals WHERE name = '#{@login_under_test}' AND [type] = '#{@sql_principal_type}'";
           run_sql_query(host, run_sql_query_opts_as_sa(query, expected_row_count = 0))
