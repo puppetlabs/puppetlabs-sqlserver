@@ -13,7 +13,8 @@
       "type": "Optional[Variant[Array[String],String]]"
     },
     "exact_match": {
-      "description": "Use only exact name matches for the job_name parameter instead of the default fuzzy matching."
+      "description": "Use only exact name matches for the job_name parameter instead of the default fuzzy matching.",
+      "type": "Optional[Boolean]"
     }
   }
 }
