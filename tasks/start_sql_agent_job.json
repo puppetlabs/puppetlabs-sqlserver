@@ -1,0 +1,27 @@
+{
+  "puppet_task_version": 1,
+  "supports_noop": false,
+  "description": "Start SQL Agent jobs on a server. You can start at a specified job step number (zero based indexes), and you can either wait on the job to complete, or return immediately.",
+  "parameters": {
+    "instance_name": {
+      "description": "The instance to start a job on.",
+      "type": "Optional[Variant[Array[String],String]]"
+    },
+    "job_name": {
+      "description": "The name of the job to start.",
+      "type": "Optional[Variant[Array[String],String]]"
+    },
+    "fuzzy_match": {
+      "description": "Turn the job_name parameter into a pattern to match using the PowerShell -match operator.",
+      "type": "Optional[Boolean]"
+    },
+    "step": {
+      "description": "The zero based index number of the jop step to start from. Defaults to zero.",
+      "type": "Optional[Integer]"
+    },
+    "wait": {
+      "description": "Wait for all jobs started to complete before returning data. Defaults to false such that the task will return immediately indicating only that the job was started.",
+      "type": "Optional[Boolean]"
+    }
+  }
+}
