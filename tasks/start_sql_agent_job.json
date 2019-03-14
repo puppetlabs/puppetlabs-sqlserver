@@ -23,5 +23,6 @@
       "description": "Wait for all jobs started to complete before returning data. Defaults to false such that the task will return immediately indicating only that the job was started.",
       "type": "Optional[Boolean]"
     }
-  }
+  },
+  "files": ["sqlserver/files/shared_task_functions.ps1"]
 }

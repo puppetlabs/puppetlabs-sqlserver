@@ -20,5 +20,6 @@
       "description": "Return more detailed information from the server instead of the default summary information",
       "type": "Optional[Boolean]"
     }
-  }
+  },
+  "files": ["sqlserver/files/shared_task_functions.ps1"]
 }

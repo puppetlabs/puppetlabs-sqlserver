@@ -3,6 +3,7 @@ param (
   # The name of the instance where the account exists.
   [string[]]$instance_name,
   # The login name to set
+  [Parameter(Mandatory=$true)]
   [string[]]$login_name,
   # Loose matching on $login_name so 'sql' matches an login with 'sql' in the name.
   [switch]$fuzzy_match,
@@ -14,122 +15,34 @@ param (
   [bool]$_noop
 )
 
+$currentFolder = Split-Path -parent $PSCommandPath
+$parentFolder  = Split-Path -parent $currentFolder
 
-function Select-LoginName {
-  param(
-    [PSObject]$login,
-    [string[]]$namesToMatch,
-    [switch]$exact_match
-  )
+$helpersFilePath = "$parentFolder\files\shared_task_functions.ps1"
 
-  <#
-    This function takes a single SQLServer login object and compares it against
-    the list of names passed into the -login_name parameter of the script to
-    determine if this is a login the user is interested in seeing. If it does
-    not pass the filter represented by that parameter the login is discarded.
-  #>
-
-  foreach ($paramLogin in [string[]]$namesToMatch) {
-    if (-not $fuzzy_match) {
-      if ($paramLogin -eq $login.name) {
-        Write-Output $login
-      }
-    }
-    else {
-      # Match is a regex operator, and it doesn't like the '\' in domain names.
-      if ($login.name -match [regex]::escape($paramLogin)) {
-        Write-Output $login
-      }
-    }
-  }
-}
-
-function Get-SQLInstances {
-  param(
-    [string[]]$instance_name
-  )
-
-  $instancesHolder = New-Object System.Collections.Generic.List[System.Object]
-  $stringsToReturn = New-Object System.Collections.Generic.List[System.Object]
-
-  # The default instance is referred to in its service name as MSSQLSERVER. This
-  # leads many SQLSERVER people to refer to it as such. They will also connect
-  # to it using just a '.'. None of these are it's real name. Its real instance
-  # name is just the machine name. A named instances real name is the machine
-  # name a '\' and the instance name. This little foreach ensures that we are
-  # referring to these instances by their real names so that proper filtering
-  # can be done.
-
-  foreach ($name in $instance_name) {
-    switch ($name) {
-      {($_ -eq 'MSSQLSERVER') -or ($_ -eq '.')} { [void]$instancesHolder.add($env:COMPUTERNAME) }
-      {$_ -eq $env:COMPUTERNAME} { [void]$instancesHolder.add($_) }
-      {$_ -notmatch '\\'} { [void]$instancesHolder.add("$env:COMPUTERNAME\$_") }
-      default { [void]$instancesHolder.add($name) }
-    }
-  }
-
-  if($instancesHolder.count -eq 0){
-    [void]$instancesHolder.add($env:computername)
-  }
-
-  $instanceStrings = (Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server').InstalledInstances
-
-  # The registry key does not return the real instance names. Again we must
-  # normalize these names into their real names so that comparisons can be done
-  # properly.
-
-  foreach ($string in $instanceStrings) {
-    switch ($string) {
-      'MSSQLSERVER' { $string = $env:COMPUTERNAME }
-      Default {$string = "$env:COMPUTERNAME\$string"}
-    }
-
-    foreach ($instance in $instancesHolder) {
-      if ($instance -eq $string) {
-        [void]$stringsToReturn.add($string)
+if(Test-Path $helpersFilePath){
+  . $helpersFilePath
+} else {
+  $errorReturn = @{
+    _error = @{
+      msg     = 'Could not load shared code file.'
+      kind    = 'puppetlabs.task/task-error'
+      details = @{
+        detailedInfo = ''
+        exitcode     = 1
       }
     }
   }
 
-  if($stringsToReturn.count -gt 0){
-    Write-Output $stringsToReturn
-  } else {
-    throw "No instances were found by the name(s) $instance_name"
-  }
+  return ($errorReturn | ConvertTo-JSON -Depth 99)
 }
 
-function Get-ServerObject {
-  param(
-    [string]$instance
-  )
-
-  [System.Reflection.Assembly]::LoadWithPartialName("Microsoft.SqlServer.Smo") | Out-Null
-
-  Write-Output (New-Object Microsoft.SqlServer.Management.Smo.Server -ArgumentList $instance)
-
-}
-
-$error = @{
-  _error = @{
-    msg     = ''
-    kind    = 'puppetlabs.task/task-error'
-    details = @{
-      detailedInfo = ''
-      exitcode     = 1
-    }
-  }
-}
-
-#Get SQL Instances
 
 try {
-  $SQLInstances = Get-SQLInstances -instance_name $instance_name
+  $SQLInstances = Get-SQLInstancesStrict -instance_name $instance_name
 }
 catch {
-  $error._error.msg = 'Cannot detect SQL instance names.'
-  $error._error.details.detailedInfo = $_
-  return $error | ConvertTo-JSON
+  return (Write-BoltError 'Cannot find SQL instances' $_)
 }
 
 # Unfiltered Logins from all instances.
@@ -140,9 +53,7 @@ foreach ($instance in $SQLInstances) {
     $sqlServer = Get-ServerObject -instance $instance
   }
   catch {
-    $error._error.msg = "Cannot connect to SQL Instance: $instance"
-    $error._error.details.detailedInfo = $_
-    return $error | ConvertTo-JSON
+    return (Write-BoltError "Cannot connect to SQL Instance: $instance" $_)
   }
 
   foreach ($item in $sqlServer.logins) {
@@ -161,11 +72,8 @@ foreach ($instance in $SQLInstances) {
 $logins = New-Object System.Collections.Generic.List[System.Object]
 
 foreach ($login in $rawLogins) {
-  if ($MyInvocation.BoundParameters.ContainsKey('login_name')) {
-    [void]$logins.add((Select-LoginName -login $login -namesToMatch $login_name -exact_match:$exact_match))
-  }
-  else {
-    [void]$logins.add($login)
+  if($selectedLogin = Select-LoginNameStrict -login $login -namesToMatch $login_name -fuzzy_match:$fuzzy_match){
+    [void]$logins.add($selectedLogin)
   }
 }
 
@@ -193,9 +101,7 @@ foreach ($login in $logins) {
           $login_return.properties_set += @{property_name = 'IsDisabled'; value = 'false'}
         }
         catch {
-          $error._error.msg = "Cannot set property 'enabled' for login: $($login.InstanceName)\$($login.name)"
-          $error._error.details.detailedInfo = $_
-          return $error | ConvertTo-JSON -Depth 99
+          return (Write-BoltError "Cannot set property 'enabled' for login: $($login.InstanceName)\$($login.name)" $_)
         }
       }
     }
@@ -209,9 +115,7 @@ foreach ($login in $logins) {
           $login_return.properties_set += @{property_name = 'IsDisabled'; value = 'true'}
         }
         catch {
-          $error._error.msg = "Cannot set property 'disabled' for login: $($login.InstanceName)\$($login.name)"
-          $error._error.details.detailedInfo = $_
-          return $error | ConvertTo-JSON -Depth 99
+          return (Write-BoltError "Cannot set property 'disabled' for login: $($login.InstanceName)\$($login.name)" $_)
         }
       }
     }
@@ -227,9 +131,7 @@ foreach ($login in $logins) {
         $login_return.properties_set += @{property_name = 'password'; value = '**********'}
       }
       catch {
-        $error._error.msg = "Cannot set property 'disabled' for login: $($login.InstanceName)\$($login.name)"
-        $error._error.details.detailedInfo = $_
-        return $error | ConvertTo-Json -Depth 99
+        return (Write-BoltError "Cannot set property 'disabled' for login: $($login.InstanceName)\$($login.name)" $_)
       }
     }
   }
@@ -262,4 +164,3 @@ $return | ConvertTo-JSON -Depth 99
 
   Run the script in no op mode to see the commands and all of the accounts the script would have affected 
 #>
-
