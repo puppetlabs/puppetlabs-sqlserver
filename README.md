@@ -1182,6 +1182,48 @@ Use this parameter — especially when using the `fuzzy_match` parameter — to 
   Set this to true to change the behavior of the `job_name` parameter so that only jobs with names exactly matching one of the provided job_names is returned in the result set.
   This is an optional parameter which accepts either `true` or `false`. It's default value is false.
 
+#### sqlserver::start_sqlagent_jobs
+
+##### parameters
+
+* **instance_name**
+
+  The name of the instance to start a job on. The value defaults to the default instance on the machine.
+  Refer to named instances by either the short name of the instance or by `<COMPUTERNAME>\<INSTANCE_NAME>`.
+  Specifying an instance name will access only that instance.
+  Pass the values `.`, `MSSQLSERVER`, the node name, or leave blank refer to only the default instance.
+  This is an optional parameter which accepts a single string or array of strings as input.
+
+* **job_name**
+
+  The name of a job to start. By default job names must be exact.
+  See the `fuzzy_match` parameter below for pattern matching job names.
+  This parameter is required and will accept a string or an array of strings as input.
+
+* **fuzzy_match**
+
+  Modifies the behavior of the `job_name` parameter so that the value given is a job name pattern to match.
+  Searches are done using the PowerShell `-match` operator.
+  For example, if the string `backup` is passed to the `job_name` parameter, while `fuzzy_match` is set to true, jobs such as `Daily Backup` and `System Backup` will be matched and started.
+  This is an optional parameter which accepts either `true` or `false`. Its default value is false.
+
+* **step**
+
+  The step number you would like to execute. Leave blank to execute at the first step.
+  Keep in mind that these job step numbers refer to a zero based array of job step.
+  If you want to execute a job starting at step 5 you need to pass 4 to this parameter.
+  This is because contrary to the SQLServer user interface in many places, the programming objects
+  this task leverages are zero based.
+
+* **wait**
+
+  This parameter tells the task to wait until a set of jobs has completed and then return job data.
+  All matched jobs are started concurrently and the task waits in a loop for all of them to complete.
+  If this parameter is not set to true, then matched jobs are started and the task returns job data indicating that the job is executing.
+  Keep in mind that jobs that complete rapidly may complete before the task has finished executing.
+  This could result in returned job information indicating the job is currently idle. Please inspect the `lastRunDate` property of the job and the steps to determine if the job was executed successfully.
+  This is a boolean parameter that defaults to false.
+
 ### Microsoft SQL Server terms
 
 Terminology differs somewhat between various database systems; please refer to this list of terms for clarification.

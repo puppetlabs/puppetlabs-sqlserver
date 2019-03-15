@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ## [Unreleased]
 
+## Added
+
+- Bolt task to start SQL agent jobs ([MODULES-8610](https://tickets.puppetlabs.com/browse/MODULES-8610)).
+
 ## [2.4.0] - 2019-03-12
 
 ### Added
