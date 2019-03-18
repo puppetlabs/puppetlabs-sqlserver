@@ -10,110 +10,26 @@ param (
   [switch]$detailed
 )
 
-$error = @{
-  _error = @{
-    msg     = ''
-    kind    = 'puppetlabs.task/task-error'
-    details = @{
-      detailedInfo = ''
-      exitcode     = 1
-    }
-  }
-}
+$currentFolder = Split-Path -parent $PSCommandPath
+$parentFolder  = Split-Path -parent $currentFolder
 
-function Select-LoginName {
-  param(
-    [PSObject]$login,
-    [string[]]$namesToMatch,
-    [switch]$exact_match
-  )
+$helpersFilePath = "$parentFolder\files\shared_task_functions.ps1"
 
-
-  # This function takes a single SQLServer login object and compares it against
-  # the list of names passed into the -login_name parameter of the script to
-  # determine if this is a login the user is interested in seeing. If it does
-  # not pass the filter represented by that parameter the login is discarded.
-
-  foreach ($paramLogin in $namesToMatch) {
-    if ($exact_match) {
-      if ($paramLogin -eq $login.name) {
-        Write-Output $login
-      }
-    }
-    else {
-      # Match is a regex operator, and it doesn't like the '\' in domain names.
-      if ($login.name -match [regex]::escape($paramLogin)) {
-        Write-Output $login
+if(Test-Path $helpersFilePath){
+  . $helpersFilePath
+} else {
+  $errorReturn = @{
+    _error = @{
+      msg     = 'Could not load shared code file.'
+      kind    = 'puppetlabs.task/task-error'
+      details = @{
+        detailedInfo = ''
+        exitcode     = 1
       }
     }
   }
-}
 
-function Get-SQLInstances {
-  param(
-    [string[]]$instance_name
-  )
-
-  $instancesHolder = New-Object System.Collections.Generic.List[System.Object]
-  $stringsToReturn = New-Object System.Collections.Generic.List[System.Object]
-
-  # The default instance is referred to in its service name as MSSQLSERVER. This
-  # leads many SQLSERVER people to refer to it as such. They will also connect
-  # to it using just a '.'. None of these are its real name. Its real instance
-  # name is just the machine name. A named instances real name is the machine
-  # name a, '\', and the instance name. This little foreach ensures that we are
-  # referring to these instances by their real names so that proper filtering
-  # can be done.
-
-  foreach ($name in $instance_name) {
-    switch ($name) {
-      {($_ -eq 'MSSQLSERVER') -or ($_ -eq '.')} { [void]$instancesHolder.add($env:COMPUTERNAME) }
-      {$_ -eq $env:COMPUTERNAME} { [void]$instancesHolder.add($_) }
-      {$_ -notmatch '\\'} { [void]$instancesHolder.add("$env:COMPUTERNAME\$_") }
-      default { [void]$instancesHolder.add($name) }
-    }
-  }
-
-  $instanceStrings = (Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server').InstalledInstances
-
-  # The registry key does not return the real instance names. Again we must
-  # normalize these names into their real names so that comparisons can be done
-  # properly.
-
-  foreach ($string in $instanceStrings) {
-    switch ($string) {
-      'MSSQLSERVER' { $string = $env:COMPUTERNAME }
-      Default {$string = "$env:COMPUTERNAME\$string"}
-    }
-
-    if ((-not [string]::IsNullOrEmpty($instancesHolder))-and(-not [string]::IsNullOrWhiteSpace($instancesHolder))) {
-      foreach ($instance in $instancesHolder) {
-        if ($instance -eq $string) {
-          [void]$stringsToReturn.add($string)
-        }
-      }
-    }
-    else {
-      [void]$stringsToReturn.add($string)
-    }
-  }
-
-  if($stringsToReturn.count -gt 0){
-    Write-Output $stringsToReturn
-  } else {
-    throw "No instances were found by the name(s) $instance_name"
-  }
-}
-
-function Get-ServerObject {
-  param(
-    [string]$instance
-  )
-
-  [void][System.Reflection.Assembly]::LoadWithPartialName("Microsoft.SqlServer.Smo")
-
-  Write-Output (New-Object Microsoft.SqlServer.Management.Smo.Server -ArgumentList $instance)
-
+  return ($errorReturn | ConvertTo-JSON -Depth 99)
 }
 
 $return = @{}
@@ -124,9 +40,7 @@ try {
   $SQLInstances = Get-SQLInstances -instance_name $instance_name
 }
 catch {
-  $error._error.msg = 'Cannot detect SQL instance names.'
-  $error._error.details.detailedInfo = $_
-  return $error | ConvertTo-JSON
+  return (Write-BoltError 'Cannot find SQL instances' $_)
 }
 
 # Unfiltered Logins from all instances.
@@ -137,9 +51,7 @@ foreach ($instance in $SQLInstances) {
     $sqlServer = Get-ServerObject -instance $instance
   }
   catch {
-    $error._error.msg = "Cannot connect to SQL Instance: $instance"
-    $error._error.details.detailedInfo = $_
-    return $error | ConvertTo-JSON
+    return (Write-BoltError "Cannot connect to SQL Instance: $instance" $_)
   }
 
   foreach ($item in $sqlServer.logins) {

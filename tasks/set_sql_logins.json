@@ -10,7 +10,7 @@
     },
     "login_name": {
       "description": "Name of the login to modify. Matches are exact only by default.",
-      "type": "Optional[Variant[Array[String],String]]"
+      "type": "Variant[Array[String],String]"
     },
     "fuzzy_match": {
       "description": "Allow -match operator matches on $login_name so that inputs like 'sql' will match any login with 'sql' anywhere in the name.",
@@ -25,5 +25,6 @@
       "type": "Optional[String]",
       "sensitive": true
     }
-  }
+  },
+  "files": ["sqlserver/files/shared_task_functions.ps1"]
 }
