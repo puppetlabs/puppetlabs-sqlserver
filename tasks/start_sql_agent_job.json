@@ -9,7 +9,7 @@
     },
     "job_name": {
       "description": "The name of the job to start.",
-      "type": "Optional[Variant[Array[String],String]]"
+      "type": "Variant[Array[String],String]"
     },
     "fuzzy_match": {
       "description": "Turn the job_name parameter into a pattern to match using the PowerShell -match operator.",

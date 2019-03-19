@@ -69,24 +69,8 @@ foreach ($instance in $SQLInstances) {
     }
 
     foreach ($currentJob in $sqlserver.jobserver.jobs) {
-        if ($MyInvocation.BoundParameters.ContainsKey('job_name')) {
-            if ($selectedJob = (Select-JobStrict -job $currentJob -jobsToMatch $job_name -fuzzy_match:$fuzzy_match)) {
-                [void]$jobs.add($selectedJob)
-                $jobName = $selectedJob.jobsteps[$step].name
-                if([string]::IsNullOrEmpty($jobName)){
-                    $message = `
-                    ("No job step found at index {0}. There are {1} steps in the job `"{2}`". Remember that these are zero based array indexes." `
-                    -f $step, $selectedJob.jobSteps.count, $selectedJob.name)
-                    return (Write-BoltError $message)
-                }
-                $selectedJob.start($jobName)
-                # It takes the server a little time to spin up the job. If we don't do this here
-                # then the -wait parameter may not work later.
-                Start-Sleep -Milliseconds 300
-            }
-        }
-        else {
-            [void]$jobs.add($currentJob)
+        if ($selectedJob = (Select-JobStrict -job $currentJob -jobsToMatch $job_name -fuzzy_match:$fuzzy_match)) {
+            [void]$jobs.add($selectedJob)
             $jobName = $selectedJob.jobsteps[$step].name
             if([string]::IsNullOrEmpty($jobName)){
                 $message = `
@@ -95,6 +79,8 @@ foreach ($instance in $SQLInstances) {
                 return (Write-BoltError $message)
             }
             $selectedJob.start($jobName)
+            # It takes the server a little time to spin up the job. If we don't do this here
+            # then the -wait parameter may not work later.
             Start-Sleep -Milliseconds 300
         }
     }
