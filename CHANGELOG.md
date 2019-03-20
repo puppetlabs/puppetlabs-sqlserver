@@ -10,6 +10,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 - Bolt task to start SQL agent jobs ([MODULES-8610](https://tickets.puppetlabs.com/browse/MODULES-8610)).
 
+## Fixed
+
+- Missing type declaration for the get_sqlagent_job.json
+- Make job_name param required for the start_sql_agent_job task ([MODULES-8749](https://tickets.puppetlabs.com/browse/MODULES-8749))
+
 ## [2.4.0] - 2019-03-12
 
 ### Added
