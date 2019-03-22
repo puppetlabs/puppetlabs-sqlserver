@@ -1188,40 +1188,40 @@ Use this parameter — especially when using the `fuzzy_match` parameter — to 
 
 * **instance_name**
 
-  The name of the instance to start a job on. The value defaults to the default instance on the machine.
+  The name of the instance. The value defaults to the default instance on the machine.
   Refer to named instances by either the short name of the instance or by `<COMPUTERNAME>\<INSTANCE_NAME>`.
   Specifying an instance name will access only that instance.
-  Pass the values `.`, `MSSQLSERVER`, the node name, or leave blank refer to only the default instance.
-  This is an optional parameter which accepts a single string or array of strings as input.
+  Pass the values `.`, `MSSQLSERVER`, the node name, or leave blank which will refer to the default instance.
+  This is an optional parameter which accepts a single string or an array of strings as input.
 
 * **job_name**
 
-  The name of a job to start. By default job names must be exact.
-  See the `fuzzy_match` parameter below for pattern matching job names.
-  This parameter is required and will accept a string or an array of strings as input.
+  The name of a job. By default, the job names must be exact.
+  See the `fuzzy_match` parameter below for an example of pattern matching job names.
+  This parameter is required and accepts a string or an array of strings as input.
 
 * **fuzzy_match**
 
-  Modifies the behavior of the `job_name` parameter so that the value given is a job name pattern to match.
-  Searches are done using the PowerShell `-match` operator.
-  For example, if the string `backup` is passed to the `job_name` parameter, while `fuzzy_match` is set to true, jobs such as `Daily Backup` and `System Backup` will be matched and started.
+  Modifies the behavior of the `job_name` parameter so that the value given is matched to the job name pattern.
+  The `fuzzy_match` paremeter searches using the PowerShell `-match` operator.
+  For example, when `fuzzy_match` is set to true, if you pass the string `backup` to the `job_name` parameter, jobs such as `Daily Backup` and `System Backup` will be matched and executed.
   This is an optional parameter which accepts either `true` or `false`. Its default value is false.
 
 * **step**
 
-  The step number you would like to execute. Leave blank to execute at the first step.
-  Keep in mind that these job step numbers refer to a zero based array of job step.
-  If you want to execute a job starting at step 5 you need to pass 4 to this parameter.
-  This is because contrary to the SQLServer user interface in many places, the programming objects
+  The step number you want to execute. Leave blank to execute the first step.
+  Note that these job step numbers refer to a zero based array of job steps.
+  To execute a job starting at step 5, pass step 4 to this parameter.
+  This is because contrary to the SQLServer user interface, the programming objects
   this task leverages are zero based.
 
 * **wait**
 
-  This parameter tells the task to wait until a set of jobs has completed and then return job data.
-  All matched jobs are started concurrently and the task waits in a loop for all of them to complete.
-  If this parameter is not set to true, then matched jobs are started and the task returns job data indicating that the job is executing.
-  Keep in mind that jobs that complete rapidly may complete before the task has finished executing.
-  This could result in returned job information indicating the job is currently idle. Please inspect the `lastRunDate` property of the job and the steps to determine if the job was executed successfully.
+  This parameter tells the task to wait until a set of jobs has been completed before returning the job data.
+  All matched jobs start concurrently. The task waits in a loop for all of the jobs to complete.
+  If this parameter is not set to true, matched jobs are started and the task returns job data — indicating that the job has started.
+  Note that if a job completes quickly, it may finish before the task has finished executing.   
+  This could result in false information that the job is idle. If this happens, check the `lastRunDate` property of the job to see if it was executed successfully.
   This is a boolean parameter that defaults to false.
 
 ### Microsoft SQL Server terms
