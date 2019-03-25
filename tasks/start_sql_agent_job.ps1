@@ -79,11 +79,12 @@ foreach ($instance in $SQLInstances) {
                 return (Write-BoltError $message)
             }
             $selectedJob.start($jobName)
-            # It takes the server a little time to spin up the job. If we don't do this here
-            # then the -wait parameter may not work later.
-            Start-Sleep -Milliseconds 300
         }
     }
+
+    # It takes the server a little time to spin up the job. If we don't do this here
+    # then the -wait parameter may not work later.
+    Start-Sleep -Seconds 1
 }
 
 do {
@@ -96,6 +97,7 @@ do {
         }
         [void]$finishedJobs.add((New-CustomJobObject -job $job))
     }
+    Start-Sleep -Milliseconds 300
 } while ($wait -and !$done)
 
 $return.jobs = $finishedJobs
