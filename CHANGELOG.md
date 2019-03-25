@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ## [Unreleased]
 
+## [2.5.0] - 2019-03-26
+
 ## Added
 
 - Bolt task to start SQL agent jobs ([MODULES-8610](https://tickets.puppetlabs.com/browse/MODULES-8610)).
@@ -231,7 +233,8 @@ attempts to reinstall an instance that already exists ([MODULES-6022](https://ti
 
 Initial release.
 
-[Unreleased]: https://github.com/puppetlabs/puppetlabs-sqlserver/compare/2.4.0..master
+[Unreleased]: https://github.com/puppetlabs/puppetlabs-sqlserver/compare/2.5.0..master
+[2.5.0]: https://github.com/puppetlabs/puppetlabs-sqlserver/compare/2.4.0..2.5.0
 [2.4.0]: https://github.com/puppetlabs/puppetlabs-sqlserver/compare/2.3.0..2.4.0
 [2.3.0]: https://github.com/puppetlabs/puppetlabs-sqlserver/compare/2.2.0..2.3.0
 [2.2.0]: https://github.com/puppetlabs/puppetlabs-sqlserver/compare/2.1.1..2.2.0
