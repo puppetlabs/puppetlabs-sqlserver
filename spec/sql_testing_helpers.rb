@@ -56,6 +56,7 @@ def run_sql_query(host, opts = {}, &block)
       $Env:Path +=\";C:\\Program Files\\Microsoft SQL Server\\Client SDK\\ODBC\\110\\Tools\\Binn;C:\\Program Files\\Microsoft SQL Server\\110\\Tools\\Binn\\"
       $Env:Path +=\";C:\\Program Files\\Microsoft SQL Server\\Client SDK\\ODBC\\120\\Tools\\Binn;C:\\Program Files\\Microsoft SQL Server\\120\\Tools\\Binn\\"
       $Env:Path +=\";C:\\Program Files\\Microsoft SQL Server\\Client SDK\\ODBC\\130\\Tools\\Binn;C:\\Program Files\\Microsoft SQL Server\\130\\Tools\\Binn\\"
+      $Env:Path +=\";C:\\Program Files\\Microsoft SQL Server\\Client SDK\\ODBC\\150\\Tools\\Binn;C:\\Program Files\\Microsoft SQL Server\\150\\Tools\\Binn\\"
       sqlcmd.exe -S #{server}\\#{instance} -U #{sql_admin_user} -P #{sql_admin_pass} -Q \"#{query}\"
   EOS
   # sqlcmd has problem authenticate to sqlserver if the instance is the default one MSSQLSERVER
@@ -103,6 +104,12 @@ def base_install(sql_version)
       :file         => SQL_2016_ISO,
       :drive_letter => 'H'
     }
+  when 2019
+    iso_opts = {
+      :folder       => QA_RESOURCE_ROOT,
+      :file         => SQL_2019_ISO,
+      :drive_letter => 'H'
+    }
   end
   host = find_only_one('sql_host')
   # Mount the ISO on the agent
@@ -146,7 +153,7 @@ def remove_sql_instances(host, opts = {})
 end
 
 def get_install_paths(version)
-  vers = { '2012' => '110', '2014' => '120', '2016' => '130' }
+  vers = { '2012' => '110', '2014' => '120', '2016' => '130', '2019' => '150' }
 
   raise 'Valid version must be specified' if ! vers.keys.include?(version)
 
