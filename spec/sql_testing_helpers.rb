@@ -103,6 +103,18 @@ def base_install(sql_version)
       :file         => SQL_2016_ISO,
       :drive_letter => 'H'
     }
+  when 2017
+    iso_opts = {
+      :folder       => QA_RESOURCE_ROOT,
+      :file         => SQL_2017_ISO,
+      :drive_letter => 'H'
+    }
+  when 2019
+    iso_opts = {
+      :folder       => QA_RESOURCE_ROOT,
+      :file         => SQL_2019_ISO,
+      :drive_letter => 'H'
+    }
   end
   host = find_only_one('sql_host')
   # Mount the ISO on the agent
