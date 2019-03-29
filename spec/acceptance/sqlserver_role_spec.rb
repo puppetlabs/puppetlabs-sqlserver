@@ -178,7 +178,6 @@ describe "Test sqlserver::role", :node => host do
         type        => 'DATABASE',
       }
       MANIFEST
-      require 'pry'; binding.pry;
       execute_manifest(pp, opts = {}) do |r|
         expect(r.stderr).not_to match(/Error/i)
       end
