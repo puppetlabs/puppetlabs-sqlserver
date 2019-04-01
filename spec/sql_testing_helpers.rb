@@ -56,7 +56,9 @@ def run_sql_query(host, opts = {}, &block)
       $Env:Path +=\";C:\\Program Files\\Microsoft SQL Server\\Client SDK\\ODBC\\110\\Tools\\Binn;C:\\Program Files\\Microsoft SQL Server\\110\\Tools\\Binn\\"
       $Env:Path +=\";C:\\Program Files\\Microsoft SQL Server\\Client SDK\\ODBC\\120\\Tools\\Binn;C:\\Program Files\\Microsoft SQL Server\\120\\Tools\\Binn\\"
       $Env:Path +=\";C:\\Program Files\\Microsoft SQL Server\\Client SDK\\ODBC\\130\\Tools\\Binn;C:\\Program Files\\Microsoft SQL Server\\130\\Tools\\Binn\\"
+      $Env:Path +=\";C:\\Program Files\\Microsoft SQL Server\\Client SDK\\ODBC\\140\\Tools\\Binn;C:\\Program Files\\Microsoft SQL Server\\140\\Tools\\Binn\\"
       $Env:Path +=\";C:\\Program Files\\Microsoft SQL Server\\Client SDK\\ODBC\\150\\Tools\\Binn;C:\\Program Files\\Microsoft SQL Server\\150\\Tools\\Binn\\"
+      $Env:Path +=\";C:\\Program Files\\Microsoft SQL Server\\Client SDK\\ODBC\\170\\Tools\\Binn;C:\\Program Files\\Microsoft SQL Server\\170\\Tools\\Binn\\"
       sqlcmd.exe -S #{server}\\#{instance} -U #{sql_admin_user} -P #{sql_admin_pass} -Q \"#{query}\"
   EOS
   # sqlcmd has problem authenticate to sqlserver if the instance is the default one MSSQLSERVER
@@ -102,6 +104,12 @@ def base_install(sql_version)
     iso_opts = {
       :folder       => QA_RESOURCE_ROOT,
       :file         => SQL_2016_ISO,
+      :drive_letter => 'H'
+    }
+  when 2017
+    iso_opts = {
+      :folder       => QA_RESOURCE_ROOT,
+      :file         => SQL_2017_ISO,
       :drive_letter => 'H'
     }
   when 2019
@@ -153,12 +161,17 @@ def remove_sql_instances(host, opts = {})
 end
 
 def get_install_paths(version)
-  vers = { '2012' => '110', '2014' => '120', '2016' => '130', '2019' => '150' }
+  vers = { '2012' => '110', '2014' => '120', '2016' => '130', '2017' => '140', '2019' => '150' }
 
   raise 'Valid version must be specified' if ! vers.keys.include?(version)
 
   dir = "%ProgramFiles%\\Microsoft SQL Server\\#{vers[version]}\\Setup Bootstrap"
-  [dir, "#{dir}\\SQLServer#{version}"]
+  sql_directory = "SQL"
+  if version != "2017"
+    sql_directory = sql_directory + "Server"
+  end
+
+  [dir, "#{dir}\\#{sql_directory}#{version}"]
 end
 
 def install_pe_license(host)

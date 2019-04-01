@@ -123,7 +123,7 @@ describe "sqlserver_instance", :node => host do
       ensure_sqlserver_instance(features, inst_name, 'absent')
     end
 
-    it "create #{inst_name} instance with only one RS feature", :tier_high => true do
+    it "create #{inst_name} instance with only one RS feature", :unless => version.to_i >= 2017, :tier_high => true do
       ensure_sqlserver_instance(features, inst_name)
 
       validate_sql_install(host, {:version => version}) do |r|

@@ -121,8 +121,8 @@ describe "sqlserver_features", :node => host do
       end
     end
 
-    # TODO: Guard on SQL 2016
-    it "'ADV_SSMS'", :unless => sql_version == '2016', :tier_low => true do
+    # TODO: Guard on SQL 2016 and 2017
+    it "'ADV_SSMS'", :unless => sql_version.to_i >= 2016, :tier_low => true do
       ensure_sql_features(features - ['ADV_SSMS'])
 
       validate_sql_install(host, {:version => sql_version}) do |r|
