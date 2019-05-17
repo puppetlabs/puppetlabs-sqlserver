@@ -253,6 +253,21 @@ sqlserver_tsql {'check advanced sp_configure':
   value => 2048
 }
 ```
+*Note:*
+$facts['hostnane'] is only suitable for building login names for local machine logins. For building domain logins you will need the domain name instead. $facts['domain'] returns the full domain name which will usually not be what you need. Try instead:
+
+```puppet
+$netbios_name = split($facts['domain'],'\.')[0]
+
+$dba_group_netbios_name = "${netbios_name}\\DB Administrators"
+
+sqlserver::role { 'sysadmin':
+  ensure   => 'present',
+  instance => 'MSSQLSERVER',
+  type     => 'SERVER',
+  members  => [$dba_group_netbios_name, $facts['id']],
+}
+```
 
 ## Reference
 
