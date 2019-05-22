@@ -37,7 +37,7 @@ Puppet::Type::newtype(:sqlserver_features) do
   newproperty(:features, :array_matching => :all) do
     desc 'Specifies features to install, uninstall, or upgrade. The list of top-level features include
          BC, Conn, SSMS, ADV_SSMS, SDK, IS and MDS.'
-    newvalues(:Tools, :BC, :Conn, :SSMS, :ADV_SSMS, :SDK, :IS, :MDS, :BOL, :DREPLAY_CTLR, :DREPLAY_CLT)
+    newvalues(:Tools, :BC, :Conn, :SSMS, :ADV_SSMS, :SDK, :IS, :MDS, :BOL, :DREPLAY_CTLR, :DREPLAY_CLT, :DQC)
     munge do |value|
       if PuppetX::Sqlserver::ServerHelper.is_super_feature(value)
         Puppet.deprecation_warning("Using #{value} is deprecated for features in sql_features resources")

@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ## [Unreleased]
 
+## Fixed
+
+- Add DQC to sqlserver_features feature attribute ([MODULES-8600](https://tickets.puppetlabs.com/browse/MODULES-8600))
+
 ## [2.5.0] - 2019-03-26
 
 ## Added

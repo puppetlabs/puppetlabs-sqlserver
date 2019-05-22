@@ -33,7 +33,7 @@ describe "sqlserver_features", :node => host do
   end
 
   context 'can install' do
-    features = ['BC', 'Conn', 'SDK', 'IS', 'MDS']
+    features = ['BC', 'Conn', 'SDK', 'IS', 'MDS', 'DQC']
 
     before(:all) do
       remove_sql_features(host, {:features => features, :version => sql_version})
@@ -58,7 +58,7 @@ describe "sqlserver_features", :node => host do
 
   context 'can remove' do
 
-    features = ['BC', 'Conn', 'SDK', 'IS', 'MDS']
+    features = ['BC', 'Conn', 'SDK', 'IS', 'MDS', 'DQC']
 
     before(:all) do
       ensure_sql_features(features)
@@ -85,11 +85,11 @@ describe "sqlserver_features", :node => host do
 
   context 'can remove independent feature' do
     if sql_version == '2016'
-      all_possible_features = ['BC', 'Conn', 'SDK', 'IS', 'MDS']
-      features = ['BC', 'Conn', 'SDK', 'IS', 'MDS']
+      all_possible_features = ['BC', 'Conn', 'SDK', 'IS', 'MDS', 'DQC']
+      features = ['BC', 'Conn', 'SDK', 'IS', 'MDS', 'DQC']
     else
-      all_possible_features = ['BC', 'Conn', 'SSMS', 'ADV_SSMS', 'SDK', 'IS', 'MDS']
-      features = ['BC', 'Conn', 'SSMS', 'ADV_SSMS', 'SDK', 'IS', 'MDS']
+      all_possible_features = ['BC', 'Conn', 'SSMS', 'ADV_SSMS', 'SDK', 'IS', 'MDS', 'DQC']
+      features = ['BC', 'Conn', 'SSMS', 'ADV_SSMS', 'SDK', 'IS', 'MDS', 'DQC']
     end
 
     before(:all) do
@@ -156,6 +156,14 @@ describe "sqlserver_features", :node => host do
         expect(r.stdout).not_to match(/Master Data Services/)
       end
     end
+
+    it "'DQC'", :tier_low => true do
+      ensure_sql_features(features - ['DQC'])
+
+      validate_sql_install(host, {:version => sql_version}) do |r|
+        expect(r.stdout).not_to match(/Data Quality Client/)
+      end
+    end
   end
 
   context 'with negative test cases' do
@@ -200,7 +208,7 @@ describe "sqlserver_features", :node => host do
 
     context 'can install' do
 
-      features = ['BC', 'Conn', 'SDK', 'IS', 'MDS']
+      features = ['BC', 'Conn', 'SDK', 'IS', 'MDS', 'DQC']
 
       before(:all) do
         puppet_version = (on host, puppet('--version')).stdout.chomp
