@@ -86,14 +86,16 @@ module PuppetX
             open(HKLM, "#{instance_root}\\#{instance_type}", KEY_READ | KEY64) do |instance|
               each_value(instance) do |short_name, _, long_name|
                 root = "Software\\Microsoft\\Microsoft SQL Server\\#{long_name}"
-                discovered[short_name] ||= {
-                  'name' => short_name,
-                  'reg_root' => [],
-                  'version' => open(HKLM, "#{root}\\MSSQLServer\\CurrentVersion", KEY_READ | KEY64) { |r| values(r)['CurrentVersion'] },
-                  'version_friendly' => friendly_version
-                }
-                
-                discovered[short_name]['reg_root'].push(root)
+                if key_exists?("#{root}\\MSSQLServer\\CurrentVersion")
+                  discovered[short_name] ||= {
+                    'name' => short_name,
+                    'reg_root' => [],
+                    'version' => open(HKLM, "#{root}\\MSSQLServer\\CurrentVersion", KEY_READ | KEY64) { |r| values(r)['CurrentVersion'] },
+                    'version_friendly' => friendly_version
+                  }
+
+                  discovered[short_name]['reg_root'].push(root)
+                end
               end
             end
           end
