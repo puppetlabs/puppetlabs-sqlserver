@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 - Add DQC to sqlserver_features feature attribute ([MODULES-8600](https://tickets.puppetlabs.com/browse/MODULES-8600))
 - Fix sqlserver_instances fact fails when registry contains uninstalled instances ([MODULES-8439](https://tickets.puppetlabs.com/browse/MODULES-8439))
+- Switch to using PowerShell `Restart-Service .. -Force` to restart the SQLServer service in `sqlserver::sp_configure` ([MODULES-6904](https://tickets.puppetlabs.com/browse/MODULES-6904))
 
 ## [2.5.0] - 2019-03-26
 

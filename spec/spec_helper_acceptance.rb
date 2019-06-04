@@ -85,6 +85,7 @@ unless ENV['MODULE_provision'] == 'no'
 
     # Install sqlserver dependencies.
     on(agent, puppet('module install puppetlabs-stdlib'))
+    on(agent, puppet('module install puppetlabs-powershell'))
 
     # Mount windows 2012R2 ISO to allow install of .NET 3.5 Windows Feature
     iso_opts = {
@@ -102,6 +103,7 @@ unless ENV['MODULE_provision'] == 'no'
   hosts_as("master").each do |host|
     # Install sqlserver dependencies.
     on(host, puppet('module install puppetlabs-stdlib'))
+    on(host, puppet('module install puppetlabs-powershell'))
 
     # Install sqlserver module from local source.
     # See FM-5062 for more details.

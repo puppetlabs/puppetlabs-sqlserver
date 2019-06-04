@@ -73,7 +73,7 @@ RSpec.describe 'sqlserver::sp_configure', :type => :define do
 
   describe 'service' do
     it 'should be defined' do
-      should contain_service('MSSQLSERVER')
+      should contain_exec('restart-service-MSSQLSERVER').with_refreshonly(true)
     end
   end
 end
