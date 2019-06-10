@@ -42,7 +42,7 @@
     "tsql",
     "database"
   ],
-  "pdk-version": "1.7.1",
+  "pdk-version": "1.8.0",
   "template-url": "https://github.com/puppetlabs/pdk-templates",
-  "template-ref": "heads/master-0-ge116657"
+  "template-ref": "1.8.0-0-g0d9da00"
 }
