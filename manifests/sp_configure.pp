@@ -41,10 +41,8 @@ define sqlserver::sp_configure (
     default => "MSSQL\$${instance}"
   }
 
-  ensure_resource('service',$service_name)
-
   if $restart {
-    Sqlserver_tsql["sp_configure-${instance}-${config_name}"] ~> Service[$service_name]
+    Sqlserver_tsql["sp_configure-${instance}-${config_name}"] ~> Exec["restart-service-${service_name}"]
   }
 
   sqlserver_tsql{ "sp_configure-${instance}-${config_name}":
@@ -52,5 +50,12 @@ define sqlserver::sp_configure (
     command  => template('sqlserver/create/sp_configure.sql.erb'),
     onlyif   => template('sqlserver/query/sp_configure.sql.erb'),
     require  => Sqlserver::Config[$instance]
+  }
+
+  exec{"restart-service-${service_name}":
+    command     => template('sqlserver/restart_service.ps1.erb'),
+    provider    => powershell,
+    logoutput   => true,
+    refreshonly => true,
   }
 }
