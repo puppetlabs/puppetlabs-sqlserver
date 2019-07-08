@@ -1,5 +1,5 @@
 module Puppet::Parser::Functions
-  newfunction(:sqlserver_validate_size) do |args|
+  newfunction(:sqlserver_validate_size, :doc => '@return Error if not a valid size value') do |args|
     if args.length != 1
       raise(Puppet::ParseError, "mssql_validate_size(): requires exactly 1 argument, you provided #{args.length}")
     end

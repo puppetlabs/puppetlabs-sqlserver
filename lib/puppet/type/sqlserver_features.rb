@@ -6,13 +6,15 @@ Puppet::Type::newtype(:sqlserver_features) do
 
 
   newparam(:name, :namevar => true) do
-    #Due to our prefetch and unaware of what name the user will provide we munge the value to meet our expecations.
+    desc 'Due to our prefetch and unaware of what name the user will provide we munge the value to meet our expecations.'
     munge do |value|
       'Generic Features'
     end
   end
 
-  newparam(:source)
+  newparam(:source) do
+    desc 'Location of the source files.'
+  end
 
   newparam(:windows_feature_source) do
     desc 'Specify the location of the Windows Feature source files.  This may be needed to install the .Net Framework.
@@ -51,7 +53,7 @@ Puppet::Type::newtype(:sqlserver_features) do
   newparam(:install_switches) do
     desc 'A hash of switches you want to pass to the installer'
     validate do |value|
-      fail ArguemntError, 'install_switch must be in the form of a Hash' unless value.is_a?(Hash)
+      fail ArguemntError, _('install_switch must be in the form of a Hash') unless value.is_a?(Hash)
     end
   end
 

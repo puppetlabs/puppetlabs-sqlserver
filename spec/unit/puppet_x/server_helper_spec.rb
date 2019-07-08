@@ -7,7 +7,7 @@ RSpec.describe PuppetX::Sqlserver::ServerHelper do
 
   shared_examples 'when calling with' do |user, should_be_bool|
     it "with #{user} should return #{should_be_bool}" do
-      subject.stubs(:lookupvar).with('hostname').returns('mybox')
+      allow(subject).to receive(:lookupvar).with('hostname').and_return('mybox')
       subject.is_domain_or_local_user?(user, 'mybox').should(eq(should_be_bool))
     end
   end

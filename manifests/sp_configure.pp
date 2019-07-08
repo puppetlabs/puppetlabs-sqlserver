@@ -1,26 +1,25 @@
 ##
-# == Defined Resource Type: sqlserver::sp_configure
+# @summary Defined Resource Type: sqlserver::sp_configure
 #
-# == Required Dependencies:
+# Required Dependencies:
 # Requires defined type {sqlserver::config} in order to execute against the SQL Server instance
 #
-# === Parameters
-# [config_name]
+# @param config_name
 #   The config name found within sys.configurations that you would like to update
 #
-# [value]
+# @param value
 #   The value you would like to change to for the given `config_name`, must be an integer value
 #
-# [instance]
+# @param instance
 #   The name of the instance you would like to manage against
 #
-# [reconfigure]
+# @param reconfigure
 #   If you would like to run RECONFIGURE against the server after updating the value, defaults to true
 #
-# [with_override]
+# @param with_override
 #   This pertains tot he `reconfigure` in which you would want to override or force the reconfigure, defaults to false
 #
-# [restart]
+# @param restart
 #   Will ensure service resource and notify if changes occur for a restart
 #
 #  @see http://msdn.microsoft.com/en-us/library/ms176069.aspx Reconfigure Explanation

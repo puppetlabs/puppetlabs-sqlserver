@@ -2,8 +2,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), '..', 'sqlserver'))
 require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', '..', 'puppet_x/sqlserver/sql_connection'))
 
 Puppet::Type::type(:sqlserver_tsql).provide(:mssql, :parent => Puppet::Provider::Sqlserver) do
-
-
+  desc 'SQLServer TSQL provider'
   def run(query)
     debug("Running resource #{query} against #{resource[:instance]}")
     config = get_config.merge({ :database => resource[:database] })

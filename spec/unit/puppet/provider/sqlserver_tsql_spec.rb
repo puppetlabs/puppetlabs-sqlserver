@@ -7,9 +7,9 @@ RSpec.describe Puppet::Type.type(:sqlserver_tsql).provider(:mssql) do
   let(:config) { {:admin_user => 'sa', :admin_pass => 'Pupp3t1@', :instance_name => 'MSSQLSERVER'} }
 
   def stub_open_and_run(query, config)
-    sqlconn = mock()
-    sqlconn.expects(:open_and_run_command).with(gen_query(query), config)
-    PuppetX::Sqlserver::SqlConnection.expects(:new).returns(sqlconn)
+    sqlconn = double()
+    expect(sqlconn).to receive(:open_and_run_command).with(gen_query(query), config)
+    expect(PuppetX::Sqlserver::SqlConnection).to receive(:new).and_return(sqlconn)
   end
 
   def create_sqlserver_tsql(args)
@@ -18,7 +18,7 @@ RSpec.describe Puppet::Type.type(:sqlserver_tsql).provider(:mssql) do
   end
 
   def stub_get_instance_config(config)
-    @provider.expects(:get_config).returns(config)
+    expect(@provider).to receive(:get_config).and_return(config)
   end
 
   def gen_query(query)

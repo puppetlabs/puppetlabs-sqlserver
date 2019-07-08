@@ -1,39 +1,38 @@
 ##
-# == Define Resource Type: sqlserver::role::permissions
+# @summary 
+#   Define Resource Type: sqlserver::role::permissions
 #
-#
-# === Requirement/Dependencies:
-#
+# Requirement/Dependencies:
 # Requires defined type {sqlserver::config} in order to execute against the SQL Server instance
 #
-#
-# === Parameters
-#
-# [ensure]
+# 
+# @param ensure
 #   Whether the role should be absent or present
 #
-# [role]
+# @param role
 #   The name of the role for which the permissions will be manage.
 #
-# [instance]
+# @param instance
 #   The name of the instance where the role and database exists. Defaults to 'MSSQLSERVER'
 #
-# [authorization]
+# @param authorization
 #   The database principal that should own the role
 #
-# [type]
+# @param type
 #   Whether the Role is `SERVER` or `DATABASE`
 #
-# [database]
+# @param database
 #   The name of the database the role exists on when specifying `type => 'DATABASE'`. Defaults to 'master'
 #
-# [permissions]
-#   A hash of permissions that should be managed for the role.  Valid keys are 'GRANT', 'GRANT_WITH_OPTION', 'DENY' or 'REVOKE'.  Valid values must be an array of Strings i.e. {'GRANT' => ['CONNECT', 'CREATE ANY DATABASE'] }
+# @param permissions
+#   A hash of permissions that should be managed for the role.  
+#   Valid keys are 'GRANT', 'GRANT_WITH_OPTION', 'DENY' or 'REVOKE'. 
+#   Valid values must be an array of Strings i.e. {'GRANT' => ['CONNECT', 'CREATE ANY DATABASE'] }
 #
-# [members]
+# @param members
 #   An array of users/logins that should be a member of the role
 #
-# [members_purge]
+# @param members_purge
 #   Whether we should purge any members not listed in the members parameter. Default: false
 ##
 define sqlserver::role(

@@ -35,7 +35,7 @@ RSpec.describe provider_class do
                 "/FEATURES=#{installed_features.join(',')}",]
 
     result = Puppet::Util::Execution::ProcessOutput.new('', exit_code)
-    Puppet::Util::Execution.stubs(:execute).with(cmd_args.compact, failonfail: false).returns(result)
+    allow(Puppet::Util::Execution).to receive(:execute).with(cmd_args.compact, failonfail: false).and_return(result)
   end
 
   shared_examples 'create' do |exit_code, warning_matcher|
@@ -71,11 +71,10 @@ RSpec.describe provider_class do
       end
 
       # If warning_matcher supplied ensure warnings raised match, otherwise no warnings raised
-      @provider.stubs(:warn).with(regexp_matches(warning_matcher)).returns(nil).times(1) if warning_matcher
-      @provider.stubs(:warn).with(anything).times(0) unless warning_matcher
+      allow(@provider).to receive(:warn).with(anything) unless warning_matcher
 
       result = Puppet::Util::Execution::ProcessOutput.new('', exit_code || 0)
-      Puppet::Util::Execution.stubs(:execute).with(cmd_args.compact, failonfail: false).returns(result)
+      allow(Puppet::Util::Execution).to receive(:execute).with(cmd_args.compact, failonfail: false).and_return(result)
       @provider.create
     }
   end
@@ -112,10 +111,10 @@ RSpec.describe provider_class do
         cmd_args << switch
       end
 
-      @provider.stubs(:warn).with(anything).times(0)
+      allow(@provider).to receive(:warn).with(anything)
 
       result = Puppet::Util::Execution::ProcessOutput.new('', exit_code || 0)
-      Puppet::Util::Execution.stubs(:execute).with(cmd_args.compact, failonfail: false).returns(result)
+      allow(Puppet::Util::Execution).to receive(:execute).with(cmd_args.compact, failonfail: false).and_return(result)
       expect{ @provider.create }.to raise_error(error_matcher)
     }
   end
@@ -126,9 +125,9 @@ RSpec.describe provider_class do
       @provider = provider_class.new(@resource)
 
       stub_source_which_call args[:source]
-      @provider.expects(:current_installed_features).returns(installed_features)
+      expect(@provider).to receive(:current_installed_features).and_return(installed_features)
       stub_uninstall args, installed_features, exit_code || 0
-      @provider.stubs(:warn).with(regexp_matches(warning_matcher)).returns(nil).times(1) if warning_matcher
+      allow(@provider).to receive(:warn).with(regexp_matches(warning_matcher)).and_return(nil) if warning_matcher
       @provider.destroy
     }
   end
@@ -139,7 +138,7 @@ RSpec.describe provider_class do
       provider = provider_class.new(resource)
 
       stub_source_which_call args[:source]
-      provider.expects(:current_installed_features).returns(installed_features)
+      expect(provider).to receive(:current_installed_features).and_return(installed_features)
       stub_uninstall args, installed_features
       provider.create
     }
@@ -279,10 +278,10 @@ RSpec.describe provider_class do
   describe 'install_switches' do
     before :each do
       @file_double = Tempfile.new(['sqlconfig', '.ini'])
-      @file_double.stubs(:write)
-      @file_double.stubs(:flush)
-      @file_double.stubs(:close)
-      Tempfile.stubs(:new).with(['sqlconfig', '.ini']).returns(@file_double)
+      allow(@file_double).to receive(:write)
+      allow(@file_double).to receive(:flush)
+      allow(@file_double).to receive(:close)
+      allow(Tempfile).to receive(:new).with(['sqlconfig', '.ini']).and_return(@file_double)
     end
 
     it_behaves_like 'create' do

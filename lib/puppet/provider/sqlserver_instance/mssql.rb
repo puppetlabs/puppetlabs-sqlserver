@@ -4,6 +4,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', '..', 'pu
 require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', '..', 'puppet_x/sqlserver/features'))
 
 Puppet::Type::type(:sqlserver_instance).provide(:mssql, :parent => Puppet::Provider::Sqlserver) do
+  desc 'SQLServer instance provider'
   RESOURCEKEY_TO_CMDARG = {
     'agt_svc_account'       => 'AGTSVCACCOUNT',
     'agt_svc_password'      => 'AGTSVCPASSWORD',
@@ -89,13 +90,13 @@ Puppet::Type::type(:sqlserver_instance).provide(:mssql, :parent => Puppet::Provi
       destroy
     else
       unless @resource[:as_sysadmin_accounts].nil? || @resource[:features].include?('AS')
-        fail('The parameter as_sysadmin_accounts was specified however the AS feature was not included in the installed features.  Either remove the as_sysadmin_accounts parameter or add AS as a feature to the instance.')
+        fail(_('The parameter as_sysadmin_accounts was specified however the AS feature was not included in the installed features.  Either remove the as_sysadmin_accounts parameter or add AS as a feature to the instance.'))
       end
       unless @resource[:polybase_svc_account].nil? || @resource[:features].include?('POLYBASE')
-        fail('The parameter polybase_svc_account was specified however the POLYBASE feature was not included in the installed features.  Either remove the polybase_svc_account parameter or add POLYBASE as a feature to the instance.')
+        fail(_('The parameter polybase_svc_account was specified however the POLYBASE feature was not included in the installed features.  Either remove the polybase_svc_account parameter or add POLYBASE as a feature to the instance.'))
       end
       unless @resource[:polybase_svc_password].nil? || @resource[:features].include?('POLYBASE')
-        fail('The parameter polybase_svc_password was specified however the POLYBASE feature was not included in the installed features.  Either remove the polybase_svc_password parameter or add POLYBASE as a feature to the instance.')
+        fail(_('The parameter polybase_svc_password was specified however the POLYBASE feature was not included in the installed features.  Either remove the polybase_svc_password parameter or add POLYBASE as a feature to the instance.'))
       end
 
       instance_version = PuppetX::Sqlserver::ServerHelper.sql_version_from_install_source(@resource[:source])

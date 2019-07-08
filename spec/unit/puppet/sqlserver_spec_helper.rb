@@ -1,10 +1,10 @@
 def stub_source_which_call(source)
-  Puppet::Util.stubs(:which).with("#{source}/setup.exe").returns("#{source}/setup.exe")
+  allow(Puppet::Util).to receive(:which).with("#{source}/setup.exe").and_return("#{source}/setup.exe")
 end
 
 def stub_powershell_call(subject)
-  Puppet::Util.stubs(:which).with('powershell.exe').returns('powershell.exe')
-  Puppet::Provider::Sqlserver.stubs(:run_install_dot_net).returns()
+  allow(Puppet::Util).to receive(:which).with('powershell.exe').and_return('powershell.exe')
+  allow(Puppet::Provider::Sqlserver).to receive(:run_install_dot_net)
 end
 
 def stub_add_features(args, features, additional_switches = [], exit_code = 0)
@@ -34,5 +34,5 @@ def stub_modify_features(action, args, features, additional_switches = [], exit_
 
   result = Puppet::Util::Execution::ProcessOutput.new('', exit_code)
 
-  Puppet::Util::Execution.stubs(:execute).with(cmds, failonfail: false).returns(result)
+  allow(Puppet::Util::Execution).to receive(:execute).with(cmds, failonfail: false).and_return(result)
 end

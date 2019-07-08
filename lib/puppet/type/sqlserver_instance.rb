@@ -6,13 +6,14 @@ Puppet::Type::newtype(:sqlserver_instance) do
   ensurable
 
   newparam(:name, :namevar => true) do
+    desc 'Namevar'
     munge do |value|
       value.upcase
     end
   end
 
   newparam(:source) do
-
+    desc 'Location of source files.'
   end
 
   newparam(:windows_feature_source) do
@@ -129,7 +130,7 @@ Puppet::Type::newtype(:sqlserver_instance) do
   newparam(:install_switches) do
     desc 'A hash of switches you want to pass to the installer'
     validate do |value|
-      fail ArguemntError, 'install_switch must be in the form of a Hash' unless value.is_a?(Hash)
+      fail ArguemntError, _('install_switch must be in the form of a Hash') unless value.is_a?(Hash)
     end
   end
 

@@ -1,28 +1,28 @@
 ##
-# == Define Resource Type: sqlserver::user::permissions
+# @summary Define Resource Type: sqlserver::user::permissions
 #
-# === Requirement/Dependencies:
-#
+# Requirement/Dependencies:
 # Requires defined type {sqlserver::config} in order to execute against the SQL Server instance
 #
 #
-# === Parameters
-# [user]
+# @param user
 #   The username for which the permission will be manage.
 #
-# [database]
+# @param database
 #   The databaser you would like the permission managed on.
 #
-# [permissions]
+# @param permissions
 #   An array of permissions you would like managed. i.e. ['SELECT', 'INSERT', 'UPDATE', 'DELETE']
 #
-# [state]
-#   The state you would like the permission in.  Accepts 'GRANT', 'DENY', 'REVOKE' Please note that REVOKE equates to absent and will default to database and system level permissions.
+# @param state
+#   The state you would like the permission in.
+#   Accepts 'GRANT', 'DENY', 'REVOKE'.
+#   Please note that REVOKE equates to absent and will default to database and system level permissions.
 #
-# [with_grant_option]
+# @param with_grant_option
 #   Whether to give the user the option to grant this permission to other users, accepts true or false, defaults to false
 #
-# [instance]
+# @param instance
 #   The name of the instance where the user and database exists. Defaults to 'MSSQLSERVER'
 #
 ##
