@@ -1,17 +1,14 @@
 #
-# == Define Resource Type: sqlserver::config
+# @summary Define Resource Type: sqlserver::config
 #
-# === Requirement/Dependencies:
 #
-# === Parameters
-#
-# [instance_name]
+# @param instance_name
 #   The instance name you want to manage.  Defaults to the $title when not defined explicitly.
-# [admin_user]
+# @param admin_user
 #   Only required for SQL_LOGIN type. A user/login who has sysadmin rights on the server
-# [admin_pass]
+# @param admin_pass
 #   Only required for SQL_LOGIN type. The password in order to access the server to be managed.
-# [admin_login_type]
+# @param admin_login_type
 #   The type of account use to configure the server.  Valid values are SQL_LOGIN and WINDOWS_LOGIN, with a default of SQL_LOGIN
 #   The SQL_LOGIN requires the admin_user and admin_pass to be set
 #   The WINDOWS_LOGIN requires the adm_user and admin_pass to be empty or undefined

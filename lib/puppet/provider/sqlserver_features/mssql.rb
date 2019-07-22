@@ -8,6 +8,8 @@ FEATURE_RESERVED_SWITCHES =
        RSSVCACCOUNT RSSVCPASSWORD SAPWD SECURITYMODE SQLSYSADMINACCOUNTS FEATURES)
 
 Puppet::Type::type(:sqlserver_features).provide(:mssql, :parent => Puppet::Provider::Sqlserver) do
+  desc 'SQLServer Features provider'
+
   def self.instances
     instances = []
     result = Facter.value(:sqlserver_features)

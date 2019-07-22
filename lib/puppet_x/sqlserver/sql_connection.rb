@@ -41,13 +41,13 @@ module PuppetX
 
         if (config[:admin_login_type] == 'WINDOWS_LOGIN')
           # Windows based authentication
-          raise ArgumentError, 'admin_user must be empty or nil' unless admin_user == ''
-          raise ArgumentError, 'admin_pass must be empty or nil' unless admin_pass == ''
+          raise ArgumentError, _('admin_user must be empty or nil') unless admin_user == ''
+          raise ArgumentError, _('admin_pass must be empty or nil') unless admin_pass == ''
           params.store('Integrated Security','SSPI')
         else
           # SQL Server based authentication
-          raise ArgumentError, 'admin_user must not be empty or nil' unless admin_user != ''
-          raise ArgumentError, 'admin_pass must not be empty or nil' unless admin_pass != ''
+          raise ArgumentError, _('admin_user must not be empty or nil') unless admin_user != ''
+          raise ArgumentError, _('admin_pass must not be empty or nil') unless admin_pass != ''
           params.store('User ID',  admin_user)
           params.store('Password', admin_pass)
         end

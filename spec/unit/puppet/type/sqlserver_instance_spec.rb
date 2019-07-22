@@ -8,7 +8,7 @@ RSpec.describe Puppet::Type.type(:sqlserver_instance) do
   shared_examples 'validate' do
     it {
       @subject = Puppet::Type.type(:sqlserver_instance).new(args)
-      @subject.stubs(:lookupvar).with('hostname').returns('machineCrazyName')
+      allow(@subject).to receive(:lookupvar).with('hostname').and_return('machineCrazyName')
     }
   end
 
@@ -39,7 +39,7 @@ RSpec.describe Puppet::Type.type(:sqlserver_instance) do
           :ensure => 'present',
           :features => [feature_name],
         }
-        Puppet.expects(:deprecation_warning).at_least_once
+        expect(Puppet).to receive(:deprecation_warning).at_least(:once)
         subject = Puppet::Type.type(:sqlserver_instance).new(args)
       end
     end

@@ -4,8 +4,8 @@ require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'lib/pupp
 RSpec.describe 'sqlserver_is_domain_or_local_user?' do
   shared_examples 'return the value' do
     it {
-      Facter.stubs(:value).with(anything())
-      Facter.stubs(:value).with(:hostname).returns('mybox')
+      allow(Facter).to receive(:value).with(anything())
+      allow(Facter).to receive(:value).with(:hostname).and_return('mybox')
       expect(scope.function_sqlserver_is_domain_or_local_user([user])).to eq(expected_value)
     }
   end

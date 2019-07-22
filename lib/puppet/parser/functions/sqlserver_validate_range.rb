@@ -1,5 +1,5 @@
 module Puppet::Parser::Functions
-  newfunction(:sqlserver_validate_range) do |args|
+  newfunction(:sqlserver_validate_range,:doc => '@return Error if value is not between range') do |args|
     if (args.length < 3) or (args.length > 4) then
       raise Puppet::ParseError, ("validate_range(): wrong number of arguments (#{args.length}; must be 3)")
     end

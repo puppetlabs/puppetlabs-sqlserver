@@ -1,41 +1,40 @@
 ##
-# == Define Resource Type: sqlserver::user
+# @summary Define Resource Type: sqlserver::user
 #
-# === Requirement/Dependencies:
-#
+# Requirement/Dependencies:
 # Requires defined type {sqlserver::config} in order to execute against the SQL Server instance
 #
-# === Examples
+# @example
+#   sqlserver::user{'myUser':
+#     database  => 'loggingDatabase',
+#     login     => 'myUser',
+#   }
 #
-# sqlserver::user{'myUser':
-#   database  => 'loggingDatabase',
-#   login     => 'myUser',
-# }
-#
-# === Parameters
-# [user]
+# @param user
 #   The username you want to manage, defaults to the title
 #
-# [database]
+# @param database
 #   The database you want the user to be created as
 #
-# [ensure]
+# @param ensure
 #   Ensure present or absent
 #
-# [default_schema]
+# @param default_schema
 #   SQL schema you would like to default to, typically 'dbo'
 #
-# [instance]
+# @param instance
 #   The named instance you want to manage against
 #
-# [login]
+# @param login
 #   The login to associate the user with, by default SQL Server will assume user and login match if left empty
 #
-# [password]
+# @param password
 #   The password for the user, can only be used when the database is a contained database.
 #
-# [permissions]
-#   A hash of permissions that should be managed for the user.  Valid keys are 'GRANT', 'GRANT_WITH_OPTION', 'DENY' or 'REVOKE'.  Valid values must be an array of Strings i.e. {'GRANT' => ['SELECT', 'INSERT'] }
+# @param permissions
+#   A hash of permissions that should be managed for the user.  
+#   Valid keys are 'GRANT', 'GRANT_WITH_OPTION', 'DENY' or 'REVOKE'.
+#   Valid values must be an array of Strings i.e. {'GRANT' => ['SELECT', 'INSERT'] }
 #
 ##
 define sqlserver::user (

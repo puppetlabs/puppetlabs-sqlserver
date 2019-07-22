@@ -12,7 +12,7 @@ RSpec.describe Puppet::Type.type(:sqlserver_features) do
           :ensure => 'present',
           :features => [feature_name],
         }
-        Puppet.expects(:deprecation_warning).at_least_once
+        expect(Puppet).to receive(:deprecation_warning).at_least(:once)
         subject = Puppet::Type.type(:sqlserver_features).new(args)
       end
     end

@@ -71,7 +71,7 @@ def run_sql_query(host, opts = {}, &block)
 
   on(host, "powershell -NonInteractive -NoLogo -File \"C:\\cygwin64\\home\\Administrator\\tmp.ps1\"") do |r|
     match = /(\d*) rows affected/.match(r.stdout)
-    raise 'Could not match number of rows for SQL query' unless match
+    raise _('Could not match number of rows for SQL query') unless match
     rows_observed = match[1]
     error_message = "Expected #{opts[:expected_row_count]} rows but observed #{rows_observed}"
     raise error_message unless opts[:expected_row_count] == rows_observed.to_i
@@ -163,7 +163,7 @@ end
 def get_install_paths(version)
   vers = { '2012' => '110', '2014' => '120', '2016' => '130', '2017' => '140', '2019' => '150' }
 
-  raise 'Valid version must be specified' if ! vers.keys.include?(version)
+  raise _('Valid version must be specified') if ! vers.keys.include?(version)
 
   dir = "%ProgramFiles%\\Microsoft SQL Server\\#{vers[version]}\\Setup Bootstrap"
   sql_directory = "SQL"

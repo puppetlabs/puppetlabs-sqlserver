@@ -3,7 +3,12 @@ require File.expand_path(File.join(File.dirname(__FILE__), '..', 'property/sqlse
 
 
 Puppet::Type::newtype(:sqlserver_tsql) do
-  newparam :name, :namevar => true
+  @desc = <<-EOT
+    SQLServer TSQL type allows users to execute commands against an instance
+  EOT
+  newparam :name, :namevar => true do
+    desc 'Namevar'
+  end
 
   def self.newcheck(name, options = {}, &block)
     @checks ||= {}
@@ -74,6 +79,7 @@ Puppet::Type::newtype(:sqlserver_tsql) do
   end
 
   newproperty(:returns, :array_matching => :all, :event => :executed_command) do |property|
+    desc 'Returns the result of the executed command'
     munge do |value|
       value.to_s
     end

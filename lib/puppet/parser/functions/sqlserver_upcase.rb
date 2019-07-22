@@ -1,5 +1,5 @@
 module Puppet::Parser::Functions
-  newfunction(:sqlserver_upcase, :type => :rvalue, :arity => 1) do |arguments|
+  newfunction(:sqlserver_upcase, :type => :rvalue, :arity => 1, :doc => '@return Upcase values') do |arguments|
 
     raise(Puppet::ParseError, "upcase(): Wrong number of arguments " +
                               "given (#{arguments.size} for 1)") if arguments.size != 1

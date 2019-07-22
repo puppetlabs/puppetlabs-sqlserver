@@ -1,7 +1,6 @@
 require 'spec_helper'
 require 'rspec'
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'sqlserver_spec_helper.rb'))
-require 'mocha'
 
 provider_class = Puppet::Type.type(:sqlserver_features).provider(:mssql)
 
@@ -25,7 +24,7 @@ RSpec.describe provider_class do
 
       executed_args = params.merge(munged_args)
       stub_add_features(executed_args, executed_args[:features], additional_switches, exit_code || 0)
-      @provider.stubs(:warn).with(regexp_matches(warning_matcher)).returns(nil).times(1) if warning_matcher
+      allow(@provider).to receive(:warn).with(regexp_matches(warning_matcher)).and_return(nil) if warning_matcher
       @provider.create
     }
   end
@@ -48,10 +47,10 @@ RSpec.describe provider_class do
   context 'it should provide the correct command default command' do
     before :each do
       @file_double = Tempfile.new(['sqlconfig', '.ini'])
-      @file_double.stubs(:write)
-      @file_double.stubs(:flush)
-      @file_double.stubs(:close)
-      Tempfile.stubs(:new).with(['sqlconfig', '.ini']).returns(@file_double)
+      allow(@file_double).to receive(:write)
+      allow(@file_double).to receive(:flush)
+      allow(@file_double).to receive(:close)
+      allow(Tempfile).to receive(:new).with(['sqlconfig', '.ini']).and_return(@file_double)
     end
     it_should_behave_like 'create' do
       let(:additional_params) { {:install_switches => {'ERRORREPORTING' => 1, 'SQLBACKUPDIR' => 'I:\DBbackup'}} }
@@ -71,6 +70,7 @@ RSpec.describe provider_class do
       @resource = Puppet::Type::Sqlserver_features.new(args)
       @provider = provider_class.new(@resource)
 
+
       stub_powershell_call(subject)
       stub_source_which_call args
       if !feature_remove.empty?
@@ -81,8 +81,8 @@ RSpec.describe provider_class do
       end
 
       # If warning_matcher supplied ensure warnings raised match, otherwise no warnings raised
-      @provider.stubs(:warn).with(regexp_matches(warning_matcher)).returns(nil).times(1) if warning_matcher
-      @provider.stubs(:warn).with(anything).times(0) unless warning_matcher
+      allow(@provider).to receive(:warn).with(regexp_matches(warning_matcher)).and_return(nil) if warning_matcher
+      allow(@provider).to receive(:warn).with(anything) unless warning_matcher
       @provider.create
     }
   end
@@ -140,16 +140,16 @@ RSpec.describe provider_class do
       }
       @resource = Puppet::Type::Sqlserver_features.new(feature_params)
       @provider = provider_class.new(@resource)
-      @provider.stubs(:current_installed_features).returns(%w(SSMS ADV_SSMS Conn))
-      Puppet::Util.stubs(:which).with("#{feature_params[:source]}/setup.exe").returns("#{feature_params[:source]}/setup.exe")
+      allow(@provider).to receive(:current_installed_features).and_return(%w(SSMS ADV_SSMS Conn))
+      allow(Puppet::Util).to receive(:which).with("#{feature_params[:source]}/setup.exe").and_return("#{feature_params[:source]}/setup.exe")
       result = Puppet::Util::Execution::ProcessOutput.new('', 0)
-      Puppet::Util::Execution.expects(:execute).with(
+      expect(Puppet::Util::Execution).to receive(:execute).with(
         ["#{feature_params[:source]}/setup.exe",
          "/ACTION=uninstall",
          '/Q',
          '/IACCEPTSQLSERVERLICENSETERMS',
          "/FEATURES=#{%w(SSMS ADV_SSMS Conn).join(',')}",
-        ], failonfail: false).returns(result)
+        ], failonfail: false).and_return(result)
       @provider.create
     }
   end

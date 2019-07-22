@@ -12,7 +12,7 @@ class Puppet::Property::SqlserverLogin < Puppet::Property
     end
     if value.match(/@/)
       fail ArgumentError,
-           '@ sybmol is not allowed in the username, please follow the pattern of domain\login if you are attempting to add domain user'
+           _('@ sybmol is not allowed in the username, please follow the pattern of domain\login if you are attempting to add domain user')
     end
   end
 end

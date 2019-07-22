@@ -1,52 +1,53 @@
 #
-# == Define Resource Type: sqlserver::login
+# @summary Define Resource Type: sqlserver::login
 #
 #
 #
 #
-# === Requirement/Dependencies:
-#
+# Requirement/Dependencies:
 # Requires defined type {sqlserver::config} in order to execute against the SQL Server instance
 #
 #
-# === Parameters
-# [login]
+# @param login
 #   The SQL or Windows login you would like to manage
 #
-# [instance] The name of the instance which to connect to, instance names can not be longer than 16 characters
+# @param instance The name of the instance which to connect to, instance names can not be longer than 16 characters
 #
-# [ensure] Defaults to 'present', valid values are 'present' | 'absent'
+# @param ensure Defaults to 'present', valid values are 'present' | 'absent'
 #
-# [password]
+# @param password
 #   Plain text password. Only applicable when Login_Type = 'SQL_LOGIN'.
 #
-# [svrroles, Hash] A hash of preinstalled server roles that you want assigned to this login.
+# @param svrroles
+#   A hash of preinstalled server roles that you want assigned to this login.
 #   sample usage would be  { 'diskadmin' => 1, 'dbcreator' => 1, 'sysadmin' => 0,  }
 #
-# [login_type]
+# @param login_type
 #   Defaults to 'SQL_LOGIN', possible values are 'SQL_LOGIN' or 'WINDOWS_LOGIN'
 #
-# [default_database]
+# @param default_database
 #   The database that when connecting the login should default to, the default value is 'master'
 #
-# [default_language]
+# @param default_language
 #   The default language is 'us_english', a list of possible
 #
-# [check_expiration, Boolean]
+# @param check_expiration
 #   Default value is false, possible values of true | false. Only applicable when Login_Type = 'SQL_LOGIN'.
 #
-# [check_policy]
+# @param check_policy
 #   Default value is false, possible values are true | false. Only applicable when Login_Type = 'SQL_LOGIN'.
 #
-# [disabled]
+# @param disabled
 #   Default value is false.  Accepts [Boolean] values of true or false.
 # @see Puppet::Parser::Fucntions#sqlserver_validate_instance_name
 # @see http://msdn.microsoft.com/en-us/library/ms186320(v=sql.110).aspx Server Role Members
 # @see http://technet.microsoft.com/en-us/library/ms189751(v=sql.110).aspx Create Login
 # @see http://technet.microsoft.com/en-us/library/ms189828(v=sql.110).aspx Alter Login
 #
-# [permissions]
-#   A hash of permissions that should be managed for the login.  Valid keys are 'GRANT', 'GRANT_WITH_OPTION', 'DENY' or 'REVOKE'.  Valid values must be an array of Strings i.e. {'GRANT' => ['CONNECT SQL', 'CREATE ANY DATABASE'] }
+# @param permissions
+#   A hash of permissions that should be managed for the login.
+#   Valid keys are 'GRANT', 'GRANT_WITH_OPTION', 'DENY' or 'REVOKE'. 
+#   Valid values must be an array of Strings i.e. {'GRANT' => ['CONNECT SQL', 'CREATE ANY DATABASE'] }
 #
 ##
 define sqlserver::login (
