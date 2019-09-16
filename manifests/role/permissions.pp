@@ -45,7 +45,6 @@ define sqlserver::role::permissions (
     sqlserver_validate_instance_name($instance)
     $_state = upcase($state)
 
-    $_upermissions = upcase($permissions)
     $_grant_option = $with_grant_option ? {
       true => '-WITH_GRANT_OPTION',
       false => '',
