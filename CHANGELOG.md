@@ -6,11 +6,14 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ## [Unreleased]
 
+## [2.5.1] - 2019-09-18
+
 ## Fixed
 
 - Add DQC to sqlserver_features feature attribute ([MODULES-8600](https://tickets.puppetlabs.com/browse/MODULES-8600))
 - Fix sqlserver_instances fact fails when registry contains uninstalled instances ([MODULES-8439](https://tickets.puppetlabs.com/browse/MODULES-8439))
 - Switch to using PowerShell `Restart-Service .. -Force` to restart the SQLServer service in `sqlserver::sp_configure` ([MODULES-6904](https://tickets.puppetlabs.com/browse/MODULES-6904))
+- Fix ERB Template Errors ([MODULES-9912](https://tickets.puppetlabs.com/browse/MODULES-9912))
 
 ## [2.5.0] - 2019-03-26
 
@@ -239,7 +242,8 @@ attempts to reinstall an instance that already exists ([MODULES-6022](https://ti
 
 Initial release.
 
-[Unreleased]: https://github.com/puppetlabs/puppetlabs-sqlserver/compare/2.5.0..master
+[Unreleased]: https://github.com/puppetlabs/puppetlabs-sqlserver/compare/v2.5.1..master
+[2.5.1]: https://github.com/puppetlabs/puppetlabs-sqlserver/compare/2.5.0..v2.5.1
 [2.5.0]: https://github.com/puppetlabs/puppetlabs-sqlserver/compare/2.4.0..2.5.0
 [2.4.0]: https://github.com/puppetlabs/puppetlabs-sqlserver/compare/2.3.0..2.4.0
 [2.3.0]: https://github.com/puppetlabs/puppetlabs-sqlserver/compare/2.2.0..2.3.0
