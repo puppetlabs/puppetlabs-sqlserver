@@ -2,18 +2,17 @@ require 'spec_helper_acceptance'
 require 'securerandom'
 require 'erb'
 
-host = find_only_one("sql_host")
+host = find_only_one('sql_host')
 hostname = host.hostname
 
 # database name
-db_name   = ("DB" + SecureRandom.hex(4)).upcase
-LOGIN1    = "Login1_" + SecureRandom.hex(2)
-LOGIN2    = "Login2_" + SecureRandom.hex(2)
-LOGIN3    = "Login3_" + SecureRandom.hex(2)
-USER1     = "User1_" + SecureRandom.hex(2)
+db_name   = ('DB' + SecureRandom.hex(4)).upcase
+LOGIN1    = 'Login1_' + SecureRandom.hex(2)
+LOGIN2    = 'Login2_' + SecureRandom.hex(2)
+LOGIN3    = 'Login3_' + SecureRandom.hex(2)
+USER1     = 'User1_' + SecureRandom.hex(2)
 
-describe "Test sqlserver::role", :node => host do
-
+describe 'Test sqlserver::role', node: host do
   def ensure_sqlserver_logins_users(db_name)
     pp = <<-MANIFEST
     sqlserver::config{'MSSQLSERVER':
@@ -43,17 +42,17 @@ describe "Test sqlserver::role", :node => host do
     }
     MANIFEST
     execute_manifest(pp, opts = {}) do |r|
-      expect(r.stderr).not_to match(/Error/i)
+      expect(r.stderr).not_to match(%r{Error}i)
     end
   end
 
-  context "Start testing sqlserver::role", {:testrail => ['89161', '89162', '89163', '89164', '89165']} do
+  context 'Start testing sqlserver::role', testrail: ['89161', '89162', '89163', '89164', '89165'] do
     before(:all) do
       # Create database users
       ensure_sqlserver_logins_users(db_name)
     end
     before(:each) do
-      @role = "Role_" + SecureRandom.hex(2)
+      @role = 'Role_' + SecureRandom.hex(2)
     end
     after(:each) do
       pp = <<-MANIFEST
@@ -66,7 +65,7 @@ describe "Test sqlserver::role", :node => host do
       }
       MANIFEST
       execute_manifest(pp, opts = {}) do |r|
-        expect(r.stderr).not_to match(/Error/i)
+        expect(r.stderr).not_to match(%r{Error}i)
       end
     end
 
@@ -83,11 +82,11 @@ describe "Test sqlserver::role", :node => host do
       }
       MANIFEST
       execute_manifest(pp, opts = {}) do |r|
-        expect(r.stderr).not_to match(/Error/i)
+        expect(r.stderr).not_to match(%r{Error}i)
       end
     end
 
-    it "Create server role #{@role} with optional authorization", :tier_low => true do
+    it "Create server role #{@role} with optional authorization", tier_low: true do
       pp = <<-MANIFEST
       sqlserver::config{'MSSQLSERVER':
         admin_user    => 'sa',
@@ -102,10 +101,10 @@ describe "Test sqlserver::role", :node => host do
       }
       MANIFEST
       execute_manifest(pp, opts = {}) do |r|
-        expect(r.stderr).not_to match(/Error/i)
+        expect(r.stderr).not_to match(%r{Error}i)
       end
 
-      #validate that the database-specific role '#{@role}' is successfully created with specified permissions':
+      # validate that the database-specific role '#{@role}' is successfully created with specified permissions':
       query = "USE #{db_name};
       SELECT spr.principal_id, spr.name,
               spe.state_desc, spe.permission_name
@@ -114,7 +113,7 @@ describe "Test sqlserver::role", :node => host do
       ON spe.grantee_principal_id = spr.principal_id
       WHERE spr.name = '#{@role}';"
 
-      run_sql_query(host, { :query => query, :server => hostname, :expected_row_count => 2 })
+      run_sql_query(host, query: query, server: hostname, expected_row_count: 2)
 
       # validate that the database-specific role '#{@role}' has correct authorization #{LOGIN1}
       query = "USE #{db_name};
@@ -124,10 +123,10 @@ describe "Test sqlserver::role", :node => host do
         ON spr.owning_principal_id = sl.principal_id
       WHERE sl.name = '#{LOGIN1}';"
 
-      run_sql_query(host, { :query => query, :server => hostname, :expected_row_count => 1 })
+      run_sql_query(host, query: query, server: hostname, expected_row_count: 1)
     end
 
-    it "Create database-specific role #{@role}", :tier_low => true do
+    it "Create database-specific role #{@role}", tier_low: true do
       pp = <<-MANIFEST
       sqlserver::config{'MSSQLSERVER':
         admin_user    => 'sa',
@@ -142,7 +141,7 @@ describe "Test sqlserver::role", :node => host do
       }
       MANIFEST
       execute_manifest(pp, opts = {}) do |r|
-        expect(r.stderr).not_to match(/Error/i)
+        expect(r.stderr).not_to match(%r{Error}i)
       end
 
       # validate that the database-specific role '#{@role}' is successfully created with specified permissions':
@@ -154,10 +153,10 @@ describe "Test sqlserver::role", :node => host do
         ON pe.grantee_principal_id = pr.principal_id
       WHERE pr.name = '#{@role}';"
 
-      run_sql_query(host, { :query => query, :server => hostname, :expected_row_count => 6 })
+      run_sql_query(host, query: query, server: hostname, expected_row_count: 6)
     end
 
-    it "Create a database-specific role with the same name on two databases", :tier_low => true do
+    it 'Create a database-specific role with the same name on two databases', tier_low: true do
       pp = <<-MANIFEST
       sqlserver::config{'MSSQLSERVER':
         admin_user    => 'sa',
@@ -179,7 +178,7 @@ describe "Test sqlserver::role", :node => host do
       }
       MANIFEST
       execute_manifest(pp, opts = {}) do |r|
-        expect(r.stderr).not_to match(/Error/i)
+        expect(r.stderr).not_to match(%r{Error}i)
       end
 
       # validate that the database-specific role '#{@role}' is successfully created with specified permissions':
@@ -194,10 +193,10 @@ describe "Test sqlserver::role", :node => host do
         on pr.name = dbpr.name
       WHERE pr.name = '#{@role}';"
 
-      run_sql_query(host, { :query => query, :server => hostname, :expected_row_count => 6 })
+      run_sql_query(host, query: query, server: hostname, expected_row_count: 6)
     end
 
-    it "Create server role #{@role} with optional members and optional members-purge", :tier_low => true do
+    it "Create server role #{@role} with optional members and optional members-purge", tier_low: true do
       pp = <<-MANIFEST
       sqlserver::config{'MSSQLSERVER':
         admin_user    => 'sa',
@@ -213,10 +212,10 @@ describe "Test sqlserver::role", :node => host do
       }
       MANIFEST
       execute_manifest(pp, opts = {}) do |r|
-        expect(r.stderr).not_to match(/Error/i)
+        expect(r.stderr).not_to match(%r{Error}i)
       end
 
-      #validate that the server role '#{@role}' is successfully created with specified permissions':
+      # validate that the server role '#{@role}' is successfully created with specified permissions':
       query = "USE #{db_name};
       SELECT spr.principal_id AS ID, spr.name AS Server_Role,
               spe.state_desc, spe.permission_name
@@ -225,9 +224,9 @@ describe "Test sqlserver::role", :node => host do
         ON spe.grantee_principal_id = spr.principal_id
       WHERE spr.name = '#{@role}';"
 
-      run_sql_query(host, { :query => query, :server => hostname, :expected_row_count => 2 })
+      run_sql_query(host, query: query, server: hostname, expected_row_count: 2)
 
-      #validate that the t server role '#{@role}' has correct members (Login1, 2, 3)
+      # validate that the t server role '#{@role}' has correct members (Login1, 2, 3)
       query = "USE #{db_name};
       SELECT spr.principal_id AS ID, spr.name AS ServerRole
       FROM sys.server_principals AS spr
@@ -238,7 +237,7 @@ describe "Test sqlserver::role", :node => host do
         OR spr.name = '#{LOGIN3}'
         OR spr.name = 'LOGIN4';"
 
-      run_sql_query(host, { :query => query, :server => hostname, :expected_row_count => 3 })
+      run_sql_query(host, query: query, server: hostname, expected_row_count: 3)
 
       puts "Create server role #{@role} with optional members_purge:"
       pp = <<-MANIFEST
@@ -257,10 +256,10 @@ describe "Test sqlserver::role", :node => host do
       }
       MANIFEST
       execute_manifest(pp, opts = {}) do |r|
-        expect(r.stderr).not_to match(/Error/i)
+        expect(r.stderr).not_to match(%r{Error}i)
       end
 
-      #validate that the t server role '#{@role}' has correct members (only Login3)
+      # validate that the t server role '#{@role}' has correct members (only Login3)
       query = "USE #{db_name};
       SELECT spr.principal_id AS ID, spr.name AS ServerRole
       FROM sys.server_principals AS spr
@@ -270,7 +269,7 @@ describe "Test sqlserver::role", :node => host do
         OR spr.name = '#{LOGIN2}'
         OR spr.name = '#{LOGIN3}';"
 
-      run_sql_query(host, { :query => query, :server => hostname, :expected_row_count => 1 })
+      run_sql_query(host, query: query, server: hostname, expected_row_count: 1)
     end
   end
 end

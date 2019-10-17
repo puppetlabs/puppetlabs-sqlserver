@@ -6,14 +6,18 @@ provider_class = Puppet::Type.type(:sqlserver_features).provider(:mssql)
 
 RSpec.describe provider_class do
   subject { provider_class }
-  let(:params) { {
-    :name => 'Base features',
-    :source => 'C:\myinstallexecs',
-    :features => %w(BC SSMS)
-  } }
+
+  let(:params) do
+    {
+      name: 'Base features',
+      source: 'C:\myinstallexecs',
+      features: ['BC', 'SSMS'],
+    }
+  end
   let(:additional_params) { {} }
   let(:munged_args) { {} }
   let(:additional_switches) { [] }
+
   shared_examples 'create' do |exit_code, warning_matcher|
     it {
       params.merge!(additional_params)
@@ -31,9 +35,9 @@ RSpec.describe provider_class do
 
   shared_context 'features' do
     @feature_params = {
-      :name => 'Base features',
-      :source => 'C:\myinstallexecs',
-      :features => %w(BC SSMS)
+      name: 'Base features',
+      source: 'C:\myinstallexecs',
+      features: ['BC', 'SSMS'],
     }
     let(:feature_remove) { [] }
     let(:feature_add) { [] }
@@ -41,7 +45,7 @@ RSpec.describe provider_class do
 
   context 'it should provide the correct command default command' do
     include_context 'features'
-    it_should_behave_like 'create'
+    it_behaves_like 'create'
   end
 
   context 'it should provide the correct command default command' do
@@ -52,8 +56,8 @@ RSpec.describe provider_class do
       allow(@file_double).to receive(:close)
       allow(Tempfile).to receive(:new).with(['sqlconfig', '.ini']).and_return(@file_double)
     end
-    it_should_behave_like 'create' do
-      let(:additional_params) { {:install_switches => {'ERRORREPORTING' => 1, 'SQLBACKUPDIR' => 'I:\DBbackup'}} }
+    it_behaves_like 'create' do
+      let(:additional_params) { { install_switches: { 'ERRORREPORTING' => 1, 'SQLBACKUPDIR' => 'I:\DBbackup' } } }
       let(:additional_switches) { ["/ConfigurationFile=\"#{@file_double.path}\""] }
     end
   end
@@ -70,18 +74,17 @@ RSpec.describe provider_class do
       @resource = Puppet::Type::Sqlserver_features.new(args)
       @provider = provider_class.new(@resource)
 
-
       stub_powershell_call(subject)
       stub_source_which_call args
-      if !feature_remove.empty?
+      unless feature_remove.empty?
         stub_remove_features(args, feature_remove, exit_code || 0)
       end
-      if !feature_add.empty?
+      unless feature_add.empty?
         stub_add_features(args, feature_add, [], exit_code || 0)
       end
 
       # If warning_matcher supplied ensure warnings raised match, otherwise no warnings raised
-      allow(@provider).to receive(:warn).with(regexp_matches(warning_matcher)).and_return(nil) if warning_matcher
+      allow(@provider).to receive(:warn).with(match(warning_matcher)).and_return(nil) if warning_matcher
       allow(@provider).to receive(:warn).with(anything) unless warning_matcher
       @provider.create
     }
@@ -99,29 +102,31 @@ RSpec.describe provider_class do
 
         @provider.create
       }.to raise_error Puppet::ResourceError
-
     }
   end
 
   context 'it should install SSMS' do
     include_context 'features'
-    @feature_params[:features] = %w(SSMS)
-    let(:feature_add) { %w(SSMS) }
-    it_should_behave_like 'features=', @feature_params
+    @feature_params[:features] = ['SSMS']
+    let(:feature_add) { ['SSMS'] }
+
+    it_behaves_like 'features=', @feature_params
   end
 
   context 'it should raise warning on feature install when 1641 exit code returned' do
     include_context 'features'
-    @feature_params[:features] = %w(SSMS)
-    let(:feature_add) { %w(SSMS) }
-    it_should_behave_like 'features=', @feature_params, 1641, /reboot initiated/i
+    @feature_params[:features] = ['SSMS']
+    let(:feature_add) { ['SSMS'] }
+
+    it_behaves_like 'features=', @feature_params, 1641, %r{reboot initiated}i
   end
 
   context 'it should raise warning on feature install when 3010 exit code returned' do
     include_context 'features'
-    @feature_params[:features] = %w(SSMS)
-    let(:feature_add) { %w(SSMS) }
-    it_should_behave_like 'features=', @feature_params, 3010, /reboot required/i
+    @feature_params[:features] = ['SSMS']
+    let(:feature_add) { ['SSMS'] }
+
+    it_behaves_like 'features=', @feature_params, 3010, %r{reboot required}i
   end
 
   # context 'it should install the expanded tools set' do
@@ -134,22 +139,22 @@ RSpec.describe provider_class do
   describe 'it should call destroy on empty array' do
     it {
       feature_params = {
-        :name => 'Base features',
-        :source => 'C:\myinstallexecs',
-        :features => []
+        name: 'Base features',
+        source: 'C:\myinstallexecs',
+        features: [],
       }
       @resource = Puppet::Type::Sqlserver_features.new(feature_params)
       @provider = provider_class.new(@resource)
-      allow(@provider).to receive(:current_installed_features).and_return(%w(SSMS ADV_SSMS Conn))
+      allow(@provider).to receive(:current_installed_features).and_return(['SSMS', 'ADV_SSMS', 'Conn'])
       allow(Puppet::Util).to receive(:which).with("#{feature_params[:source]}/setup.exe").and_return("#{feature_params[:source]}/setup.exe")
       result = Puppet::Util::Execution::ProcessOutput.new('', 0)
       expect(Puppet::Util::Execution).to receive(:execute).with(
         ["#{feature_params[:source]}/setup.exe",
-         "/ACTION=uninstall",
+         '/ACTION=uninstall',
          '/Q',
          '/IACCEPTSQLSERVERLICENSETERMS',
-         "/FEATURES=#{%w(SSMS ADV_SSMS Conn).join(',')}",
-        ], failonfail: false).and_return(result)
+         "/FEATURES=#{['SSMS', 'ADV_SSMS', 'Conn'].join(',')}"], failonfail: false
+      ).and_return(result)
       @provider.create
     }
   end
@@ -159,7 +164,8 @@ RSpec.describe provider_class do
     @feature_params[:is_svc_account] = 'nexus/Administrator'
     @feature_params[:is_svc_password] = 'MycrazyStrongPassword'
     @feature_params[:features] << 'IS'
-    let(:feature_add) { %w(BC IS SSMS) }
-    it_should_behave_like 'features=', @feature_params
+    let(:feature_add) { ['BC', 'IS', 'SSMS'] }
+
+    it_behaves_like 'features=', @feature_params
   end
 end

@@ -4,10 +4,9 @@ require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', '..', 'pu
 require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', '..', 'puppet_x/sqlserver/features'))
 
 FEATURE_RESERVED_SWITCHES =
-  %w(AGTSVCACCOUNT AGTSVCPASSWORD ASSVCACCOUNT AGTSVCPASSWORD PID
-       RSSVCACCOUNT RSSVCPASSWORD SAPWD SECURITYMODE SQLSYSADMINACCOUNTS FEATURES)
+  ['AGTSVCACCOUNT', 'AGTSVCPASSWORD', 'ASSVCACCOUNT', 'AGTSVCPASSWORD', 'PID', 'RSSVCACCOUNT', 'RSSVCPASSWORD', 'SAPWD', 'SECURITYMODE', 'SQLSYSADMINACCOUNTS', 'FEATURES'].freeze
 
-Puppet::Type::type(:sqlserver_features).provide(:mssql, :parent => Puppet::Provider::Sqlserver) do
+Puppet::Type.type(:sqlserver_features).provide(:mssql, parent: Puppet::Provider::Sqlserver) do
   desc 'SQLServer Features provider'
 
   def self.instances
@@ -28,10 +27,9 @@ Puppet::Type::type(:sqlserver_features).provide(:mssql, :parent => Puppet::Provi
     end
 
     unless featurelist.count.zero?
-      instance_props = {:name => "Generic Features",
-                        :ensure => :present,
-                        :features => featurelist.uniq.sort
-      }
+      instance_props = { name: 'Generic Features',
+                         ensure: :present,
+                         features: featurelist.uniq.sort }
       debug "Parsed features = #{instance_props[:features]}"
       instances = [new(instance_props)]
     end
@@ -93,18 +91,18 @@ Puppet::Type::type(:sqlserver_features).provide(:mssql, :parent => Puppet::Provi
 
   def create_temp_for_install_switch
     if not_nil_and_not_empty? @resource[:install_switches]
-      config_file = ["[OPTIONS]"]
+      config_file = ['[OPTIONS]']
       @resource[:install_switches].each_pair do |k, v|
         if FEATURE_RESERVED_SWITCHES.include? k
           warn("Reserved switch [#{k}] found for `install_switches`, please know the provided value may be overridden by some command line arguments")
         end
-        if v.is_a?(Numeric) || (v.is_a?(String) && v =~ /^(true|false|1|0)$/i)
-          config_file << "#{k}=#{v}"
-        elsif v.nil?
-          config_file << k
-        else
-          config_file << "#{k}=\"#{v}\""
-        end
+        config_file << if v.is_a?(Numeric) || (v.is_a?(String) && v =~ %r{^(true|false|1|0)$}i)
+                         "#{k}=#{v}"
+                       elsif v.nil?
+                         k
+                       else
+                         "#{k}=\"#{v}\""
+                       end
       end
       config_temp = Tempfile.new(['sqlconfig', '.ini'])
       config_temp.write(config_file.join("\n"))
@@ -112,7 +110,7 @@ Puppet::Type::type(:sqlserver_features).provide(:mssql, :parent => Puppet::Provi
       config_temp.close
       return config_temp
     end
-    return nil
+    nil
   end
 
   def installNet35(source_location = nil)
@@ -121,7 +119,7 @@ Puppet::Type::type(:sqlserver_features).provide(:mssql, :parent => Puppet::Provi
 
   def create
     if @resource[:features].empty?
-      warn "Uninstalling all sql server features not tied into an instance because an empty array was passed, please use ensure absent instead."
+      warn 'Uninstalling all sql server features not tied into an instance because an empty array was passed, please use ensure absent instead.'
       destroy
     else
 
@@ -145,7 +143,7 @@ Puppet::Type::type(:sqlserver_features).provide(:mssql, :parent => Puppet::Provi
   mk_resource_methods
 
   def exists?
-    return @property_hash[:ensure] == :present || false
+    @property_hash[:ensure] == :present || false
   end
 
   def current_installed_features
@@ -158,8 +156,6 @@ Puppet::Type::type(:sqlserver_features).provide(:mssql, :parent => Puppet::Provi
       add_features (new_features - @property_hash[:features])
     end
     @property_hash[:features] = new_features
-    self.features
+    features
   end
-
 end
-

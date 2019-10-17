@@ -2,8 +2,8 @@ module PuppetX
   module Sqlserver
     class ServerHelper
       @super_feature_hash = {
-          :SQL => [:DQ, :FullText, :Replication, :SQLEngine],
-          :Tools => [:BC, :SSMS, :ADV_SSMS, :Conn, :SDK]
+        SQL: [:DQ, :FullText, :Replication, :SQLEngine],
+        Tools: [:BC, :SSMS, :ADV_SSMS, :Conn, :SDK],
       }
 
       def self.get_sub_features(super_feature)
@@ -11,11 +11,11 @@ module PuppetX
       end
 
       def self.is_super_feature(feature)
-        @super_feature_hash.has_key?(feature.to_sym)
+        @super_feature_hash.key?(feature.to_sym)
       end
 
       def self.is_domain_or_local_user?(user, hostname)
-        if /(^(((nt (authority|service))|#{hostname})\\\w+)$)|^(\w+)$/i.match(user)
+        if %r{(^(((nt (authority|service))|#{hostname})\\\w+)$)|^(\w+)$}i.match(user)
           false
         else
           true
@@ -34,7 +34,7 @@ module PuppetX
         content = File.read(media_file)
         index1 = content.index('"BaselineVersion"')
         return nil if index1.nil?
-        index2 = content.index('/>',index1) 
+        index2 = content.index('/>', index1)
         return nil if index2.nil?
         content = content.slice(index1 + 18, index2 - index1 - 18)
         # Extract the version number from the text snippet

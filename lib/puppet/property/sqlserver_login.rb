@@ -5,14 +5,14 @@ class Puppet::Property::SqlserverLogin < Puppet::Property
   validate do |value|
     # @todo
     # value.length > 1
-    #does not contain two back slashes, contains no forward slashes
-    #Determine what characters are valid for SQLLogin vs Domain Logins
-    if value.match(/\\.*\\/)
-      fail ('More than one \ found, maximum of one for users is allowed')
+    # does not contain two back slashes, contains no forward slashes
+    # Determine what characters are valid for SQLLogin vs Domain Logins
+    if value =~ %r{\\.*\\}
+      raise 'More than one \ found, maximum of one for users is allowed'
     end
-    if value.match(/@/)
-      fail ArgumentError,
-           _('@ sybmol is not allowed in the username, please follow the pattern of domain\login if you are attempting to add domain user')
+    if value =~ %r{@}
+      raise ArgumentError,
+            _('@ sybmol is not allowed in the username, please follow the pattern of domain\login if you are attempting to add domain user')
     end
   end
 end

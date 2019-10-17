@@ -4,13 +4,13 @@ require File.expand_path(File.join(File.dirname(__FILE__), '..', 'sqlserver_inst
 RSpec.describe Puppet::Type.type(:sqlserver_features) do
   let(:error_class) { Puppet::Error }
 
-  describe "features" do
+  describe 'features' do
     ['Tools'].each do |feature_name|
       it "should raise deprecation warning with super feature #{feature_name}" do
         args = {
-          :name => 'Generic Features',
-          :ensure => 'present',
-          :features => [feature_name],
+          name: 'Generic Features',
+          ensure: 'present',
+          features: [feature_name],
         }
         expect(Puppet).to receive(:deprecation_warning).at_least(:once)
         subject = Puppet::Type.type(:sqlserver_features).new(args)

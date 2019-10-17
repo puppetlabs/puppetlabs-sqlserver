@@ -18,5 +18,4 @@ END CATCH
     TEMPLATE
     value = erb_template
   end
-
 end

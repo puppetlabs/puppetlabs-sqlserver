@@ -1,6 +1,5 @@
 module PuppetX
   module Sqlserver
-
     CONNECTION_CLOSED = 0
 
     class SqlConnection
@@ -18,13 +17,14 @@ module PuppetX
       end
 
       private
+
       def connection
         @connection ||= create_connection
       end
 
       def open(config)
         connection_string = get_connection_string(config)
-        connection.Open(connection_string) unless !connection_closed?
+        connection.Open(connection_string) if connection_closed?
       end
 
       def get_connection_string(config)
@@ -33,17 +33,17 @@ module PuppetX
           'Initial Catalog'      => config[:database] || 'master',
           'Application Name'     => 'Puppet',
           'Data Source'          => '.',
-          'DataTypeComptibility' => 80
+          'DataTypeComptibility' => 80,
         }
 
         admin_user = config[:admin_user] || ''
         admin_pass = config[:admin_pass] || ''
 
-        if (config[:admin_login_type] == 'WINDOWS_LOGIN')
+        if config[:admin_login_type] == 'WINDOWS_LOGIN'
           # Windows based authentication
           raise ArgumentError, _('admin_user must be empty or nil') unless admin_user == ''
           raise ArgumentError, _('admin_pass must be empty or nil') unless admin_pass == ''
-          params.store('Integrated Security','SSPI')
+          params.store('Integrated Security', 'SSPI')
         else
           # SQL Server based authentication
           raise ArgumentError, _('admin_user must not be empty or nil') unless admin_user != ''
@@ -52,7 +52,7 @@ module PuppetX
           params.store('Password', admin_pass)
         end
 
-        if config[:instance_name] != nil && config[:instance_name] !~ /^MSSQLSERVER$/
+        if !config[:instance_name].nil? && config[:instance_name] !~ %r{^MSSQLSERVER$}
           params['Data Source'] = ".\\#{config[:instance_name]}"
         end
 
@@ -60,10 +60,8 @@ module PuppetX
       end
 
       def close
-        begin
-          connection.Close unless connection_closed?
-        rescue win32_exception => e
-        end
+        connection.Close unless connection_closed?
+      rescue win32_exception => e
       end
 
       def connection_closed?
@@ -75,7 +73,7 @@ module PuppetX
         WIN32OLE.new('ADODB.Connection')
       end
 
-      def execute (sql)
+      def execute(sql)
         connection.Execute(sql, nil, nil)
       end
 
@@ -90,7 +88,6 @@ module PuppetX
     end
 
     class ResultOutput
-
       attr_reader :exitstatus, :error_message
 
       def initialize(has_errors, error_message, connection)
@@ -103,8 +100,8 @@ module PuppetX
         return nil if connection.nil? || connection.Errors.count == 0
 
         error_count = connection.Errors.count - 1
-        
-        ((0..error_count).map { |i| connection.Errors(i).Description.to_s}).join("\n")
+
+        ((0..error_count).map { |i| connection.Errors(i).Description.to_s }).join("\n")
       end
 
       def has_errors

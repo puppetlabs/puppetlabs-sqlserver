@@ -1,21 +1,21 @@
 require 'spec_helper'
 
-describe "the sqlserver_upcase function" do
-  it "should exist" do
-    expect(Puppet::Parser::Functions.function("sqlserver_upcase")).to eq("function_sqlserver_upcase")
+describe 'the sqlserver_upcase function' do
+  it 'exists' do
+    expect(Puppet::Parser::Functions.function('sqlserver_upcase')).to eq('function_sqlserver_upcase')
   end
 
-  it "should upcase a string" do
-    result = scope.function_sqlserver_upcase(["abc"])
+  it 'upcases a string' do
+    result = scope.function_sqlserver_upcase(['abc'])
     expect(result).to(eq('ABC'))
   end
 
-  it "should do nothing if a string is already upcase" do
-    result = scope.function_sqlserver_upcase(["ABC"])
+  it 'does nothing if a string is already upcase' do
+    result = scope.function_sqlserver_upcase(['ABC'])
     expect(result).to(eq('ABC'))
   end
 
-  it "should accept objects which extend String" do
+  it 'accepts objects which extend String' do
     class AlsoString < String
     end
 
@@ -24,28 +24,27 @@ describe "the sqlserver_upcase function" do
     result.should(eq('ABC'))
   end
 
-  it 'should accept hashes and return uppercase' do
+  it 'accepts hashes and return uppercase' do
     expect(
-      scope.function_sqlserver_upcase([{'test' => %w(this that and other thing)}])
-    ).to eq({'TEST' => %w(THIS THAT AND OTHER THING)})
+      scope.function_sqlserver_upcase([{ 'test' => ['this', 'that', 'and', 'other', 'thing'] }]),
+    ).to eq('TEST' => ['THIS', 'THAT', 'AND', 'OTHER', 'THING'])
   end
 
   if :test.respond_to?(:upcase)
-    it 'should accept hashes of symbols' do
+    it 'accepts hashes of symbols' do
       expect(
-        scope.function_sqlserver_upcase([{:test => [:this, :that, :other]}])
-      ).to eq({:TEST => [:THIS, :THAT, :OTHER]})
+        scope.function_sqlserver_upcase([{ test: [:this, :that, :other] }]),
+      ).to eq(TEST: [:THIS, :THAT, :OTHER])
     end
-    it 'should return upcase symbol' do
+    it 'returns upcase symbol' do
       expect(
-        scope.function_sqlserver_upcase([:test])
+        scope.function_sqlserver_upcase([:test]),
       ).to eq(:TEST)
     end
-    it 'should return mixed objects in upcease' do
+    it 'returns mixed objects in upcease' do
       expect(
-        scope.function_sqlserver_upcase([[:test, 'woot']])
+        scope.function_sqlserver_upcase([[:test, 'woot']]),
       ).to eq([:TEST, 'WOOT'])
-
     end
   end
 end

@@ -1,12 +1,11 @@
 require 'puppet'
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'property/sqlserver_tsql'))
 
-
-Puppet::Type::newtype(:sqlserver_tsql) do
+Puppet::Type.newtype(:sqlserver_tsql) do
   @desc = <<-EOT
     SQLServer TSQL type allows users to execute commands against an instance
   EOT
-  newparam :name, :namevar => true do
+  newparam :name, namevar: true do
     desc 'Namevar'
   end
 
@@ -21,9 +20,8 @@ Puppet::Type::newtype(:sqlserver_tsql) do
     @checks.keys
   end
 
-  newparam(:command, :parent => Puppet::Property::SqlserverTsql) do
+  newparam(:command, parent: Puppet::Property::SqlserverTsql) do
     desc 'command to run against an instance with the authenticated credentials used in sqlserver::config'
-
   end
 
   newparam(:instance) do
@@ -37,13 +35,13 @@ Puppet::Type::newtype(:sqlserver_tsql) do
     desc 'initial database to connect to during query execution'
     defaultto 'master'
     validate do |value|
-      fail("Invalid database name #{value}") unless /^[[:word:]|#|@]+/.match(value)
+      raise("Invalid database name #{value}") unless %r{^[[:word:]|#|@]+}.match(value)
     end
   end
 
-  newcheck(:onlyif, :parent => Puppet::Property::SqlserverTsql) do
+  newcheck(:onlyif, parent: Puppet::Property::SqlserverTsql) do
     desc 'SQL Query to run and only run if exits with non-zero'
-    #Runs in the event that our TSQL exits with anything other than 0
+    # Runs in the event that our TSQL exits with anything other than 0
     def check(value)
       output = provider.run(value)
       debug("OnlyIf returned exitstatus of #{output.exitstatus}")
@@ -52,7 +50,7 @@ Puppet::Type::newtype(:sqlserver_tsql) do
     end
   end
 
-  def check_all_attributes(refreshing = false)
+  def check_all_attributes(_refreshing = false)
     check = :onlyif
     if @parameters.include?(check)
       val = @parameters[check].value
@@ -65,20 +63,20 @@ Puppet::Type::newtype(:sqlserver_tsql) do
   end
 
   def output
-    if self.property(:returns).nil?
-      return nil
+    if property(:returns).nil?
+      nil
     else
-      return 0
+      0
     end
   end
 
   def refresh
-    if self.check_all_attributes(true)
-      self.property(:returns).sync
+    if check_all_attributes(true)
+      property(:returns).sync
     end
   end
 
-  newproperty(:returns, :array_matching => :all, :event => :executed_command) do |property|
+  newproperty(:returns, array_matching: :all, event: :executed_command) do |_property|
     desc 'Returns the result of the executed command'
     munge do |value|
       value.to_s
@@ -88,13 +86,13 @@ Puppet::Type::newtype(:sqlserver_tsql) do
       :executed_command
     end
 
-    defaultto "0"
+    defaultto '0'
 
     attr_reader :output
 
     # Make output a bit prettier
-    def change_to_s(currentvalue, newvalue)
-      "executed successfully"
+    def change_to_s(_currentvalue, _newvalue)
+      'executed successfully'
     end
 
     # First verify that all of our checks pass.
@@ -104,9 +102,9 @@ Puppet::Type::newtype(:sqlserver_tsql) do
       # value, which causes us to be treated as in_sync?, which means we
       # don't actually execute anything.  I think. --daniel 2011-03-10
       if @resource.check_all_attributes
-        return :notrun
+        :notrun
       else
-        return self.should
+        should
       end
     end
 
@@ -114,13 +112,13 @@ Puppet::Type::newtype(:sqlserver_tsql) do
     def sync
       event = :executed_command
       begin
-        @output = provider.run(self.resource[:command])
+        @output = provider.run(resource[:command])
         if @output.has_errors
-          fail("Unable to apply changes, failed with error message #{@output.error_message}")
+          raise("Unable to apply changes, failed with error message #{@output.error_message}")
         end
       end
-      unless @output.exitstatus.to_s == "0"
-        self.fail("#{self.resource[:command]} returned #{@output.exitstatus} instead of one of [#{self.should.join(",")}]")
+      unless @output.exitstatus.to_s == '0'
+        raise("#{resource[:command]} returned #{@output.exitstatus} instead of one of [#{should.join(',')}]")
       end
       event
     end
@@ -129,6 +127,4 @@ Puppet::Type::newtype(:sqlserver_tsql) do
   def self.instances
     []
   end
-
-
 end

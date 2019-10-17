@@ -1,12 +1,12 @@
 require 'puppet/util/windows'
 
-SQL_2012 ||= 'SQL_2012'
-SQL_2014 ||= 'SQL_2014'
-SQL_2016 ||= 'SQL_2016'
-SQL_2017 ||= 'SQL_2017'
-SQL_2019 ||= 'SQL_2019'
+SQL_2012 ||= 'SQL_2012'.freeze
+SQL_2014 ||= 'SQL_2014'.freeze
+SQL_2016 ||= 'SQL_2016'.freeze
+SQL_2017 ||= 'SQL_2017'.freeze
+SQL_2019 ||= 'SQL_2019'.freeze
 
-ALL_SQL_VERSIONS ||= [SQL_2012, SQL_2014, SQL_2016, SQL_2017, SQL_2019]
+ALL_SQL_VERSIONS ||= [SQL_2012, SQL_2014, SQL_2016, SQL_2017, SQL_2019].freeze
 
 module PuppetX
   module Sqlserver
@@ -19,29 +19,29 @@ module PuppetX
 
       SQL_CONFIGURATION ||= {
         SQL_2012 => {
-          :major_version => 11,
-          :registry_path => '110',
+          major_version: 11,
+          registry_path: '110',
         },
         SQL_2014 => {
-          :major_version => 12,
-          :registry_path => '120',
+          major_version: 12,
+          registry_path: '120',
         },
         SQL_2016 => {
-          :major_version => 13,
-          :registry_path => '130',
+          major_version: 13,
+          registry_path: '130',
         },
         SQL_2017 => {
-          :major_version => 14,
-          :registry_path => '140',
+          major_version: 14,
+          registry_path: '140',
         },
         SQL_2019 => {
-          :major_version => 15,
-          :registry_path => '150',
-        }
-      }
+          major_version: 15,
+          registry_path: '150',
+        },
+      }.freeze
 
-      SQL_REG_ROOT ||= 'Software\Microsoft\Microsoft SQL Server'
-      HKLM         ||= 'HKEY_LOCAL_MACHINE'
+      SQL_REG_ROOT ||= 'Software\Microsoft\Microsoft SQL Server'.freeze
+      HKLM         ||= 'HKEY_LOCAL_MACHINE'.freeze
 
       def self.get_parent_path(key_path)
         # should be the same as SQL_REG_ROOT
@@ -49,18 +49,16 @@ module PuppetX
       end
 
       def self.get_reg_key_val(win32_reg_key, val_name, reg_type)
-          win32_reg_key[val_name, reg_type]
-        rescue
-          nil
+        win32_reg_key[val_name, reg_type]
+      rescue
+        nil
       end
 
       def self.key_exists?(path)
-        begin
-          open(HKLM, path, KEY_READ | KEY64) {}
-          return true
-        rescue
-          return false
-        end
+        open(HKLM, path, KEY_READ | KEY64) {}
+        return true
+      rescue
+        return false
       end
 
       def self.get_sql_reg_val_features(key_name, reg_val_feat_hash)
@@ -81,21 +79,20 @@ module PuppetX
         instance_root = 'SOFTWARE\Microsoft\Microsoft SQL Server\Instance Names'
         return [] unless key_exists?(instance_root)
         discovered = {}
-        open(HKLM, "#{instance_root}", KEY_READ | KEY64) do |registry|
+        open(HKLM, instance_root.to_s, KEY_READ | KEY64) do |registry|
           each_key(registry) do |instance_type, _|
             open(HKLM, "#{instance_root}\\#{instance_type}", KEY_READ | KEY64) do |instance|
               each_value(instance) do |short_name, _, long_name|
                 root = "Software\\Microsoft\\Microsoft SQL Server\\#{long_name}"
-                if key_exists?("#{root}\\MSSQLServer\\CurrentVersion")
-                  discovered[short_name] ||= {
-                    'name' => short_name,
-                    'reg_root' => [],
-                    'version' => open(HKLM, "#{root}\\MSSQLServer\\CurrentVersion", KEY_READ | KEY64) { |r| values(r)['CurrentVersion'] },
-                    'version_friendly' => friendly_version
-                  }
+                next unless key_exists?("#{root}\\MSSQLServer\\CurrentVersion")
+                discovered[short_name] ||= {
+                  'name' => short_name,
+                  'reg_root' => [],
+                  'version' => open(HKLM, "#{root}\\MSSQLServer\\CurrentVersion", KEY_READ | KEY64) { |r| values(r)['CurrentVersion'] },
+                  'version_friendly' => friendly_version,
+                }
 
-                  discovered[short_name]['reg_root'].push(root)
-                end
+                discovered[short_name]['reg_root'].push(root)
               end
             end
           end
@@ -104,7 +101,7 @@ module PuppetX
       end
 
       def self.get_sql_reg_key_features(key_name, reg_key_feat_hash, instance_name)
-        installed = reg_key_feat_hash.select do |subkey, feat_name|
+        installed = reg_key_feat_hash.select do |subkey, _feat_name|
           begin
             open(HKLM, "#{key_name}\\#{subkey}", KEY_READ | KEY64) do |feat_key|
               get_reg_key_val(feat_key, instance_name, Win32::Registry::REG_SZ)
@@ -198,29 +195,29 @@ module PuppetX
       # }
       def self.get_instances
         version_instance_map = ALL_SQL_VERSIONS
-          .map do |version|
-            major_version = SQL_CONFIGURATION[version][:major_version]
+                               .map do |version|
+          major_version = SQL_CONFIGURATION[version][:major_version]
 
-            instances = get_reg_instance_info(version).map do |instance|
-              [instance['name'], get_instance_info(version,instance)]
-            end
-
-            # Instance names are unique on a single host, but not for a particular SQL Server version therefore
-            # it's possible to request information for a valid instance_name but not for version.  In this case
-            # we just reject any instances that have no information
-            instances.reject! { |value| value[1].nil? }
-
-            # Unfortunately later SQL versions can return previous version SQL instances.  We can weed these out
-            # by inspecting the major version of the instance_version
-            instances.reject! do |value|
-              return true if value[1]['version'].nil?
-              ver = Gem::Version.new(value[1]['version'])
-              # Segment 0 is the major version number of the SQL Instance
-              ver.segments[0] != major_version
-            end
-
-            [ version, Hash[instances] ]
+          instances = get_reg_instance_info(version).map do |instance|
+            [instance['name'], get_instance_info(version, instance)]
           end
+
+          # Instance names are unique on a single host, but not for a particular SQL Server version therefore
+          # it's possible to request information for a valid instance_name but not for version.  In this case
+          # we just reject any instances that have no information
+          instances.reject! { |value| value[1].nil? }
+
+          # Unfortunately later SQL versions can return previous version SQL instances.  We can weed these out
+          # by inspecting the major version of the instance_version
+          instances.select! do |value|
+            return true if value[1]['version'].nil?
+            ver = Gem::Version.new(value[1]['version'])
+            # Segment 0 is the major version number of the SQL Instance
+            ver.segments[0] == major_version
+          end
+
+          [version, Hash[instances]]
+        end
 
         Hash[version_instance_map]
       end
@@ -263,7 +260,7 @@ module PuppetX
         sql_instance['reg_root'].each do |reg_root|
           feats += get_instance_features(reg_root, sql_instance['name'])
         end
-        sql_instance.merge({'features' => feats.uniq})
+        sql_instance.merge('features' => feats.uniq)
       end
     end
   end
