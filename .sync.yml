@@ -1,69 +1,39 @@
 ---
-.gitignore:
+".gitignore":
   required:
-    - ---.project
-
-Gemfile:
-  required:
-    ':system_tests':
-      - gem: 'puppet-module-posix-system-r#{minor_version}'
-        platforms: ruby
-      - gem: 'puppet-module-win-system-r#{minor_version}'
-        platforms:
-          - mswin
-          - mingw
-          - x64_mingw
-      - gem: beaker-testmode_switcher
-        version: '~> 0.4'
-      - gem: master_manipulator
-      - gem: puppet-blacksmith
-        version: '~> 3.4'
-  optional:
-    ':development':
-      - gem: 'github_changelog_generator'
-        git: 'https://github.com/skywinder/github-changelog-generator'
-        ref: '20ee04ba1234e9e83eb2ffb5056e23d641c7a018'
-        condition: "Gem::Version.new(RUBY_VERSION.dup) >= Gem::Version.new('2.2.2')"
-
-
-spec/default_facts.yml:
-  unmanaged: true
-
+  - "---.project"
+".gitlab-ci.yml":
+  delete: true
 appveyor.yml:
   matrix_extras:
-    - PUPPET_GEM_VERSION: ~> 6.0
-      RUBY_VERSION: 25
-      CHECK: parallel_spec
-    - PUPPET_GEM_VERSION: ~> 6.0
-      RUBY_VERSION: 25-x64
-      CHECK: parallel_spec
-
-.gitlab-ci.yml:
-  delete: true
-
-#Rakefile:
-#  unmanaged: true
-
+  - PUPPET_GEM_VERSION: "~> 6.0"
+    RUBY_VERSION: 25
+    CHECK: parallel_spec
+  - PUPPET_GEM_VERSION: "~> 6.0"
+    RUBY_VERSION: 25-x64
+    CHECK: parallel_spec
+Gemfile:
+  required:
+    ":system_tests":
+    - gem: puppet-module-posix-system-r#{minor_version}
+      platforms: ruby
+    - gem: puppet-module-win-system-r#{minor_version}
+      platforms:
+      - mswin
+      - mingw
+      - x64_mingw
+    - gem: beaker-testmode_switcher
+      version: "~> 0.4"
+    - gem: master_manipulator
+    - gem: puppet-blacksmith
+      version: "~> 3.4"
+  optional:
+    ":development":
+    - gem: github_changelog_generator
+      git: https://github.com/skywinder/github-changelog-generator
+      ref: 20ee04ba1234e9e83eb2ffb5056e23d641c7a018
+      condition: Gem::Version.new(RUBY_VERSION.dup) >= Gem::Version.new('2.2.2')
+spec/default_facts.yml:
+  unmanaged: true
 spec/spec_helper.rb:
-  mock_with: ':rspec'
-
-#---
-# Gemfile:
-#   optional:
-#     ':development':
-#       - gem: yard
-#     ':system_tests':
-#           - gem: beaker-testmode_switcher
-#             version: '<= 0.2.0'
-#           - gem: master_manipulator
-# Rakefile:
-#   unmanaged: true
-# spec/spec_helper.rb:
-#   unmanaged: true
-# LICENSE:
-#   license_type: 'puppetpe'
-# NOTICE:
-#   unmanaged: true
-# MAINTAINERS.md:
-#   maintainers:
-#     - "Puppet Windows Team `windows |at| puppet |dot| com`"
+  mock_with: ":rspec"
