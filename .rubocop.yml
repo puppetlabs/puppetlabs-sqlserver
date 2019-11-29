@@ -18,9 +18,10 @@ AllCops:
   - "**/Puppetfile"
   - "**/Vagrantfile"
   - "**/Guardfile"
+inherit_from: ".rubocop_todo.yml"
 Metrics/LineLength:
   Description: People have wide screens, use them.
-  Max: 200
+  Max: 300
 GetText:
   Enabled: false
 GetText/DecorateString:
