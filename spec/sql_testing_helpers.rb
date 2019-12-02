@@ -71,18 +71,17 @@ def run_sql_query(host, opts = {}, &block)
 
   on(host, 'powershell -NonInteractive -NoLogo -File "C:\\cygwin64\\home\\Administrator\\tmp.ps1"') do |r|
     match = %r{(\d*) rows affected}.match(r.stdout)
-    raise _('Could not match number of rows for SQL query') unless match
+    raise 'Could not match number of rows for SQL query' unless match
     rows_observed = match[1]
     error_message = "Expected #{opts[:expected_row_count]} rows but observed #{rows_observed}"
     raise error_message unless opts[:expected_row_count] == rows_observed.to_i
   end
-  if block_given?
-    case block.arity
-    when 0
-      yield self
-    else
-      yield r
-    end
+  return unless block_given?
+  case block.arity
+  when 0
+    yield self
+  else
+    yield r
   end
 end
 
@@ -136,24 +135,23 @@ def validate_sql_install(host, opts = {}, &block)
 
   cmd = "type \\\"#{bootstrap_dir}\\Log\\Summary.txt\\\""
   result = on(host, "cmd.exe /c \"#{cmd}\"")
-  if block_given?
-    case block.arity
-    when 0
-      yield self
-    else
-      yield result
-    end
+  return unless block_given?
+  case block.arity
+  when 0
+    yield self
+  else
+    yield result
   end
 end
 
 def remove_sql_features(host, opts = {})
-  bootstrap_dir, setup_dir = get_install_paths(opts[:version])
+  _, setup_dir = get_install_paths(opts[:version])
   cmd = "cd \\\"#{setup_dir}\\\" && setup.exe /Action=uninstall /Q /IACCEPTSQLSERVERLICENSETERMS /FEATURES=#{opts[:features].join(',')}"
   on(host, "cmd.exe /c \"#{cmd}\"", acceptable_exit_codes: [0, 1, 2])
 end
 
 def remove_sql_instances(host, opts = {})
-  bootstrap_dir, setup_dir = get_install_paths(opts[:version])
+  _, setup_dir = get_install_paths(opts[:version])
   opts[:instance_names].each do |instance_name|
     cmd = "cd \\\"#{setup_dir}\\\" && setup.exe /Action=uninstall /Q /IACCEPTSQLSERVERLICENSETERMS /FEATURES=SQL,AS,RS /INSTANCENAME=#{instance_name}"
     on(host, "cmd.exe /c \"#{cmd}\"", acceptable_exit_codes: [0])
@@ -167,9 +165,7 @@ def get_install_paths(version)
 
   dir = "%ProgramFiles%\\Microsoft SQL Server\\#{vers[version]}\\Setup Bootstrap"
   sql_directory = 'SQL'
-  if version != '2017'
-    sql_directory += 'Server'
-  end
+  sql_directory += 'Server' if version != '2017'
 
   [dir, "#{dir}\\#{sql_directory}#{version}"]
 end

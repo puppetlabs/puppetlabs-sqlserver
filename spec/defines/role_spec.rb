@@ -21,17 +21,17 @@ RSpec.describe 'sqlserver::role', type: :define do
     describe 'SERVER' do
       let(:should_contain_command) do
         [
-        'USE [master];',
-        'CREATE SERVER ROLE [myCustomRole];',
-        %r{IF NOT EXISTS\(\n\s+SELECT name FROM sys\.server_principals WHERE type_desc = 'SERVER_ROLE' AND name = 'myCustomRole'\n\)},
-        "THROW 51000, 'The SERVER ROLE [myCustomRole] does not exist', 10",
-      ]
+          'USE [master];',
+          'CREATE SERVER ROLE [myCustomRole];',
+          %r{IF NOT EXISTS\(\n\s+SELECT name FROM sys\.server_principals WHERE type_desc = 'SERVER_ROLE' AND name = 'myCustomRole'\n\)},
+          "THROW 51000, 'The SERVER ROLE [myCustomRole] does not exist', 10",
+        ]
       end
       let(:should_contain_onlyif) do
         [
-        %r{IF NOT EXISTS\(\n\s+SELECT name FROM sys\.server_principals WHERE type_desc = 'SERVER_ROLE' AND name = 'myCustomRole'\n\)},
-        "THROW 51000, 'The SERVER ROLE [myCustomRole] does not exist', 10",
-      ]
+          %r{IF NOT EXISTS\(\n\s+SELECT name FROM sys\.server_principals WHERE type_desc = 'SERVER_ROLE' AND name = 'myCustomRole'\n\)},
+          "THROW 51000, 'The SERVER ROLE [myCustomRole] does not exist', 10",
+        ]
       end
 
       it_behaves_like 'sqlserver_tsql command'
@@ -45,17 +45,17 @@ RSpec.describe 'sqlserver::role', type: :define do
       end
       let(:should_contain_command) do
         [
-        'USE [master];',
-        'CREATE ROLE [myCustomRole];',
-        %r{IF NOT EXISTS\(\n\s+SELECT name FROM sys\.database_principals WHERE type_desc = 'DATABASE_ROLE' AND name = 'myCustomRole'\n\)},
-        "THROW 51000, 'The DATABASE ROLE [myCustomRole] does not exist', 10",
-      ]
+          'USE [master];',
+          'CREATE ROLE [myCustomRole];',
+          %r{IF NOT EXISTS\(\n\s+SELECT name FROM sys\.database_principals WHERE type_desc = 'DATABASE_ROLE' AND name = 'myCustomRole'\n\)},
+          "THROW 51000, 'The DATABASE ROLE [myCustomRole] does not exist', 10",
+        ]
       end
       let(:should_contain_onlyif) do
         [
-        %r{IF NOT EXISTS\(\n\s+SELECT name FROM sys\.database_principals WHERE type_desc = 'DATABASE_ROLE' AND name = 'myCustomRole'\n\)},
-        "THROW 51000, 'The DATABASE ROLE [myCustomRole] does not exist', 10",
-      ]
+          %r{IF NOT EXISTS\(\n\s+SELECT name FROM sys\.database_principals WHERE type_desc = 'DATABASE_ROLE' AND name = 'myCustomRole'\n\)},
+          "THROW 51000, 'The DATABASE ROLE [myCustomRole] does not exist', 10",
+        ]
       end
 
       it_behaves_like 'sqlserver_tsql command'
@@ -85,8 +85,8 @@ RSpec.describe 'sqlserver::role', type: :define do
       end
       let(:should_contain_command) do
         [
-        'USE [myCrazyDb];',
-      ]
+          'USE [myCrazyDb];',
+        ]
       end
 
       it_behaves_like 'sqlserver_tsql command'
@@ -113,9 +113,9 @@ RSpec.describe 'sqlserver::role', type: :define do
     describe 'undef' do
       let(:should_not_contain_command) do
         [
-        %r{AUTHORIZATION}i,
-        'ALTER AUTHORIZATION ON ',
-      ]
+          %r{AUTHORIZATION}i,
+          'ALTER AUTHORIZATION ON ',
+        ]
       end
 
       it_behaves_like 'sqlserver_tsql without_command'
@@ -128,9 +128,9 @@ RSpec.describe 'sqlserver::role', type: :define do
       end
       let(:should_contain_command) do
         [
-        'CREATE SERVER ROLE [myCustomRole] AUTHORIZATION [myUser];',
-        'ALTER AUTHORIZATION ON SERVER ROLE::[myCustomRole] TO [myUser];',
-      ]
+          'CREATE SERVER ROLE [myCustomRole] AUTHORIZATION [myUser];',
+          'ALTER AUTHORIZATION ON SERVER ROLE::[myCustomRole] TO [myUser];',
+        ]
       end
 
       it_behaves_like 'sqlserver_tsql command'
@@ -144,9 +144,9 @@ RSpec.describe 'sqlserver::role', type: :define do
       end
       let(:should_contain_command) do
         [
-        'CREATE ROLE [myCustomRole] AUTHORIZATION [myUser];',
-        'ALTER AUTHORIZATION ON ROLE::[myCustomRole] TO [myUser];',
-      ]
+          'CREATE ROLE [myCustomRole] AUTHORIZATION [myUser];',
+          'ALTER AUTHORIZATION ON ROLE::[myCustomRole] TO [myUser];',
+        ]
       end
 
       it_behaves_like 'sqlserver_tsql command'
@@ -162,49 +162,18 @@ RSpec.describe 'sqlserver::role', type: :define do
       end
       let(:should_contain_command) do
         [
-        'USE [master];',
-        'DROP SERVER ROLE [myCustomRole];',
-      ]
+          'USE [master];',
+          'DROP SERVER ROLE [myCustomRole];',
+        ]
       end
       let(:should_contain_onlyif) do
         [
-        'IF EXISTS(',
-      ]
+          'IF EXISTS(',
+        ]
       end
 
       it_behaves_like 'sqlserver_tsql command'
       it_behaves_like 'sqlserver_tsql onlyif'
-    end
-  end
-
-  context 'members =>' do
-    let(:sqlserver_tsql_title) { 'role-MSSQLSERVER-master-myCustomRole-members' }
-
-    describe '[test these users]' do
-      let(:additional_params) do
-        {
-          members: ['test', 'these', 'users'],
-        }
-      end
-      let(:should_contain_command) do
-        [
-        'ALTER SERVER ROLE [myCustomRole] ADD MEMBER [test];',
-        'ALTER SERVER ROLE [myCustomRole] ADD MEMBER [these];',
-        'ALTER SERVER ROLE [myCustomRole] ADD MEMBER [users];',
-      ]
-      end
-      let(:should_contain_onlyif) do
-        [
-      ]
-      end
-
-      it_behaves_like 'sqlserver_tsql command'
-      it_behaves_like 'sqlserver_tsql onlyif'
-    end
-    describe 'empty' do
-      it {
-        is_expected.not_to contain_sqlserver_tsql(sqlserver_tsql_title)
-      }
     end
   end
   context 'members_purge =>' do
@@ -225,7 +194,7 @@ BEGIN
     EXEC(@sql)
 	SET @row += 1
 END",
-        ]
+          ]
         end
         let(:should_contain_onlyif) do
           [
@@ -233,7 +202,7 @@ END",
     JOIN sys.server_principals r ON rm.role_principal_id = r.principal_id
     JOIN sys.server_principals m ON rm.member_principal_id = m.principal_id
     WHERE r.name = 'myCustomRole'",
-        ]
+          ]
         end
 
         it_behaves_like 'sqlserver_tsql command'
@@ -255,7 +224,7 @@ BEGIN
     EXEC(@sql)
 	SET @row += 1
 END",
-        ]
+          ]
         end
         let(:should_contain_onlyif) do
           [
@@ -263,7 +232,7 @@ END",
     JOIN sys.database_principals r ON rm.role_principal_id = r.principal_id
     JOIN sys.database_principals m ON rm.member_principal_id = m.principal_id
     WHERE r.name = 'myCustomRole'",
-        ]
+          ]
         end
 
         it_behaves_like 'sqlserver_tsql command'
@@ -281,17 +250,20 @@ END",
         [
         %r{WHERE r\.name = 'myCustomRole'\n\s+AND m\.name NOT IN \(},
         "NOT IN ('test','these','users')",
-      ]
+        ]
       end
       let(:should_contain_onlyif) do
         [
         %r{WHERE r\.name = 'myCustomRole'\n\s+AND m\.name NOT IN \(},
         "NOT IN ('test','these','users')",
-      ]
+        ]
       end
 
+      # rubocop:enable Style/RegexpLiteral
       it_behaves_like 'sqlserver_tsql command'
       it_behaves_like 'sqlserver_tsql onlyif'
     end
   end
+  # rubocop:enable RSpec/EmptyLineAfterFinalLet
+  # rubocop:enable Layout/IndentArray
 end

@@ -12,7 +12,7 @@ describe 'Test sqlserver::database', node: host do
 
   # Return options for run_sql_query
   def run_sql_query_opts(query, expected_row_count)
-    run_sql_query_opt = {
+    {
       query: query,
       sql_admin_user: 'sa',
       sql_admin_pass: 'Pupp3t1@',
@@ -308,6 +308,7 @@ describe 'Test sqlserver::database', node: host do
                 AND default_language_lcid = '1028';"
 
       run_sql_query(host, run_sql_query_opts(query, 1))
+      # rubocop:enable RSpec/InstanceVariable
     end
   end
 end

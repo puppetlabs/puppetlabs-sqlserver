@@ -4,6 +4,6 @@ Facter.add(:sqlserver_features) do
   confine osfamily: :windows
 
   setcode do
-    PuppetX::Sqlserver::Features.get_features
+    PuppetX::Sqlserver::Features.features
   end
 end

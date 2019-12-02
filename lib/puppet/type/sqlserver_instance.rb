@@ -6,9 +6,7 @@ Puppet::Type.newtype(:sqlserver_instance) do
 
   newparam(:name, namevar: true) do
     desc 'Namevar'
-    munge do |value|
-      value.upcase
-    end
+    munge(&:upcase)
   end
 
   newparam(:source) do
@@ -31,7 +29,7 @@ Puppet::Type.newtype(:sqlserver_instance) do
     munge do |value|
       if PuppetX::Sqlserver::ServerHelper.is_super_feature(value)
         Puppet.deprecation_warning("Using #{value} is deprecated for features in sql_instance resources")
-        PuppetX::Sqlserver::ServerHelper.get_sub_features(value).map { |v| v.to_s }
+        PuppetX::Sqlserver::ServerHelper.get_sub_features(value).map(&:to_s)
       else
         value
       end
@@ -84,7 +82,7 @@ Puppet::Type.newtype(:sqlserver_instance) do
           following characters: " / \ [ ] : ; | = , + * ? < > '
     validate do |value|
       value.is_a? String
-      matches = value.scan(/(\/|\\|\[|\]|\:|\;|\||\=|\,|\+|\*|\?|\<|\>)/)
+      matches = value.scan(%r{(\/|\\|\[|\]|\:|\;|\||\=|\,|\+|\*|\?|\<|\>)})
       unless matches.empty?
         raise("rs_svc_account can not contain any of the special characters, / \\ [ ] : ; | = , + * ? < >, your entry contained #{matches}")
       end
@@ -125,17 +123,14 @@ Puppet::Type.newtype(:sqlserver_instance) do
     if set?(:agt_svc_account)
       validate_user_password_required(:agt_svc_account, :agt_svc_password)
     end
-    if set?(:features)
-      self[:features] = self[:features].flatten.sort.uniq
-    end
+    self[:features] = self[:features].flatten.sort.uniq if set?(:features)
 
     # RS Must have Strong Password
     if set?(:rs_svc_password) && self[:features].include?('RS')
-      is_strong_password?(:rs_svc_password)
+      strong_password?(:rs_svc_password)
     end
-    if self[:security_mode] == 'SQL'
-      is_strong_password?(:sa_pwd)
-    end
+    return unless self[:security_mode] == 'SQL'
+    strong_password?(:sa_pwd)
   end
 
   def set?(key)
@@ -143,43 +138,28 @@ Puppet::Type.newtype(:sqlserver_instance) do
   end
 
   def validate_user_password_required(account, pass)
-    unless set?(account)
-      raise("User #{account} is required")
-    end
-    if is_domain_or_local_user?(self[account]) && self[pass].nil?
-      raise("#{pass} required when using domain account")
-    end
+    # rubocop:disable Style/SignalException
+    fail("User #{account} is required") unless set?(account)
+    return unless domain_or_local_user?(self[account]) && self[pass].nil?
+    fail("#{pass} required when using domain account")
+    # rubocop:enable Style/SignalException
   end
 
-  def is_domain_or_local_user?(user)
+  def domain_or_local_user?(user)
     PuppetX::Sqlserver::ServerHelper.is_domain_or_local_user?(user, Facter.value(:hostname))
   end
 
-  def is_strong_password?(key)
+  def strong_password?(key)
     password = self[key]
-    unless password
-      return
-    end
+    return unless password
     message_start = "Password for #{key} is not strong"
     failures = []
-    if password.length < 8
-      failures << 'must be at least 8 characters long'
-    end
-    unless password =~ %r{[a-z]}
-      failures << 'must contain lowercase letters'
-    end
-    unless password =~ %r{[A-Z]}
-      failures << 'must contain uppercase letters'
-    end
-    unless password =~ %r{\d}
-      failures << 'must contain numbers'
-    end
-    unless password =~ %r{}
-      failures << 'must contain a special character'
-    end
-    if failures.count > 0
-      raise("#{message_start}:\n#{failures.join("\n")}")
-    end
+    failures << 'must be at least 8 characters long' unless password.length >= 8
+    failures << 'must contain lowercase letters' unless password =~ %r{[a-z]}
+    failures << 'must contain uppercase letters' unless password =~ %r{[A-Z]}
+    failures << 'must contain numbers' unless password =~ %r{\d}
+    failures << 'must contain a special character' unless password =~ %r{}
+    fail("#{message_start}:\n#{failures.join("\n")}") if failures.count > 0 # rubocop:disable Style/SignalException
     true
   end
 end

@@ -7,7 +7,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), '..', 'sqlserver_spec
 provider_class = Puppet::Type.type(:sqlserver_instance).provider(:mssql)
 
 RSpec.describe provider_class do
-  subject { provider_class }
+  subject(:provider_class) { provider_class }
 
   let(:additional_install_switches) { [] }
 
@@ -47,7 +47,7 @@ RSpec.describe provider_class do
       @resource = Puppet::Type::Sqlserver_instance.new(args)
       @provider = provider_class.new(@resource)
 
-      stub_powershell_call(subject)
+      stub_powershell_call(provider_class)
       stub_source_which_call args[:source]
 
       cmd_args = ["#{execute_args[:source]}/setup.exe",
@@ -59,12 +59,10 @@ RSpec.describe provider_class do
       (execute_args.keys - ['ensure', 'loglevel', 'features', 'name', 'source', 'sql_sysadmin_accounts', 'sql_security_mode', 'install_switches'].map(&:to_sym)).sort.map do |key|
         cmd_args << "/#{resourcekey_to_cmdarg[key.to_s]}=\"#{@resource[key]}\""
       end
-      if execute_args[:sql_security_mode]
-        cmd_args << '/SECURITYMODE=SQL'
-      end
+      cmd_args << '/SECURITYMODE=SQL' if execute_args[:sql_security_mode]
 
       # Extrace the SQL Sysadmins
-      admin_args = execute_args[:sql_sysadmin_accounts].map { |a| a.to_s }
+      admin_args = execute_args[:sql_sysadmin_accounts].map(&:to_s)
       # prepend first arg only with CLI switch
       admin_args[0] = '/SQLSYSADMINACCOUNTS=' + admin_args[0]
       cmd_args += admin_args
@@ -88,7 +86,7 @@ RSpec.describe provider_class do
       @resource = Puppet::Type::Sqlserver_instance.new(args)
       @provider = provider_class.new(@resource)
 
-      stub_powershell_call(subject)
+      stub_powershell_call(provider_class)
       stub_source_which_call args[:source]
 
       cmd_args = ["#{execute_args[:source]}/setup.exe",
@@ -100,9 +98,7 @@ RSpec.describe provider_class do
       (execute_args.keys - ['ensure', 'loglevel', 'features', 'name', 'source', 'sql_sysadmin_accounts', 'sql_security_mode', 'install_switches'].map(&:to_sym)).sort.map do |key|
         cmd_args << "/#{resourcekey_to_cmdarg[key.to_s]}=\"#{@resource[key]}\""
       end
-      if execute_args[:sql_security_mode]
-        cmd_args << '/SECURITYMODE=SQL'
-      end
+      cmd_args << '/SECURITYMODE=SQL' if execute_args[:sql_security_mode]
 
       # wrap each arg in doublequotes
       admin_args = execute_args[:sql_sysadmin_accounts].map { |a| "\"#{a}\"" }
@@ -149,7 +145,7 @@ RSpec.describe provider_class do
 
   describe 'it should provide the correct command default command' do
     it_behaves_like 'create' do
-      args = get_basic_args
+      args = basic_args
       let(:args) { args }
       munged = { features: Array.new(args[:features]) }
       munged[:features].delete('SQL')
@@ -161,7 +157,7 @@ RSpec.describe provider_class do
 
   describe 'it should raise error if as_sysadmin_accounts is specified without AS feature' do
     it_behaves_like 'create_failure', 1, %r{as_sysadmin_accounts was specified however the AS feature was not included}i do
-      args = get_basic_args
+      args = basic_args
       args[:features] = ['SQLEngine']
       args[:as_sysadmin_accounts] = 'username'
 
@@ -173,7 +169,7 @@ RSpec.describe provider_class do
 
   describe 'it should raise error if polybase_svc_account is specified without POLYBASE feature' do
     it_behaves_like 'create_failure', 1, %r{polybase_svc_account was specified however the POLYBASE feature was not included}i do
-      args = get_basic_args
+      args = basic_args
       args[:features] = ['SQLEngine']
       args[:polybase_svc_account] = 'username'
       args.delete(:polybase_svc_password)
@@ -186,7 +182,7 @@ RSpec.describe provider_class do
 
   describe 'it should raise error if polybase_svc_password is specified without POLYBASE feature' do
     it_behaves_like 'create_failure', 1, %r{polybase_svc_password was specified however the POLYBASE feature was not included}i do
-      args = get_basic_args
+      args = basic_args
       args[:features] = ['SQLEngine']
       args.delete(:polybase_svc_account)
       args[:polybase_svc_password] = 'password'
@@ -199,7 +195,7 @@ RSpec.describe provider_class do
 
   describe 'it should raise warning on install when 1641 exit code returned' do
     it_behaves_like 'create', 1641, %r{reboot initiated}i do
-      args = get_basic_args
+      args = basic_args
       let(:args) { args }
       munged = { features: Array.new(args[:features]) }
       munged[:features].delete('SQL')
@@ -211,7 +207,7 @@ RSpec.describe provider_class do
 
   describe 'it should raise warning on install when 3010 exit code returned' do
     it_behaves_like 'create', 3010, %r{reboot required}i do
-      args = get_basic_args
+      args = basic_args
       let(:args) { args }
       munged = { features: Array.new(args[:features]) }
       munged[:features].delete('SQL')
@@ -296,7 +292,7 @@ RSpec.describe provider_class do
     end
 
     it_behaves_like 'create' do
-      args = get_basic_args
+      args = basic_args
       args[:install_switches] = { 'ERRORREPORTING' => 1 }
       let(:additional_install_switches) { ["/ConfigurationFile=\"#{@file_double.path}\""] }
       let(:args) { args }
@@ -307,9 +303,10 @@ RSpec.describe provider_class do
       let(:munged_values) { munged }
     end
     it_behaves_like 'create' do
-      args = get_basic_args
+      args = basic_args
       args[:install_switches] = { 'ERRORREPORTING' => 1, 'SQLBACKUPDIR' => 'I:\DBbackup' }
       let(:additional_install_switches) { ["/ConfigurationFile=\"#{@file_double.path}\""] }
+      # rubocop:enable RSpec/InstanceVariable
       let(:args) { args }
       munged = { features: Array.new(args[:features]) }
       munged[:features].delete('SQL')

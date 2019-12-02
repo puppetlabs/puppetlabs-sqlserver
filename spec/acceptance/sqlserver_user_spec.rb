@@ -214,6 +214,7 @@ describe 'sqlserver::user test', node: host do
       # validate that the database user '#{@db_user}' should be deleted:
       query = "USE #{db_name}; SELECT * FROM SYS.DATABASE_PRINCIPALS WHERE name = '#{@db_user}';"
       run_sql_query(host, query: query, server: hostname, expected_row_count: 0)
+      # rubocop:enable RSpec/InstanceVariable
     end
   end
 end

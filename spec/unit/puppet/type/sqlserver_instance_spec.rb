@@ -14,7 +14,7 @@ RSpec.describe Puppet::Type.type(:sqlserver_instance) do
 
   describe 'should pass with all valid arguments' do
     it_behaves_like 'validate' do
-      let(:args) { get_basic_args }
+      let(:args) { basic_args }
     end
   end
 
@@ -40,14 +40,14 @@ RSpec.describe Puppet::Type.type(:sqlserver_instance) do
           features: [feature_name],
         }
         expect(Puppet).to receive(:deprecation_warning).at_least(:once)
-        subject = Puppet::Type.type(:sqlserver_instance).new(args)
+        Puppet::Type.type(:sqlserver_instance).new(args)
       end
     end
   end
 
   describe 'agt_svc_password required when using domain account' do
     it_behaves_like 'fail validation' do
-      args = get_basic_args
+      args = basic_args
       args.delete(:agt_svc_password)
       let(:args) { args }
       let(:messages) { 'agt_svc_password' }
@@ -58,7 +58,7 @@ RSpec.describe Puppet::Type.type(:sqlserver_instance) do
     ['/', ' [', ']', ':', ';', '|', '=', ',', '+', '*', '?', '<', '>'].each do |v|
       context "contains invalid character #{v}" do
         it_behaves_like 'fail validation' do
-          args = get_basic_args
+          args = basic_args
           args[:rs_svc_account] = "crazy#{v}User"
           let(:args) { args }
           let(:messages) { ['rs_svc_account can not contain any of the special characters,'] }
@@ -70,7 +70,7 @@ RSpec.describe Puppet::Type.type(:sqlserver_instance) do
   describe 'rs_svc_password' do
     context 'when less than 8 characters long' do
       it_behaves_like 'fail validation' do
-        args = get_basic_args
+        args = basic_args
         args[:rs_svc_password] = 'hrt'
         let(:args) { args }
         let(:messages) do

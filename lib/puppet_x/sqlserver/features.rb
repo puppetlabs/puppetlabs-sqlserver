@@ -8,12 +8,11 @@ SQL_2019 ||= 'SQL_2019'.freeze
 
 ALL_SQL_VERSIONS ||= [SQL_2012, SQL_2014, SQL_2016, SQL_2017, SQL_2019].freeze
 
+# rubocop:disable Style/ClassAndModuleChildren
 module PuppetX
   module Sqlserver
-    # https://msdn.microsoft.com/en-us/library/ms143786.aspx basic feature docs
-    class Features
-      private
-
+    class Features # rubocop:disable Style/Documentation
+      # https://msdn.microsoft.com/en-us/library/ms143786.aspx basic feature docs
       include Puppet::Util::Windows::Registry
       extend Puppet::Util::Windows::Registry
 
@@ -69,7 +68,7 @@ module PuppetX
               .select { |val_name, _| get_reg_key_val(key, val_name, Win32::Registry::REG_DWORD).to_i >= 1 }
               .map { |_, feat_name| feat_name }
           end
-        rescue Puppet::Util::Windows::Error # subkey doesn't exist
+        rescue Puppet::Util::Windows::Error # subkey doesn't exist #rubocop:disable Lint/HandleExceptions
         end
 
         vals
@@ -106,7 +105,7 @@ module PuppetX
             open(HKLM, "#{key_name}\\#{subkey}", KEY_READ | KEY64) do |feat_key|
               get_reg_key_val(feat_key, instance_name, Win32::Registry::REG_SZ)
             end
-          rescue Puppet::Util::Windows::Error # subkey doesn't exist
+          rescue Puppet::Util::Windows::Error # subkey doesn't exist #rubocop:disable Lint/HandleExceptions
           end
         end
 
@@ -170,8 +169,6 @@ module PuppetX
         get_sql_reg_val_features(reg_root, shared_features)
       end
 
-      public
-
       # return a hash of version => instance info
       #
       # {
@@ -193,7 +190,7 @@ module PuppetX
       #     }
       #   }
       # }
-      def self.get_instances
+      def self.instances
         version_instance_map = ALL_SQL_VERSIONS
                                .map do |version|
           major_version = SQL_CONFIGURATION[version][:major_version]
@@ -228,7 +225,7 @@ module PuppetX
       #   "SQL_2012" => ["Conn", "SDK", "MDS", "BC", "SSMS", "ADV_SSMS", "IS"],
       #   "SQL_2014" => []
       # }
-      def self.get_features
+      def self.features
         features = {}
         ALL_SQL_VERSIONS.each { |version| features[version] = get_shared_features(version) }
         features
@@ -265,3 +262,4 @@ module PuppetX
     end
   end
 end
+# rubocop:enable Style/ClassAndModuleChildren

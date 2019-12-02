@@ -44,7 +44,7 @@ Puppet::Type.type(:sqlserver_instance).provide(:mssql, parent: Puppet::Provider:
   def self.prefetch(resources)
     my_instances = instances
     resources.keys.each do |name|
-      if provider = my_instances.find { |inst| inst.name == name }
+      if (provider = my_instances.find { |inst| inst.name == name })
         resources[name].provider = provider
       end
     end
@@ -59,28 +59,27 @@ Puppet::Type.type(:sqlserver_instance).provide(:mssql, parent: Puppet::Provider:
   end
 
   def modify_features(features, action)
-    if not_nil_and_not_empty? features
-      debug "#{action.capitalize}ing features '#{features.join(',')}'"
-      cmd_args, obfuscated_strings = build_cmd_args(features, action)
+    return unless not_nil_and_not_empty? features
+    debug "#{action.capitalize}ing features '#{features.join(',')}'"
+    cmd_args, obfuscated_strings = build_cmd_args(features, action)
 
-      begin
-        config_file = create_temp_for_install_switch unless action == 'uninstall'
-        cmd_args << "/ConfigurationFile=\"#{config_file.path}\"" unless config_file.nil?
-        res = try_execute(cmd_args, "Error trying to #{action} features (#{features.join(', ')}", obfuscated_strings, [0, 1641, 3010])
+    begin
+      config_file = create_temp_for_install_switch unless action == 'uninstall'
+      cmd_args << "/ConfigurationFile=\"#{config_file.path}\"" unless config_file.nil?
+      res = try_execute(cmd_args, "Error trying to #{action} features (#{features.join(', ')}", obfuscated_strings, [0, 1641, 3010])
 
-        warn("#{action} of features (#{features.join(', ')}) returned exit code 3010 - reboot required")  if res.exitstatus == 3010
-        warn("#{action} of features (#{features.join(', ')}) returned exit code 1641 - reboot initiated") if res.exitstatus == 1641
-      ensure
-        if config_file
-          config_file.close
-          config_file.unlink
-        end
+      warn("#{action} of features (#{features.join(', ')}) returned exit code 3010 - reboot required")  if res.exitstatus == 3010
+      warn("#{action} of features (#{features.join(', ')}) returned exit code 1641 - reboot initiated") if res.exitstatus == 1641
+    ensure
+      if config_file
+        config_file.close
+        config_file.unlink
       end
     end
   end
 
-  def installNet35(source_location = nil)
-    result = Puppet::Provider::Sqlserver.run_install_dot_net(source_location)
+  def install_net_35(source_location = nil)
+    Puppet::Provider::Sqlserver.run_install_dot_net(source_location)
   end
 
   def create
@@ -89,19 +88,22 @@ Puppet::Type.type(:sqlserver_instance).provide(:mssql, parent: Puppet::Provider:
       destroy
     else
       unless @resource[:as_sysadmin_accounts].nil? || @resource[:features].include?('AS')
-        raise(_('The parameter as_sysadmin_accounts was specified however the AS feature was not included in the installed features.  Either remove the as_sysadmin_accounts parameter or add AS as a feature to the instance.'))
+        raise(_('The parameter as_sysadmin_accounts was specified however the AS feature was not included in the installed features.
+           Either remove the as_sysadmin_accounts parameter or add AS as a feature to the instance.'))
       end
       unless @resource[:polybase_svc_account].nil? || @resource[:features].include?('POLYBASE')
-        raise(_('The parameter polybase_svc_account was specified however the POLYBASE feature was not included in the installed features.  Either remove the polybase_svc_account parameter or add POLYBASE as a feature to the instance.'))
+        raise(_('The parameter polybase_svc_account was specified however the POLYBASE feature was not included in the installed features.
+           Either remove the polybase_svc_account parameter or add POLYBASE as a feature to the instance.'))
       end
       unless @resource[:polybase_svc_password].nil? || @resource[:features].include?('POLYBASE')
-        raise(_('The parameter polybase_svc_password was specified however the POLYBASE feature was not included in the installed features.  Either remove the polybase_svc_password parameter or add POLYBASE as a feature to the instance.'))
+        raise(_('The parameter polybase_svc_password was specified however the POLYBASE feature was not included in the installed features.
+           Either remove the polybase_svc_password parameter or add POLYBASE as a feature to the instance.'))
       end
 
       instance_version = PuppetX::Sqlserver::ServerHelper.sql_version_from_install_source(@resource[:source])
       Puppet.debug("Installation source detected as version #{instance_version}") unless instance_version.nil?
 
-      installNet35(@resource[:windows_feature_source]) unless [SQL_2016, SQL_2017, SQL_2019].include? instance_version
+      install_net_35(@resource[:windows_feature_source]) unless [SQL_2016, SQL_2017, SQL_2019].include? instance_version
 
       add_features(@resource[:features])
     end
@@ -159,25 +161,24 @@ Puppet::Type.type(:sqlserver_instance).provide(:mssql, parent: Puppet::Provider:
   end
 
   def format_cmd_args_array(switch, arr, cmd_args, use_discrete = false)
-    if not_nil_and_not_empty? arr
-      arr = [arr] unless arr.is_a?(Array)
+    return unless not_nil_and_not_empty? arr
+    arr = [arr] unless arr.is_a?(Array)
 
-      # The default action is to join the array elements with a space ' ' so the cmd_args ends up like;
-      # ["/SWITCH=\"Element1\" \"Element2\""]
-      # Whereas if use_discrete is set, the args are appended as discrete elements in the cmd_args array e.g.;
-      # ["/SWITCH=\"Element1\"","\"Element2\""]
+    # The default action is to join the array elements with a space ' ' so the cmd_args ends up like;
+    # ["/SWITCH=\"Element1\" \"Element2\""]
+    # Whereas if use_discrete is set, the args are appended as discrete elements in the cmd_args array e.g.;
+    # ["/SWITCH=\"Element1\"","\"Element2\""]
 
-      if use_discrete
-        arr.map.with_index do |var, i|
-          cmd_args << if i == 0
-                        "#{switch}=#{var}"
-                      else
-                        var.to_s
-                      end
-        end
-      else
-        cmd_args << "#{switch}=#{arr.map { |item| "\"#{item}\"" }.join(' ')}"
+    if use_discrete
+      arr.map.with_index do |var, i|
+        cmd_args << if i.zero?
+                      "#{switch}=#{var}"
+                    else
+                      var.to_s
+                    end
       end
+    else
+      cmd_args << "#{switch}=#{arr.map { |item| "\"#{item}\"" }.join(' ')}"
     end
   end
 
@@ -205,7 +206,7 @@ Puppet::Type.type(:sqlserver_instance).provide(:mssql, parent: Puppet::Provider:
   def features=(new_features)
     if exists?
       remove_features(@property_hash[:features] - new_features)
-      add_features (new_features - @property_hash[:features])
+      add_features(new_features - @property_hash[:features])
     end
     @property_hash[:features] = new_features
     features

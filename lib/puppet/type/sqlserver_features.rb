@@ -39,7 +39,7 @@ Puppet::Type.newtype(:sqlserver_features) do
     munge do |value|
       if PuppetX::Sqlserver::ServerHelper.is_super_feature(value)
         Puppet.deprecation_warning("Using #{value} is deprecated for features in sql_features resources")
-        PuppetX::Sqlserver::ServerHelper.get_sub_features(value).map { |v| v.to_s }
+        PuppetX::Sqlserver::ServerHelper.get_sub_features(value).map(&:to_s)
       else
         value
       end
@@ -49,33 +49,26 @@ Puppet::Type.newtype(:sqlserver_features) do
   newparam(:install_switches) do
     desc 'A hash of switches you want to pass to the installer'
     validate do |value|
-      raise ArguemntError, _('install_switch must be in the form of a Hash') unless value.is_a?(Hash)
+      raise ArgumentError, _('install_switch must be in the form of a Hash') unless value.is_a?(Hash)
     end
   end
 
   def validate
-    if set?(:features)
-      self[:features] = self[:features].flatten.sort.uniq
-    end
+    self[:features] = self[:features].flatten.sort.uniq if set?(:features)
     # IS_SVC_ACCOUNT validation
-    if set?(:features) && self[:features].include?('IS')
-      if set?(:is_svc_account) || set?(:is_svc_password)
-        validate_user_password_required(:is_svc_account, :is_svc_password)
-      end
-    end
+    return unless set?(:features) && self[:features].include?('IS')
+    return unless set?(:is_svc_account) || set?(:is_svc_password)
+    validate_user_password_required(:is_svc_account, :is_svc_password)
   end
 
-  def is_domain_or_local_user?(user)
+  def domain_or_local_user?(user)
     PuppetX::Sqlserver::ServerHelper.is_domain_or_local_user?(user, Facter.value(:hostname))
   end
 
   def validate_user_password_required(account, pass)
-    unless set?(account)
-      raise("User #{account} is required")
-    end
-    if is_domain_or_local_user?(self[account]) && self[pass].nil?
-      raise("#{pass} required when using domain account")
-    end
+    raise("User #{account} is required") unless set?(account)
+    return unless domain_or_local_user?(self[account]) && self[pass].nil?
+    raise("#{pass} required when using domain account")
   end
 
   def set?(key)

@@ -26,16 +26,14 @@ Puppet::Type.newtype(:sqlserver_tsql) do
 
   newparam(:instance) do
     desc 'requires the usage of sqlserver::config with the user and password'
-    munge do |value|
-      value.upcase
-    end
+    munge(&:upcase)
   end
 
   newparam(:database) do
     desc 'initial database to connect to during query execution'
     defaultto 'master'
     validate do |value|
-      raise("Invalid database name #{value}") unless %r{^[[:word:]|#|@]+}.match(value)
+      raise("Invalid database name #{value}") unless value =~ %r{^[[:word:]|#|@]+}
     end
   end
 
@@ -71,16 +69,12 @@ Puppet::Type.newtype(:sqlserver_tsql) do
   end
 
   def refresh
-    if check_all_attributes(true)
-      property(:returns).sync
-    end
+    property(:returns).sync if check_all_attributes(true)
   end
 
   newproperty(:returns, array_matching: :all, event: :executed_command) do |_property|
     desc 'Returns the result of the executed command'
-    munge do |value|
-      value.to_s
-    end
+    munge(&:to_s)
 
     def event_name
       :executed_command

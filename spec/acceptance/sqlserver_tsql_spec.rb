@@ -206,6 +206,7 @@ describe 'sqlserver_tsql test', node: host do
         command => "CREATE TABLE #{@table_name} (id INT, name VARCHAR(20), email VARCHAR(20));",
       }
       MANIFEST
+      # rubocop:enable RSpec/InstanceVariable
       execute_manifest(pp, acceptable_exit_codes: [0, 1]) do |r|
         expect(r.stderr).to match(%r{Non-Existing-Database}i)
       end

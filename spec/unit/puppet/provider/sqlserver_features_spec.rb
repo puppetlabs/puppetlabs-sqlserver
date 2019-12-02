@@ -5,7 +5,9 @@ require File.expand_path(File.join(File.dirname(__FILE__), '..', 'sqlserver_spec
 provider_class = Puppet::Type.type(:sqlserver_features).provider(:mssql)
 
 RSpec.describe provider_class do
-  subject { provider_class }
+  subject(:provider_class_ut) { provider_class }
+
+  # subject { provider_class }
 
   let(:params) do
     {
@@ -22,14 +24,14 @@ RSpec.describe provider_class do
     it {
       params.merge!(additional_params)
       @resource = Puppet::Type::Sqlserver_features.new(params)
-      @provider = provider_class.new(@resource)
+      provider_class_ut = provider_class.new(@resource)
 
-      stub_powershell_call(subject)
+      stub_powershell_call(provider_class_ut)
 
       executed_args = params.merge(munged_args)
       stub_add_features(executed_args, executed_args[:features], additional_switches, exit_code || 0)
-      allow(@provider).to receive(:warn).with(regexp_matches(warning_matcher)).and_return(nil) if warning_matcher
-      @provider.create
+      allow(provider_class_ut).to receive(:warn).with(regexp_matches(warning_matcher)).and_return(nil) if warning_matcher
+      provider_class_ut.create
     }
   end
 
@@ -74,7 +76,7 @@ RSpec.describe provider_class do
       @resource = Puppet::Type::Sqlserver_features.new(args)
       @provider = provider_class.new(@resource)
 
-      stub_powershell_call(subject)
+      stub_powershell_call(provider_class_ut)
       stub_source_which_call args
       unless feature_remove.empty?
         stub_remove_features(args, feature_remove, exit_code || 0)
@@ -96,7 +98,7 @@ RSpec.describe provider_class do
         @resource = Puppet::Type::Sqlserver_features.new(feature_params)
         @provider = provider_class.new(@resource)
 
-        stub_powershell_call(subject)
+        stub_powershell_call(provider_class_ut)
 
         stub_source_which_call feature_params[:source]
 
@@ -167,5 +169,6 @@ RSpec.describe provider_class do
     let(:feature_add) { ['BC', 'IS', 'SSMS'] }
 
     it_behaves_like 'features=', @feature_params
+    # rubocop:enable RSpec/InstanceVariable
   end
 end

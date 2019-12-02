@@ -23,7 +23,7 @@ RSpec.describe 'sqlserver::sp_configure', type: :define do
       [
         "EXECUTE @return_value = sp_configure @configname = N'filestream access level', @configvalue = 1",
         "IF @return_value != 0
-  	THROW 51000,'Unable to update `filestream access level`', 10",
+	THROW 51000,'Unable to update `filestream access level`', 10",
         'RECONFIGURE',
       ]
     end

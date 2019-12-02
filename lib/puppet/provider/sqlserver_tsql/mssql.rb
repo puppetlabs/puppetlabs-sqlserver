@@ -11,7 +11,7 @@ Puppet::Type.type(:sqlserver_tsql).provide(:mssql, parent: Puppet::Provider::Sql
     sqlconn.open_and_run_command(query, config)
   end
 
-  def get_config
+  def get_config # rubocop:disable Style/AccessorMethodName
     instance = resource[:instance]
     config_resc = resource.catalog.resources.find do |resc|
       resc.title =~ %r{Sqlserver::Config} &&

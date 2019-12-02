@@ -21,9 +21,7 @@ def stub_modify_features(action, args, features, additional_switches = [], exit_
           '/Q',
           '/IACCEPTSQLSERVERLICENSETERMS',
           "/FEATURES=#{features.join(',')}"]
-  if args.key?(:is_svc_account)
-    cmds << "/ISSVCACCOUNT=#{args[:is_svc_account]}"
-  end
+  cmds << "/ISSVCACCOUNT=#{args[:is_svc_account]}" if args.key?(:is_svc_account)
   if args.key?(:is_svc_password)
     cmds << "/ISSVCPASSWORD=#{args[:is_svc_password]}"
   end

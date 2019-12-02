@@ -15,7 +15,7 @@ describe 'Test sqlserver::login', node: host do
 
   # Return options for run_sql_query
   def run_sql_query_opts(user, passwd, query, expected_row_count)
-    run_sql_query_opt = {
+    {
       query: query,
       sql_admin_user: user,
       sql_admin_pass: passwd,
@@ -61,7 +61,7 @@ describe 'Test sqlserver::login', node: host do
       raise "Unknown testcase name #{testcase}"
     end
 
-    pp = <<-MANIFEST
+    pp = <<-MANIFEST # rubocop:disable Lint/UselessAssignment
           sqlserver::config{'MSSQLSERVER':
             admin_user    => 'sa',
             admin_pass    => 'Pupp3t1@',
@@ -69,7 +69,7 @@ describe 'Test sqlserver::login', node: host do
           sqlserver::login{'#{login_name}':
             instance    => 'MSSQLSERVER',
             login_type  => '#{login_type}',
-            #{if testcase == 'SQL_LOGIN user' then "password => '#{login_password}'," end}
+            #{"password => '#{login_password}'," if testcase == 'SQL_LOGIN user'}
             #{options['svrroles'].nil? ? "svrroles => {'sysadmin' => 1}," : "svrroles => #{options['svrroles']},"}
             #{"check_expiration => #{options['check_expiration']}," unless options['check_expiration'].nil?}
             #{"check_policy => #{options['check_policy']}," unless options['check_policy'].nil?}
@@ -168,14 +168,14 @@ describe 'Test sqlserver::login', node: host do
 
         it 'exists in the principals table', tier_low: true do
           query = "SELECT principal_id FROM SYS.server_principals WHERE name = '#{@login_under_test}' AND [type] = '#{@sql_principal_type}'"
-          run_sql_query(host, run_sql_query_opts_as_sa(query, expected_row_count = 1))
+          run_sql_query(host, run_sql_query_opts_as_sa(query, 1))
         end
 
         if testcase == 'SQL_LOGIN user'
           it 'can login to SQL Server', tier_low: true do
             puts "Validate the login '#{@login_under_test}' is successfully created and able to access database '#{db_name}':"
             query = "USE #{db_name}; SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE table_name = '#{table_name}';"
-            run_sql_query(host, run_sql_query_opts(@login_under_test, @login_passwd, query, expected_row_count = 1))
+            run_sql_query(host, run_sql_query_opts(@login_under_test, @login_passwd, query, 1))
           end
         end
 
@@ -197,12 +197,12 @@ describe 'Test sqlserver::login', node: host do
 
         it 'has is_expiration_checked set', tier_low: true do
           query = "SELECT name as LOGIN_NAME, is_expiration_checked FROM SYS.SQL_LOGINS WHERE is_expiration_checked = '1' AND name = '#{@login_under_test}';"
-          run_sql_query(host, run_sql_query_opts_as_sa(query, expected_row_count = 1))
+          run_sql_query(host, run_sql_query_opts_as_sa(query, 1))
         end
 
         it 'has is_policy_checked set', tier_low: true do
           query = "SELECT name as LOGIN_NAME, is_policy_checked FROM SYS.SQL_LOGINS WHERE is_policy_checked = '1' AND name = '#{@login_under_test}';"
-          run_sql_query(host, run_sql_query_opts_as_sa(query, expected_row_count = 1))
+          run_sql_query(host, run_sql_query_opts_as_sa(query, 1))
         end
       end
 
@@ -217,17 +217,17 @@ describe 'Test sqlserver::login', node: host do
 
         it 'exists in the principals table', tier_low: true do
           query = "SELECT principal_id FROM SYS.server_principals WHERE name = '#{@login_under_test}' AND [type] = '#{@sql_principal_type}'"
-          run_sql_query(host, run_sql_query_opts_as_sa(query, expected_row_count = 1))
+          run_sql_query(host, run_sql_query_opts_as_sa(query, 1))
         end
 
         it 'has the specified default database', tier_low: true do
           query = "SELECT principal_id FROM SYS.server_principals WHERE name = '#{@login_under_test}' AND [type] = '#{@sql_principal_type}' AND default_database_name = '#{db_name}'"
-          run_sql_query(host, run_sql_query_opts_as_sa(query, expected_row_count = 1))
+          run_sql_query(host, run_sql_query_opts_as_sa(query, 1))
         end
 
         it 'has the specified default langauge', tier_low: true do
           query = "SELECT principal_id FROM SYS.server_principals WHERE name = '#{@login_under_test}' AND [type] = '#{@sql_principal_type}' AND default_language_name = 'Spanish'"
-          run_sql_query(host, run_sql_query_opts_as_sa(query, expected_row_count = 1))
+          run_sql_query(host, run_sql_query_opts_as_sa(query, 1))
         end
       end
 
@@ -245,12 +245,12 @@ describe 'Test sqlserver::login', node: host do
             query = "SELECT sp.[state] FROM sys.server_principals p
                     INNER JOIN sys.server_permissions sp ON p.principal_id = sp.grantee_principal_id
                     WHERE sp.permission_name = 'CONNECT SQL' AND sp.class = 100 AND sp.state = 'D' AND p.name = '#{@login_under_test}' AND p.[type] = '#{@sql_principal_type}'"
-            run_sql_query(host, run_sql_query_opts_as_sa(query, expected_row_count = 1))
+            run_sql_query(host, run_sql_query_opts_as_sa(query, 1))
           end
         else
           it 'has is_disabled set' do
             query = "SELECT principal_id FROM SYS.server_principals WHERE name = '#{@login_under_test}' AND [type] = '#{@sql_principal_type}' AND is_disabled = '1';"
-            run_sql_query(host, run_sql_query_opts_as_sa(query, expected_row_count = 1))
+            run_sql_query(host, run_sql_query_opts_as_sa(query, 1))
           end
         end
       end
@@ -266,11 +266,16 @@ describe 'Test sqlserver::login', node: host do
 
         it 'exists in the principals table on creation', tier_low: true do
           query = "SELECT principal_id FROM SYS.server_principals WHERE name = '#{@login_under_test}' AND [type] = '#{@sql_principal_type}'"
-          run_sql_query(host, run_sql_query_opts_as_sa(query, expected_row_count = 1))
+          run_sql_query(host, run_sql_query_opts_as_sa(query, 1))
         end
 
         it "should modify a #{testcase} login", tier_low: true do
-          options = { 'disabled' => true, 'default_database' => db_name.to_s, 'default_language' => 'Spanish', 'check_expiration' => true, 'check_policy' => true, 'svrroles' => '{\'sysadmin\' => 1, \'serveradmin\' => 1}' }
+          options = { 'disabled' => true,
+                      'default_database' => db_name.to_s,
+                      'default_language' => 'Spanish',
+                      'check_expiration' => true,
+                      'check_policy' => true,
+                      'svrroles' => '{\'sysadmin\' => 1, \'serveradmin\' => 1}' }
           pp = create_login_manifest(testcase, @login_under_test, @login_passwd, options)
           ensure_manifest_execute(pp)
         end
@@ -278,12 +283,12 @@ describe 'Test sqlserver::login', node: host do
         if testcase == 'SQL_LOGIN user'
           it 'has is_expiration_checked set', tier_low: true do
             query = "SELECT name as LOGIN_NAME, is_expiration_checked FROM SYS.SQL_LOGINS WHERE is_expiration_checked = '1' AND name = '#{@login_under_test}';"
-            run_sql_query(host, run_sql_query_opts_as_sa(query, expected_row_count = 1))
+            run_sql_query(host, run_sql_query_opts_as_sa(query, 1))
           end
 
           it 'has is_policy_checked set', tier_low: true do
             query = "SELECT name as LOGIN_NAME, is_policy_checked FROM SYS.SQL_LOGINS WHERE is_policy_checked = '1' AND name = '#{@login_under_test}';"
-            run_sql_query(host, run_sql_query_opts_as_sa(query, expected_row_count = 1))
+            run_sql_query(host, run_sql_query_opts_as_sa(query, 1))
           end
         end
 
@@ -295,7 +300,7 @@ describe 'Test sqlserver::login', node: host do
                     WHERE rol.type_desc = 'SERVER_ROLE'
                     AND rol.name = 'sysadmin'
                     AND pri.name = '#{@login_under_test}'"
-          run_sql_query(host, run_sql_query_opts_as_sa(query, expected_row_count = 1))
+          run_sql_query(host, run_sql_query_opts_as_sa(query, 1))
         end
         it 'has the specified serveradmin role', tier_low: true do
           # Note - IS_SRVROLEMEMBER always returns false for a disabled WINDOWS_LOGIN user login
@@ -305,17 +310,17 @@ describe 'Test sqlserver::login', node: host do
                     WHERE rol.type_desc = 'SERVER_ROLE'
                     AND rol.name = 'serveradmin'
                     AND pri.name = '#{@login_under_test}'"
-          run_sql_query(host, run_sql_query_opts_as_sa(query, expected_row_count = 1))
+          run_sql_query(host, run_sql_query_opts_as_sa(query, 1))
         end
 
         it 'has the specified default database', tier_low: true do
           query = "SELECT principal_id FROM SYS.server_principals WHERE name = '#{@login_under_test}' AND [type] = '#{@sql_principal_type}' AND default_database_name = '#{db_name}'"
-          run_sql_query(host, run_sql_query_opts_as_sa(query, expected_row_count = 1))
+          run_sql_query(host, run_sql_query_opts_as_sa(query, 1))
         end
 
         it 'has the specified default langauge', tier_low: true do
           query = "SELECT principal_id FROM SYS.server_principals WHERE name = '#{@login_under_test}' AND [type] = '#{@sql_principal_type}' AND default_language_name = 'Spanish'"
-          run_sql_query(host, run_sql_query_opts_as_sa(query, expected_row_count = 1))
+          run_sql_query(host, run_sql_query_opts_as_sa(query, 1))
         end
 
         if testcase == 'WINDOWS_LOGIN group'
@@ -323,12 +328,12 @@ describe 'Test sqlserver::login', node: host do
             query = "SELECT sp.[state] FROM sys.server_principals p
                     INNER JOIN sys.server_permissions sp ON p.principal_id = sp.grantee_principal_id
                     WHERE sp.permission_name = 'CONNECT SQL' AND sp.class = 100 AND sp.state = 'D' AND p.name = '#{@login_under_test}' AND p.[type] = '#{@sql_principal_type}'"
-            run_sql_query(host, run_sql_query_opts_as_sa(query, expected_row_count = 1))
+            run_sql_query(host, run_sql_query_opts_as_sa(query, 1))
           end
         else
           it 'has is_disabled set', tier_low: true do
             query = "SELECT principal_id FROM SYS.server_principals WHERE name = '#{@login_under_test}' AND [type] = '#{@sql_principal_type}' AND is_disabled = '1';"
-            run_sql_query(host, run_sql_query_opts_as_sa(query, expected_row_count = 1))
+            run_sql_query(host, run_sql_query_opts_as_sa(query, 1))
           end
         end
       end
@@ -343,7 +348,7 @@ describe 'Test sqlserver::login', node: host do
 
         it 'exists in the principals table on creation', tier_low: true do
           query = "SELECT principal_id FROM SYS.server_principals WHERE name = '#{@login_under_test}' AND [type] = '#{@sql_principal_type}'"
-          run_sql_query(host, run_sql_query_opts_as_sa(query, expected_row_count = 1))
+          run_sql_query(host, run_sql_query_opts_as_sa(query, 1))
         end
 
         it "should remove a #{testcase} on ensure => absent", tier_low: true do
@@ -360,8 +365,9 @@ describe 'Test sqlserver::login', node: host do
 
         it 'does not exist in the principals table after deletion', tier_low: true do
           query = "SELECT principal_id FROM SYS.server_principals WHERE name = '#{@login_under_test}' AND [type] = '#{@sql_principal_type}'"
-          run_sql_query(host, run_sql_query_opts_as_sa(query, expected_row_count = 0))
+          run_sql_query(host, run_sql_query_opts_as_sa(query, 0))
         end
+        # rubocop:enable RSpec/InstanceVariable
       end
     end
   end

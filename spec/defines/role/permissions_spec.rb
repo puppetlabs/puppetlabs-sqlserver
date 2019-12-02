@@ -14,31 +14,31 @@ RSpec.describe 'sqlserver::role::permissions' do
   end
 
   context 'sql variables' do
-    let(:params) do
-      {
-        role: 'myCustomRole',
-        permissions: ['INSERT', 'UPDATE', 'DELETE', 'SELECT'],
-      }
-    end
+    # rubocop:disable Layout/AlignArray : Will not conform SQL test data to Rubocop
     declare_variables = [
-        "DECLARE
+      "DECLARE
     @perm_state varchar(250),
     @error_msg varchar(250),
     @permission varchar(250),
     @princ_name varchar(50),
     @princ_type varchar(50),
     @state_desc varchar(50);",
-        "SET @princ_type = 'SERVER_ROLE';",
-        "SET @princ_name = 'myCustomRole';",
-        "SET @state_desc = 'GRANT';",
-]
+    "SET @princ_type = 'SERVER_ROLE';",
+    "SET @princ_name = 'myCustomRole';",
+    "SET @state_desc = 'GRANT';",
+    ]
     let(:should_contain_command) { declare_variables }
     let(:should_contain_onlyif) { declare_variables }
+    let(:params) do
+      {
+        role: 'myCustomRole',
+        permissions: ['INSERT', 'UPDATE', 'DELETE', 'SELECT'],
+      }
+    end
 
     it_behaves_like 'sqlserver_tsql command'
     it_behaves_like 'sqlserver_tsql onlyif'
   end
-
   context 'type =>' do
     shared_examples 'GRANT Permissions' do |type|
       base_commands = [
@@ -60,6 +60,7 @@ RSpec.describe 'sqlserver::role::permissions' do
           'GRANT DELETE TO [myCustomRole];',
           'GRANT SELECT TO [myCustomRole];',
       ]
+      # rubocop:enable Layout/IndentArray
       let(:should_contain_command) { base_commands + should_commands }
       let(:should_contain_onlyif) { base_commands }
 
@@ -91,18 +92,18 @@ RSpec.describe 'sqlserver::role::permissions' do
   context 'permissions =>' do
     describe '[INSERT UPDATE DELETE SELECT]' do
       declare_variables = [
-          "SET @permission = 'INSERT';",
-          "SET @permission = 'UPDATE';",
-          "SET @permission = 'DELETE';",
-          "SET @permission = 'SELECT';",
+        "SET @permission = 'INSERT';",
+        "SET @permission = 'UPDATE';",
+        "SET @permission = 'DELETE';",
+        "SET @permission = 'SELECT';",
       ]
       let(:should_contain_command) do
         declare_variables +
           [
-              'GRANT INSERT TO [myCustomRole];',
-              'GRANT UPDATE TO [myCustomRole];',
-              'GRANT DELETE TO [myCustomRole];',
-              'GRANT SELECT TO [myCustomRole];',
+            'GRANT INSERT TO [myCustomRole];',
+            'GRANT UPDATE TO [myCustomRole];',
+            'GRANT DELETE TO [myCustomRole];',
+            'GRANT SELECT TO [myCustomRole];',
           ]
       end
       let(:should_contain_onlyif) { declare_variables }
@@ -137,13 +138,13 @@ RSpec.describe 'sqlserver::role::permissions' do
       let(:additional_params) { { database: 'customDatabase' } }
       let(:should_contain_command) { ['USE [customDatabase];'] }
       let(:sqlserver_tsql_title) { 'role-permissions-myCustomRole-GRANT-MSSQLSERVER-customDatabase' }
-      it_behaves_like 'sqlserver_tsql command'
-      let(:should_contain_onlyif) { ['USE [customDatabase];'] }
-      it_behaves_like 'sqlserver_tsql onlyif'
       let(:should_contain_without_command) { ['USE [master];'] }
-      it_behaves_like 'sqlserver_tsql without_command'
+      let(:should_contain_onlyif) { ['USE [customDatabase];'] }
       let(:should_contain_without_onlyif) { ['USE [master];'] }
 
+      it_behaves_like 'sqlserver_tsql command'
+      it_behaves_like 'sqlserver_tsql onlyif'
+      it_behaves_like 'sqlserver_tsql without_command'
       it_behaves_like 'sqlserver_tsql without_onlyif'
     end
   end

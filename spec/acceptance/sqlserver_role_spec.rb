@@ -41,7 +41,7 @@ describe 'Test sqlserver::role', node: host do
       require         => Sqlserver::Login['#{LOGIN1}'],
     }
     MANIFEST
-    execute_manifest(pp, opts = {}) do |r|
+    execute_manifest(pp, {}) do |r|
       expect(r.stderr).not_to match(%r{Error}i)
     end
   end
@@ -64,7 +64,7 @@ describe 'Test sqlserver::role', node: host do
         ensure  => 'absent',
       }
       MANIFEST
-      execute_manifest(pp, opts = {}) do |r|
+      execute_manifest(pp, {}) do |r|
         expect(r.stderr).not_to match(%r{Error}i)
       end
     end
@@ -81,7 +81,7 @@ describe 'Test sqlserver::role', node: host do
         ensure    => 'absent',
       }
       MANIFEST
-      execute_manifest(pp, opts = {}) do |r|
+      execute_manifest(pp, {}) do |r|
         expect(r.stderr).not_to match(%r{Error}i)
       end
     end
@@ -100,7 +100,7 @@ describe 'Test sqlserver::role', node: host do
         type          => 'SERVER',
       }
       MANIFEST
-      execute_manifest(pp, opts = {}) do |r|
+      execute_manifest(pp, {}) do |r|
         expect(r.stderr).not_to match(%r{Error}i)
       end
 
@@ -140,7 +140,7 @@ describe 'Test sqlserver::role', node: host do
         type        => 'DATABASE',
       }
       MANIFEST
-      execute_manifest(pp, opts = {}) do |r|
+      execute_manifest(pp, {}) do |r|
         expect(r.stderr).not_to match(%r{Error}i)
       end
 
@@ -177,7 +177,7 @@ describe 'Test sqlserver::role', node: host do
         type        => 'DATABASE',
       }
       MANIFEST
-      execute_manifest(pp, opts = {}) do |r|
+      execute_manifest(pp, {}) do |r|
         expect(r.stderr).not_to match(%r{Error}i)
       end
 
@@ -211,7 +211,7 @@ describe 'Test sqlserver::role', node: host do
         members     => ['#{LOGIN1}', '#{LOGIN2}', '#{LOGIN3}'],
       }
       MANIFEST
-      execute_manifest(pp, opts = {}) do |r|
+      execute_manifest(pp, {}) do |r|
         expect(r.stderr).not_to match(%r{Error}i)
       end
 
@@ -255,7 +255,7 @@ describe 'Test sqlserver::role', node: host do
         members_purge => true,
       }
       MANIFEST
-      execute_manifest(pp, opts = {}) do |r|
+      execute_manifest(pp, {}) do |r|
         expect(r.stderr).not_to match(%r{Error}i)
       end
 
@@ -270,6 +270,7 @@ describe 'Test sqlserver::role', node: host do
         OR spr.name = '#{LOGIN3}';"
 
       run_sql_query(host, query: query, server: hostname, expected_row_count: 1)
+      # rubocop:enable RSpec/InstanceVariable
     end
   end
 end

@@ -31,8 +31,6 @@ module Puppet::Parser::Functions
     if value =~ %r{^_|_$}
       errors << "Instance name can not start or end with underscore (_), you provided #{value}"
     end
-    unless errors.empty?
-      raise Puppet::ParseError, errors.join("\n")
-    end
+    raise Puppet::ParseError, errors.join("\n") unless errors.empty?
   end
 end

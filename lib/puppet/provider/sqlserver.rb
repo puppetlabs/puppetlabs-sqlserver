@@ -3,7 +3,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', '..', 'li
 require File.expand_path(File.join(File.dirname(__FILE__), 'sqlserver'))
 require 'tempfile'
 
-class Puppet::Provider::Sqlserver < Puppet::Provider
+class Puppet::Provider::Sqlserver < Puppet::Provider # rubocop:disable Style/Documentation
   confine operatingsystem: :windows
 
   initvars
@@ -14,7 +14,7 @@ class Puppet::Provider::Sqlserver < Puppet::Provider
                                         "#{ENV['SYSTEMROOT']}\\system32\\WindowsPowershell\\v1.0\\powershell.exe"
                                       else
                                         'powershell.exe'
-               end
+                                      end
 
   def try_execute(command, msg = nil, obfuscate_strings = nil, acceptable_exit_codes = [0])
     res = execute(command.compact, failonfail: false)

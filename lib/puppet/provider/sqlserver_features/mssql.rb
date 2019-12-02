@@ -40,7 +40,7 @@ Puppet::Type.type(:sqlserver_features).provide(:mssql, parent: Puppet::Provider:
   def self.prefetch(resources)
     features = instances
     resources.keys.each do |name|
-      if provider = features.find { |feature| feature.name == name }
+      if (provider = features.find { |feature| feature.name == name })
         resources[name].provider = provider
       end
     end
@@ -55,36 +55,35 @@ Puppet::Type.type(:sqlserver_features).provide(:mssql, parent: Puppet::Provider:
   end
 
   def modify_features(action, features)
-    if not_nil_and_not_empty? features
-      debug "#{action.capitalize}ing features '#{features.join(',')}'"
-      cmd_args = ["#{@resource[:source]}/setup.exe",
-                  "/ACTION=#{action}",
-                  '/Q',
-                  '/IACCEPTSQLSERVERLICENSETERMS',
-                  "/FEATURES=#{features.join(',')}"]
-      if action == 'install'
-        if not_nil_and_not_empty?(@resource[:is_svc_account])
-          cmd_args << "/ISSVCACCOUNT=#{@resource[:is_svc_account]}"
-        end
-        if not_nil_and_not_empty?(@resource[:is_svc_password])
-          cmd_args << "/ISSVCPASSWORD=#{@resource[:is_svc_password]}"
-        end
-        if not_nil_and_not_empty?(@resource[:pid])
-          cmd_args << "/PID=#{@resource[:pid]}"
-        end
+    return unless not_nil_and_not_empty? features
+    debug "#{action.capitalize}ing features '#{features.join(',')}'"
+    cmd_args = ["#{@resource[:source]}/setup.exe",
+                "/ACTION=#{action}",
+                '/Q',
+                '/IACCEPTSQLSERVERLICENSETERMS',
+                "/FEATURES=#{features.join(',')}"]
+    if action == 'install'
+      if not_nil_and_not_empty?(@resource[:is_svc_account])
+        cmd_args << "/ISSVCACCOUNT=#{@resource[:is_svc_account]}"
       end
-      begin
-        config_file = create_temp_for_install_switch unless action == 'uninstall'
-        cmd_args << "/ConfigurationFile=\"#{config_file.path}\"" unless config_file.nil?
-        res = try_execute(cmd_args, "Unable to #{action} features (#{features.join(', ')})", nil, [0, 1641, 3010])
+      if not_nil_and_not_empty?(@resource[:is_svc_password])
+        cmd_args << "/ISSVCPASSWORD=#{@resource[:is_svc_password]}"
+      end
+      if not_nil_and_not_empty?(@resource[:pid])
+        cmd_args << "/PID=#{@resource[:pid]}"
+      end
+    end
+    begin
+      config_file = create_temp_for_install_switch unless action == 'uninstall'
+      cmd_args << "/ConfigurationFile=\"#{config_file.path}\"" unless config_file.nil?
+      res = try_execute(cmd_args, "Unable to #{action} features (#{features.join(', ')})", nil, [0, 1641, 3010])
 
-        warn("#{action} of features (#{features.join(', ')} returned exit code 3010 - reboot required")  if res.exitstatus == 3010
-        warn("#{action} of features (#{features.join(', ')} returned exit code 1641 - reboot initiated") if res.exitstatus == 1641
-      ensure
-        if config_file
-          config_file.close
-          config_file.unlink
-        end
+      warn("#{action} of features (#{features.join(', ')} returned exit code 3010 - reboot required")  if res.exitstatus == 3010
+      warn("#{action} of features (#{features.join(', ')} returned exit code 1641 - reboot initiated") if res.exitstatus == 1641
+    ensure
+      if config_file
+        config_file.close
+        config_file.unlink
       end
     end
   end
@@ -113,8 +112,8 @@ Puppet::Type.type(:sqlserver_features).provide(:mssql, parent: Puppet::Provider:
     nil
   end
 
-  def installNet35(source_location = nil)
-    result = Puppet::Provider::Sqlserver.run_install_dot_net(source_location)
+  def install_net_35(source_location = nil)
+    Puppet::Provider::Sqlserver.run_install_dot_net(source_location)
   end
 
   def create
@@ -126,7 +125,8 @@ Puppet::Type.type(:sqlserver_features).provide(:mssql, parent: Puppet::Provider:
       instance_version = PuppetX::Sqlserver::ServerHelper.sql_version_from_install_source(@resource[:source])
       Puppet.debug("Installation source detected as version #{instance_version}") unless instance_version.nil?
 
-      installNet35(@resource[:windows_feature_source]) unless [SQL_2016, SQL_2017, SQL_2019].include? instance_version
+      install_net_35
+      (@resource[:windows_feature_source]) unless [SQL_2016, SQL_2017, SQL_2019].include? instance_version
 
       debug "Installing features #{@resource[:features]}"
       add_features(@resource[:features])
@@ -153,7 +153,7 @@ Puppet::Type.type(:sqlserver_features).provide(:mssql, parent: Puppet::Provider:
   def features=(new_features)
     if exists?
       remove_features(@property_hash[:features] - new_features)
-      add_features (new_features - @property_hash[:features])
+      add_features(new_features - @property_hash[:features])
     end
     @property_hash[:features] = new_features
     features

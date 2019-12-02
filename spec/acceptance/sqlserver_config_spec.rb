@@ -101,6 +101,7 @@ describe 'sqlserver::config test', node: host do
         instance => '#{inst_name}',
       }
       MANIFEST
+      # rubocop:enable RSpec/InstanceVariable
       execute_manifest(pp) do |r|
         expect(r.stderr).not_to match(%r{Error}i)
       end

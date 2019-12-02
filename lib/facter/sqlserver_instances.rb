@@ -4,6 +4,6 @@ Facter.add(:sqlserver_instances) do
   confine osfamily: :windows
 
   setcode do
-    PuppetX::Sqlserver::Features.get_instances
+    PuppetX::Sqlserver::Features.instances
   end
 end

@@ -1,4 +1,4 @@
-def get_basic_args
+def basic_args
   {
     source: 'C:\myinstallexecs',
     pid: 'areallyCrazyLongPid',

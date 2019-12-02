@@ -206,7 +206,6 @@ describe 'sqlserver_features', node: host do
       features = ['BC', 'Conn', 'SDK', 'IS', 'MDS', 'DQC']
 
       before(:all) do
-        puppet_version = (on host, puppet('--version')).stdout.chomp
         json_result = JSON.parse((on host, puppet('facts --render-as json')).raw_output)['values']['sqlserver_instances']
         names = json_result.map { |k, _v| json_result[k].keys }.flatten
         remove_sql_instances(host, version: sql_version, instance_names: names)

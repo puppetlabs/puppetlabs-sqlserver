@@ -13,7 +13,7 @@ RSpec.describe Puppet::Type.type(:sqlserver_features) do
           features: [feature_name],
         }
         expect(Puppet).to receive(:deprecation_warning).at_least(:once)
-        subject = Puppet::Type.type(:sqlserver_features).new(args)
+        Puppet::Type.type(:sqlserver_features).new(args)
       end
     end
   end

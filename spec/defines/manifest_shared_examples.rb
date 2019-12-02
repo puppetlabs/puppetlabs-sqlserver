@@ -68,6 +68,6 @@ end
 def random_string_of_size(size, include_numeric = true)
   pool = [('a'..'z'), ('A'..'Z')]
   pool << (0..9) if include_numeric
-  o = pool.map { |i| i.to_a }.flatten
+  o = pool.map(&:to_a).flatten
   (0...size).map { o[rand(o.length)] }.join
 end

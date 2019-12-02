@@ -37,7 +37,7 @@ describe 'sqlserver_instance', node: host do
 
   # Return options for run_sql_query
   def run_sql_query_opts(inst_name, query, expected_row_count)
-    run_sql_query_opt = {
+    {
       query: query,
       instance: inst_name,
       server: '.',
@@ -60,9 +60,9 @@ describe 'sqlserver_instance', node: host do
   context 'Create an instance', testrail: ['88978', '89028', '89031', '89043', '89061'] do
     before(:context) do
       # Use a username with a space to test argument parsing works correctly
-      @ExtraAdminUser = 'Extra SQLAdmin'
+      @extra_admin_user = 'Extra SQLAdmin'
       pp = <<-MANIFEST
-      user { '#{@ExtraAdminUser}':
+      user { '#{@extra_admin_user}':
         ensure => present,
         password => 'Puppet01!',
       }
@@ -72,7 +72,7 @@ describe 'sqlserver_instance', node: host do
 
     after(:context) do
       pp = <<-MANIFEST
-      user { '#{@ExtraAdminUser}':
+      user { '#{@extra_admin_user}':
         ensure => absent,
       }
       MANIFEST
@@ -84,7 +84,7 @@ describe 'sqlserver_instance', node: host do
 
     it "create #{inst_name} instance", tier_high: true do
       host_computer_name = on(host, 'CMD /C ECHO %COMPUTERNAME%').stdout.chomp
-      ensure_sqlserver_instance(features, inst_name, 'present', "['Administrator','#{host_computer_name}\\#{@ExtraAdminUser}']")
+      ensure_sqlserver_instance(features, inst_name, 'present', "['Administrator','#{host_computer_name}\\#{@extra_admin_user}']")
 
       validate_sql_install(host, version: version) do |r|
         expect(r.stdout).to match(%r{#{Regexp.new(inst_name)}})
@@ -92,13 +92,13 @@ describe 'sqlserver_instance', node: host do
     end
 
     it "#{inst_name} instance has Administrator as a sysadmin", tier_low: true do
-      run_sql_query(host, run_sql_query_opts(inst_name, sql_query_is_user_sysadmin('Administrator'), expected_row_count = 1))
+      run_sql_query(host, run_sql_query_opts(inst_name, sql_query_is_user_sysadmin('Administrator'), 1))
     end
 
     it "#{inst_name} instance has ExtraSQLAdmin as a sysadmin", tier_low: true do
-      run_sql_query(host, run_sql_query_opts(inst_name, sql_query_is_user_sysadmin(@ExtraAdminUser), expected_row_count = 1))
+      run_sql_query(host, run_sql_query_opts(inst_name, sql_query_is_user_sysadmin(@extra_admin_user), 1))
     end
-
+    # rubocop:enable RSpec/InstanceVariable
     it "remove #{inst_name} instance", tier_high: true do
       ensure_sqlserver_instance(features, inst_name, 'absent')
 

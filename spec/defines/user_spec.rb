@@ -15,7 +15,7 @@ RSpec.describe 'sqlserver::user', type: :define do
   end
 
   describe 'should fail when password above 128 characters' do
-    o = [('a'..'z'), ('A'..'Z'), (0..9)].map { |i| i.to_a }.flatten
+    o = [('a'..'z'), ('A'..'Z'), (0..9)].map(&:to_a).flatten
     string = (0...129).map { o[rand(o.length)] }.join
     let(:additional_params) { { password: string } }
     let(:raise_error_check) { "'password' expects" }
@@ -24,7 +24,7 @@ RSpec.describe 'sqlserver::user', type: :define do
   end
 
   describe 'should fail when database above 128 characters' do
-    o = [('a'..'z'), ('A'..'Z'), (0..9)].map { |i| i.to_a }.flatten
+    o = [('a'..'z'), ('A'..'Z'), (0..9)].map(&:to_a).flatten
     string = (0...129).map { o[rand(o.length)] }.join
     let(:additional_params) { { database: string } }
     let(:raise_error_check) { "'database' expects a String[1, 128]" }
@@ -48,11 +48,7 @@ RSpec.describe 'sqlserver::user', type: :define do
       ]
     end
     let(:should_not_contain_command) do
-      [
-        'PASSWORD',
-        'DEFAULT_SCHEMA',
-        'WITH',
-      ]
+      ['PASSWORD', 'DEFAULT_SCHEMA', 'WITH']
     end
     let(:additional_params) { { login: 'mySysLogin' } }
 
@@ -118,7 +114,7 @@ RSpec.describe 'sqlserver::user', type: :define do
     let(:should_contain_command) do
       [
         'USE [myDatabase]',
-        /CREATE USER \[myMachineName\/myUser\]\n\s+FROM LOGIN \[myMachineName\/myUser\]/,
+        /CREATE USER \[myMachineName\/myUser\]\n\s+FROM LOGIN \[myMachineName\/myUser\]/, # rubocop:disable Style/RegexpLiteral : Will not conform SQL test data to Rubocop
       ]
     end
 

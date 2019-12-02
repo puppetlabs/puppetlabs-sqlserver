@@ -14,8 +14,6 @@ module Puppet::Parser::Functions
     total_count = value.count
     uniq_count = value.uniq.count
     msg = (arguments[1]) ? arguments[1] : "Duplicate values passed to hash #{value}"
-    if uniq_count != total_count
-      raise(Puppet::ParseError, msg)
-    end
+    raise(Puppet::ParseError, msg) if uniq_count != total_count
   end
 end
