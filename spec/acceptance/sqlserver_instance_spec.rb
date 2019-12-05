@@ -2,13 +2,13 @@ require 'spec_helper_acceptance'
 require 'securerandom'
 require 'erb'
 
-host = find_only_one("sql_host")
+host = find_only_one('sql_host')
 
 def new_random_instance_name
-  ("MSSQL" + SecureRandom.hex(4)).upcase.to_s
+  ('MSSQL' + SecureRandom.hex(4)).upcase.to_s
 end
 
-describe "sqlserver_instance", :node => host do
+describe 'sqlserver_instance', node: host do
   version = host['sql_version'].to_s
 
   def ensure_sqlserver_instance(features, inst_name, ensure_val = 'present', sysadmin_accounts = "['Administrator']")
@@ -31,19 +31,19 @@ describe "sqlserver_instance", :node => host do
 
     pp = ERB.new(manifest).result(binding)
 
-    execute_manifest(pp,{:catch_failures => true})
-    execute_manifest(pp,{:catch_changes => true})
+    execute_manifest(pp, catch_failures: true)
+    execute_manifest(pp, catch_changes: true)
   end
 
-  #Return options for run_sql_query
-  def run_sql_query_opts (inst_name, query, expected_row_count)
-    run_sql_query_opt = {
-        :query => query,
-        :instance => inst_name,
-        :server => '.',
-        :sql_admin_user => 'sa',
-        :sql_admin_pass => 'Pupp3t1@',
-        :expected_row_count => expected_row_count,
+  # Return options for run_sql_query
+  def run_sql_query_opts(inst_name, query, expected_row_count)
+    {
+      query: query,
+      instance: inst_name,
+      server: '.',
+      sql_admin_user: 'sa',
+      sql_admin_pass: 'Pupp3t1@',
+      expected_row_count: expected_row_count,
     }
   end
 
@@ -57,13 +57,12 @@ describe "sqlserver_instance", :node => host do
     QUERY
   end
 
-  context "Create an instance", {:testrail => ['88978', '89028', '89031', '89043', '89061']} do
-
+  context 'Create an instance', testrail: ['88978', '89028', '89031', '89043', '89061'] do
     before(:context) do
       # Use a username with a space to test argument parsing works correctly
-      @ExtraAdminUser = 'Extra SQLAdmin'
+      @extra_admin_user = 'Extra SQLAdmin'
       pp = <<-MANIFEST
-      user { '#{@ExtraAdminUser}':
+      user { '#{@extra_admin_user}':
         ensure => present,
         password => 'Puppet01!',
       }
@@ -73,7 +72,7 @@ describe "sqlserver_instance", :node => host do
 
     after(:context) do
       pp = <<-MANIFEST
-      user { '#{@ExtraAdminUser}':
+      user { '#{@extra_admin_user}':
         ensure => absent,
       }
       MANIFEST
@@ -83,39 +82,39 @@ describe "sqlserver_instance", :node => host do
     inst_name = new_random_instance_name
     features = ['SQLEngine', 'Replication', 'FullText', 'DQ']
 
-    it "create #{inst_name} instance", :tier_high => true do
+    it "create #{inst_name} instance", tier_high: true do
       host_computer_name = on(host, 'CMD /C ECHO %COMPUTERNAME%').stdout.chomp
-      ensure_sqlserver_instance(features, inst_name,'present',"['Administrator','#{host_computer_name}\\#{@ExtraAdminUser}']")
+      ensure_sqlserver_instance(features, inst_name, 'present', "['Administrator','#{host_computer_name}\\#{@extra_admin_user}']")
 
-      validate_sql_install(host, {:version => version}) do |r|
-        expect(r.stdout).to match(/#{Regexp.new(inst_name)}/)
+      validate_sql_install(host, version: version) do |r|
+        expect(r.stdout).to match(%r{#{Regexp.new(inst_name)}})
       end
     end
 
-    it "#{inst_name} instance has Administrator as a sysadmin", :tier_low => true do
-      run_sql_query(host, run_sql_query_opts(inst_name, sql_query_is_user_sysadmin('Administrator'), expected_row_count = 1))
+    it "#{inst_name} instance has Administrator as a sysadmin", tier_low: true do
+      run_sql_query(host, run_sql_query_opts(inst_name, sql_query_is_user_sysadmin('Administrator'), 1))
     end
 
-    it "#{inst_name} instance has ExtraSQLAdmin as a sysadmin", :tier_low => true do
-      run_sql_query(host, run_sql_query_opts(inst_name, sql_query_is_user_sysadmin(@ExtraAdminUser), expected_row_count = 1))
+    it "#{inst_name} instance has ExtraSQLAdmin as a sysadmin", tier_low: true do
+      run_sql_query(host, run_sql_query_opts(inst_name, sql_query_is_user_sysadmin(@extra_admin_user), 1))
     end
-
-    it "remove #{inst_name} instance", :tier_high => true do
+    # rubocop:enable RSpec/InstanceVariable
+    it "remove #{inst_name} instance", tier_high: true do
       ensure_sqlserver_instance(features, inst_name, 'absent')
 
       # Ensure all features for this instance are removed and the defaults are left alone
-      validate_sql_install(host, {:version => version}) do |r|
-        expect(r.stdout).to match(/MSSQLSERVER\s+Database Engine Services/)
-        expect(r.stdout).to match(/MSSQLSERVER\s+SQL Server Replication/)
-        expect(r.stdout).to match(/MSSQLSERVER\s+Data Quality Services/)
-        expect(r.stdout).not_to match(/#{inst_name}\s+Database Engine Services/)
-        expect(r.stdout).not_to match(/#{inst_name}\s+SQL Server Replication/)
-        expect(r.stdout).not_to match(/#{inst_name}\s+Data Quality Services/)
+      validate_sql_install(host, version: version) do |r|
+        expect(r.stdout).to match(%r{MSSQLSERVER\s+Database Engine Services})
+        expect(r.stdout).to match(%r{MSSQLSERVER\s+SQL Server Replication})
+        expect(r.stdout).to match(%r{MSSQLSERVER\s+Data Quality Services})
+        expect(r.stdout).not_to match(%r{#{inst_name}\s+Database Engine Services})
+        expect(r.stdout).not_to match(%r{#{inst_name}\s+SQL Server Replication})
+        expect(r.stdout).not_to match(%r{#{inst_name}\s+Data Quality Services})
       end
     end
   end
 
-  context "Feature has only one 'RS'", {:testrail => ['89034']} do
+  context "Feature has only one 'RS'", testrail: ['89034'] do
     inst_name = new_random_instance_name
     features = ['RS']
 
@@ -123,16 +122,16 @@ describe "sqlserver_instance", :node => host do
       ensure_sqlserver_instance(features, inst_name, 'absent')
     end
 
-    it "create #{inst_name} instance with only one RS feature", :unless => version.to_i >= 2017, :tier_high => true do
+    it "create #{inst_name} instance with only one RS feature", unless: version.to_i >= 2017, tier_high: true do
       ensure_sqlserver_instance(features, inst_name)
 
-      validate_sql_install(host, {:version => version}) do |r|
-        expect(r.stdout).to match(/#{inst_name}\s+Reporting Services/)
+      validate_sql_install(host, version: version) do |r|
+        expect(r.stdout).to match(%r{#{inst_name}\s+Reporting Services})
       end
     end
   end
 
-  context "Feature has only one 'AS'", {:testrail => ['89033']} do
+  context "Feature has only one 'AS'", testrail: ['89033'] do
     inst_name = new_random_instance_name
     features = ['AS']
 
@@ -140,13 +139,13 @@ describe "sqlserver_instance", :node => host do
       ensure_sqlserver_instance(features, inst_name, 'absent')
     end
 
-    #skip below test due to ticket MODULES-2379, when the ticket was resolved
+    # skip below test due to ticket MODULES-2379, when the ticket was resolved
     # will change xit to it
     xit "create #{inst_name} instance with only one AS feature" do
       ensure_sqlserver_instance(features, inst_name)
 
-      validate_sql_install(host, {:version => version}) do |r|
-        expect(r.stdout).to match(/#{Regexp.new(inst_name)}/)
+      validate_sql_install(host, version: version) do |r|
+        expect(r.stdout).to match(%r{#{Regexp.new(inst_name)}})
       end
     end
   end

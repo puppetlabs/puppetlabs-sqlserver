@@ -1,30 +1,28 @@
 require 'spec_helper_acceptance'
 require 'securerandom'
 
-host = find_only_one("sql_host")
+host = find_only_one('sql_host')
 
-describe "Test sqlserver::database", :node => host do
-
+describe 'Test sqlserver::database', node: host do
   def ensure_sqlserver_database(pp)
     execute_manifest(pp) do |r|
-      expect(r.stderr).not_to match(/Error/i)
+      expect(r.stderr).not_to match(%r{Error}i)
     end
   end
 
-  #Return options for run_sql_query
-  def run_sql_query_opts (query, expected_row_count)
-    run_sql_query_opt = {
-        :query => query,
-        :sql_admin_user => 'sa',
-        :sql_admin_pass => 'Pupp3t1@',
-        :expected_row_count => expected_row_count,
+  # Return options for run_sql_query
+  def run_sql_query_opts(query, expected_row_count)
+    {
+      query: query,
+      sql_admin_user: 'sa',
+      sql_admin_pass: 'Pupp3t1@',
+      expected_row_count: expected_row_count,
     }
   end
 
-  context "Start testing...", {:testrail => ['89019', '89076', '89077', '89078', '89079', '89080', '89081']} do
-
+  context 'Start testing...', testrail: ['89019', '89076', '89077', '89078', '89079', '89080', '89081'] do
     before(:each) do
-      @db_name = ("DB" + SecureRandom.hex(4)).upcase
+      @db_name = ('DB' + SecureRandom.hex(4)).upcase
       @table_name = 'Tables_' + SecureRandom.hex(3)
     end
 
@@ -42,7 +40,7 @@ describe "Test sqlserver::database", :node => host do
       ensure_sqlserver_database(pp)
     end
 
-    it "Test Case C89019: Create a database", :tier_low => true do
+    it 'Test Case C89019: Create a database', tier_low: true do
       pp = <<-MANIFEST
         sqlserver::config{'MSSQLSERVER':
           admin_user    => 'sa',
@@ -64,7 +62,7 @@ describe "Test sqlserver::database", :node => host do
       run_sql_query(host, run_sql_query_opts(query, 1))
     end
 
-    it "Delete a database", :tier_low => true do
+    it 'Delete a database', tier_low: true do
       pp = <<-MANIFEST
         sqlserver::config{'MSSQLSERVER':
           admin_user    => 'sa',
@@ -95,7 +93,7 @@ describe "Test sqlserver::database", :node => host do
       run_sql_query(host, run_sql_query_opts(query, 0))
     end
 
-    it "Test Case C89076: Create database with optional collation_name", :tier_low => true do
+    it 'Test Case C89076: Create database with optional collation_name', tier_low: true do
       pp = <<-MANIFEST
         sqlserver::config{'MSSQLSERVER':
           admin_user    => 'sa',
@@ -113,7 +111,7 @@ describe "Test sqlserver::database", :node => host do
       MANIFEST
       ensure_sqlserver_database(pp)
 
-      puts "Validate that a table can be created in the database:"
+      puts 'Validate that a table can be created in the database:'
       query = "USE #{@db_name}; SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE table_name = '#{@table_name}';"
       run_sql_query(host, run_sql_query_opts(query, 1))
 
@@ -126,7 +124,7 @@ describe "Test sqlserver::database", :node => host do
       run_sql_query(host, run_sql_query_opts(query, 1))
     end
 
-    it "Test Case C89077: Create database with optional compatibility", :tier_low => true do
+    it 'Test Case C89077: Create database with optional compatibility', tier_low: true do
       pp = <<-MANIFEST
         sqlserver::config{'MSSQLSERVER':
           admin_user    => 'sa',
@@ -144,7 +142,7 @@ describe "Test sqlserver::database", :node => host do
       MANIFEST
       ensure_sqlserver_database(pp)
 
-      puts "Validate that a table can be created in the database:"
+      puts 'Validate that a table can be created in the database:'
       query = "USE #{@db_name}; SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE table_name = '#{@table_name}';"
       run_sql_query(host, run_sql_query_opts(query, 1))
 
@@ -157,7 +155,7 @@ describe "Test sqlserver::database", :node => host do
       run_sql_query(host, run_sql_query_opts(query, 1))
     end
 
-    it "Test Case C89078: Create database with optional containment", :tier_low => true do
+    it 'Test Case C89078: Create database with optional containment', tier_low: true do
       pp = <<-MANIFEST
         sqlserver::config{'MSSQLSERVER':
           admin_user   => 'sa',
@@ -182,7 +180,7 @@ describe "Test sqlserver::database", :node => host do
       MANIFEST
       ensure_sqlserver_database(pp)
 
-      puts "Validate that a table can be created in the database:"
+      puts 'Validate that a table can be created in the database:'
       query = "USE #{@db_name}; SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE table_name = '#{@table_name}';"
       run_sql_query(host, run_sql_query_opts(query, 1))
 
@@ -195,7 +193,7 @@ describe "Test sqlserver::database", :node => host do
       run_sql_query(host, run_sql_query_opts(query, 1))
     end
 
-    it "Test Case C89079: Create database with optional db_chaining", :tier_low => true do
+    it 'Test Case C89079: Create database with optional db_chaining', tier_low: true do
       pp = <<-MANIFEST
         sqlserver::config{'MSSQLSERVER':
           admin_user   => 'sa',
@@ -221,7 +219,7 @@ describe "Test sqlserver::database", :node => host do
       MANIFEST
       ensure_sqlserver_database(pp)
 
-      puts "Validate that a table can be created in the database:"
+      puts 'Validate that a table can be created in the database:'
       query = "USE #{@db_name}; SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE table_name = '#{@table_name}';"
       run_sql_query(host, run_sql_query_opts(query, 1))
 
@@ -234,7 +232,7 @@ describe "Test sqlserver::database", :node => host do
       run_sql_query(host, run_sql_query_opts(query, 1))
     end
 
-    it "Test Case C89080: Create database with optional default_fulltext_language", :tier_low => true do
+    it 'Test Case C89080: Create database with optional default_fulltext_language', tier_low: true do
       pp = <<-MANIFEST
         sqlserver::config{'MSSQLSERVER':
           admin_user   => 'sa',
@@ -260,7 +258,7 @@ describe "Test sqlserver::database", :node => host do
       MANIFEST
       ensure_sqlserver_database(pp)
 
-      puts "Validate that a table can be created in the database:"
+      puts 'Validate that a table can be created in the database:'
       query = "USE #{@db_name}; SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE table_name = '#{@table_name}';"
       run_sql_query(host, run_sql_query_opts(query, 1))
 
@@ -273,7 +271,7 @@ describe "Test sqlserver::database", :node => host do
       run_sql_query(host, run_sql_query_opts(query, 1))
     end
 
-    it "Test Case C89081: Create database with optional default_language", :tier_low => true do
+    it 'Test Case C89081: Create database with optional default_language', tier_low: true do
       pp = <<-MANIFEST
         sqlserver::config{'MSSQLSERVER':
           admin_user   => 'sa',
@@ -299,7 +297,7 @@ describe "Test sqlserver::database", :node => host do
       MANIFEST
       ensure_sqlserver_database(pp)
 
-      puts "Validate that a table can be created in the database:"
+      puts 'Validate that a table can be created in the database:'
       query = "USE #{@db_name}; SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE table_name = '#{@table_name}';"
       run_sql_query(host, run_sql_query_opts(query, 1))
 
@@ -310,6 +308,7 @@ describe "Test sqlserver::database", :node => host do
                 AND default_language_lcid = '1028';"
 
       run_sql_query(host, run_sql_query_opts(query, 1))
+      # rubocop:enable RSpec/InstanceVariable
     end
   end
 end

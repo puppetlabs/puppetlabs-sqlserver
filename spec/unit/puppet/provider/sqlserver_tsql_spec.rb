@@ -1,13 +1,13 @@
 require 'spec_helper'
 require 'mocha'
 
-
 RSpec.describe Puppet::Type.type(:sqlserver_tsql).provider(:mssql) do
   subject { described_class }
-  let(:config) { {:admin_user => 'sa', :admin_pass => 'Pupp3t1@', :instance_name => 'MSSQLSERVER'} }
+
+  let(:config) { { admin_user: 'sa', admin_pass: 'Pupp3t1@', instance_name: 'MSSQLSERVER' } }
 
   def stub_open_and_run(query, config)
-    sqlconn = double()
+    sqlconn = double
     expect(sqlconn).to receive(:open_and_run_command).with(gen_query(query), config)
     expect(PuppetX::Sqlserver::SqlConnection).to receive(:new).and_return(sqlconn)
   end
@@ -40,18 +40,18 @@ END CATCH
   context 'run with a command' do
     describe 'against non master database' do
       it {
-        create_sqlserver_tsql({:title => 'runme', :command => 'whacka whacka', :instance => 'MSSQLSERVER', :database => 'myDb'})
+        create_sqlserver_tsql(title: 'runme', command: 'whacka whacka', instance: 'MSSQLSERVER', database: 'myDb')
         stub_get_instance_config(config)
-        stub_open_and_run('whacka whacka', config.merge({:database => 'myDb'}))
+        stub_open_and_run('whacka whacka', config.merge(database: 'myDb'))
 
         @provider.run(gen_query('whacka whacka'))
       }
     end
     describe 'against default database' do
       it {
-        create_sqlserver_tsql({:title => 'runme', :command => 'whacka whacka', :instance => 'MSSQLSERVER'})
+        create_sqlserver_tsql(title: 'runme', command: 'whacka whacka', instance: 'MSSQLSERVER')
         stub_get_instance_config(config)
-        stub_open_and_run('whacka whacka', config.merge({:database => 'master'}))
+        stub_open_and_run('whacka whacka', config.merge(database: 'master'))
 
         @provider.run(gen_query('whacka whacka'))
       }
@@ -60,9 +60,9 @@ END CATCH
   context 'run with onlyif' do
     describe 'against default database' do
       it {
-        create_sqlserver_tsql({:title => 'runme', :command => 'whacka whacka', :onlyif => 'fozy wozy', :instance => 'MSSQLSERVER'})
+        create_sqlserver_tsql(title: 'runme', command: 'whacka whacka', onlyif: 'fozy wozy', instance: 'MSSQLSERVER')
         stub_get_instance_config(config)
-        stub_open_and_run('fozy wozy', config.merge({:database => 'master'}))
+        stub_open_and_run('fozy wozy', config.merge(database: 'master'))
 
         @provider.run(gen_query('fozy wozy'))
       }
@@ -70,15 +70,16 @@ END CATCH
     describe 'against non master database' do
       it {
         create_sqlserver_tsql(
-          {:title => 'runme',
-           :command => 'whacka whacka',
-           :onlyif => 'fozy wozy',
-           :instance => 'MSSQLSERVER',
-           :database => 'myDb'})
+          title: 'runme',
+          command: 'whacka whacka',
+          onlyif: 'fozy wozy',
+          instance: 'MSSQLSERVER',
+          database: 'myDb',
+        )
         stub_get_instance_config(config)
-        stub_open_and_run('fozy wozy', config.merge({:database => 'myDb'}))
-
+        stub_open_and_run('fozy wozy', config.merge(database: 'myDb'))
         @provider.run(gen_query('fozy wozy'))
+        # rubocop:enable RSpec/InstanceVariable
       }
     end
   end

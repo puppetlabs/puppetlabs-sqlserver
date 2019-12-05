@@ -2,7 +2,7 @@ def stub_source_which_call(source)
   allow(Puppet::Util).to receive(:which).with("#{source}/setup.exe").and_return("#{source}/setup.exe")
 end
 
-def stub_powershell_call(subject)
+def stub_powershell_call(_subject)
   allow(Puppet::Util).to receive(:which).with('powershell.exe').and_return('powershell.exe')
   allow(Puppet::Provider::Sqlserver).to receive(:run_install_dot_net)
 end
@@ -20,12 +20,9 @@ def stub_modify_features(action, args, features, additional_switches = [], exit_
           "/ACTION=#{action}",
           '/Q',
           '/IACCEPTSQLSERVERLICENSETERMS',
-          "/FEATURES=#{features.join(',')}",
-  ]
-  if args.has_key?(:is_svc_account)
-    cmds << "/ISSVCACCOUNT=#{args[:is_svc_account]}"
-  end
-  if args.has_key?(:is_svc_password)
+          "/FEATURES=#{features.join(',')}"]
+  cmds << "/ISSVCACCOUNT=#{args[:is_svc_account]}" if args.key?(:is_svc_account)
+  if args.key?(:is_svc_password)
     cmds << "/ISSVCPASSWORD=#{args[:is_svc_password]}"
   end
   additional_switches.each do |switch|

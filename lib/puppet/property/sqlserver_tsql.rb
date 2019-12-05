@@ -1,6 +1,6 @@
 require 'puppet/property'
 
-class Puppet::Property::SqlserverTsql < Puppet::Property
+class Puppet::Property::SqlserverTsql < Puppet::Property # rubocop:disable Style/Documentation
   desc 'TSQL property that we are going to wrap with a try catch'
   munge do |value|
     quoted_value = value.gsub('\'', '\'\'')
@@ -16,7 +16,6 @@ BEGIN CATCH
     THROW 51000, @msg, 10
 END CATCH
     TEMPLATE
-    value = erb_template
+    erb_template
   end
-
 end

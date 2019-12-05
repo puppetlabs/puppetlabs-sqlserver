@@ -7,32 +7,35 @@ require File.expand_path(File.join(File.dirname(__FILE__), '..', 'sqlserver_spec
 provider_class = Puppet::Type.type(:sqlserver_instance).provider(:mssql)
 
 RSpec.describe provider_class do
-  subject { provider_class }
+  subject(:provider_class) { provider_class }
+
   let(:additional_install_switches) { [] }
 
-  let(:resourcekey_to_cmdarg) {{
-    'agt_svc_account'       => 'AGTSVCACCOUNT',
-    'agt_svc_password'      => 'AGTSVCPASSWORD',
-    'as_svc_account'        => 'ASSVCACCOUNT',
-    'as_svc_password'       => 'ASSVCPASSWORD',
-    'pid'                   => 'PID',
-    'rs_svc_account'        => 'RSSVCACCOUNT',
-    'rs_svc_password'       => 'RSSVCPASSWORD',
-    'polybase_svc_account'  => 'PBENGSVCACCOUNT',
-    'polybase_svc_password' => 'PBDMSSVCPASSWORD',
-    'sa_pwd'                => 'SAPWD',
-    'security_mode'         => 'SECURITYMODE',
-    'sql_svc_account'       => 'SQLSVCACCOUNT',
-    'sql_svc_password'      => 'SQLSVCPASSWORD',
-  }}
+  let(:resourcekey_to_cmdarg) do
+    {
+      'agt_svc_account' => 'AGTSVCACCOUNT',
+      'agt_svc_password'      => 'AGTSVCPASSWORD',
+      'as_svc_account'        => 'ASSVCACCOUNT',
+      'as_svc_password'       => 'ASSVCPASSWORD',
+      'pid'                   => 'PID',
+      'rs_svc_account'        => 'RSSVCACCOUNT',
+      'rs_svc_password'       => 'RSSVCPASSWORD',
+      'polybase_svc_account'  => 'PBENGSVCACCOUNT',
+      'polybase_svc_password' => 'PBDMSSVCPASSWORD',
+      'sa_pwd'                => 'SAPWD',
+      'security_mode'         => 'SECURITYMODE',
+      'sql_svc_account'       => 'SQLSVCACCOUNT',
+      'sql_svc_password'      => 'SQLSVCPASSWORD',
+    }
+  end
 
   def stub_uninstall(args, installed_features, exit_code = 0)
     cmd_args = ["#{args[:source]}/setup.exe",
-                "/ACTION=uninstall",
+                '/ACTION=uninstall',
                 '/Q',
                 '/IACCEPTSQLSERVERLICENSETERMS',
                 "/INSTANCENAME=#{args[:name]}",
-                "/FEATURES=#{installed_features.join(',')}",]
+                "/FEATURES=#{installed_features.join(',')}"]
 
     result = Puppet::Util::Execution::ProcessOutput.new('', exit_code)
     allow(Puppet::Util::Execution).to receive(:execute).with(cmd_args.compact, failonfail: false).and_return(result)
@@ -44,26 +47,24 @@ RSpec.describe provider_class do
       @resource = Puppet::Type::Sqlserver_instance.new(args)
       @provider = provider_class.new(@resource)
 
-      stub_powershell_call(subject)
+      stub_powershell_call(provider_class)
       stub_source_which_call args[:source]
 
       cmd_args = ["#{execute_args[:source]}/setup.exe",
-                  "/ACTION=install",
+                  '/ACTION=install',
                   '/Q',
                   '/IACCEPTSQLSERVERLICENSETERMS',
                   "/INSTANCENAME=#{execute_args[:name]}",
-                  "/FEATURES=#{execute_args[:features].join(',')}",]
-      (execute_args.keys - %w( ensure loglevel features name source sql_sysadmin_accounts sql_security_mode install_switches).map(&:to_sym)).sort.collect do |key|
+                  "/FEATURES=#{execute_args[:features].join(',')}"]
+      (execute_args.keys - ['ensure', 'loglevel', 'features', 'name', 'source', 'sql_sysadmin_accounts', 'sql_security_mode', 'install_switches'].map(&:to_sym)).sort.map do |key|
         cmd_args << "/#{resourcekey_to_cmdarg[key.to_s]}=\"#{@resource[key]}\""
       end
-      if execute_args[:sql_security_mode]
-        cmd_args << "/SECURITYMODE=SQL"
-      end
+      cmd_args << '/SECURITYMODE=SQL' if execute_args[:sql_security_mode]
 
       # Extrace the SQL Sysadmins
-      admin_args = execute_args[:sql_sysadmin_accounts].map { |a| "#{a}" }
+      admin_args = execute_args[:sql_sysadmin_accounts].map(&:to_s)
       # prepend first arg only with CLI switch
-      admin_args[0] = "/SQLSYSADMINACCOUNTS=" + admin_args[0]
+      admin_args[0] = '/SQLSYSADMINACCOUNTS=' + admin_args[0]
       cmd_args += admin_args
 
       additional_install_switches.each do |switch|
@@ -85,26 +86,24 @@ RSpec.describe provider_class do
       @resource = Puppet::Type::Sqlserver_instance.new(args)
       @provider = provider_class.new(@resource)
 
-      stub_powershell_call(subject)
+      stub_powershell_call(provider_class)
       stub_source_which_call args[:source]
 
       cmd_args = ["#{execute_args[:source]}/setup.exe",
-                  "/ACTION=install",
+                  '/ACTION=install',
                   '/Q',
                   '/IACCEPTSQLSERVERLICENSETERMS',
                   "/INSTANCENAME=#{execute_args[:name]}",
-                  "/FEATURES=#{execute_args[:features].join(',')}",]
-      (execute_args.keys - %w( ensure loglevel features name source sql_sysadmin_accounts sql_security_mode install_switches).map(&:to_sym)).sort.collect do |key|
+                  "/FEATURES=#{execute_args[:features].join(',')}"]
+      (execute_args.keys - ['ensure', 'loglevel', 'features', 'name', 'source', 'sql_sysadmin_accounts', 'sql_security_mode', 'install_switches'].map(&:to_sym)).sort.map do |key|
         cmd_args << "/#{resourcekey_to_cmdarg[key.to_s]}=\"#{@resource[key]}\""
       end
-      if execute_args[:sql_security_mode]
-        cmd_args << "/SECURITYMODE=SQL"
-      end
+      cmd_args << '/SECURITYMODE=SQL' if execute_args[:sql_security_mode]
 
       # wrap each arg in doublequotes
       admin_args = execute_args[:sql_sysadmin_accounts].map { |a| "\"#{a}\"" }
       # prepend first arg only with CLI switch
-      admin_args[0] = "/SQLSYSADMINACCOUNTS=" + admin_args[0]
+      admin_args[0] = '/SQLSYSADMINACCOUNTS=' + admin_args[0]
       cmd_args += admin_args
 
       additional_install_switches.each do |switch|
@@ -115,7 +114,7 @@ RSpec.describe provider_class do
 
       result = Puppet::Util::Execution::ProcessOutput.new('', exit_code || 0)
       allow(Puppet::Util::Execution).to receive(:execute).with(cmd_args.compact, failonfail: false).and_return(result)
-      expect{ @provider.create }.to raise_error(error_matcher)
+      expect { @provider.create }.to raise_error(error_matcher)
     }
   end
 
@@ -127,7 +126,7 @@ RSpec.describe provider_class do
       stub_source_which_call args[:source]
       expect(@provider).to receive(:current_installed_features).and_return(installed_features)
       stub_uninstall args, installed_features, exit_code || 0
-      allow(@provider).to receive(:warn).with(regexp_matches(warning_matcher)).and_return(nil) if warning_matcher
+      allow(@provider).to receive(:warn).with(match(warning_matcher)).and_return(nil) if warning_matcher
       @provider.destroy
     }
   end
@@ -146,74 +145,73 @@ RSpec.describe provider_class do
 
   describe 'it should provide the correct command default command' do
     it_behaves_like 'create' do
-      args = get_basic_args
+      args = basic_args
       let(:args) { args }
-      munged = {:features => Array.new(args[:features])}
+      munged = { features: Array.new(args[:features]) }
       munged[:features].delete('SQL')
-      munged[:features] += %w(DQ FullText Replication SQLEngine)
+      munged[:features] += ['DQ', 'FullText', 'Replication', 'SQLEngine']
       munged[:features].sort!
       let(:munged_values) { munged }
     end
   end
 
   describe 'it should raise error if as_sysadmin_accounts is specified without AS feature' do
-    it_behaves_like 'create_failure', 1, /as_sysadmin_accounts was specified however the AS feature was not included/i do
-      args = get_basic_args
+    it_behaves_like 'create_failure', 1, %r{as_sysadmin_accounts was specified however the AS feature was not included}i do
+      args = basic_args
       args[:features] = ['SQLEngine']
       args[:as_sysadmin_accounts] = 'username'
 
       let(:args) { args }
-      munged = {:features => Array.new(args[:features])}
+      munged = { features: Array.new(args[:features]) }
       let(:munged_values) { munged }
     end
   end
 
   describe 'it should raise error if polybase_svc_account is specified without POLYBASE feature' do
-    it_behaves_like 'create_failure', 1, /polybase_svc_account was specified however the POLYBASE feature was not included/i do
-      args = get_basic_args
+    it_behaves_like 'create_failure', 1, %r{polybase_svc_account was specified however the POLYBASE feature was not included}i do
+      args = basic_args
       args[:features] = ['SQLEngine']
       args[:polybase_svc_account] = 'username'
       args.delete(:polybase_svc_password)
 
       let(:args) { args }
-      munged = {:features => Array.new(args[:features])}
+      munged = { features: Array.new(args[:features]) }
       let(:munged_values) { munged }
     end
   end
 
   describe 'it should raise error if polybase_svc_password is specified without POLYBASE feature' do
-    it_behaves_like 'create_failure', 1, /polybase_svc_password was specified however the POLYBASE feature was not included/i do
-      args = get_basic_args
+    it_behaves_like 'create_failure', 1, %r{polybase_svc_password was specified however the POLYBASE feature was not included}i do
+      args = basic_args
       args[:features] = ['SQLEngine']
       args.delete(:polybase_svc_account)
       args[:polybase_svc_password] = 'password'
 
       let(:args) { args }
-      munged = {:features => Array.new(args[:features])}
+      munged = { features: Array.new(args[:features]) }
       let(:munged_values) { munged }
     end
   end
 
-
   describe 'it should raise warning on install when 1641 exit code returned' do
-    it_behaves_like 'create', 1641, /reboot initiated/i do
-      args = get_basic_args
+    it_behaves_like 'create', 1641, %r{reboot initiated}i do
+      args = basic_args
       let(:args) { args }
-      munged = {:features => Array.new(args[:features])}
+      munged = { features: Array.new(args[:features]) }
       munged[:features].delete('SQL')
-      munged[:features] += %w(DQ FullText Replication SQLEngine)
+      munged[:features] += ['DQ', 'FullText', 'Replication', 'SQLEngine']
       munged[:features].sort!
       let(:munged_values) { munged }
     end
   end
 
   describe 'it should raise warning on install when 3010 exit code returned' do
-    it_behaves_like 'create', 3010, /reboot required/i do
-      args = get_basic_args
+    it_behaves_like 'create', 3010, %r{reboot required}i do
+      args = basic_args
       let(:args) { args }
-      munged = {:features => Array.new(args[:features])}
+      munged = { features: Array.new(args[:features]) }
       munged[:features].delete('SQL')
-      munged[:features] += %w(DQ FullText Replication SQLEngine)
+      munged[:features] += ['DQ', 'FullText', 'Replication', 'SQLEngine']
       munged[:features].sort!
       let(:munged_values) { munged }
     end
@@ -221,57 +219,66 @@ RSpec.describe provider_class do
 
   describe 'empty array should' do
     it_behaves_like 'destroy on create' do
-      let(:installed_features) { %w(SQLEngine Replication) }
-      let(:args) { {
-        :name => 'MYSQLSERVER',
-        :source => 'C:\myinstallexecs',
-        :features => []
-      } }
+      let(:installed_features) { ['SQLEngine', 'Replication'] }
+      let(:args) do
+        {
+          name: 'MYSQLSERVER',
+          source: 'C:\myinstallexecs',
+          features: [],
+        }
+      end
     end
   end
 
   describe 'it should uninstall' do
     it_behaves_like 'destroy' do
-      let(:args) { {
-        :name => 'MYSQLSERVER',
-        :source => 'C:\myinstallexecs',
-        :features => []
-      } }
-      let(:installed_features) { %w(SQLEngine Replication) }
+      let(:args) do
+        {
+          name: 'MYSQLSERVER',
+          source: 'C:\myinstallexecs',
+          features: [],
+        }
+      end
+      let(:installed_features) { ['SQLEngine', 'Replication'] }
     end
-
   end
 
   describe 'it should raise warning on uninstall when 1641 exit code returned' do
-    it_behaves_like 'destroy', 1641, /reboot initiated/i do
-      let(:args) { {
-          :name => 'MYSQLSERVER',
-          :source => 'C:\myinstallexecs',
-          :features => []
-      } }
-      let(:installed_features) { %w(SQLEngine Replication) }
+    it_behaves_like 'destroy', 1641, %r{reboot initiated}i do
+      let(:args) do
+        {
+          name: 'MYSQLSERVER',
+          source: 'C:\myinstallexecs',
+          features: [],
+        }
+      end
+      let(:installed_features) { ['SQLEngine', 'Replication'] }
     end
   end
 
   describe 'it should raise warning on uninstall when 3010 exit code returned' do
-    it_behaves_like 'destroy', 3010, /reboot required/i do
-      let(:args) { {
-          :name => 'MYSQLSERVER',
-          :source => 'C:\myinstallexecs',
-          :features => []
-      } }
-      let(:installed_features) { %w(SQLEngine Replication) }
+    it_behaves_like 'destroy', 3010, %r{reboot required}i do
+      let(:args) do
+        {
+          name: 'MYSQLSERVER',
+          source: 'C:\myinstallexecs',
+          features: [],
+        }
+      end
+      let(:installed_features) { ['SQLEngine', 'Replication'] }
     end
   end
 
   describe 'installed features even if provided features' do
     it_behaves_like 'destroy' do
-      let(:args) { {
-        :name => 'MYSQLSERVER',
-        :source => 'C:\myinstallexecs',
-        :features => ['SQL']
-      } }
-      let(:installed_features) { %w(SQLEngine Replication) }
+      let(:args) do
+        {
+          name: 'MYSQLSERVER',
+          source: 'C:\myinstallexecs',
+          features: ['SQL'],
+        }
+      end
+      let(:installed_features) { ['SQLEngine', 'Replication'] }
     end
   end
 
@@ -285,24 +292,25 @@ RSpec.describe provider_class do
     end
 
     it_behaves_like 'create' do
-      args = get_basic_args
-      args[:install_switches] = {'ERRORREPORTING' => 1}
+      args = basic_args
+      args[:install_switches] = { 'ERRORREPORTING' => 1 }
       let(:additional_install_switches) { ["/ConfigurationFile=\"#{@file_double.path}\""] }
       let(:args) { args }
-      munged = {:features => Array.new(args[:features])}
+      munged = { features: Array.new(args[:features]) }
       munged[:features].delete('SQL')
-      munged[:features] += %w(DQ FullText Replication SQLEngine)
+      munged[:features] += ['DQ', 'FullText', 'Replication', 'SQLEngine']
       munged[:features].sort!
       let(:munged_values) { munged }
     end
     it_behaves_like 'create' do
-      args = get_basic_args
-      args[:install_switches] = {'ERRORREPORTING' => 1, 'SQLBACKUPDIR' => 'I:\DBbackup'}
+      args = basic_args
+      args[:install_switches] = { 'ERRORREPORTING' => 1, 'SQLBACKUPDIR' => 'I:\DBbackup' }
       let(:additional_install_switches) { ["/ConfigurationFile=\"#{@file_double.path}\""] }
+      # rubocop:enable RSpec/InstanceVariable
       let(:args) { args }
-      munged = {:features => Array.new(args[:features])}
+      munged = { features: Array.new(args[:features]) }
       munged[:features].delete('SQL')
-      munged[:features] += %w(DQ FullText Replication SQLEngine)
+      munged[:features] += ['DQ', 'FullText', 'Replication', 'SQLEngine']
       munged[:features].sort!
       let(:munged_values) { munged }
     end

@@ -1,21 +1,21 @@
-module PuppetX
-  module Sqlserver
-    class ServerHelper
+module PuppetX # rubocop:disable Style/ClassAndModuleChildren
+  module Sqlserver # rubocop:disable Style/ClassAndModuleChildren
+    class ServerHelper # rubocop:disable Style/Documentation
       @super_feature_hash = {
-          :SQL => [:DQ, :FullText, :Replication, :SQLEngine],
-          :Tools => [:BC, :SSMS, :ADV_SSMS, :Conn, :SDK]
+        SQL: [:DQ, :FullText, :Replication, :SQLEngine],
+        Tools: [:BC, :SSMS, :ADV_SSMS, :Conn, :SDK],
       }
 
       def self.get_sub_features(super_feature)
         @super_feature_hash[super_feature.to_sym]
       end
 
-      def self.is_super_feature(feature)
-        @super_feature_hash.has_key?(feature.to_sym)
+      def self.is_super_feature(feature) # rubocop:disable Style/PredicateName
+        @super_feature_hash.key?(feature.to_sym)
       end
 
-      def self.is_domain_or_local_user?(user, hostname)
-        if /(^(((nt (authority|service))|#{hostname})\\\w+)$)|^(\w+)$/i.match(user)
+      def self.is_domain_or_local_user?(user, hostname) # rubocop:disable Style/PredicateName
+        if user =~ %r{(^(((nt (authority|service))|#{hostname})\\\w+)$)|^(\w+)$}i
           false
         else
           true
@@ -34,7 +34,7 @@ module PuppetX
         content = File.read(media_file)
         index1 = content.index('"BaselineVersion"')
         return nil if index1.nil?
-        index2 = content.index('/>',index1) 
+        index2 = content.index('/>', index1)
         return nil if index2.nil?
         content = content.slice(index1 + 18, index2 - index1 - 18)
         # Extract the version number from the text snippet
