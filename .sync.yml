@@ -9,6 +9,8 @@
         Metrics/LineLength:
           Max: 300
 ".travis.yml":
+  deploy_to_forge:
+    enabled: false
   simplecov: true
 appveyor.yml:
   matrix_extras:
