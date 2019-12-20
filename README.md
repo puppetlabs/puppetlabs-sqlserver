@@ -82,7 +82,7 @@ This example creates the same MS SQL instance as shown above with additional opt
 ```puppet
 sqlserver_features { 'Generic Features':
   source   => 'E:/',
-  features => ['ADV_SSMS', 'BC', 'Conn', 'SDK', 'SSMS'],
+  features => ['BC', 'Conn', 'SDK'],
 }
 ```
 
@@ -277,6 +277,8 @@ SQL 2017 and 2019 detection support has been added. This support is limited to f
 This module can manage only a single version of SQL Server on a given host (one and only one of SQL Server 2012, 2014, 2016, 2017, or 2019). The module is able to manage multiple SQL Server instances of the same version.
 
 This module cannot manage the SQL Server Native Client SDK (also known as SNAC_SDK). The SQL Server installation media can install the SDK, but it is not able to uninstall the SDK. Note that the 'sqlserver_features' fact detects the presence of the SDK.
+
+In SQL Server 2016 and newer, Microsoft separated the installation of SQL Server Management Studio (SSMS) from the installation of the SQL Server engine and other features. SSMS now has its own installer and can be [installed and managed via Chocolatey](https://chocolatey.org/packages/sql-server-management-studio). As such, specifying SSMS in the `sqlserver` as a feature to install no longer works with SQL Server 2016 and newer. Instead, use `package` resources with the [Chocolatey provider](https://forge.puppet.com/puppetlabs/chocolatey) to manage SSMS installation.
 
 ## Development
 
