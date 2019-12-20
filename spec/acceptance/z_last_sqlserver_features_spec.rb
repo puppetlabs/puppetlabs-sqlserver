@@ -82,7 +82,7 @@ describe 'sqlserver_features', node: host do
   end
 
   context 'can remove independent feature' do
-    if sql_version == '2016'
+    if sql_version.to_i >= 2016
       all_possible_features = ['BC', 'Conn', 'SDK', 'IS', 'MDS', 'DQC']
       features = ['BC', 'Conn', 'SDK', 'IS', 'MDS', 'DQC']
     else
