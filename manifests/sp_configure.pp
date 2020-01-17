@@ -41,7 +41,7 @@ define sqlserver::sp_configure (
   }
 
   if $restart {
-    Sqlserver_tsql["sp_configure-${instance}-${config_name}"] ~> Exec["restart-service-${service_name}"]
+    Sqlserver_tsql["sp_configure-${instance}-${config_name}"] ~> Exec["restart-service-${service_name}-${config_name}"]
   }
 
   sqlserver_tsql{ "sp_configure-${instance}-${config_name}":
@@ -51,7 +51,7 @@ define sqlserver::sp_configure (
     require  => Sqlserver::Config[$instance]
   }
 
-  exec{"restart-service-${service_name}":
+  exec{"restart-service-${service_name}-${config_name}":
     command     => template('sqlserver/restart_service.ps1.erb'),
     provider    => powershell,
     logoutput   => true,

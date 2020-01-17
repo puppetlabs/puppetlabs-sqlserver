@@ -36,6 +36,9 @@ describe 'Test sqlserver::database', node: host do
         sqlserver::database{'#{@db_name}':
           ensure  => 'absent',
         }
+        sqlserver::database{'#{@db_name}-2':
+          ensure  => 'absent',
+        }
       MANIFEST
       ensure_sqlserver_database(pp)
     end
@@ -308,6 +311,47 @@ describe 'Test sqlserver::database', node: host do
                 AND default_language_lcid = '1028';"
 
       run_sql_query(host, run_sql_query_opts(query, 1))
+      # rubocop:enable RSpec/InstanceVariable
+    end
+
+    it 'Test Case MODULES-10335: Create two database with seperate sp_configure', tier_low: true do
+      pp = <<-MANIFEST
+        sqlserver::config{'MSSQLSERVER':
+          admin_user   => 'sa',
+          admin_pass   => 'Pupp3t1@',
+        }
+        sqlserver::sp_configure{ 'sp_config4db':
+          config_name   => 'contained database authentication',
+          value         => 1,
+          reconfigure   => true,
+          instance      => 'MSSQLSERVER',
+        }
+        sqlserver::database{ '#{@db_name}':
+          require            => Sqlserver::Sp_configure['sp_config4db']
+        }
+        sqlserver_tsql{'testsqlserver_tsql':
+          instance => 'MSSQLSERVER',
+          database => '#{@db_name}',
+          command => "CREATE TABLE #{@table_name} (id INT, name VARCHAR(20), email VARCHAR(20));",
+          require => Sqlserver::Database['#{@db_name}'],
+        }
+        sqlserver::sp_configure{ 'sp_config5db':
+          config_name   => 'contained database authentication',
+          value         => 1,
+          reconfigure   => true,
+          instance      => 'MSSQLSERVER',
+        }
+        sqlserver::database{ '#{@db_name}-2':
+          require            => Sqlserver::Sp_configure['sp_config5db']
+        }
+        sqlserver_tsql{'testsqlserver_tsql':
+          instance => 'MSSQLSERVER',
+          database => '#{@db_name}-2',
+          command => "CREATE TABLE #{@table_name} (id INT, name VARCHAR(20), email VARCHAR(20));",
+          require => Sqlserver::Database['#{@db_name}-2'],
+        }
+      MANIFEST
+      ensure_sqlserver_database(pp)
       # rubocop:enable RSpec/InstanceVariable
     end
   end
