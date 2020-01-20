@@ -94,7 +94,7 @@ RSpec.describe 'sqlserver::sp_configure', type: :define do
 
   describe 'service' do
     it 'is defined' do
-      is_expected.to contain_exec('restart-service-MSSQLSERVER').with_refreshonly(true)
+      is_expected.to contain_exec('restart-service-MSSQLSERVER-filestream access level').with_refreshonly(true)
     end
   end
 end
