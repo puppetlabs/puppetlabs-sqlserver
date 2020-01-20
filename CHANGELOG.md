@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
+## [v2.6.1](https://github.com/puppetlabs/puppetlabs-sqlserver/tree/v2.6.1) (2020-01-16)
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-sqlserver/compare/v2.6.0...v2.6.1)
+
+### Fixed
+
+- \(MODULES-10388\) fix missing gem [\#339](https://github.com/puppetlabs/puppetlabs-sqlserver/pull/339) ([sheenaajay](https://github.com/sheenaajay))
+
 ## [v2.6.0](https://github.com/puppetlabs/puppetlabs-sqlserver/tree/v2.6.0) (2019-10-21)
 
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-sqlserver/compare/v2.5.1...v2.6.0)
