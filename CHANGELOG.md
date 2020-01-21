@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
+## [v2.6.2](https://github.com/puppetlabs/puppetlabs-sqlserver/tree/v2.6.2) (2020-01-21)
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-sqlserver/compare/v2.6.1...v2.6.2)
+
+### Fixed
+
+- \(MODULES-10384\) - Registry value check tightened [\#343](https://github.com/puppetlabs/puppetlabs-sqlserver/pull/343) ([david22swan](https://github.com/david22swan))
+- \(MODULES-10335\) - Update exec's title to be unique [\#341](https://github.com/puppetlabs/puppetlabs-sqlserver/pull/341) ([david22swan](https://github.com/david22swan))
+
 ## [v2.6.1](https://github.com/puppetlabs/puppetlabs-sqlserver/tree/v2.6.1) (2020-01-16)
 
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-sqlserver/compare/v2.6.0...v2.6.1)
