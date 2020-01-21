@@ -1,0 +1,31 @@
+default:
+  provisioner: vagrant
+  images: ['gusztavvargadr/windows-server']
+release_checks_sql_2012:
+  provisioner: vmpooler
+  images: ['win-2012r2-x86_64']
+  vars: 'sqlversion: sqlserver_2012'
+release_checks_sql_2014_parity:
+  provisioner: vmpooler
+  images: ['win-2012r2-x86_64']
+  vars: 'sqlversion: sqlserver_2014'
+release_checks_sql_2014:
+  provisioner: vmpooler
+  images: ['win-2012r2-x86_64', 'win-2016-x86_64', 'win-2019-x86_64']
+  vars: 'sqlversion: sqlserver_2014'
+release_checks_sql_2016_parity:
+  provisioner: vmpooler
+  images: ['win-2012r2-x86_64', 'win-2016-x86_64']
+  vars: 'sqlversion: sqlserver_2016'
+release_checks_sql_2016:
+  provisioner: vmpooler
+  images: ['win-2012r2-x86_64', 'win-2016-x86_64', 'win-2019-x86_64']
+  vars: 'sqlversion: sqlserver_2016'
+release_checks_sql_2017:
+  provisioner: vmpooler
+  images: ['win-2012r2-x86_64', 'win-2016-x86_64', 'win-2019-x86_64']
+  vars: 'sqlversion: sqlserver_2017'
+release_checks_sql_2019:
+  provisioner: vmpooler
+  images: ['win-2012r2-x86_64', 'win-2016-x86_64', 'win-2019-x86_64']
+  vars: 'sqlversion: sqlserver_2019'
