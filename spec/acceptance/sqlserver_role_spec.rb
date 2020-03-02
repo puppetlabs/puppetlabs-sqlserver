@@ -2,8 +2,7 @@ require 'spec_helper_acceptance'
 require 'securerandom'
 require 'erb'
 
-host = find_only_one('sql_host')
-hostname = host.hostname
+hostname = ENV['TARGET_HOST']
 
 # database name
 db_name   = ('DB' + SecureRandom.hex(4)).upcase
@@ -12,7 +11,7 @@ LOGIN2    = 'Login2_' + SecureRandom.hex(2)
 LOGIN3    = 'Login3_' + SecureRandom.hex(2)
 USER1     = 'User1_' + SecureRandom.hex(2)
 
-describe 'Test sqlserver::role', node: host do
+describe 'Test sqlserver::role' do
   def ensure_sqlserver_logins_users(db_name)
     pp = <<-MANIFEST
     sqlserver::config{'MSSQLSERVER':
@@ -41,12 +40,10 @@ describe 'Test sqlserver::role', node: host do
       require         => Sqlserver::Login['#{LOGIN1}'],
     }
     MANIFEST
-    execute_manifest(pp, {}) do |r|
-      expect(r.stderr).not_to match(%r{Error}i)
-    end
+    apply_manifest(pp, catch_failures: true)
   end
 
-  context 'Start testing sqlserver::role', testrail: ['89161', '89162', '89163', '89164', '89165'] do
+  context 'Start testing sqlserver::role' do
     before(:all) do
       # Create database users
       ensure_sqlserver_logins_users(db_name)
@@ -64,9 +61,7 @@ describe 'Test sqlserver::role', node: host do
         ensure  => 'absent',
       }
       MANIFEST
-      execute_manifest(pp, {}) do |r|
-        expect(r.stderr).not_to match(%r{Error}i)
-      end
+      apply_manifest(pp, catch_failures: true)
     end
 
     after(:all) do
@@ -81,12 +76,10 @@ describe 'Test sqlserver::role', node: host do
         ensure    => 'absent',
       }
       MANIFEST
-      execute_manifest(pp, {}) do |r|
-        expect(r.stderr).not_to match(%r{Error}i)
-      end
+      apply_manifest(pp, catch_failures: true)
     end
 
-    it "Create server role #{@role} with optional authorization", tier_low: true do
+    it "Create server role #{@role} with optional authorization" do
       pp = <<-MANIFEST
       sqlserver::config{'MSSQLSERVER':
         admin_user    => 'sa',
@@ -100,9 +93,7 @@ describe 'Test sqlserver::role', node: host do
         type          => 'SERVER',
       }
       MANIFEST
-      execute_manifest(pp, {}) do |r|
-        expect(r.stderr).not_to match(%r{Error}i)
-      end
+      apply_manifest(pp, catch_failures: true)
 
       # validate that the database-specific role '#{@role}' is successfully created with specified permissions':
       query = "USE #{db_name};
@@ -113,7 +104,7 @@ describe 'Test sqlserver::role', node: host do
       ON spe.grantee_principal_id = spr.principal_id
       WHERE spr.name = '#{@role}';"
 
-      run_sql_query(host, query: query, server: hostname, expected_row_count: 2)
+      run_sql_query(query: query, server: hostname, expected_row_count: 2)
 
       # validate that the database-specific role '#{@role}' has correct authorization #{LOGIN1}
       query = "USE #{db_name};
@@ -123,10 +114,10 @@ describe 'Test sqlserver::role', node: host do
         ON spr.owning_principal_id = sl.principal_id
       WHERE sl.name = '#{LOGIN1}';"
 
-      run_sql_query(host, query: query, server: hostname, expected_row_count: 1)
+      run_sql_query(query: query, server: hostname, expected_row_count: 1)
     end
 
-    it "Create database-specific role #{@role}", tier_low: true do
+    it "Create database-specific role #{@role}" do
       pp = <<-MANIFEST
       sqlserver::config{'MSSQLSERVER':
         admin_user    => 'sa',
@@ -140,9 +131,7 @@ describe 'Test sqlserver::role', node: host do
         type        => 'DATABASE',
       }
       MANIFEST
-      execute_manifest(pp, {}) do |r|
-        expect(r.stderr).not_to match(%r{Error}i)
-      end
+      apply_manifest(pp, catch_failures: true)
 
       # validate that the database-specific role '#{@role}' is successfully created with specified permissions':
       query = "USE #{db_name};
@@ -153,10 +142,10 @@ describe 'Test sqlserver::role', node: host do
         ON pe.grantee_principal_id = pr.principal_id
       WHERE pr.name = '#{@role}';"
 
-      run_sql_query(host, query: query, server: hostname, expected_row_count: 6)
+      run_sql_query(query: query, server: hostname, expected_row_count: 6)
     end
 
-    it 'Create a database-specific role with the same name on two databases', tier_low: true do
+    it 'Create a database-specific role with the same name on two databases' do
       pp = <<-MANIFEST
       sqlserver::config{'MSSQLSERVER':
         admin_user    => 'sa',
@@ -177,9 +166,7 @@ describe 'Test sqlserver::role', node: host do
         type        => 'DATABASE',
       }
       MANIFEST
-      execute_manifest(pp, {}) do |r|
-        expect(r.stderr).not_to match(%r{Error}i)
-      end
+      apply_manifest(pp, catch_failures: true)
 
       # validate that the database-specific role '#{@role}' is successfully created with specified permissions':
       # and that it exists in both the MASTER database and the 'db_name' database.
@@ -193,10 +180,10 @@ describe 'Test sqlserver::role', node: host do
         on pr.name = dbpr.name
       WHERE pr.name = '#{@role}';"
 
-      run_sql_query(host, query: query, server: hostname, expected_row_count: 6)
+      run_sql_query(query: query, server: hostname, expected_row_count: 6)
     end
 
-    it "Create server role #{@role} with optional members and optional members-purge", tier_low: true do
+    it "Create server role #{@role} with optional members and optional members-purge" do
       pp = <<-MANIFEST
       sqlserver::config{'MSSQLSERVER':
         admin_user    => 'sa',
@@ -211,9 +198,7 @@ describe 'Test sqlserver::role', node: host do
         members     => ['#{LOGIN1}', '#{LOGIN2}', '#{LOGIN3}'],
       }
       MANIFEST
-      execute_manifest(pp, {}) do |r|
-        expect(r.stderr).not_to match(%r{Error}i)
-      end
+      apply_manifest(pp, catch_failures: true)
 
       # validate that the server role '#{@role}' is successfully created with specified permissions':
       query = "USE #{db_name};
@@ -224,7 +209,7 @@ describe 'Test sqlserver::role', node: host do
         ON spe.grantee_principal_id = spr.principal_id
       WHERE spr.name = '#{@role}';"
 
-      run_sql_query(host, query: query, server: hostname, expected_row_count: 2)
+      run_sql_query(query: query, server: hostname, expected_row_count: 2)
 
       # validate that the t server role '#{@role}' has correct members (Login1, 2, 3)
       query = "USE #{db_name};
@@ -237,7 +222,7 @@ describe 'Test sqlserver::role', node: host do
         OR spr.name = '#{LOGIN3}'
         OR spr.name = 'LOGIN4';"
 
-      run_sql_query(host, query: query, server: hostname, expected_row_count: 3)
+      run_sql_query(query: query, server: hostname, expected_row_count: 3)
 
       puts "Create server role #{@role} with optional members_purge:"
       pp = <<-MANIFEST
@@ -255,9 +240,7 @@ describe 'Test sqlserver::role', node: host do
         members_purge => true,
       }
       MANIFEST
-      execute_manifest(pp, {}) do |r|
-        expect(r.stderr).not_to match(%r{Error}i)
-      end
+      apply_manifest(pp, catch_failures: true)
 
       # validate that the t server role '#{@role}' has correct members (only Login3)
       query = "USE #{db_name};
@@ -269,7 +252,7 @@ describe 'Test sqlserver::role', node: host do
         OR spr.name = '#{LOGIN2}'
         OR spr.name = '#{LOGIN3}';"
 
-      run_sql_query(host, query: query, server: hostname, expected_row_count: 1)
+      run_sql_query(query: query, server: hostname, expected_row_count: 1)
       # rubocop:enable RSpec/InstanceVariable
     end
   end

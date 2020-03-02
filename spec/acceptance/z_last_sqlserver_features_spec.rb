@@ -2,51 +2,60 @@ require 'spec_helper_acceptance'
 require 'erb'
 require 'json'
 
-host = find_only_one('sql_host')
-describe 'sqlserver_features', node: host do
-  sql_version = host['sql_version'].to_s
+version = sql_version?
 
+describe 'sqlserver_features', if: version.to_i != 2012 do
   def ensure_sql_features(features, ensure_val = 'present')
-    manifest = <<-MANIFEST
+    pp = <<-MANIFEST
     sqlserver::config{ 'MSSQLSERVER':
       admin_pass        => '<%= SQL_ADMIN_PASS %>',
       admin_user        => '<%= SQL_ADMIN_USER %>',
     }
     sqlserver_features{ 'MSSQLSERVER':
-      ensure            => <%= ensure_value %>,
+      ensure            => #{ensure_val},
       source            => 'H:',
       is_svc_account    => "$::hostname\\\\Administrator",
       is_svc_password   => 'Qu@lity!',
-      features          => [ <%= mssql_features %> ],
+      features          => #{features},
       windows_feature_source => 'I:\\sources\\sxs',
     }
     MANIFEST
 
-    ensure_value = ensure_val
-    mssql_features = features.map { |x| "'#{x}'" }.join(', ')
+    apply_manifest(pp, catch_failures: true)
+  end
 
-    pp = ERB.new(manifest).result(binding)
+  def bind_and_apply_failing_manifest(features, ensure_val = 'present')
+    pp = <<-MANIFEST
+    sqlserver::config{ 'MSSQLSERVER':
+      admin_pass        => '<%= SQL_ADMIN_PASS %>',
+      admin_user        => '<%= SQL_ADMIN_USER %>',
+    }
+    sqlserver_features{ 'MSSQLSERVER':
+      ensure            => #{ensure_val},
+      source            => 'H:',
+      is_svc_account    => "$::hostname\\\\Administrator",
+      features          => #{features},
+    }
+    MANIFEST
 
-    execute_manifest(pp) do |r|
-      expect(r.stderr).not_to match(%r{Error}i)
-    end
+    apply_manifest(pp, expect_failures: true)
   end
 
   context 'can install' do
-    features = ['BC', 'Conn', 'SDK', 'IS', 'MDS', 'DQC']
+    features = if version.to_i >= 2016
+                 ['BC', 'Conn', 'SDK', 'IS', 'MDS', 'DQC']
+               else
+                 ['BC', 'Conn', 'SSMS', 'ADV_SSMS', 'SDK', 'IS', 'MDS', 'DQC']
+               end
 
     before(:all) do
-      remove_sql_features(host, features: features, version: sql_version)
+      ensure_sql_features(features, 'absent')
     end
 
-    after(:all) do
-      remove_sql_features(host, features: features, version: sql_version)
-    end
-
-    it 'all possible features', tier_low: true do
+    it 'all possible features' do
       ensure_sql_features(features)
 
-      validate_sql_install(host, version: sql_version) do |r|
+      validate_sql_install(version: version) do |r|
         expect(r.stdout).to match(%r{Client Tools Connectivity})
         expect(r.stdout).to match(%r{Client Tools Backwards Compatibility})
         expect(r.stdout).to match(%r{Client Tools SDK})
@@ -57,21 +66,16 @@ describe 'sqlserver_features', node: host do
   end
 
   context 'can remove' do
-    features = ['BC', 'Conn', 'SDK', 'IS', 'MDS', 'DQC']
+    features = if version.to_i >= 2016
+                 ['BC', 'Conn', 'SDK', 'IS', 'MDS', 'DQC']
+               else
+                 ['BC', 'Conn', 'SSMS', 'ADV_SSMS', 'SDK', 'IS', 'MDS', 'DQC']
+               end
 
-    before(:all) do
-      ensure_sql_features(features)
-    end
-
-    after(:all) do
-      # redundant but necessary in case our manifest fails
-      remove_sql_features(host, features: features, version: sql_version)
-    end
-
-    it 'all possible features', tier_low: true do
+    it 'all possible features' do
       ensure_sql_features(features, 'absent')
 
-      validate_sql_install(host, version: sql_version) do |r|
+      validate_sql_install(version: version) do |r|
         expect(r.stdout).not_to match(%r{Client Tools Connectivity})
         expect(r.stdout).not_to match(%r{Client Tools Backwards Compatibility})
         expect(r.stdout).not_to match(%r{Client Tools SDK})
@@ -82,48 +86,32 @@ describe 'sqlserver_features', node: host do
   end
 
   context 'can remove independent feature' do
-    if sql_version.to_i >= 2016
-      all_possible_features = ['BC', 'Conn', 'SDK', 'IS', 'MDS', 'DQC']
-      features = ['BC', 'Conn', 'SDK', 'IS', 'MDS', 'DQC']
-    else
-      all_possible_features = ['BC', 'Conn', 'SSMS', 'ADV_SSMS', 'SDK', 'IS', 'MDS', 'DQC']
-      features = ['BC', 'Conn', 'SSMS', 'ADV_SSMS', 'SDK', 'IS', 'MDS', 'DQC']
-    end
+    features = if version.to_i >= 2016
+                 ['BC', 'Conn', 'SDK', 'IS', 'MDS', 'DQC']
+               else
+                 ['BC', 'Conn', 'SSMS', 'ADV_SSMS', 'SDK', 'IS', 'MDS', 'DQC']
+               end
 
     before(:all) do
-      remove_sql_features(host, features: all_possible_features, version: sql_version)
-    end
-
-    before(:each) do
       ensure_sql_features(features)
     end
 
     after(:all) do
-      # only lower-level should be installed, but wipe all in case manifest misbehaves
-      remove_sql_features(host, features: all_possible_features, version: sql_version)
+      ensure_sql_features(features, 'absent')
     end
 
-    it "'BC'", tier_low: true do
+    it "'BC'" do
       ensure_sql_features(features - ['BC'])
 
-      validate_sql_install(host, version: sql_version) do |r|
+      validate_sql_install(version: version) do |r|
         expect(r.stdout).not_to match(%r{Client Tools Backwards Compatibility})
       end
     end
 
-    it "'Conn'", tier_low: true do
-      ensure_sql_features(features - ['Conn'])
-
-      validate_sql_install(host, version: sql_version) do |r|
-        expect(r.stdout).not_to match(%r{Client Tools Connectivity})
-      end
-    end
-
-    # TODO: Guard on SQL 2016 and 2017
-    it "'ADV_SSMS'", unless: sql_version.to_i >= 2016, tier_low: true do
+    it "'ADV_SSMS'", unless: version.to_i >= 2016 do
       ensure_sql_features(features - ['ADV_SSMS'])
 
-      validate_sql_install(host, version: sql_version) do |r|
+      validate_sql_install(version: version) do |r|
         expect(r.stdout).not_to match(%r{Management Tools - Complete})
 
         # also verify SSMS is still present
@@ -131,98 +119,63 @@ describe 'sqlserver_features', node: host do
       end
     end
 
-    it "'SDK'", tier_low: true do
-      ensure_sql_features(features - ['SDK'])
+    it "'SDK' + 'IS" do
+      ensure_sql_features(features - ['SDK', 'IS'])
 
-      validate_sql_install(host, version: sql_version) do |r|
+      validate_sql_install(version: version) do |r|
         expect(r.stdout).not_to match(%r{Client Tools SDK})
-      end
-    end
-
-    it "'IS'", tier_low: true do
-      ensure_sql_features(features - ['IS'])
-
-      validate_sql_install(host, version: sql_version) do |r|
-        expect(r.stdout).not_to match(%r{Integration Services})
-      end
-    end
-
-    it "'MDS'", tier_low: true do
-      ensure_sql_features(features - ['MDS'])
-
-      validate_sql_install(host, version: sql_version) do |r|
-        expect(r.stdout).not_to match(%r{Master Data Services})
-      end
-    end
-
-    it "'DQC'", tier_low: true do
-      ensure_sql_features(features - ['DQC'])
-
-      validate_sql_install(host, version: sql_version) do |r|
-        expect(r.stdout).not_to match(%r{Data Quality Client})
       end
     end
   end
 
   context 'with negative test cases' do
-    def bind_and_apply_failing_manifest(features, ensure_val = 'present')
-      failing_manifest = <<-MANIFEST
-      sqlserver::config{ 'MSSQLSERVER':
-        admin_pass        => '<%= SQL_ADMIN_PASS %>',
-        admin_user        => '<%= SQL_ADMIN_USER %>',
-      }
-      sqlserver_features{ 'MSSQLSERVER':
-        ensure            => <%= ensure_value %>,
-        source            => 'H:',
-        is_svc_account    => "$::hostname\\\\Administrator",
-        features          => [ <%= mssql_features %> ],
-      }
-      MANIFEST
-
-      ensure_value = ensure_val
-      mssql_features = features.map { |x| "'#{x}'" }.join(', ')
-
-      pp = ERB.new(failing_manifest).result(binding)
-
-      execute_manifest(pp) do |r|
-        expect(r.stderr).to match(%r{error}i)
-      end
-    end
-
-    it 'fails when an is_svc_account is supplied and a password is not', tier_low: true do
+    it 'fails when an is_svc_account is supplied and a password is not' do
       features = ['IS']
       bind_and_apply_failing_manifest(features)
     end
 
-    it 'fails when ADV_SSMS is supplied but SSMS is not', tier_low: true do
-      skip('This test is blocked by FM-2712')
+    it 'fails when ADV_SSMS is supplied but SSMS is not - FM-2712' do
+      pending('error not shown on Sql Server 2014') if version .to_i == 2014
       features = ['BC', 'Conn', 'ADV_SSMS', 'SDK']
-      ensure_sql_features(features)
+      bind_and_apply_failing_manifest(features)
     end
   end
 
   context 'with no installed instances' do
+    # Currently this test can only be run on a machine once and will error if run a second time
     context 'can install' do
       features = ['BC', 'Conn', 'SDK', 'IS', 'MDS', 'DQC']
 
+      def remove_sql_instance
+        pp = <<-MANIFEST
+            sqlserver_instance{'MSSQLSERVER':
+            ensure                => absent,
+            source                => 'H:',
+            sql_sysadmin_accounts => ['Administrator'],
+            }
+            MANIFEST
+        idempotent_apply(pp)
+      end
+
       before(:all) do
-        json_result = JSON.parse((on host, puppet('facts --render-as json')).raw_output)['values']['sqlserver_instances']
-        names = json_result.map { |k, _v| json_result[k].keys }.flatten
-        remove_sql_instances(host, version: sql_version, instance_names: names)
+        remove_sql_instance
       end
 
       after(:all) do
-        remove_sql_features(host, features: features, version: sql_version)
+        ensure_sql_features(features, 'absent')
       end
 
-      it 'all possible features', tier_low: true do
+      it 'all possible features' do
         ensure_sql_features(features)
 
-        validate_sql_install(host, version: sql_version) do |r|
+        validate_sql_install(version: version) do |r|
           # SQL Server 2016 will not install the client tools features.
-          expect(r.stdout).to match(%r{Client Tools Connectivity}) unless sql_version.to_i >= 2016
-          expect(r.stdout).to match(%r{Client Tools Backwards Compatibility}) unless sql_version.to_i >= 2016
-          expect(r.stdout).to match(%r{Client Tools SDK}) unless sql_version.to_i >= 2016
+          expect(r.stdout).not_to match(%r{MSSQLSERVER\s+Database Engine Services})
+          expect(r.stdout).not_to match(%r{MSSQLSERVER\s+SQL Server Replication})
+          expect(r.stdout).not_to match(%r{MSSQLSERVER\s+Data Quality Services})
+          expect(r.stdout).to match(%r{Client Tools Connectivity}) unless version.to_i >= 2016
+          expect(r.stdout).to match(%r{Client Tools Backwards Compatibility}) unless version.to_i >= 2016
+          expect(r.stdout).to match(%r{Client Tools SDK}) unless version.to_i >= 2016
           expect(r.stdout).to match(%r{Integration Services})
           expect(r.stdout).to match(%r{Master Data Services})
         end

@@ -2,21 +2,18 @@ require 'spec_helper_acceptance'
 require 'securerandom'
 require 'erb'
 
-host = find_only_one('sql_host')
-
 # Get instance name
 inst_name = ('MSSQL' + SecureRandom.hex(4)).upcase
-
 # Get database name
 db_name   = ('DB' + SecureRandom.hex(4)).upcase
 
-describe 'sqlserver::config test', node: host do
+describe 'sqlserver::config test' do
   def ensure_sqlserver_instance(inst_name, ensure_val = 'present')
-    create_new_instance = <<-MANIFEST
+    pp = <<-MANIFEST
       sqlserver_instance{'#{inst_name}':
       ensure                => '#{ensure_val}',
       source                => 'H:',
-      features              => [ 'SQL' ],
+      features              => ['DQ', 'FullText', 'Replication', 'SQLEngine'],
       sql_sysadmin_accounts => ['Administrator'],
       security_mode         => 'SQL',
       sa_pwd                => 'Pupp3t1@',
@@ -24,12 +21,10 @@ describe 'sqlserver::config test', node: host do
     }
     MANIFEST
 
-    execute_manifest(create_new_instance) do |r|
-      expect(r.stderr).not_to match(%r{Error}i)
-    end
+    apply_manifest(pp, catch_failures: true)
   end
 
-  context 'Testing sqlserver::config', testrail: ['89070', '89071', '89072', '89073'] do
+  context 'Testing sqlserver::config' do
     before(:all) do
       # Create new instance
       ensure_sqlserver_instance(inst_name)
@@ -47,8 +42,8 @@ describe 'sqlserver::config test', node: host do
       ensure_sqlserver_instance(inst_name, 'absent')
     end
 
-    it 'Create New Admin Login:', tier_low: true do
-      create_new_login = <<-MANIFEST
+    it 'Create New Admin Login:' do
+      pp = <<-MANIFEST
       sqlserver::config{'#{inst_name}':
         instance_name => '#{inst_name}',
         admin_user    => 'sa',
@@ -62,12 +57,10 @@ describe 'sqlserver::config test', node: host do
         svrroles    => {'sysadmin' => 1},
       }
       MANIFEST
-      execute_manifest(create_new_login) do |r|
-        expect(r.stderr).not_to match(%r{Error}i)
-      end
+      apply_manifest(pp, catch_failures: true)
     end
 
-    it 'Validate New Config WITH using instance_name in sqlserver::config', tier_low: true do
+    it 'Validate New Config WITH using instance_name in sqlserver::config' do
       pp = <<-MANIFEST
       sqlserver::config{'#{inst_name}':
         admin_user    => '#{@admin_user}',
@@ -78,20 +71,18 @@ describe 'sqlserver::config test', node: host do
         instance => '#{inst_name}',
       }
       MANIFEST
-      execute_manifest(pp) do |r|
-        expect(r.stderr).not_to match(%r{Error}i)
-      end
+      apply_manifest(pp, catch_failures: true)
     end
 
-    it 'Validate new login and database actualy created', tier_low: true do
-      hostname = host.hostname
+    it 'Validate new login and database actualy created' do
+      hostname = ENV['TARGET_HOST']
       query = "USE #{db_name}; SELECT * from master..sysdatabases WHERE name = '#{db_name}'"
 
-      run_sql_query(host, query: query, server: hostname, instance: inst_name, \
-                          sql_admin_user: @admin_user, sql_admin_pass: @admin_pass, expected_row_count: 1)
+      run_sql_query(query: query, server: hostname, instance: inst_name, \
+                    sql_admin_user: @admin_user, sql_admin_pass: @admin_pass, expected_row_count: 1)
     end
 
-    it 'Validate New Config WITHOUT using instance_name in sqlserver::config', tier_low: true do
+    it 'Validate New Config WITHOUT using instance_name in sqlserver::config' do
       pp = <<-MANIFEST
       sqlserver::config{'#{inst_name}':
         admin_user    => '#{@admin_user}',
@@ -101,10 +92,7 @@ describe 'sqlserver::config test', node: host do
         instance => '#{inst_name}',
       }
       MANIFEST
-      # rubocop:enable RSpec/InstanceVariable
-      execute_manifest(pp) do |r|
-        expect(r.stderr).not_to match(%r{Error}i)
-      end
+      apply_manifest(pp, catch_failures: true)
     end
   end
 end
