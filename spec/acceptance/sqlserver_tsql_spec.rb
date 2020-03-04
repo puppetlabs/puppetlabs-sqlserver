@@ -162,6 +162,37 @@ describe 'sqlserver_tsql test' do
       run_sql_query(run_sql_query_opts)
     end
 
+    it 'Run sqlserver_tsql WITH onlyif that does a table insert:' do
+      # Initilize a new table name:
+      @table_name = 'Table_' + SecureRandom.hex(3)
+      @query = "USE #{db_name}; SELECT * FROM #{@table_name} WHERE id = 2;"
+      pp = <<-MANIFEST
+      sqlserver::config{'MSSQLSERVER':
+          instance_name => 'MSSQLSERVER',
+          admin_user    => 'sa',
+          admin_pass    => 'Pupp3t1@',
+      }
+      sqlserver_tsql{'testsqlserver_tsql':
+          instance => 'MSSQLSERVER',
+          database => '#{db_name}',
+          command => "INSERT #{@table_name} VALUES(2, 'name2', 'email2@domain.tld');",
+          onlyif => "CREATE TABLE #{@table_name} (id INT, name VARCHAR(20), email VARCHAR(20));
+          INSERT #{@table_name} VALUES(1, 'name', 'email@domain.tld');
+          THROW 5300, 'Throw to trigger second INSERT statement in command property', 10"
+      }
+      MANIFEST
+      apply_manifest(pp, catch_failures: true)
+
+      puts "Validate a row is inserted into #{@table_name} by the command:"
+      run_sql_query_opts = {
+        query: @query,
+        sql_admin_user: @admin_user,
+        sql_admin_pass: @admin_pass,
+        expected_row_count: 1,
+      }
+      run_sql_query(run_sql_query_opts)
+    end
+
     it 'Negative test: Run tsql with invalid command:' do
       pp = <<-MANIFEST
       sqlserver::config{'MSSQLSERVER':
