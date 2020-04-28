@@ -6,6 +6,7 @@ class Puppet::Property::SqlserverTsql < Puppet::Property # rubocop:disable Style
     quoted_value = value.gsub('\'', '\'\'')
     erb_template = <<-TEMPLATE
 BEGIN TRY
+    SET NOCOUNT ON
     DECLARE @sql_text as NVARCHAR(max);
     SET @sql_text = N'#{quoted_value}'
     EXECUTE sp_executesql @sql_text;

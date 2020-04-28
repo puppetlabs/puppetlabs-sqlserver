@@ -13,8 +13,8 @@ describe 'tsql' do
   it 'munges value to have begin and end try' do
     @node[:command] = 'function foo'
     @node[:onlyif] = 'exec bar'
-    expect(@node[:onlyif]).to match(%r{BEGIN TRY\n\s+DECLARE @sql_text as NVARCHAR\(max\);\n\s+SET @sql_text = N'exec bar'\n\s+EXECUTE sp_executesql @sql_text;\nEND TRY})
-    expect(@node[:command]).to match(%r{BEGIN TRY\n\s+DECLARE @sql_text as NVARCHAR\(max\);\n\s+SET @sql_text = N'function foo'\n\s+EXECUTE sp_executesql @sql_text;\nEND TRY})
+    expect(@node[:onlyif]).to match(%r{BEGIN TRY\n\s+SET NOCOUNT ON\n\s+DECLARE @sql_text as NVARCHAR\(max\);\n\s+SET @sql_text = N'exec bar'\n\s+EXECUTE sp_executesql @sql_text;\nEND TRY})
+    expect(@node[:command]).to match(%r{BEGIN TRY\n\s+SET NOCOUNT ON\n\s+DECLARE @sql_text as NVARCHAR\(max\);\n\s+SET @sql_text = N'function foo'\n\s+EXECUTE sp_executesql @sql_text;\nEND TRY})
   end
 
   it 'properlies escape single quotes in queries' do
