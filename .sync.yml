@@ -45,3 +45,7 @@ spec/spec_helper.rb:
   - def regexp_matches(available_parameters)
   - "  match(available_parameters)"
   - end
+.gitpod.Dockerfile:
+  unmanaged: false
+.gitpod.yml:
+  unmanaged: false
