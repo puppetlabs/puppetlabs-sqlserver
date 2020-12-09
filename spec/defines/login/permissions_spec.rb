@@ -95,7 +95,7 @@ describe 'sqlserver::login::permissions' do
     ['revoke', 'grant', 'deny'].each do |state|
       context "state => '#{state}'" do
         let(:sqlserver_tsql_title) { "login-permission-MSSQLSERVER-loggingUser-#{state.upcase}" }
-        let(:should_contain_command) { ["#{state.upcase} SELECT TO [loggingUser];", 'USE [master];'] }
+        let(:should_contain_command) { ["#{state.upcase} SELECT TO [loggingUser];", 'USE [server];'] }
 
         describe "lowercase #{state}" do
           let(:additional_params) { { state: state } }
@@ -116,13 +116,13 @@ describe 'sqlserver::login::permissions' do
         permission = random_string_of_size(128, false)
         let(:additional_params) { { permissions: [permission] } }
         let(:sqlserver_tsql_title) { 'login-permission-MSSQLSERVER-loggingUser-GRANT' }
-        let(:should_contain_command) { ['USE [master];'] }
+        let(:should_contain_command) { ['USE [server];'] }
 
         it_behaves_like 'sqlserver_tsql command'
       end
       describe 'alter' do
         let(:additional_params) { { permissions: ['ALTER'] } }
-        let(:should_contain_command) { ['USE [master];', 'GRANT ALTER TO [loggingUser];'] }
+        let(:should_contain_command) { ['USE [server];', 'GRANT ALTER TO [loggingUser];'] }
         let(:sqlserver_tsql_title) { 'login-permission-MSSQLSERVER-loggingUser-GRANT' }
 
         it_behaves_like 'sqlserver_tsql command'
@@ -155,7 +155,7 @@ describe 'sqlserver::login::permissions' do
       describe '' do
         let(:should_contain_command) do
           [
-            'USE [master];',
+            'USE [server];',
             'GRANT SELECT TO [loggingUser];',
             %r{DECLARE @perm_state varchar\(250\)},
             %r{SET @perm_state = ISNULL\(\n\s+\(SELECT perm.state_desc FROM sys\.server_permissions perm\n\s+JOIN sys\.},

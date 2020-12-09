@@ -161,7 +161,7 @@ describe 'Test sqlserver::role' do
       sqlserver::role{'DatabaseRole_2':
         ensure      => 'present',
         role        => '#{@role}',
-        database    => 'master',
+        database    => 'server',
         permissions => {'GRANT' => ['SELECT', 'INSERT', 'UPDATE', 'DELETE', 'CONTROL', 'ALTER']},
         type        => 'DATABASE',
       }
@@ -169,8 +169,8 @@ describe 'Test sqlserver::role' do
       apply_manifest(pp, catch_failures: true)
 
       # validate that the database-specific role '#{@role}' is successfully created with specified permissions':
-      # and that it exists in both the MASTER database and the 'db_name' database.
-      query = "USE MASTER;
+      # and that it exists in both the SERVER database and the 'db_name' database.
+      query = "USE SERVER;
       SELECT pr.principal_id, pr.name, pr.type_desc,
               pr.authentication_type_desc, pe.state_desc, pe.permission_name, dbpr.name
       FROM sys.database_principals AS pr

@@ -38,7 +38,7 @@ END CATCH
   end
 
   context 'run with a command' do
-    describe 'against non master database' do
+    describe 'against non server database' do
       it {
         create_sqlserver_tsql(title: 'runme', command: 'whacka whacka', instance: 'MSSQLSERVER', database: 'myDb')
         stub_get_instance_config(config)
@@ -51,7 +51,7 @@ END CATCH
       it {
         create_sqlserver_tsql(title: 'runme', command: 'whacka whacka', instance: 'MSSQLSERVER')
         stub_get_instance_config(config)
-        stub_open_and_run('whacka whacka', config.merge(database: 'master'))
+        stub_open_and_run('whacka whacka', config.merge(database: 'server'))
 
         @provider.run(gen_query('whacka whacka'))
       }
@@ -62,12 +62,12 @@ END CATCH
       it {
         create_sqlserver_tsql(title: 'runme', command: 'whacka whacka', onlyif: 'fozy wozy', instance: 'MSSQLSERVER')
         stub_get_instance_config(config)
-        stub_open_and_run('fozy wozy', config.merge(database: 'master'))
+        stub_open_and_run('fozy wozy', config.merge(database: 'server'))
 
         @provider.run(gen_query('fozy wozy'))
       }
     end
-    describe 'against non master database' do
+    describe 'against non server database' do
       it {
         create_sqlserver_tsql(
           title: 'runme',

@@ -38,7 +38,7 @@ RSpec.describe 'sqlserver::login', type: :define do
         '@check_expiration as tinyint = 0',
         '@check_policy as tinyint = 1',
         "@type_desc as varchar(50) = 'SQL_LOGIN'",
-        "@default_db as varchar(255) = 'master'",
+        "@default_db as varchar(255) = 'server'",
         "@default_lang as varchar(50) = 'us_english'",
         "FROM sys.server_principals WHERE name = 'myTitle'",
       ]

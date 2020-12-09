@@ -4,7 +4,7 @@ require File.expand_path(File.join(File.join(File.dirname(__FILE__), '..'), 'man
 RSpec.describe 'sqlserver::role::permissions' do
   include_context 'manifests' do
     let(:title) { 'myTitle' }
-    let(:sqlserver_tsql_title) { 'role-permissions-myCustomRole-GRANT-MSSQLSERVER-master' }
+    let(:sqlserver_tsql_title) { 'role-permissions-myCustomRole-GRANT-MSSQLSERVER-server' }
     let(:params) do
       {
         role: 'myCustomRole',
@@ -128,8 +128,8 @@ RSpec.describe 'sqlserver::role::permissions' do
 
   context 'database =>' do
     describe 'default' do
-      let(:should_contain_command) { ['USE [master];'] }
-      let(:should_contain_onlyif) { ['USE [master];'] }
+      let(:should_contain_command) { ['USE [server];'] }
+      let(:should_contain_onlyif) { ['USE [server];'] }
 
       it_behaves_like 'sqlserver_tsql command'
       it_behaves_like 'sqlserver_tsql onlyif'
@@ -138,9 +138,9 @@ RSpec.describe 'sqlserver::role::permissions' do
       let(:additional_params) { { database: 'customDatabase' } }
       let(:should_contain_command) { ['USE [customDatabase];'] }
       let(:sqlserver_tsql_title) { 'role-permissions-myCustomRole-GRANT-MSSQLSERVER-customDatabase' }
-      let(:should_contain_without_command) { ['USE [master];'] }
+      let(:should_contain_without_command) { ['USE [server];'] }
       let(:should_contain_onlyif) { ['USE [customDatabase];'] }
-      let(:should_contain_without_onlyif) { ['USE [master];'] }
+      let(:should_contain_without_onlyif) { ['USE [server];'] }
 
       it_behaves_like 'sqlserver_tsql command'
       it_behaves_like 'sqlserver_tsql onlyif'
@@ -161,7 +161,7 @@ RSpec.describe 'sqlserver::role::permissions' do
         end
 
         it {
-          is_expected.to contain_sqlserver_tsql("role-permissions-myCustomRole-GRANT-#{instance}-master").with_instance(instance)
+          is_expected.to contain_sqlserver_tsql("role-permissions-myCustomRole-GRANT-#{instance}-server").with_instance(instance)
         }
       end
     end

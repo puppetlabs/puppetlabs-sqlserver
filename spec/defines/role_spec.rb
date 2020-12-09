@@ -3,7 +3,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), 'manifest_shared_exam
 
 RSpec.describe 'sqlserver::role', type: :define do
   include_context 'manifests' do
-    let(:sqlserver_tsql_title) { 'role-MSSQLSERVER-master-myCustomRole' }
+    let(:sqlserver_tsql_title) { 'role-MSSQLSERVER-server-myCustomRole' }
     let(:title) { 'myCustomRole' }
   end
 
@@ -21,7 +21,7 @@ RSpec.describe 'sqlserver::role', type: :define do
     describe 'SERVER' do
       let(:should_contain_command) do
         [
-          'USE [master];',
+          'USE [server];',
           'CREATE SERVER ROLE [myCustomRole];',
           %r{IF NOT EXISTS\(\n\s+SELECT name FROM sys\.server_principals WHERE type_desc = 'SERVER_ROLE' AND name = 'myCustomRole'\n\)},
           "THROW 51000, 'The SERVER ROLE [myCustomRole] does not exist', 10",
@@ -45,7 +45,7 @@ RSpec.describe 'sqlserver::role', type: :define do
       end
       let(:should_contain_command) do
         [
-          'USE [master];',
+          'USE [server];',
           'CREATE ROLE [myCustomRole];',
           %r{IF NOT EXISTS\(\n\s+SELECT name FROM sys\.database_principals WHERE type_desc = 'DATABASE_ROLE' AND name = 'myCustomRole'\n\)},
           "THROW 51000, 'The DATABASE ROLE [myCustomRole] does not exist', 10",
@@ -72,7 +72,7 @@ RSpec.describe 'sqlserver::role', type: :define do
     let(:sqlserver_tsql_title) { 'role-MSSQLSERVER-myCrazyDb-myCustomRole' }
 
     describe 'with server role type' do
-      let(:raise_error_check) { 'Can not specify a database other than master when managing SERVER ROLES' }
+      let(:raise_error_check) { 'Can not specify a database other than server when managing SERVER ROLES' }
 
       it_behaves_like 'validation error'
     end
@@ -98,7 +98,7 @@ RSpec.describe 'sqlserver::role', type: :define do
       let(:params) { { instance: 'MYCUSTOM' } }
 
       it {
-        is_expected.to contain_sqlserver_tsql('role-MYCUSTOM-master-myCustomRole').with_instance('MYCUSTOM')
+        is_expected.to contain_sqlserver_tsql('role-MYCUSTOM-server-myCustomRole').with_instance('MYCUSTOM')
       }
     end
     describe 'empty instance' do
@@ -162,7 +162,7 @@ RSpec.describe 'sqlserver::role', type: :define do
       end
       let(:should_contain_command) do
         [
-          'USE [master];',
+          'USE [server];',
           'DROP SERVER ROLE [myCustomRole];',
         ]
       end
@@ -177,7 +177,7 @@ RSpec.describe 'sqlserver::role', type: :define do
     end
   end
   context 'members_purge =>' do
-    let(:sqlserver_tsql_title) { 'role-MSSQLSERVER-master-myCustomRole-members' }
+    let(:sqlserver_tsql_title) { 'role-MSSQLSERVER-server-myCustomRole-members' }
 
     context 'true' do
       describe 'type => SERVER and members => []' do

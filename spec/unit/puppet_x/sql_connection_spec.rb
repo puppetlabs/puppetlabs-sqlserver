@@ -22,7 +22,7 @@ RSpec.describe PuppetX::Sqlserver::SqlConnection do
     context 'command execution' do
       before :each do
         stub_connection
-        allow(@connection).to receive(:Open).with('Provider=SQLNCLI11;Initial Catalog=master;Application Name=Puppet;Data Source=.;DataTypeComptibility=80;User ID=sa;Password=Pupp3t1@')
+        allow(@connection).to receive(:Open).with('Provider=SQLNCLI11;Initial Catalog=server;Application Name=Puppet;Data Source=.;DataTypeComptibility=80;User ID=sa;Password=Pupp3t1@')
       end
       it 'does not raise an error but populate has_errors with message' do
         allow(@connection.Errors).to receive(:count).and_return(2)
@@ -49,7 +49,7 @@ RSpec.describe PuppetX::Sqlserver::SqlConnection do
 
       context 'Use default authentication' do
         it 'defauls to SQL_LOGIN if admin_login_type is not set' do
-          expect(@connection).to receive(:Open).with('Provider=SQLNCLI11;Initial Catalog=master;Application Name=Puppet;Data Source=.;DataTypeComptibility=80;User ID=sa;Password=Pupp3t1@')
+          expect(@connection).to receive(:Open).with('Provider=SQLNCLI11;Initial Catalog=server;Application Name=Puppet;Data Source=.;DataTypeComptibility=80;User ID=sa;Password=Pupp3t1@')
           subject.open_and_run_command('query', admin_user: 'sa', admin_pass: 'Pupp3t1@')
         end
       end
@@ -72,11 +72,11 @@ RSpec.describe PuppetX::Sqlserver::SqlConnection do
         end
 
         it 'does not add the default instance of MSSQLSERVER to connection string' do
-          expect(@connection).to receive(:Open).with('Provider=SQLNCLI11;Initial Catalog=master;Application Name=Puppet;Data Source=.;DataTypeComptibility=80;User ID=sa;Password=Pupp3t1@')
+          expect(@connection).to receive(:Open).with('Provider=SQLNCLI11;Initial Catalog=server;Application Name=Puppet;Data Source=.;DataTypeComptibility=80;User ID=sa;Password=Pupp3t1@')
           subject.open_and_run_command('query', admin_user: 'sa', admin_pass: 'Pupp3t1@', instance_name: 'MSSQLSERVER')
         end
         it 'adds a non default instance to connection string' do
-          expect(@connection).to receive(:Open).with('Provider=SQLNCLI11;Initial Catalog=master;Application Name=Puppet;Data Source=.\\LOGGING;DataTypeComptibility=80;User ID=sa;Password=Pupp3t1@')
+          expect(@connection).to receive(:Open).with('Provider=SQLNCLI11;Initial Catalog=server;Application Name=Puppet;Data Source=.\\LOGGING;DataTypeComptibility=80;User ID=sa;Password=Pupp3t1@')
           subject.open_and_run_command('query', admin_user: 'sa', admin_pass: 'Pupp3t1@', instance_name: 'LOGGING')
         end
       end
@@ -99,12 +99,12 @@ RSpec.describe PuppetX::Sqlserver::SqlConnection do
         end
 
         it 'adds integrated security to the connection string if admin and password are empty' do
-          expect(@connection).to receive(:Open).with('Provider=SQLNCLI11;Initial Catalog=master;Application Name=Puppet;Data Source=.;DataTypeComptibility=80;Integrated Security=SSPI')
+          expect(@connection).to receive(:Open).with('Provider=SQLNCLI11;Initial Catalog=server;Application Name=Puppet;Data Source=.;DataTypeComptibility=80;Integrated Security=SSPI')
           subject.open_and_run_command('query', admin_user: '', admin_pass: '', admin_login_type: 'WINDOWS_LOGIN')
         end
 
         it 'adds integrated security to the connection string if admin and password are not defined' do
-          expect(@connection).to receive(:Open).with('Provider=SQLNCLI11;Initial Catalog=master;Application Name=Puppet;Data Source=.;DataTypeComptibility=80;Integrated Security=SSPI')
+          expect(@connection).to receive(:Open).with('Provider=SQLNCLI11;Initial Catalog=server;Application Name=Puppet;Data Source=.;DataTypeComptibility=80;Integrated Security=SSPI')
           subject.open_and_run_command('query', admin_login_type: 'WINDOWS_LOGIN')
         end
       end

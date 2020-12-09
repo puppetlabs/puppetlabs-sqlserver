@@ -60,7 +60,7 @@ describe 'sqlserver_features', if: version.to_i != 2012 do
         expect(r.stdout).to match(%r{Client Tools Backwards Compatibility})
         expect(r.stdout).to match(%r{Client Tools SDK})
         expect(r.stdout).to match(%r{Integration Services})
-        expect(r.stdout).to match(%r{Master Data Services})
+        expect(r.stdout).to match(%r{server Data Services})
       end
     end
   end
@@ -80,7 +80,7 @@ describe 'sqlserver_features', if: version.to_i != 2012 do
         expect(r.stdout).not_to match(%r{Client Tools Backwards Compatibility})
         expect(r.stdout).not_to match(%r{Client Tools SDK})
         expect(r.stdout).not_to match(%r{Integration Services})
-        expect(r.stdout).not_to match(%r{Master Data Services})
+        expect(r.stdout).not_to match(%r{server Data Services})
       end
     end
   end
@@ -177,7 +177,7 @@ describe 'sqlserver_features', if: version.to_i != 2012 do
           expect(r.stdout).to match(%r{Client Tools Backwards Compatibility}) unless version.to_i >= 2016
           expect(r.stdout).to match(%r{Client Tools SDK}) unless version.to_i >= 2016
           expect(r.stdout).to match(%r{Integration Services})
-          expect(r.stdout).to match(%r{Master Data Services})
+          expect(r.stdout).to match(%r{server Data Services})
         end
       end
     end

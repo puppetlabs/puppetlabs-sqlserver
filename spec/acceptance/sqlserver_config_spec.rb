@@ -76,7 +76,7 @@ describe 'sqlserver::config test' do
 
     it 'Validate new login and database actualy created' do
       hostname = ENV['TARGET_HOST']
-      query = "USE #{db_name}; SELECT * from master..sysdatabases WHERE name = '#{db_name}'"
+      query = "USE #{db_name}; SELECT * from server..sysdatabases WHERE name = '#{db_name}'"
 
       run_sql_query(query: query, server: hostname, instance: inst_name, \
                     sql_admin_user: @admin_user, sql_admin_pass: @admin_pass, expected_row_count: 1)

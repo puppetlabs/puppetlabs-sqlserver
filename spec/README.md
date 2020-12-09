@@ -2,7 +2,7 @@
 
 ## Overview
 
-The sqlserver module is tested at the unit and acceptance level. Those tests are found in the spec/unit and spec/acceptance directory respectively. Acceptance level tests are run using either a master and agent setup or just an aget. This is accomplished via use of testmode-switcher technology. The module's tests also utilize test-tiers.
+The sqlserver module is tested at the unit and acceptance level. Those tests are found in the spec/unit and spec/acceptance directory respectively. Acceptance level tests are run using either a server and agent setup or just an aget. This is accomplished via use of testmode-switcher technology. The module's tests also utilize test-tiers.
 
 ## Running Module Tests
 This section will instruct you on how to run the unit and acceptance tests.
@@ -36,7 +36,7 @@ bundle exec rake spec
 ### Acceptance Tests
 
 #### System Under Test
-The Acceptance tets run on either a master and agent system or just on a stand-alone agent machine depending on what test mode you have delcared. With BEAKER_TESTMODE=agent the tests run using a master and an agent. With BEAKER_TESTMODE=apply the tests will run on only the agent.
+The Acceptance tets run on either a server and agent system or just on a stand-alone agent machine depending on what test mode you have delcared. With BEAKER_TESTMODE=agent the tests run using a server and an agent. With BEAKER_TESTMODE=apply the tests will run on only the agent.
 
 #### Generate Hosts File
 First use beaker-hostgenerator to set up a hosts.yml to feed to the acceptance tests by running:
