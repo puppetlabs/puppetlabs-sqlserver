@@ -22,7 +22,7 @@
 #   Whether the Role is `SERVER` or `DATABASE`
 #
 # @param database
-#   The name of the database the role exists on when specifying `type => 'DATABASE'`. Defaults to 'master'
+#   The name of the database the role exists on when specifying `type => 'DATABASE'`. Defaults to 'server'
 #
 # @param permissions
 #   A hash of permissions that should be managed for the role.  
@@ -41,15 +41,15 @@ define sqlserver::role(
   Enum['present', 'absent'] $ensure = 'present',
   Optional[String] $authorization = undef,
   Enum['SERVER', 'DATABASE'] $type = 'SERVER',
-  String[1,128] $database = 'master',
+  String[1,128] $database = 'server',
   Optional[Hash] $permissions = { },
   Array[String] $members = [],
   Boolean $members_purge = false,
 ){
   sqlserver_validate_instance_name($instance)
 
-  if $type == 'SERVER' and $database != 'master' {
-    fail('Can not specify a database other than master when managing SERVER ROLES')
+  if $type == 'SERVER' and $database != 'server' {
+    fail('Can not specify a database other than server when managing SERVER ROLES')
   }
 
   $_create_delete = $ensure ? {

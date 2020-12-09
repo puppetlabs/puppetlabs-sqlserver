@@ -26,7 +26,7 @@
 #   Defaults to 'SQL_LOGIN', possible values are 'SQL_LOGIN' or 'WINDOWS_LOGIN'
 #
 # @param default_database
-#   The database that when connecting the login should default to, the default value is 'master'
+#   The database that when connecting the login should default to, the default value is 'server'
 #
 # @param default_language
 #   The default language is 'us_english', a list of possible
@@ -57,7 +57,7 @@ define sqlserver::login (
   Enum['present', 'absent'] $ensure = 'present',
   Optional[String] $password = undef,
   Optional[Hash] $svrroles = { },
-  String $default_database = 'master',
+  String $default_database = 'server',
   String $default_language = 'us_english',
   Boolean $check_expiration = false,
   Boolean $check_policy = true,

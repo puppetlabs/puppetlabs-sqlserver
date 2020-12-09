@@ -30,7 +30,7 @@ module PuppetX # rubocop:disable Style/ClassAndModuleChildren
       def get_connection_string(config)
         params = {
           'Provider'             => 'SQLNCLI11',
-          'Initial Catalog'      => config[:database] || 'master',
+          'Initial Catalog'      => config[:database] || 'server',
           'Application Name'     => 'Puppet',
           'Data Source'          => '.',
           'DataTypeComptibility' => 80,

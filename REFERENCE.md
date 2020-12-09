@@ -405,9 +405,9 @@ Default value: 'SQL_LOGIN'
 
 Data type: `String`
 
-The database that when connecting the login should default to, the default value is 'master'
+The database that when connecting the login should default to, the default value is 'server'
 
-Default value: 'master'
+Default value: 'server'
 
 ##### `default_language`
 
@@ -551,9 +551,9 @@ Default value: 'SERVER'
 
 Data type: `String[1,128]`
 
-The name of the database the role exists on when specifying `type => 'DATABASE'`. Defaults to 'master'
+The name of the database the role exists on when specifying `type => 'DATABASE'`. Defaults to 'server'
 
-Default value: 'master'
+Default value: 'server'
 
 ##### `permissions`
 
@@ -632,9 +632,9 @@ Default value: 'SERVER'
 
 Data type: `String[1,128]`
 
-The name of the database the role exists on when specifying `type => 'DATABASE'`. Defaults to 'master'
+The name of the database the role exists on when specifying `type => 'DATABASE'`. Defaults to 'server'
 
-Default value: 'master'
+Default value: 'server'
 
 ##### `instance`
 
@@ -807,7 +807,7 @@ Data type: `String[1,128]`
 
 The databaser you would like the permission managed on.
 
-Default value: 'master'
+Default value: 'server'
 
 ##### `permissions`
 
@@ -1054,7 +1054,7 @@ requires the usage of sqlserver::config with the user and password
 
 initial database to connect to during query execution
 
-Default value: master
+Default value: server
 
 ## Functions
 

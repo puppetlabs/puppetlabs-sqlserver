@@ -268,7 +268,7 @@ sqlserver::role { 'sysadmin':
 
 ## Reference
 
-For information on the classes and types, see the [REFERENCE.md](https://github.com/puppetlabs/puppetlabs-sqlserver/blob/master/REFERENCE.md)
+For information on the classes and types, see the [REFERENCE.md](https://github.com/puppetlabs/puppetlabs-sqlserver/blob/main/REFERENCE.md)
 
 ## Limitations
 

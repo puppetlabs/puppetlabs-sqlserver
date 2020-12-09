@@ -1,4 +1,4 @@
-USE [master];
+USE [server];
 
 /* Delete Database Backup and Restore History from MSDB System Database */
 EXEC msdb.dbo.sp_delete_database_backuphistory @database_name = N'<%= @db_name %>';

@@ -1,4 +1,4 @@
-USE master;
+USE server;
 IF exists(select * from sys.server_principals where name = '<%= @login %>')
 BEGIN
     -- need to add logic to kill all possible connections if any exists,

@@ -24,7 +24,7 @@
 #   Whether the Role is `SERVER` or `DATABASE`
 #
 # @param database
-#   The name of the database the role exists on when specifying `type => 'DATABASE'`. Defaults to 'master'
+#   The name of the database the role exists on when specifying `type => 'DATABASE'`. Defaults to 'server'
 #
 # @param instance
 #   The name of the instance where the role and database exists. Defaults to 'MSSQLSERVER'
@@ -36,7 +36,7 @@ define sqlserver::role::permissions (
   Pattern[/(?i)^(GRANT|REVOKE|DENY)$/] $state = 'GRANT',
   Optional[Boolean] $with_grant_option = false,
   Enum['SERVER','DATABASE'] $type = 'SERVER',
-  String[1,128] $database = 'master',
+  String[1,128] $database = 'server',
   String[1,16] $instance = 'MSSQLSERVER',
 ){
   if size($permissions) < 1 {

@@ -1,4 +1,4 @@
-USE master
+USE server
 DECLARE @default_db_path as nvarchar(max),
 		@default_log_path as varchar(max)
 SELECT  @default_db_path = CONVERT(NVARCHAR(MAX),SERVERPROPERTY('instancedefaultdatapath'),0),

@@ -31,7 +31,7 @@ Puppet::Type.newtype(:sqlserver_tsql) do
 
   newparam(:database) do
     desc 'initial database to connect to during query execution'
-    defaultto 'master'
+    defaultto 'server'
     validate do |value|
       raise("Invalid database name #{value}") unless value =~ %r{^[[:word:]|#|@]+}
     end
