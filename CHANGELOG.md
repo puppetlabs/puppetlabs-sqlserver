@@ -68,7 +68,7 @@ All notable changes to this project will be documented in this file. The format 
 
 ### Changed
 
-- License terms updated to allow a Bolt trial period ([License](https://github.com/puppetlabs/puppetlabs-sqlserver/blob/master/LICENSE))
+- License terms updated to allow a Bolt trial period ([License](https://github.com/puppetlabs/puppetlabs-sqlserver/blob/main/LICENSE))
 
 ### Fixed
 
@@ -95,8 +95,8 @@ All notable changes to this project will be documented in this file. The format 
 
 - Fix problem installing sql instance when an array of SQL Admins are specified. ([MODULES-6356](https://tickets.puppetlabs.com/browse/MODULES-6356))
 - Fix AppVeyor OpenSSL bug.([Modsync commit with discussion](https://github.com/puppetlabs/modulesync_configs/commit/f04d0d1119cb5cbd4c3aac76047c4c766ae1fcb2))
-- During acceptance testing, only execute master provisioning steps if there is
-  a master in the hosts array.
+- During acceptance testing, only execute server provisioning steps if there is
+  a server in the hosts array.
 - Stop running `gem update bundler` during Travis runs. ([MODULES-6339](https://tickets.puppetlabs.com/browse/MODULES-6339))
 - The `sqlserver_tsql` resource now returns errors from sql queries properly. ([MODULES-6281](https://tickets.puppetlabs.com/browse/MODULES-6281))
 
@@ -263,7 +263,7 @@ attempts to reinstall an instance that already exists ([MODULES-6022](https://ti
 
 Initial release.
 
-[Unreleased]: https://github.com/puppetlabs/puppetlabs-sqlserver/compare/v2.5.1..master
+[Unreleased]: https://github.com/puppetlabs/puppetlabs-sqlserver/compare/v2.5.1..main
 [2.5.1]: https://github.com/puppetlabs/puppetlabs-sqlserver/compare/2.5.0..v2.5.1
 [2.5.0]: https://github.com/puppetlabs/puppetlabs-sqlserver/compare/2.4.0..2.5.0
 [2.4.0]: https://github.com/puppetlabs/puppetlabs-sqlserver/compare/2.3.0..2.4.0
