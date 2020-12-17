@@ -151,7 +151,7 @@ Puppet::Type.type(:sqlserver_instance).provide(:mssql, parent: Puppet::Provider:
       RESOURCEKEY_TO_CMDARG.keys.sort.map do |key|
         next unless not_nil_and_not_empty? @resource[key]
         cmd_args << "/#{RESOURCEKEY_TO_CMDARG[key]}=\"#{@resource[key.to_sym]}\""
-        if key.to_s =~ %r{(_pwd|_password)$}i
+        if %r{(_pwd|_password)$}i.match?(key.to_s)
           obfuscated_strings.push(@resource[key])
         end
       end

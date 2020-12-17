@@ -27,10 +27,10 @@ module Puppet::Parser::Functions
     if value.length > 16
       errors << "Instance name can not be larger than 16 characters, you provided #{value}"
     end
-    if value =~ %r{\\|\:|;|\,|\@|\'|\s|\&}
+    if %r{\\|\:|;|\,|\@|\'|\s|\&}.match?(value)
       errors << "Instance name can not contain  whitespaces, backslashes(\\), commas(,), colons(:), semi-colons(;), at symbols (@), single quotes(') or ampersand(&) sybmols, you provided '#{value}'"
     end
-    if value =~ %r{^_|_$}
+    if %r{^_|_$}.match?(value)
       errors << "Instance name can not start or end with underscore (_), you provided #{value}"
     end
     raise Puppet::ParseError, errors.join("\n") unless errors.empty?

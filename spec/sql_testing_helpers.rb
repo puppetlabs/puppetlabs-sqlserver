@@ -77,7 +77,7 @@ def run_sql_query(host, opts = {}, &block)
     error_message = "Expected #{opts[:expected_row_count]} rows but observed #{rows_observed}"
     raise error_message unless opts[:expected_row_count] == rows_observed.to_i
   end
-  return unless block_given?
+  return unless block
   case block.arity
   when 0
     yield self
@@ -136,7 +136,7 @@ def validate_sql_install(host, opts = {}, &block)
 
   cmd = "type \\\"#{bootstrap_dir}\\Log\\Summary.txt\\\""
   result = on(host, "cmd.exe /c \"#{cmd}\"")
-  return unless block_given?
+  return unless block
   case block.arity
   when 0
     yield self

@@ -190,7 +190,7 @@ RSpec.describe 'sqlserver::role', type: :define do
         end
         let(:should_contain_command) do
           [
-          "WHILE(@row <= @row_count)
+            "WHILE(@row <= @row_count)
 BEGIN
     SET @sql = 'ALTER SERVER ROLE [myCustomRole] DROP MEMBER [' + (SELECT member FROM @purge_members WHERE ID = @row) + '];'
     EXEC(@sql)
@@ -200,7 +200,7 @@ END",
         end
         let(:should_contain_onlyif) do
           [
-"SELECT m.name FROM sys.server_role_members rm
+            "SELECT m.name FROM sys.server_role_members rm
     JOIN sys.server_principals r ON rm.role_principal_id = r.principal_id
     JOIN sys.server_principals m ON rm.member_principal_id = m.principal_id
     WHERE r.name = 'myCustomRole'",
@@ -220,7 +220,7 @@ END",
         end
         let(:should_contain_command) do
           [
-          "WHILE(@row <= @row_count)
+            "WHILE(@row <= @row_count)
 BEGIN
     SET @sql = 'ALTER ROLE [myCustomRole] DROP MEMBER [' + (SELECT member FROM @purge_members WHERE ID = @row) + '];'
     EXEC(@sql)
@@ -230,7 +230,7 @@ END",
         end
         let(:should_contain_onlyif) do
           [
-"SELECT m.name FROM sys.database_role_members rm
+            "SELECT m.name FROM sys.database_role_members rm
     JOIN sys.database_principals r ON rm.role_principal_id = r.principal_id
     JOIN sys.database_principals m ON rm.member_principal_id = m.principal_id
     WHERE r.name = 'myCustomRole'",
@@ -250,14 +250,14 @@ END",
       end
       let(:should_contain_command) do
         [
-        %r{WHERE r\.name = 'myCustomRole'\n\s+AND m\.name NOT IN \(},
-        "NOT IN ('test','these','users')",
+          %r{WHERE r\.name = 'myCustomRole'\n\s+AND m\.name NOT IN \(},
+          "NOT IN ('test','these','users')",
         ]
       end
       let(:should_contain_onlyif) do
         [
-        %r{WHERE r\.name = 'myCustomRole'\n\s+AND m\.name NOT IN \(},
-        "NOT IN ('test','these','users')",
+          %r{WHERE r\.name = 'myCustomRole'\n\s+AND m\.name NOT IN \(},
+          "NOT IN ('test','these','users')",
         ]
       end
 

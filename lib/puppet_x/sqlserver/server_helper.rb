@@ -17,7 +17,7 @@ module PuppetX # rubocop:disable Style/ClassAndModuleChildren
       end
 
       def self.is_domain_or_local_user?(user, hostname) # rubocop:disable Naming/PredicateName
-        if user =~ %r{(^(((nt (authority|service))|#{hostname})\\\w+)$)|^(\w+)$}i
+        if %r{(^(((nt (authority|service))|#{hostname})\\\w+)$)|^(\w+)$}i.match?(user)
           false
         else
           true

@@ -248,7 +248,7 @@ describe 'Test sqlserver::login' do
       describe "Modify a #{testcase} login" do
         before(:all) { remove_test_logins(host) }
 
-        it "should create an initial #{testcase}" do
+        it "creates an initial #{testcase}" do
           options = { 'svrroles' => '{\'sysadmin\' => 1}' }
           pp = create_login_manifest(testcase, @login_under_test, @login_passwd, options)
           apply_manifest(pp, catch_failures: true)
@@ -259,7 +259,7 @@ describe 'Test sqlserver::login' do
           run_sql_query(run_sql_query_opts_as_sa(query, 1))
         end
 
-        it "should modify a #{testcase} login" do
+        it "modifies a #{testcase} login" do
           options = { 'disabled' => true,
                       'default_database' => db_name.to_s,
                       'default_language' => 'Spanish',
@@ -331,7 +331,7 @@ describe 'Test sqlserver::login' do
       describe "Delete #{testcase} login" do
         before(:all) { remove_test_logins(host) }
 
-        it "should create an initial #{testcase}" do
+        it "creates an initial #{testcase}" do
           pp = create_login_manifest(testcase, @login_under_test, @login_passwd)
           apply_manifest(pp, catch_failures: true)
         end
@@ -341,7 +341,7 @@ describe 'Test sqlserver::login' do
           run_sql_query(run_sql_query_opts_as_sa(query, 1))
         end
 
-        it "should remove a #{testcase} on ensure => absent idempotently" do
+        it "removes a #{testcase} on ensure => absent idempotently" do
           options = { 'ensure' => 'absent' }
           pp = create_login_manifest(testcase, @login_under_test, @login_passwd, options)
           idempotent_apply(pp)

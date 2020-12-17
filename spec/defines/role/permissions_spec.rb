@@ -16,7 +16,6 @@ RSpec.describe 'sqlserver::role::permissions' do
   end
 
   context 'sql variables' do
-    # rubocop:disable Layout/AlignArray : Will not conform SQL test data to Rubocop
     declare_variables = [
       "DECLARE
     @perm_state varchar(250),
@@ -25,9 +24,9 @@ RSpec.describe 'sqlserver::role::permissions' do
     @princ_name varchar(50),
     @princ_type varchar(50),
     @state_desc varchar(50);",
-    "SET @princ_type = 'SERVER_ROLE';",
-    "SET @princ_name = 'myCustomRole';",
-    "SET @state_desc = 'GRANT';",
+      "SET @princ_type = 'SERVER_ROLE';",
+      "SET @princ_name = 'myCustomRole';",
+      "SET @state_desc = 'GRANT';",
     ]
     let(:should_contain_command) { declare_variables }
     let(:should_contain_onlyif) { declare_variables }
@@ -44,23 +43,23 @@ RSpec.describe 'sqlserver::role::permissions' do
   context 'type =>' do
     shared_examples 'GRANT Permissions' do |type|
       base_commands = [
-          "SET @princ_type = '#{type.upcase}_ROLE';",
-          "ISNULL(
+        "SET @princ_type = '#{type.upcase}_ROLE';",
+        "ISNULL(
 	(SELECT state_desc FROM sys.#{type.downcase}_permissions prem
 		JOIN sys.#{type.downcase}_principals r ON r.principal_id = prem.grantee_principal_id
 		WHERE r.name = @princ_name AND r.type_desc = @princ_type
 		AND prem.permission_name = @permission),
 	 'REVOKE')",
-          "SET @permission = 'INSERT';",
-          "SET @permission = 'UPDATE';",
-          "SET @permission = 'DELETE';",
-          "SET @permission = 'SELECT';",
+        "SET @permission = 'INSERT';",
+        "SET @permission = 'UPDATE';",
+        "SET @permission = 'DELETE';",
+        "SET @permission = 'SELECT';",
       ]
       should_commands = [
-          'GRANT INSERT TO [myCustomRole];',
-          'GRANT UPDATE TO [myCustomRole];',
-          'GRANT DELETE TO [myCustomRole];',
-          'GRANT SELECT TO [myCustomRole];',
+        'GRANT INSERT TO [myCustomRole];',
+        'GRANT UPDATE TO [myCustomRole];',
+        'GRANT DELETE TO [myCustomRole];',
+        'GRANT SELECT TO [myCustomRole];',
       ]
       # rubocop:enable Layout/IndentArray
       let(:should_contain_command) { base_commands + should_commands }

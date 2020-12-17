@@ -35,7 +35,7 @@ RSpec.describe Puppet::Type.type(:sqlserver_instance) do
 
   describe 'features' do
     ['SQL'].each do |feature_name|
-      it "should raise deprecation warning with super feature #{feature_name}" do
+      it "raises deprecation warning with super feature #{feature_name}" do
         args = {
           name: 'MSSQLSERVER',
           ensure: 'present',

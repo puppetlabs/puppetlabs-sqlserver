@@ -13,7 +13,7 @@ module Puppet::Parser::Functions
         raise(Puppet::ParseError, "Please use larger measurement for values greater than 2147483647, you provided #{value}")
       end
     end
-    if value =~ %r{\.}
+    if %r{\.}.match?(value)
       raise(Puppet::ParseError, "Number must be an integer, you provided #{value}")
     end
   end
