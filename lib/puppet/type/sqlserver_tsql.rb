@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'puppet'
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'property/sqlserver_tsql'))
 

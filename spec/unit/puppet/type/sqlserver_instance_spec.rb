@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'sqlserver_install_context.rb'))
 

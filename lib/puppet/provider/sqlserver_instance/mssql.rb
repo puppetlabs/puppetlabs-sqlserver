@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'json'
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'sqlserver'))
 require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', '..', 'puppet_x/sqlserver/server_helper'))

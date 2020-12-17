@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # === Defined Parser Function: sqlserver_validate_hash_uniq_values
 #
 # @param args* A hash, that contains string or string[] for values

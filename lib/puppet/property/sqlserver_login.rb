@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'puppet/property'
 
 class Puppet::Property::SqlserverLogin < Puppet::Property # rubocop:disable Style/Documentation

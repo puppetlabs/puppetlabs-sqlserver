@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'manifest_shared_examples.rb'))
 

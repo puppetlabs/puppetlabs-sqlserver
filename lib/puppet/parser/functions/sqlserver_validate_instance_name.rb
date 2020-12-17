@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # === Defined Parser Function: mssql_validate_instance_name
 #
 # Validates an instance name for SQL Server against the documenation of

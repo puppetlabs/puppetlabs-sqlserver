@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Puppet::Parser::Functions
   newfunction(:sqlserver_validate_size, doc: '@return Error if not a valid size value') do |args|
     if args.length != 1

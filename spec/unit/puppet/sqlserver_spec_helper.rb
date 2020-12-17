@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 def stub_source_which_call(source)
   allow(Puppet::Util).to receive(:which).with("#{source}/setup.exe").and_return("#{source}/setup.exe")
 end

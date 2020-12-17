@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'sqlserver'))
 require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', '..', 'puppet_x/sqlserver/sql_connection'))
 
@@ -11,7 +13,7 @@ Puppet::Type.type(:sqlserver_tsql).provide(:mssql, parent: Puppet::Provider::Sql
     sqlconn.open_and_run_command(query, config)
   end
 
-  def get_config # rubocop:disable Style/AccessorMethodName
+  def get_config # rubocop:disable Naming/AccessorMethodName
     instance = resource[:instance]
     config_resc = resource.catalog.resources.find do |resc|
       resc.title =~ %r{Sqlserver::Config} &&

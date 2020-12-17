@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Puppet::Parser::Functions
   newfunction(:sqlserver_validate_range, doc: '@return Error if value is not between range') do |args|
     if (args.length < 3) || (args.length > 4)

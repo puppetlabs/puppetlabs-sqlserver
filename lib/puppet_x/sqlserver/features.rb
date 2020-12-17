@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'puppet/util/windows'
 
 SQL_2012 ||= 'SQL_2012'.freeze

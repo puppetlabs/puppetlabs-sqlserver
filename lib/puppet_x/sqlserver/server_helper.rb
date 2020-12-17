@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module PuppetX # rubocop:disable Style/ClassAndModuleChildren
   module Sqlserver # rubocop:disable Style/ClassAndModuleChildren
     class ServerHelper # rubocop:disable Style/Documentation
@@ -10,11 +12,11 @@ module PuppetX # rubocop:disable Style/ClassAndModuleChildren
         @super_feature_hash[super_feature.to_sym]
       end
 
-      def self.is_super_feature(feature) # rubocop:disable Style/PredicateName
+      def self.is_super_feature(feature) # rubocop:disable Naming/PredicateName
         @super_feature_hash.key?(feature.to_sym)
       end
 
-      def self.is_domain_or_local_user?(user, hostname) # rubocop:disable Style/PredicateName
+      def self.is_domain_or_local_user?(user, hostname) # rubocop:disable Naming/PredicateName
         if user =~ %r{(^(((nt (authority|service))|#{hostname})\\\w+)$)|^(\w+)$}i
           false
         else

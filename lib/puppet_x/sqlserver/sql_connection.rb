@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module PuppetX # rubocop:disable Style/ClassAndModuleChildren
   module Sqlserver
     CONNECTION_CLOSED = 0
@@ -104,7 +106,7 @@ module PuppetX # rubocop:disable Style/ClassAndModuleChildren
         ((0..error_count).map { |i| connection.Errors(i).Description.to_s }).join("\n")
       end
 
-      def has_errors # rubocop:disable Style/PredicateName
+      def has_errors # rubocop:disable Naming/PredicateName
         @exitstatus != 0
       end
     end
