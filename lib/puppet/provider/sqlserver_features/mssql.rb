@@ -41,7 +41,7 @@ Puppet::Type.type(:sqlserver_features).provide(:mssql, parent: Puppet::Provider:
 
   def self.prefetch(resources)
     features = instances
-    resources.keys.each do |name|
+    resources.each_key do |name|
       if (provider = features.find { |feature| feature.name == name })
         resources[name].provider = provider
       end

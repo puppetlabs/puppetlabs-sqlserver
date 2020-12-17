@@ -33,7 +33,7 @@ Puppet::Type.type(:sqlserver_instance).provide(:mssql, parent: Puppet::Provider:
     result = Facter.value(:sqlserver_instances)
     debug "Parsing result #{result}"
     result = result.values.inject(:merge)
-    result.keys.each do |instance_name|
+    result.each_key do |instance_name|
       existing_instance = { name: instance_name,
                             ensure: :present,
                             features: result[instance_name]['features'].sort }
@@ -45,7 +45,7 @@ Puppet::Type.type(:sqlserver_instance).provide(:mssql, parent: Puppet::Provider:
 
   def self.prefetch(resources)
     my_instances = instances
-    resources.keys.each do |name|
+    resources.each_key do |name|
       if (provider = my_instances.find { |inst| inst.name == name })
         resources[name].provider = provider
       end

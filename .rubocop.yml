@@ -18,6 +18,7 @@ AllCops:
   - "**/Puppetfile"
   - "**/Vagrantfile"
   - "**/Guardfile"
+inherit_from: ".rubocop_todo.yml"
 Layout/LineLength:
   Description: People have wide screens, use them.
   Max: 200
@@ -267,6 +268,8 @@ Naming/MemoizedInstanceVariableName:
 Naming/MethodParameterName:
   Enabled: false
 Naming/RescuedExceptionsVariableName:
+  Enabled: false
+Naming/VariableNumber:
   Enabled: false
 Performance/BindCall:
   Enabled: false

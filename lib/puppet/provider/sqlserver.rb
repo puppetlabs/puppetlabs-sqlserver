@@ -25,7 +25,7 @@ class Puppet::Provider::Sqlserver < Puppet::Provider # rubocop:disable Style/Doc
       msg = "Failure occured when trying to install SQL Server #{@resource[:name]}" if msg.nil?
       msg += " \n Execution of '#{command}' returned #{res.exitstatus}: #{res.strip}"
 
-      obfuscate_strings.each { |str| msg.gsub!(str, '**HIDDEN VALUE**') } unless obfuscate_strings.nil?
+      obfuscate_strings&.each { |str| msg.gsub!(str, '**HIDDEN VALUE**') }
 
       raise Puppet::Error, msg
     end
@@ -33,20 +33,22 @@ class Puppet::Provider::Sqlserver < Puppet::Provider # rubocop:disable Style/Doc
     res
   end
 
-  private
-
+  # @api private
   def self.native_path(path)
     path.gsub(File::SEPARATOR, File::ALT_SEPARATOR)
   end
 
+  # @api private
   def self.template_path
     File.expand_path(File.join(File.dirname(__FILE__), '../templates'))
   end
 
+  # @api private
   def not_nil_and_not_empty?(obj)
     !obj.nil? && !obj.empty?
   end
 
+  # @api private
   def self.run_install_dot_net(source_location = nil)
     unless source_location.nil?
       warn("The specified windows_source_location directory for sqlserver of \"#{source_location}\" does not exist") unless Puppet::FileSystem.directory?(source_location)

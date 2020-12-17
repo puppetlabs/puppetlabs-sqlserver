@@ -21,7 +21,7 @@ module Puppet::Parser::Functions
     end
     value = args[0]
     errors = []
-    if value.empty? || value.empty?
+    if value.empty?
       errors << 'Instance name must be between 1 to 16 characters'
     end
     if value.length > 16
