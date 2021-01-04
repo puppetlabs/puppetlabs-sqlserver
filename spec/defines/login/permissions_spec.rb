@@ -104,7 +104,8 @@ describe 'sqlserver::login::permissions' do
 
           it_behaves_like 'sqlserver_tsql command'
         end
-        state.capitalize!
+
+        state = state.capitalize
         describe "capitalized #{state}" do
           let(:additional_params) { { state: state } }
 
