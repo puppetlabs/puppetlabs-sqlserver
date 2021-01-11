@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'puppet'
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'property/sqlserver_tsql'))
 
@@ -33,7 +35,7 @@ Puppet::Type.newtype(:sqlserver_tsql) do
     desc 'initial database to connect to during query execution'
     defaultto 'master'
     validate do |value|
-      raise("Invalid database name #{value}") unless value =~ %r{^[[:word:]|#|@]+}
+      raise("Invalid database name #{value}") unless %r{^[[:word:]|#|@]+}.match?(value)
     end
   end
 
@@ -105,12 +107,12 @@ Puppet::Type.newtype(:sqlserver_tsql) do
     # Actually execute the command.
     def sync
       event = :executed_command
-      begin
-        @output = provider.run(resource[:command])
-        if @output.has_errors
-          raise("Unable to apply changes, failed with error message #{@output.error_message}")
-        end
+
+      @output = provider.run(resource[:command])
+      if @output.has_errors
+        raise("Unable to apply changes, failed with error message #{@output.error_message}")
       end
+
       unless @output.exitstatus.to_s == '0'
         raise("#{resource[:command]} returned #{@output.exitstatus} instead of one of [#{should.join(',')}]")
       end

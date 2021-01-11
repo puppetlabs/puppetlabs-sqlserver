@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 require File.expand_path(File.join(File.dirname(__FILE__), 'manifest_shared_examples.rb'))
 
@@ -58,9 +60,9 @@ RSpec.describe 'sqlserver::database', type: :define do
       let(:should_contain_command) do
         [
           %r{NAME = N'myCre-Cre'},
-          /FILENAME = N'c\:\/test\/test\.mdf'/,
+          %r{FILENAME = N'c\:/test/test\.mdf'},
           %r{NAME = N'myCrazy_Log'},
-          /FILENAME = N'c\:\/test\/logfile\.ldf'/,
+          %r{FILENAME = N'c\:/test/logfile\.ldf'},
         ]
       end
     end

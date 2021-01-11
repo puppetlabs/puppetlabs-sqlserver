@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'json'
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'sqlserver'))
 require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', '..', 'puppet_x/sqlserver/server_helper'))
@@ -31,7 +33,7 @@ Puppet::Type.type(:sqlserver_instance).provide(:mssql, parent: Puppet::Provider:
     result = Facter.value(:sqlserver_instances)
     debug "Parsing result #{result}"
     result = result.values.inject(:merge)
-    result.keys.each do |instance_name|
+    result.each_key do |instance_name|
       existing_instance = { name: instance_name,
                             ensure: :present,
                             features: result[instance_name]['features'].sort }
@@ -43,7 +45,7 @@ Puppet::Type.type(:sqlserver_instance).provide(:mssql, parent: Puppet::Provider:
 
   def self.prefetch(resources)
     my_instances = instances
-    resources.keys.each do |name|
+    resources.each_key do |name|
       if (provider = my_instances.find { |inst| inst.name == name })
         resources[name].provider = provider
       end
@@ -149,7 +151,7 @@ Puppet::Type.type(:sqlserver_instance).provide(:mssql, parent: Puppet::Provider:
       RESOURCEKEY_TO_CMDARG.keys.sort.map do |key|
         next unless not_nil_and_not_empty? @resource[key]
         cmd_args << "/#{RESOURCEKEY_TO_CMDARG[key]}=\"#{@resource[key.to_sym]}\""
-        if key.to_s =~ %r{(_pwd|_password)$}i
+        if %r{(_pwd|_password)$}i.match?(key.to_s)
           obfuscated_strings.push(@resource[key])
         end
       end

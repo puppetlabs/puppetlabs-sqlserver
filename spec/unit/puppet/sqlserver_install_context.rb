@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 def basic_args
   {
     source: 'C:\myinstallexecs',

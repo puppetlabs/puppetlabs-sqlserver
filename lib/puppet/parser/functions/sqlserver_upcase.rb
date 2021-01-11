@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Puppet::Parser::Functions
   newfunction(:sqlserver_upcase, type: :rvalue, arity: 1, doc: '@return Upcase values') do |arguments|
     if arguments.size != 1

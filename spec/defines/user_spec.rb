@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 require File.expand_path(File.join(File.dirname(__FILE__), 'manifest_shared_examples.rb'))
 
@@ -114,7 +116,7 @@ RSpec.describe 'sqlserver::user', type: :define do
     let(:should_contain_command) do
       [
         'USE [myDatabase]',
-        /CREATE USER \[myMachineName\/myUser\]\n\s+FROM LOGIN \[myMachineName\/myUser\]/, # rubocop:disable Style/RegexpLiteral : Will not conform SQL test data to Rubocop
+        /CREATE USER \[myMachineName\/myUser\]\n\s+FROM LOGIN \[myMachineName\/myUser\]/,
       ]
     end
 

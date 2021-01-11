@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.shared_context 'manifests' do
   let(:title) { 'simple title' }
   let(:sqlserver_tsql_title) {}

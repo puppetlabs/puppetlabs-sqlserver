@@ -48,6 +48,6 @@
     "database"
   ],
   "pdk-version": "1.18.1",
-  "template-url": "https://github.com/puppetlabs/pdk-templates#main",
-  "template-ref": "heads/main-0-g874030e"
+  "template-url": "/home/david/git/pdk-templates/#master",
+  "template-ref": "heads/main-0-g28e5206"
 }

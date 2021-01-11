@@ -1,10 +1,12 @@
+# frozen_string_literal: true
+
 require 'puppet/util/windows'
 
-SQL_2012 ||= 'SQL_2012'.freeze
-SQL_2014 ||= 'SQL_2014'.freeze
-SQL_2016 ||= 'SQL_2016'.freeze
-SQL_2017 ||= 'SQL_2017'.freeze
-SQL_2019 ||= 'SQL_2019'.freeze
+SQL_2012 ||= 'SQL_2012'
+SQL_2014 ||= 'SQL_2014'
+SQL_2016 ||= 'SQL_2016'
+SQL_2017 ||= 'SQL_2017'
+SQL_2019 ||= 'SQL_2019'
 
 ALL_SQL_VERSIONS ||= [SQL_2012, SQL_2014, SQL_2016, SQL_2017, SQL_2019].freeze
 
@@ -39,8 +41,8 @@ module PuppetX
         },
       }.freeze
 
-      SQL_REG_ROOT ||= 'Software\Microsoft\Microsoft SQL Server'.freeze
-      HKLM         ||= 'HKEY_LOCAL_MACHINE'.freeze
+      SQL_REG_ROOT ||= 'Software\Microsoft\Microsoft SQL Server'
+      HKLM         ||= 'HKEY_LOCAL_MACHINE'
 
       def self.get_parent_path(key_path)
         # should be the same as SQL_REG_ROOT
@@ -55,9 +57,9 @@ module PuppetX
 
       def self.key_exists?(path)
         open(HKLM, path, KEY_READ | KEY64) {}
-        return true
+        true
       rescue
-        return false
+        false
       end
 
       def self.get_sql_reg_val_features(key_name, reg_val_feat_hash)
@@ -68,7 +70,7 @@ module PuppetX
               .select { |val_name, _| get_reg_key_val(key, val_name, Win32::Registry::REG_DWORD).to_i == 1 }
               .map { |_, feat_name| feat_name }
           end
-        rescue Puppet::Util::Windows::Error # subkey doesn't exist #rubocop:disable Lint/HandleExceptions
+        rescue Puppet::Util::Windows::Error
         end
 
         vals
@@ -105,7 +107,7 @@ module PuppetX
             open(HKLM, "#{key_name}\\#{subkey}", KEY_READ | KEY64) do |feat_key|
               get_reg_key_val(feat_key, instance_name, Win32::Registry::REG_SZ)
             end
-          rescue Puppet::Util::Windows::Error # subkey doesn't exist #rubocop:disable Lint/HandleExceptions
+          rescue Puppet::Util::Windows::Error
           end
         end
 

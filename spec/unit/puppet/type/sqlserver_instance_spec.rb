@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'sqlserver_install_context.rb'))
 
@@ -33,7 +35,7 @@ RSpec.describe Puppet::Type.type(:sqlserver_instance) do
 
   describe 'features' do
     ['SQL'].each do |feature_name|
-      it "should raise deprecation warning with super feature #{feature_name}" do
+      it "raises deprecation warning with super feature #{feature_name}" do
         args = {
           name: 'MSSQLSERVER',
           ensure: 'present',

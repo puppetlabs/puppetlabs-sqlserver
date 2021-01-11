@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Puppet::Parser::Functions
   newfunction(:sqlserver_validate_size, doc: '@return Error if not a valid size value') do |args|
     if args.length != 1
@@ -11,7 +13,7 @@ module Puppet::Parser::Functions
         raise(Puppet::ParseError, "Please use larger measurement for values greater than 2147483647, you provided #{value}")
       end
     end
-    if value =~ %r{\.}
+    if %r{\.}.match?(value)
       raise(Puppet::ParseError, "Number must be an integer, you provided #{value}")
     end
   end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'manifest_shared_examples.rb'))
 
@@ -102,7 +104,8 @@ describe 'sqlserver::login::permissions' do
 
           it_behaves_like 'sqlserver_tsql command'
         end
-        state.capitalize!
+
+        state = state.capitalize
         describe "capitalized #{state}" do
           let(:additional_params) { { state: state } }
 

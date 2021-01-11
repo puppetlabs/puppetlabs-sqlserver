@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'json'
 require File.expand_path(File.join(File.dirname(__FILE__), '..', 'sqlserver'))
 require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', '..', 'puppet_x/sqlserver/server_helper'))
@@ -39,7 +41,7 @@ Puppet::Type.type(:sqlserver_features).provide(:mssql, parent: Puppet::Provider:
 
   def self.prefetch(resources)
     features = instances
-    resources.keys.each do |name|
+    resources.each_key do |name|
       if (provider = features.find { |feature| feature.name == name })
         resources[name].provider = provider
       end
