@@ -3,28 +3,9 @@
   delete: true
 ".rubocop.yml":
   include_todos: true
-".travis.yml":
-  global_env:
-    - HONEYCOMB_WRITEKEY="7f3c63a70eecc61d635917de46bea4e6",HONEYCOMB_DATASET="litmus tests"
-  deploy_to_forge:
-    enabled: false
-  simplecov: true
-  notifications:
-    slack:
-      secure: >-
-        NT68BqwAuUSDfmHKZM1Zq7hu2CsK/O2zUhQdeeMBzMWqc6stFdBs8w4zilejzbKJBGSKczV05ctg30e3BfUxGdkuB5kmUCncr5Ky/ygnTi6HnVmdb6ia2Dh41aIoE902SB4h87cOnwcaWAVUBs7lRkJt8j3fK7EZ1egwwzoVaneG/YSMCMniBqSUZFMq5JK76SNBf7VsUzdnxo+nJKJQwMeDQgejb5Fs5F4ua6uSV/keYN7fUjrTLIRA2DKc0nk9fbp8wEN1e12fD0Dziqdlj0jxgJ+8HRAALk82Xu4HivAtOXrGSiXtan2JivbvQW0vFOAd/K1W4ax6ovsZewe4bhMFqgHvdczrlrXFdbKK3cbCJln+StauiWiAVy1wnL2j08zcqxxMPG2HUOpqKjb32CNr+IQZ1GRkx+r62+y18wRb9ir8cTmQli9PcPYFYdM4/5845jaG24qXTQA7s8/f3M7rHgzbZ2ilV6FI76k2iJHX4HAioRW5sD+nIE0STJMnlaVPXmmBhkGwEgoU2Vxbxvas4nCBUikPDoRh5zmY57FaaqJpUEyUgliTWF3OOO8F3xdyv2mdsoMQWi+xBC8CPNOAsTeocYVuZzKOf76eOfwMGcpAp/D8+kAYjb9UFK9tbtil7oeU2hP8kNp+X8AQnM3fxXeGyS1IOeTYAAFfBoI=
 appveyor.yml:
-  environment:
-    HONEYCOMB_WRITEKEY: 7f3c63a70eecc61d635917de46bea4e6
-    HONEYCOMB_DATASET: litmus tests
-  matrix_extras:
-  - PUPPET_GEM_VERSION: "~> 6.0"
-    RUBY_VERSION: 25
-    CHECK: parallel_spec
-  - PUPPET_GEM_VERSION: "~> 6.0"
-    RUBY_VERSION: 25-x64
-    CHECK: parallel_spec
-  simplecov: true
+  delete: true
+
 Gemfile:
   optional:
     ":development":
@@ -43,3 +24,10 @@ spec/spec_helper.rb:
   unmanaged: false
 .github/workflows/auto_release.yml:
   unmanaged: false
+.github/workflows/spec.yml:
+  checks: 'syntax lint metadata_lint check:symlinks check:git_ignore check:dot_underscore check:test_file rubocop'
+  unmanaged: false
+.github/workflows/release.yml:
+  unmanaged: false
+.travis.yml:
+  delete: true
