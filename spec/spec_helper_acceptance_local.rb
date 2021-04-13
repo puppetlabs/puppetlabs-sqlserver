@@ -20,18 +20,40 @@ SQL_ADMIN_USER = 'sa'
 SQL_ADMIN_PASS = 'Pupp3t1@'
 
 RSpec.configure do |c|
+  _module_root = File.expand_path(File.join(File.dirname(__FILE__), '..'))
+  c.formatter = :documentation
+
   c.before(:suite) do
     Helper.instance.run_shell('puppet module install puppetlabs/mount_iso')
     Helper.instance.run_shell('puppet module install puppet/archive')
 
-    iso_opts = {
-      folder: WIN_ISO_ROOT,
-      file: WIN_2012R2_ISO,
-      drive_letter: 'I',
-    }
-    mount_iso(iso_opts)
+    if ENV['CLOUD_CI'] == 'true'
+      Helper.instance.run_shell("gsutil cp -r gs://artifactory-modules/puppetlabs-sqlserver/#{WIN_2012R2_ISO} /tmp/")
+      Helper.instance.run_shell("gsutil cp -r gs://artifactory-modules/puppetlabs-sqlserver/#{SQL_2012_ISO} /tmp/")
+      Helper.instance.run_shell("gsutil cp -r gs://artifactory-modules/puppetlabs-sqlserver/#{SQL_2014_ISO} /tmp/")
+      Helper.instance.run_shell("gsutil cp -r gs://artifactory-modules/puppetlabs-sqlserver/#{SQL_2016_ISO} /tmp/")
+      Helper.instance.run_shell("gsutil cp -r gs://artifactory-modules/puppetlabs-sqlserver/#{SQL_2017_ISO} /tmp/")
+      Helper.instance.run_shell("gsutil cp -r gs://artifactory-modules/puppetlabs-sqlserver/#{SQL_2019_ISO} /tmp/")
 
-    base_install(sql_version?)
+      iso_opts = {
+        folder: '/tmp',
+        file: WIN_2012R2_ISO,
+        drive_letter: 'I',
+      }
+      mount_iso(iso_opts)
+
+      base_install(sql_version?, '/tmp')
+    else
+      # For Internal testing
+      iso_opts = {
+        folder: WIN_ISO_ROOT,
+        file: WIN_2012R2_ISO,
+        drive_letter: 'I',
+      }
+      mount_iso(iso_opts)
+
+      base_install(sql_version?, QA_RESOURCE_ROOT)
+    end
   end
 end
 
@@ -79,35 +101,35 @@ def mount_iso(opts = {})
   Helper.instance.apply_manifest(pp)
 end
 
-def base_install(sql_version)
+def base_install(sql_version, resource_root)
   case sql_version.to_i
   when 2012
     iso_opts = {
-      folder: QA_RESOURCE_ROOT,
+      folder: resource_root,
       file: SQL_2012_ISO,
       drive_letter: 'H',
     }
   when 2014
     iso_opts = {
-      folder: QA_RESOURCE_ROOT,
+      folder: resource_root,
       file: SQL_2014_ISO,
       drive_letter: 'H',
     }
   when 2016
     iso_opts = {
-      folder: QA_RESOURCE_ROOT,
+      folder: resource_root,
       file: SQL_2016_ISO,
       drive_letter: 'H',
     }
   when 2017
     iso_opts = {
-      folder: QA_RESOURCE_ROOT,
+      folder: resource_root,
       file: SQL_2017_ISO,
       drive_letter: 'H',
     }
   when 2019
     iso_opts = {
-      folder: QA_RESOURCE_ROOT,
+      folder: resource_root,
       file: SQL_2019_ISO,
       drive_letter: 'H',
     }
