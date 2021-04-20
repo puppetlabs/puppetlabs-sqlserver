@@ -27,7 +27,7 @@ RSpec.configure do |c|
     Helper.instance.run_shell('puppet module install puppetlabs/mount_iso')
     Helper.instance.run_shell('puppet module install puppet/archive')
 
-    if ENV['CLOUD_CI'] == 'true'
+    if ENV['GITHUB_ACTIONS'] == 'true'
       Helper.instance.run_shell("gsutil cp -r gs://artifactory-modules/puppetlabs-sqlserver/#{WIN_2012R2_ISO} /tmp/")
       Helper.instance.run_shell("gsutil cp -r gs://artifactory-modules/puppetlabs-sqlserver/#{SQL_2012_ISO} /tmp/")
       Helper.instance.run_shell("gsutil cp -r gs://artifactory-modules/puppetlabs-sqlserver/#{SQL_2014_ISO} /tmp/")
@@ -42,7 +42,9 @@ RSpec.configure do |c|
       }
       mount_iso(iso_opts)
 
-      base_install(sql_version?, '/tmp')
+      # Temp fix to prove code works
+      base_install('2016', '/tmp')
+      # base_install(sql_version?, '/tmp')
     else
       # For Internal testing
       iso_opts = {
