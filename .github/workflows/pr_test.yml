@@ -5,6 +5,7 @@ on: [pull_request]
 env:
   HONEYCOMB_WRITEKEY: 7f3c63a70eecc61d635917de46bea4e6
   HONEYCOMB_DATASET: litmus tests
+  SERVICE_URL: https://facade-sqlserverport-6f3kfepqcq-ew.a.run.app/v1/provision
 
 jobs:
   setup_matrix:
@@ -55,7 +56,7 @@ jobs:
       id: get-matrix
       run: |
         if [ '${{ github.repository_owner }}' == 'puppetlabs' ]; then
-          buildevents cmd $TRACE_ID $STEP_ID matrix_from_metadata -- bundle exec matrix_from_metadata_v2
+          echo  "::set-output name=matrix::{'platforms':[{'label':'David-Test','provider':'provision::provision_service','image':'windows-2012-r2-core'}],'collection':['puppet7-nightly']}"
         else
           echo  "::set-output name=matrix::{}"
         fi
@@ -166,19 +167,19 @@ jobs:
         echo STEP_ID=${{ matrix.platforms.image }}-${{ matrix.collection }}-4 >> $GITHUB_ENV
         echo STEP_START=$(date +%s) >> $GITHUB_ENV
 
-    - name: Remove test environment
-      if: ${{ always() }}
-      continue-on-error: true
-      run: |
-        if [[ -f inventory.yaml || -f spec/fixtures/litmus_inventory.yaml ]]; then
-          buildevents cmd $TRACE_ID $STEP_ID 'rake litmus:tear_down' -- bundle exec rake 'litmus:tear_down'
-          echo ::group::=== REQUEST ===
-          cat request.json || true
-          echo
-          echo ::endgroup::
-        fi
+    # - name: Remove test environment
+    #   if: ${{ always() }}
+    #   continue-on-error: true
+    #   run: |
+    #     if [[ -f inventory.yaml || -f spec/fixtures/litmus_inventory.yaml ]]; then
+    #       buildevents cmd $TRACE_ID $STEP_ID 'rake litmus:tear_down' -- bundle exec rake 'litmus:tear_down'
+    #       echo ::group::=== REQUEST ===
+    #       cat request.json || true
+    #       echo
+    #       echo ::endgroup::
+    #     fi
 
-    - name: "Honeycomb: Record removal times"
-      if: ${{ always() }}
-      run: |
-        buildevents step $TRACE_ID $STEP_ID $STEP_START 'Remove test environment'
+    # - name: "Honeycomb: Record removal times"
+    #   if: ${{ always() }}
+    #   run: |
+    #     buildevents step $TRACE_ID $STEP_ID $STEP_START 'Remove test environment'

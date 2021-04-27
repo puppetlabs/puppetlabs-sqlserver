@@ -27,13 +27,13 @@ RSpec.configure do |c|
     Helper.instance.run_shell('puppet module install puppetlabs/mount_iso')
     Helper.instance.run_shell('puppet module install puppet/archive')
 
-    if ENV['CLOUD_CI'] == 'true'
-      Helper.instance.run_shell("gsutil cp -r gs://artifactory-modules/puppetlabs-sqlserver/#{WIN_2012R2_ISO} /tmp/")
-      Helper.instance.run_shell("gsutil cp -r gs://artifactory-modules/puppetlabs-sqlserver/#{SQL_2012_ISO} /tmp/")
-      Helper.instance.run_shell("gsutil cp -r gs://artifactory-modules/puppetlabs-sqlserver/#{SQL_2014_ISO} /tmp/")
-      Helper.instance.run_shell("gsutil cp -r gs://artifactory-modules/puppetlabs-sqlserver/#{SQL_2016_ISO} /tmp/")
-      Helper.instance.run_shell("gsutil cp -r gs://artifactory-modules/puppetlabs-sqlserver/#{SQL_2017_ISO} /tmp/")
-      Helper.instance.run_shell("gsutil cp -r gs://artifactory-modules/puppetlabs-sqlserver/#{SQL_2019_ISO} /tmp/")
+    if ENV['GITHUB_ACTIONS'] == 'true'
+      Helper.instance.run_shell("gsutil -q cp -r gs://artifactory-modules/puppetlabs-sqlserver/#{WIN_2012R2_ISO} /tmp/#{WIN_2012R2_ISO}")
+      # Helper.instance.run_shell("gsutil cp -r gs://artifactory-modules/puppetlabs-sqlserver/#{SQL_2012_ISO} /tmp/")
+      # Helper.instance.run_shell("gsutil cp -r gs://artifactory-modules/puppetlabs-sqlserver/#{SQL_2014_ISO} /tmp/")
+      # Helper.instance.run_shell("gsutil cp -r gs://artifactory-modules/puppetlabs-sqlserver/#{SQL_2016_ISO} /tmp/")
+      # Helper.instance.run_shell("gsutil cp -r gs://artifactory-modules/puppetlabs-sqlserver/#{SQL_2017_ISO} /tmp/")
+      # Helper.instance.run_shell("gsutil cp -r gs://artifactory-modules/puppetlabs-sqlserver/#{SQL_2019_ISO} /tmp/")
 
       iso_opts = {
         folder: '/tmp',
@@ -42,7 +42,9 @@ RSpec.configure do |c|
       }
       mount_iso(iso_opts)
 
-      base_install(sql_version?, '/tmp')
+      # Temp fix to prove code works
+      base_install('2016', '/tmp')
+      # base_install(sql_version?, '/tmp')
     else
       # For Internal testing
       iso_opts = {
@@ -83,51 +85,63 @@ def mount_iso(opts = {})
   folder = opts[:folder]
   file = opts[:file]
   drive_letter = opts[:drive_letter]
-
-  pp = <<-MANIFEST
-  $p_src  = '#{folder}/#{file}'
-  $source = 'C:\\#{file}'
-  archive { $source:
-    ensure => present,
-    source => $p_src,
-    user   => 0,
-    group  => 0,
-  }
-  mount_iso{$source:
-    require      => Archive[$source],
-    drive_letter => '#{drive_letter}',
-  }
-  MANIFEST
+  pp = if ENV['GITHUB_ACTIONS'] == 'true'
+         <<-MANIFEST
+          mount_iso{'C:\\tmp\\#{file}':
+            drive_letter => '#{drive_letter}',
+          }
+        MANIFEST
+       else
+         <<-MANIFEST
+          $p_src  = '#{folder}/#{file}'
+          $source = 'C:\\#{file}'
+          archive { $source:
+            ensure => present,
+            source => $p_src,
+            user   => 0,
+            group  => 0,
+          }
+          mount_iso{$source:
+            require      => Archive[$source],
+            drive_letter => '#{drive_letter}',
+          }
+        MANIFEST
+       end
   Helper.instance.apply_manifest(pp)
 end
 
 def base_install(sql_version, resource_root)
   case sql_version.to_i
   when 2012
+    Helper.instance.run_shell("gsutil -q cp -r gs://artifactory-modules/puppetlabs-sqlserver/#{SQL_2012_ISO} /tmp/#{SQL_2012_ISO}") if ENV['GITHUB_ACTIONS'] == 'true'
     iso_opts = {
       folder: resource_root,
       file: SQL_2012_ISO,
       drive_letter: 'H',
     }
   when 2014
+    Helper.instance.run_shell("gsutil -q cp -r gs://artifactory-modules/puppetlabs-sqlserver/#{SQL_2014_ISO} /tmp/#{SQL_2014_ISO}") if ENV['GITHUB_ACTIONS'] == 'true'
     iso_opts = {
       folder: resource_root,
       file: SQL_2014_ISO,
       drive_letter: 'H',
     }
   when 2016
+    Helper.instance.run_shell("gsutil -q cp -r gs://artifactory-modules/puppetlabs-sqlserver/#{SQL_2016_ISO} /tmp/#{SQL_2016_ISO}") if ENV['GITHUB_ACTIONS'] == 'true'
     iso_opts = {
       folder: resource_root,
       file: SQL_2016_ISO,
       drive_letter: 'H',
     }
   when 2017
+    Helper.instance.run_shell("gsutil -q cp -r gs://artifactory-modules/puppetlabs-sqlserver/#{SQL_2017_ISO} /tmp/#{SQL_2017_ISO}") if ENV['GITHUB_ACTIONS'] == 'true'
     iso_opts = {
       folder: resource_root,
       file: SQL_2017_ISO,
       drive_letter: 'H',
     }
   when 2019
+    Helper.instance.run_shell("gsutil -q cp -r gs://artifactory-modules/puppetlabs-sqlserver/#{SQL_2019_ISO} /tmp/#{SQL_2019_ISO}") if ENV['GITHUB_ACTIONS'] == 'true'
     iso_opts = {
       folder: resource_root,
       file: SQL_2019_ISO,

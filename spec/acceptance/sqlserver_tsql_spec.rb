@@ -4,7 +4,7 @@ require 'spec_helper_acceptance'
 require 'securerandom'
 require 'erb'
 
-version = sql_version?
+version = '2016' # sql_version?
 
 # database name
 db_name = ('DB' + SecureRandom.hex(4)).upcase

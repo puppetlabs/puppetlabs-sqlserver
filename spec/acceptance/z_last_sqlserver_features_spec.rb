@@ -4,7 +4,7 @@ require 'spec_helper_acceptance'
 require 'erb'
 require 'json'
 
-version = sql_version?
+version = '2016' # sql_version?
 
 describe 'sqlserver_features', if: version.to_i != 2012 do
   def ensure_sql_features(features, ensure_val = 'present')

@@ -5,7 +5,7 @@ release_checks_sql_2012:
   provisioner: abs
   images: ['win-2012r2-x86_64']
   vars: 'sqlversion: sqlserver_2012'
-release_checks_sql_2014_parity:
+release_checks_sql_2014_nightly:
   provisioner: abs
   images: ['win-2012r2-x86_64']
   vars: 'sqlversion: sqlserver_2014'
@@ -13,18 +13,26 @@ release_checks_sql_2014:
   provisioner: abs
   images: ['win-2012r2-x86_64', 'win-2016-x86_64', 'win-2019-x86_64']
   vars: 'sqlversion: sqlserver_2014'
-release_checks_sql_2016_parity:
+release_checks_sql_2016_nightly:
   provisioner: abs
-  images: ['win-2012r2-x86_64', 'win-2016-x86_64']
+  images: ['win-2016-x86_64']
   vars: 'sqlversion: sqlserver_2016'
 release_checks_sql_2016:
   provisioner: abs
   images: ['win-2012r2-x86_64', 'win-2016-x86_64', 'win-2019-x86_64']
   vars: 'sqlversion: sqlserver_2016'
+release_checks_sql_2017_nightly:
+  provisioner: abs
+  images: ['win-2016-x86_64']
+  vars: 'sqlversion: sqlserver_2017'
 release_checks_sql_2017:
   provisioner: abs
   images: ['win-2012r2-x86_64', 'win-2016-x86_64', 'win-2019-x86_64']
   vars: 'sqlversion: sqlserver_2017'
+release_checks_sql_2019_nightly:
+  provisioner: abs
+  images: ['win-2019-x86_64']
+  vars: 'sqlversion: sqlserver_2019'
 release_checks_sql_2019:
   provisioner: abs
   images: ['win-2012r2-x86_64', 'win-2016-x86_64', 'win-2019-x86_64']

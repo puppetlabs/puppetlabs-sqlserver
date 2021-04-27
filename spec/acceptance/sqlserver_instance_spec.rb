@@ -9,7 +9,7 @@ def new_random_instance_name
 end
 
 describe 'sqlserver_instance' do
-  version = sql_version?
+  version = '2016' # sql_version?
 
   def ensure_sqlserver_instance(features, inst_name, ensure_val = 'present', sysadmin_accounts = "['Administrator']")
     pp = <<-MANIFEST
