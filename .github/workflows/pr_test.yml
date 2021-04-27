@@ -56,7 +56,7 @@ jobs:
       id: get-matrix
       run: |
         if [ '${{ github.repository_owner }}' == 'puppetlabs' ]; then
-          echo  "::set-output name=matrix::{'platforms':[{'label':'David-Test','provider':'provision::provision_service','image':'windows-2012-r2-core'}],'collection':['puppet7-nightly']}"
+          echo  "::set-output name=matrix::{'platforms':[{'label':'win2016-sql2016','provider':'provision::provision_service','image':'windows-2016-core'}],'collection':['puppet7-nightly','puppet6-nightly']}"
         else
           echo  "::set-output name=matrix::{}"
         fi
