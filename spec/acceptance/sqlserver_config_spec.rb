@@ -12,7 +12,7 @@ db_name   = ('DB' + SecureRandom.hex(4)).upcase
 describe 'sqlserver::config test' do
   def ensure_sqlserver_instance(inst_name, ensure_val = 'present')
     pp = <<-MANIFEST
-      sqlserver_instance{'#{inst_name}':
+    sqlserver_instance{'#{inst_name}':
       ensure                => '#{ensure_val}',
       source                => 'H:',
       features              => ['DQ', 'FullText', 'Replication', 'SQLEngine'],
