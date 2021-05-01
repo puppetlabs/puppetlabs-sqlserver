@@ -17,7 +17,6 @@ All notable changes to this project will be documented in this file. The format 
 ### Fixed
 
 - \(FM-8879\) Handle T-SQL Errors Properly [\#349](https://github.com/puppetlabs/puppetlabs-sqlserver/pull/349) ([RandomNoun7](https://github.com/RandomNoun7))
-- \(MODULES-10335\) - Update exec's title to be unique [\#341](https://github.com/puppetlabs/puppetlabs-sqlserver/pull/341) ([david22swan](https://github.com/david22swan))
 
 ## [v2.6.2](https://github.com/puppetlabs/puppetlabs-sqlserver/tree/v2.6.2) (2020-01-21)
 
@@ -26,6 +25,7 @@ All notable changes to this project will be documented in this file. The format 
 ### Fixed
 
 - \(MODULES-10384\) - Registry value check tightened [\#343](https://github.com/puppetlabs/puppetlabs-sqlserver/pull/343) ([david22swan](https://github.com/david22swan))
+- \(MODULES-10335\) - Update exec's title to be unique [\#341](https://github.com/puppetlabs/puppetlabs-sqlserver/pull/341) ([david22swan](https://github.com/david22swan))
 
 ## [v2.6.1](https://github.com/puppetlabs/puppetlabs-sqlserver/tree/v2.6.1) (2020-01-16)
 
