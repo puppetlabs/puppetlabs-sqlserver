@@ -17,6 +17,7 @@
 #
 # @param password
 #   Plain text password. Only applicable when Login_Type = 'SQL_LOGIN'.
+#   Can be passed through as a sensitive value.
 #
 # @param svrroles
 #   A hash of preinstalled server roles that you want assigned to this login.
@@ -55,7 +56,7 @@ define sqlserver::login (
   String[1,16] $instance = 'MSSQLSERVER',
   Enum['SQL_LOGIN', 'WINDOWS_LOGIN'] $login_type = 'SQL_LOGIN',
   Enum['present', 'absent'] $ensure = 'present',
-  Optional[String] $password = undef,
+  Optional[Variant[Sensitive[String], String]] $password = undef,
   Optional[Hash] $svrroles = { },
   String $default_database = 'master',
   String $default_language = 'us_english',
