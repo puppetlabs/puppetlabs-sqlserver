@@ -48,14 +48,14 @@ describe 'sqlserver::config test' do
       pp = <<-MANIFEST
       sqlserver::config{'#{inst_name}':
         instance_name => '#{inst_name}',
-        admin_user    => 'sa',
+        admin_user    => Sensitive('sa'),
         admin_pass    => 'Pupp3t1@',
       }
       sqlserver::login{'#{@admin_user}':
         instance    => '#{inst_name}',
         login_type  => 'SQL_LOGIN',
         login       => '#{@admin_user}',
-        password    => '#{@admin_pass}',
+        password    => Sensitive('#{@admin_pass}'),
         svrroles    => {'sysadmin' => 1},
       }
       MANIFEST
@@ -65,8 +65,8 @@ describe 'sqlserver::config test' do
     it 'Validate New Config WITH using instance_name in sqlserver::config' do
       pp = <<-MANIFEST
       sqlserver::config{'#{inst_name}':
-        admin_user    => '#{@admin_user}',
-        admin_pass    => '#{@admin_pass}',
+        admin_user    => Sensitive('#{@admin_user}'),
+        admin_pass    => Sensitive('#{@admin_pass}'),
         instance_name => '#{inst_name}',
       }
       sqlserver::database{'#{db_name}':
