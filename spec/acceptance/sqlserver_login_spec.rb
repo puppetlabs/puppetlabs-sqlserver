@@ -89,8 +89,8 @@ describe 'Test sqlserver::login' do
     # Create a database, a simple table and windows accounts fixtures
     pp = <<-MANIFEST
       sqlserver::config{'MSSQLSERVER':
-        admin_user    => 'sa',
-        admin_pass    => 'Pupp3t1@',
+        admin_user    => Sensitive('sa'),
+        admin_pass    => Sensitive('Pupp3t1@'),
       }
       sqlserver::database{'#{db_name}':
       }
@@ -102,7 +102,7 @@ describe 'Test sqlserver::login' do
       }
 
       user {'#{@windows_user}':
-        password => '#{@login_passwd}',
+        password => Sensitive('#{@login_passwd}'),
         ensure   => 'present',
       }
       group {'#{@windows_group}':

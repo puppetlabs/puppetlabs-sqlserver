@@ -6,8 +6,10 @@
 #   The instance name you want to manage.  Defaults to the $title when not defined explicitly.
 # @param admin_user
 #   Only required for SQL_LOGIN type. A user/login who has sysadmin rights on the server
+#   Can be passed as a sensitive value
 # @param admin_pass
 #   Only required for SQL_LOGIN type. The password in order to access the server to be managed.
+#   Can be passed as a sensitive value
 # @param admin_login_type
 #   The type of account use to configure the server.  Valid values are SQL_LOGIN and WINDOWS_LOGIN, with a default of SQL_LOGIN
 #   The SQL_LOGIN requires the admin_user and admin_pass to be set
@@ -20,8 +22,8 @@
 #   }
 #
 define sqlserver::config (
-  Optional[String] $admin_user = '',
-  Optional[String] $admin_pass = '',
+  Optional[Variant[Sensitive[String], String]] $admin_user = '',
+  Optional[Variant[Sensitive[String], String]] $admin_pass = '',
   Enum['SQL_LOGIN', 'WINDOWS_LOGIN'] $admin_login_type = 'SQL_LOGIN',
   String[1,16] $instance_name = $title,
 ) {

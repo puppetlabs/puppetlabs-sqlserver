@@ -24,8 +24,8 @@ describe 'Test sqlserver::database' do
       # delete created database:
       pp = <<-MANIFEST
         sqlserver::config{'MSSQLSERVER':
-          admin_user    => 'sa',
-          admin_pass    => 'Pupp3t1@',
+          admin_user    => Sensitive('sa'),
+          admin_pass    => Sensitive('Pupp3t1@'),
         }
         sqlserver::database{'#{@db_name}':
           ensure  => 'absent',
@@ -40,8 +40,8 @@ describe 'Test sqlserver::database' do
     it 'Test Case C89019: Create a database' do
       pp = <<-MANIFEST
         sqlserver::config{'MSSQLSERVER':
-          admin_user    => 'sa',
-          admin_pass    => 'Pupp3t1@',
+          admin_user    => Sensitive('sa'),
+          admin_pass    => Sensitive('Pupp3t1@'),
         }
         sqlserver::database{'#{@db_name}':
         }
