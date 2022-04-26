@@ -127,7 +127,7 @@ define sqlserver::database (
   Integer[1753, 9999] $two_digit_year_cutoff = 2049,
   Enum['ON', 'OFF'] $db_chaining = 'OFF',
   Enum['ON', 'OFF'] $trustworthy = 'OFF',
-){
+) {
 ##
 #  validate max size
 #  Specifies that the file grows until the disk is full. In SQL Server, a log file specified with unlimited growth has

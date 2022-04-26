@@ -31,9 +31,9 @@ define sqlserver::user::permissions (
   Array[String[4,128]] $permissions,
   String[1,128] $database = 'master',
   Pattern[/(?i)^(GRANT|REVOKE|DENY)$/] $state = 'GRANT',
-  Optional[Boolean] $with_grant_option = false,
+  Boolean $with_grant_option = false,
   String[1,16] $instance = 'MSSQLSERVER',
-){
+) {
   sqlserver_validate_instance_name($instance)
 
   $_state = upcase($state)
@@ -45,7 +45,7 @@ define sqlserver::user::permissions (
     true => '-WITH_GRANT_OPTION',
     default => ''
   }
-  sqlserver_tsql{
+  sqlserver_tsql {
     "user-permissions-${instance}-${database}-${user}-${_state}${_grant_option}":
       instance => $instance,
       command  => template('sqlserver/create/user/permission.sql.erb'),

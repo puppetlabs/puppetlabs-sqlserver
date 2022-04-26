@@ -35,17 +35,17 @@
 # @param members_purge
 #   Whether we should purge any members not listed in the members parameter. Default: false
 ##
-define sqlserver::role(
-  String[1,128] $role = $title,
-  String[1,16] $instance = 'MSSQLSERVER',
+define sqlserver::role (
+  String[1,128] $role               = $title,
+  String[1,16] $instance            = 'MSSQLSERVER',
   Enum['present', 'absent'] $ensure = 'present',
-  Optional[String] $authorization = undef,
-  Enum['SERVER', 'DATABASE'] $type = 'SERVER',
-  String[1,128] $database = 'master',
-  Optional[Hash] $permissions = { },
-  Array[String] $members = [],
-  Boolean $members_purge = false,
-){
+  Optional[String] $authorization   = undef,
+  Enum['SERVER', 'DATABASE'] $type  = 'SERVER',
+  String[1,128] $database           = 'master',
+  Hash $permissions                 = {},
+  Array[String] $members            = [],
+  Boolean $members_purge            = false,
+) {
   sqlserver_validate_instance_name($instance)
 
   if $type == 'SERVER' and $database != 'master' {
@@ -63,7 +63,7 @@ define sqlserver::role(
   # users. see MODULES-3355
   $sqlserver_tsql_title = "role-${instance}-${database}-${role}"
 
-  sqlserver_tsql{ $sqlserver_tsql_title:
+  sqlserver_tsql { $sqlserver_tsql_title:
     command  => template("sqlserver/${_create_delete}/role.sql.erb"),
     onlyif   => template('sqlserver/query/role_exists.sql.erb'),
     instance => $instance,
@@ -72,33 +72,33 @@ define sqlserver::role(
   if $ensure == present {
     $_upermissions = sqlserver_upcase($permissions)
 
-    Sqlserver::Role::Permissions{
+    Sqlserver::Role::Permissions {
       role     => $role,
       instance => $instance,
       database => $database,
       type     => $type,
-      require  => Sqlserver_tsql[$sqlserver_tsql_title]
+      require  => Sqlserver_tsql[$sqlserver_tsql_title],
     }
     if has_key($_upermissions, 'GRANT') and is_array($_upermissions['GRANT']) {
-      sqlserver::role::permissions{ "Sqlserver::Role[${title}]-GRANT-${role}":
+      sqlserver::role::permissions { "Sqlserver::Role[${title}]-GRANT-${role}":
         state       => 'GRANT',
         permissions => $_upermissions['GRANT'],
       }
     }
     if has_key($_upermissions, 'DENY') and is_array($_upermissions['DENY']) {
-      sqlserver::role::permissions{ "Sqlserver::Role[${title}]-DENY-${role}":
+      sqlserver::role::permissions { "Sqlserver::Role[${title}]-DENY-${role}":
         state       => 'DENY',
         permissions => $_upermissions['DENY'],
       }
     }
     if has_key($_upermissions, 'REVOKE') and is_array($_upermissions['REVOKE']) {
-      sqlserver::role::permissions{ "Sqlserver::Role[${title}]-REVOKE-${role}":
+      sqlserver::role::permissions { "Sqlserver::Role[${title}]-REVOKE-${role}":
         state       => 'REVOKE',
         permissions => $_upermissions['REVOKE'],
       }
     }
     if has_key($_upermissions, 'GRANT_WITH_OPTION') and is_array($_upermissions['GRANT_WITH_OPTION']) {
-      sqlserver::role::permissions{ "Sqlserver::Role[${title}]-GRANT-WITH_GRANT_OPTION-${role}":
+      sqlserver::role::permissions { "Sqlserver::Role[${title}]-GRANT-WITH_GRANT_OPTION-${role}":
         state             => 'GRANT',
         with_grant_option => true,
         permissions       => $_upermissions['GRANT_WITH_OPTION'],
@@ -106,7 +106,7 @@ define sqlserver::role(
     }
 
     if size($members) > 0 or $members_purge == true {
-      sqlserver_tsql{ "${sqlserver_tsql_title}-members":
+      sqlserver_tsql { "${sqlserver_tsql_title}-members":
         command  => template('sqlserver/create/role/members.sql.erb'),
         onlyif   => template('sqlserver/query/role/member_exists.sql.erb'),
         instance => $instance,

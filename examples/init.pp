@@ -12,7 +12,7 @@
 $sapwd = 'Pupp3t1@'
 $instance_name = 'MSSQLSERVER'
 
-sqlserver_instance{ $instance_name:
+sqlserver_instance { $instance_name:
   source                => 'E:/',
   security_mode         => 'SQL',
   sa_pwd                => $sapwd,
@@ -20,13 +20,13 @@ sqlserver_instance{ $instance_name:
   sql_sysadmin_accounts => ['vagrant'],
 }
 
-sqlserver::config{ 'MSSQLSERVER':
+sqlserver::config { 'MSSQLSERVER':
   admin_user => 'sa',
   admin_pass => 'Pupp3t1@',
   require    => Mssql_instance[$instance_name],
 }
 
-sqlserver::login{ 'padmin':
+sqlserver::login { 'padmin':
   password => 'PadminP@ssw0rd1',
   instance => $instance_name,
 }

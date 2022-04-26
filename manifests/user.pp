@@ -45,15 +45,14 @@ define sqlserver::user (
   String[1,16] $instance = 'MSSQLSERVER',
   Optional[String[1]] $login = undef,
   Optional[String[1,128]] $password = undef,
-  Optional[Hash] $permissions = { },
-)
-{
+  Hash $permissions = {},
+) {
   sqlserver_validate_instance_name($instance)
 
   $is_windows_user = sqlserver_is_domain_or_local_user($login)
 
   if $password {
-    if $is_windows_user and $login != undef{
+    if $is_windows_user and $login != undef {
       fail('Can not provide password when using a Windows Login')
     }
   }
@@ -63,43 +62,43 @@ define sqlserver::user (
     absent  => 'delete',
   }
 
-  sqlserver_tsql{ "user-${instance}-${database}-${user}":
+  sqlserver_tsql { "user-${instance}-${database}-${user}":
     instance => $instance,
     command  => template("sqlserver/${create_delete}/user.sql.erb"),
     onlyif   => template('sqlserver/query/user_exists.sql.erb'),
-    require  => Sqlserver::Config[$instance]
+    require  => Sqlserver::Config[$instance],
   }
 
   if $ensure == present {
     $_upermissions = sqlserver_upcase($permissions)
     sqlserver_validate_hash_uniq_values($_upermissions, "Duplicate permissions found for sqlserver::user[${title}]")
 
-    Sqlserver::User::Permissions{
+    Sqlserver::User::Permissions {
       user      => $user,
       database  => $database,
       instance  => $instance,
-      require   => Sqlserver_tsql["user-${instance}-${database}-${user}"]
+      require   => Sqlserver_tsql["user-${instance}-${database}-${user}"],
     }
     if has_key($_upermissions, 'GRANT') and is_array($_upermissions['GRANT']) {
-      sqlserver::user::permissions{ "Sqlserver::User[${title}]-GRANT-${user}":
+      sqlserver::user::permissions { "Sqlserver::User[${title}]-GRANT-${user}":
         state       => 'GRANT',
         permissions => $_upermissions['GRANT'],
       }
     }
     if has_key($_upermissions, 'DENY') and is_array($_upermissions['DENY']) {
-      sqlserver::user::permissions{ "Sqlserver::User[${title}]-DENY-${user}":
+      sqlserver::user::permissions { "Sqlserver::User[${title}]-DENY-${user}":
         state       => 'DENY',
         permissions => $_upermissions['DENY'],
       }
     }
     if has_key($_upermissions, 'REVOKE') and is_array($_upermissions['REVOKE']) {
-      sqlserver::user::permissions{ "Sqlserver::User[${title}]-REVOKE-${user}":
+      sqlserver::user::permissions { "Sqlserver::User[${title}]-REVOKE-${user}":
         state       => 'REVOKE',
         permissions => $_upermissions['REVOKE'],
       }
     }
     if has_key($_upermissions, 'GRANT_WITH_OPTION') and is_array($_upermissions['GRANT_WITH_OPTION']) {
-      sqlserver::user::permissions{ "Sqlserver::User[${title}]-GRANT-WITH_GRANT_OPTION-${user}":
+      sqlserver::user::permissions { "Sqlserver::User[${title}]-GRANT-WITH_GRANT_OPTION-${user}":
         state             => 'GRANT',
         with_grant_option => true,
         permissions       => $_upermissions['GRANT_WITH_OPTION'],

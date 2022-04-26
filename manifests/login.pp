@@ -57,15 +57,14 @@ define sqlserver::login (
   Enum['SQL_LOGIN', 'WINDOWS_LOGIN'] $login_type = 'SQL_LOGIN',
   Enum['present', 'absent'] $ensure = 'present',
   Optional[Variant[Sensitive[String], String]] $password = undef,
-  Optional[Hash] $svrroles = { },
+  Hash $svrroles = {},
   String $default_database = 'master',
   String $default_language = 'us_english',
   Boolean $check_expiration = false,
   Boolean $check_policy = true,
   Boolean $disabled = false,
-  Optional[Hash] $permissions = { },
+  Hash $permissions = {},
 ) {
-
   sqlserver_validate_instance_name($instance)
 
   if $check_expiration and !$check_policy {
@@ -77,42 +76,42 @@ define sqlserver::login (
     absent  => 'delete',
   }
 
-  sqlserver_tsql{ "login-${instance}-${login}":
+  sqlserver_tsql { "login-${instance}-${login}":
     instance => $instance,
     command  => template("sqlserver/${_create_delete}/login.sql.erb"),
     onlyif   => template('sqlserver/query/login_exists.sql.erb'),
-    require  => Sqlserver::Config[$instance]
+    require  => Sqlserver::Config[$instance],
   }
 
   if $ensure == present {
     $_upermissions = sqlserver_upcase($permissions)
     sqlserver_validate_hash_uniq_values($_upermissions, "Duplicate permissions found for sqlserver::login[${title}]")
 
-    Sqlserver::Login::Permissions{
+    Sqlserver::Login::Permissions {
       login     => $login,
       instance  => $instance,
-      require   => Sqlserver_tsql["login-${instance}-${login}"]
+      require   => Sqlserver_tsql["login-${instance}-${login}"],
     }
     if has_key($_upermissions, 'GRANT') and is_array($_upermissions['GRANT']) {
-      sqlserver::login::permissions{ "Sqlserver::Login[${title}]-GRANT-${login}":
+      sqlserver::login::permissions { "Sqlserver::Login[${title}]-GRANT-${login}":
         state       => 'GRANT',
         permissions => $_upermissions['GRANT'],
       }
     }
     if has_key($_upermissions, 'DENY') and is_array($_upermissions['DENY']) {
-      sqlserver::login::permissions{ "Sqlserver::Login[${title}]-DENY-${login}":
+      sqlserver::login::permissions { "Sqlserver::Login[${title}]-DENY-${login}":
         state       => 'DENY',
         permissions => $_upermissions['DENY'],
       }
     }
     if has_key($_upermissions, 'REVOKE') and is_array($_upermissions['REVOKE']) {
-      sqlserver::login::permissions{ "Sqlserver::Login[${title}]-REVOKE-${login}":
+      sqlserver::login::permissions { "Sqlserver::Login[${title}]-REVOKE-${login}":
         state       => 'REVOKE',
         permissions => $_upermissions['REVOKE'],
       }
     }
     if has_key($_upermissions, 'GRANT_WITH_OPTION') and is_array($_upermissions['GRANT_WITH_OPTION']) {
-      sqlserver::login::permissions{ "Sqlserver::Login[${title}]-GRANT-WITH_GRANT_OPTION-${login}":
+      sqlserver::login::permissions { "Sqlserver::Login[${title}]-GRANT-WITH_GRANT_OPTION-${login}":
         state             => 'GRANT',
         with_grant_option => true,
         permissions       => $_upermissions['GRANT_WITH_OPTION'],
