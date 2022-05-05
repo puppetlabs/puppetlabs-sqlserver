@@ -103,12 +103,10 @@ module PuppetX
 
       def self.get_sql_reg_key_features(key_name, reg_key_feat_hash, instance_name)
         installed = reg_key_feat_hash.select do |subkey, _feat_name|
-          begin
-            open(HKLM, "#{key_name}\\#{subkey}", KEY_READ | KEY64) do |feat_key|
-              get_reg_key_val(feat_key, instance_name, Win32::Registry::REG_SZ)
-            end
-          rescue Puppet::Util::Windows::Error
+          open(HKLM, "#{key_name}\\#{subkey}", KEY_READ | KEY64) do |feat_key|
+            get_reg_key_val(feat_key, instance_name, Win32::Registry::REG_SZ)
           end
+        rescue Puppet::Util::Windows::Error
         end
 
         installed.values

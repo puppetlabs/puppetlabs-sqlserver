@@ -1,8 +1,8 @@
-sqlserver::config{ 'MSSQLSERVER':
+sqlserver::config { 'MSSQLSERVER':
   admin_user => 'sa',
   admin_pass => 'Pupp3t1@',
 }
-sqlserver::database{ 'testdb_full':
+sqlserver::database { 'testdb_full':
   instance                         => 'MSSQLSERVER',
   containment                      => 'PARTIAL',
   compatibility                    => 110,

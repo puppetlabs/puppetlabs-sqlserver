@@ -32,7 +32,7 @@ define sqlserver::sp_configure (
   Boolean $reconfigure = true,
   Boolean $with_override = false,
   Boolean $restart = false,
-){
+) {
   sqlserver_validate_instance_name($instance)
 
   $service_name = $instance ? {
@@ -44,14 +44,14 @@ define sqlserver::sp_configure (
     Sqlserver_tsql["sp_configure-${instance}-${config_name}"] ~> Exec["restart-service-${service_name}-${config_name}"]
   }
 
-  sqlserver_tsql{ "sp_configure-${instance}-${config_name}":
+  sqlserver_tsql { "sp_configure-${instance}-${config_name}":
     instance => $instance,
     command  => template('sqlserver/create/sp_configure.sql.erb'),
     onlyif   => template('sqlserver/query/sp_configure.sql.erb'),
-    require  => Sqlserver::Config[$instance]
+    require  => Sqlserver::Config[$instance],
   }
 
-  exec{"restart-service-${service_name}-${config_name}":
+  exec { "restart-service-${service_name}-${config_name}":
     command     => template('sqlserver/restart_service.ps1.erb'),
     provider    => powershell,
     logoutput   => true,

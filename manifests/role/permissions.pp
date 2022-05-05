@@ -34,14 +34,14 @@ define sqlserver::role::permissions (
   String[1,128] $role,
   Array[String[4,128]] $permissions,
   Pattern[/(?i)^(GRANT|REVOKE|DENY)$/] $state = 'GRANT',
-  Optional[Boolean] $with_grant_option = false,
-  Enum['SERVER','DATABASE'] $type = 'SERVER',
-  String[1,128] $database = 'master',
-  String[1,16] $instance = 'MSSQLSERVER',
-){
+  Boolean $with_grant_option                  = false,
+  Enum['SERVER','DATABASE'] $type             = 'SERVER',
+  String[1,128] $database                     = 'master',
+  String[1,16] $instance                      = 'MSSQLSERVER',
+) {
   if size($permissions) < 1 {
     warning("Received an empty set of permissions for ${title}, no further action will be taken")
-  } else{
+  } else {
     sqlserver_validate_instance_name($instance)
     $_state = upcase($state)
 
@@ -52,11 +52,10 @@ define sqlserver::role::permissions (
     ##
     # Parameters required in template are _state, role, _upermissions, database, type, with_grant_option
     ##
-    sqlserver_tsql{ "role-permissions-${role}-${_state}${_grant_option}-${instance}-${database}":
+    sqlserver_tsql { "role-permissions-${role}-${_state}${_grant_option}-${instance}-${database}":
       instance => $instance,
       command  => template('sqlserver/create/role/permissions.sql.erb'),
       onlyif   => template('sqlserver/query/role/permission_exists.sql.erb'),
     }
   }
-
 }
