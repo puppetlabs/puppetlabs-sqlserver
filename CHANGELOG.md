@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
+## [v3.1.0](https://github.com/puppetlabs/puppetlabs-sqlserver/tree/v3.1.0) - 2022-05-30
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-sqlserver/compare/v3.0.0...v3.1.0)
+
+### Added
+
+- pdksync - (FM-8922) - Add Support for Windows 2022 [#397](https://github.com/puppetlabs/puppetlabs-sqlserver/pull/397) ([david22swan](https://github.com/david22swan))
+
+- (MODULES-5472) Login values can now be passed as sensitive strings [#393](https://github.com/puppetlabs/puppetlabs-sqlserver/pull/393) ([david22swan](https://github.com/david22swan))
+
+### Fixed
+
+- (MODULES-10825) - Dotnet installation fix [#392](https://github.com/puppetlabs/puppetlabs-sqlserver/pull/392) ([david22swan](https://github.com/david22swan))
+
 ## [v3.0.0](https://github.com/puppetlabs/puppetlabs-sqlserver/tree/v3.0.0) (2021-02-27)
 
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-sqlserver/compare/v2.6.2...v3.0.0)
