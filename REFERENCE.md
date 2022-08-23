@@ -74,17 +74,19 @@ Default value: `$title`
 
 ##### <a name="admin_user"></a>`admin_user`
 
-Data type: `Optional[String]`
+Data type: `Variant[Sensitive[String], String]`
 
 Only required for SQL_LOGIN type. A user/login who has sysadmin rights on the server
+Can be passed as a sensitive value
 
 Default value: `''`
 
 ##### <a name="admin_pass"></a>`admin_pass`
 
-Data type: `Optional[String]`
+Data type: `Variant[Sensitive[String], String]`
 
 Only required for SQL_LOGIN type. The password in order to access the server to be managed.
+Can be passed as a sensitive value
 
 Default value: `''`
 
@@ -423,20 +425,21 @@ Default value: `'present'`
 
 ##### <a name="password"></a>`password`
 
-Data type: `Optional[String]`
+Data type: `Optional[Variant[Sensitive[String], String]]`
 
 Plain text password. Only applicable when Login_Type = 'SQL_LOGIN'.
+Can be passed through as a sensitive value.
 
 Default value: ``undef``
 
 ##### <a name="svrroles"></a>`svrroles`
 
-Data type: `Optional[Hash]`
+Data type: `Hash`
 
 A hash of preinstalled server roles that you want assigned to this login.
 sample usage would be  { 'diskadmin' => 1, 'dbcreator' => 1, 'sysadmin' => 0,  }
 
-Default value: `{ }`
+Default value: `{}`
 
 ##### <a name="login_type"></a>`login_type`
 
@@ -488,13 +491,13 @@ Default value: ``false``
 
 ##### <a name="permissions"></a>`permissions`
 
-Data type: `Optional[Hash]`
+Data type: `Hash`
 
 A hash of permissions that should be managed for the login.
 Valid keys are 'GRANT', 'GRANT_WITH_OPTION', 'DENY' or 'REVOKE'.
 Valid values must be an array of Strings i.e. {'GRANT' => ['CONNECT SQL', 'CREATE ANY DATABASE'] }
 
-Default value: `{ }`
+Default value: `{}`
 
 ### <a name="sqlserverloginpermissions"></a>`sqlserver::login::permissions`
 
@@ -543,7 +546,7 @@ Default value: `'MSSQLSERVER'`
 
 ##### <a name="with_grant_option"></a>`with_grant_option`
 
-Data type: `Optional[Boolean]`
+Data type: `Boolean`
 
 Bolean value that allows user to grant options.
 
@@ -618,13 +621,13 @@ Default value: `'master'`
 
 ##### <a name="permissions"></a>`permissions`
 
-Data type: `Optional[Hash]`
+Data type: `Hash`
 
 A hash of permissions that should be managed for the role.
 Valid keys are 'GRANT', 'GRANT_WITH_OPTION', 'DENY' or 'REVOKE'.
 Valid values must be an array of Strings i.e. {'GRANT' => ['CONNECT', 'CREATE ANY DATABASE'] }
 
-Default value: `{ }`
+Default value: `{}`
 
 ##### <a name="members"></a>`members`
 
@@ -683,7 +686,7 @@ Default value: `'GRANT'`
 
 ##### <a name="with_grant_option"></a>`with_grant_option`
 
-Data type: `Optional[Boolean]`
+Data type: `Boolean`
 
 Whether to give the role the option to grant this permission to other principal objects, accepts true or false, defaults to false
 
@@ -863,13 +866,13 @@ Default value: ``undef``
 
 ##### <a name="permissions"></a>`permissions`
 
-Data type: `Optional[Hash]`
+Data type: `Hash`
 
 A hash of permissions that should be managed for the user.
 Valid keys are 'GRANT', 'GRANT_WITH_OPTION', 'DENY' or 'REVOKE'.
 Valid values must be an array of Strings i.e. {'GRANT' => ['SELECT', 'INSERT'] }
 
-Default value: `{ }`
+Default value: `{}`
 
 ### <a name="sqlserveruserpermissions"></a>`sqlserver::user::permissions`
 
@@ -919,7 +922,7 @@ Default value: `'GRANT'`
 
 ##### <a name="with_grant_option"></a>`with_grant_option`
 
-Data type: `Optional[Boolean]`
+Data type: `Boolean`
 
 Whether to give the user the option to grant this permission to other users, accepts true or false, defaults to false
 
