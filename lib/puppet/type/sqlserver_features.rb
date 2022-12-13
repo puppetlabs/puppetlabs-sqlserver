@@ -35,8 +35,10 @@ Puppet::Type.newtype(:sqlserver_features) do
   end
 
   newproperty(:features, array_matching: :all) do
-    desc 'Specifies features to install, uninstall, or upgrade. The list of top-level features include
-         BC, Conn, SSMS, ADV_SSMS, SDK, IS and MDS.'
+    desc "Specifies features to install, uninstall, or upgrade. The list of top-level features include
+          BC, Conn, SSMS, ADV_SSMS, SDK, IS and MDS.
+
+          The 'Tools' feature is deprecated.  Instead specify 'BC', 'SSMS', 'ADV_SSMS', 'Conn', and 'SDK' explicitly."
     newvalues(:Tools, :BC, :Conn, :SSMS, :ADV_SSMS, :SDK, :IS, :MDS, :BOL, :DREPLAY_CTLR, :DREPLAY_CLT, :DQC)
     munge do |value|
       if PuppetX::Sqlserver::ServerHelper.is_super_feature(value)

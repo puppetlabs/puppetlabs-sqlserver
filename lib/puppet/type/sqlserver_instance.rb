@@ -25,8 +25,10 @@ Puppet::Type.newtype(:sqlserver_instance) do
   end
 
   newproperty(:features, array_matching: :all) do
-    desc 'Specifies features to install, uninstall, or upgrade. The list of top-level features include
-          SQLEngine, Replication, FullText, DQ AS, and RS.'
+    desc "Specifies features to install, uninstall, or upgrade. The list of top-level features include
+          SQLEngine, Replication, FullText, DQ AS, and RS.
+
+          The 'SQL' feature is deprecated.  Instead specify 'DQ', 'FullText', 'Replication', and 'SQLEngine' explicitly."
     newvalues(:SQL, :SQLEngine, :Replication, :FullText, :DQ, :AS, :RS, :POLYBASE, :ADVANCEDANALYTICS)
     munge do |value|
       if PuppetX::Sqlserver::ServerHelper.is_super_feature(value)
