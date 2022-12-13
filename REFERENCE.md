@@ -6,15 +6,15 @@
 
 ### Defined types
 
-* [`sqlserver::config`](#sqlserverconfig): Define Resource Type: sqlserver::config
-* [`sqlserver::database`](#sqlserverdatabase): Define Resource Type: sqlserver::database
-* [`sqlserver::login`](#sqlserverlogin): Define Resource Type: sqlserver::login
-* [`sqlserver::login::permissions`](#sqlserverloginpermissions): Define Resource Type: sqlserver::login::permissions#
-* [`sqlserver::role`](#sqlserverrole): Define Resource Type: sqlserver::role::permissions
-* [`sqlserver::role::permissions`](#sqlserverrolepermissions): Define Resource Type: sqlserver::role::permissions
-* [`sqlserver::sp_configure`](#sqlserversp_configure): Defined Resource Type: sqlserver::sp_configure
-* [`sqlserver::user`](#sqlserveruser): Define Resource Type: sqlserver::user
-* [`sqlserver::user::permissions`](#sqlserveruserpermissions): Define Resource Type: sqlserver::user::permissions
+* [`sqlserver::config`](#sqlserver--config): Define Resource Type: sqlserver::config
+* [`sqlserver::database`](#sqlserver--database): Define Resource Type: sqlserver::database
+* [`sqlserver::login`](#sqlserver--login): Define Resource Type: sqlserver::login
+* [`sqlserver::login::permissions`](#sqlserver--login--permissions): Define Resource Type: sqlserver::login::permissions#
+* [`sqlserver::role`](#sqlserver--role): Define Resource Type: sqlserver::role::permissions
+* [`sqlserver::role::permissions`](#sqlserver--role--permissions): Define Resource Type: sqlserver::role::permissions
+* [`sqlserver::sp_configure`](#sqlserver--sp_configure): Defined Resource Type: sqlserver::sp_configure
+* [`sqlserver::user`](#sqlserver--user): Define Resource Type: sqlserver::user
+* [`sqlserver::user::permissions`](#sqlserver--user--permissions): Define Resource Type: sqlserver::user::permissions
 
 ### Resource types
 
@@ -40,7 +40,7 @@
 
 ## Defined types
 
-### <a name="sqlserverconfig"></a>`sqlserver::config`
+### <a name="sqlserver--config"></a>`sqlserver::config`
 
 Define Resource Type: sqlserver::config
 
@@ -59,12 +59,12 @@ sqlserver::config{'MSSQLSERVER':
 
 The following parameters are available in the `sqlserver::config` defined type:
 
-* [`instance_name`](#instance_name)
-* [`admin_user`](#admin_user)
-* [`admin_pass`](#admin_pass)
-* [`admin_login_type`](#admin_login_type)
+* [`instance_name`](#-sqlserver--config--instance_name)
+* [`admin_user`](#-sqlserver--config--admin_user)
+* [`admin_pass`](#-sqlserver--config--admin_pass)
+* [`admin_login_type`](#-sqlserver--config--admin_login_type)
 
-##### <a name="instance_name"></a>`instance_name`
+##### <a name="-sqlserver--config--instance_name"></a>`instance_name`
 
 Data type: `String[1,16]`
 
@@ -72,7 +72,7 @@ The instance name you want to manage.  Defaults to the $title when not defined e
 
 Default value: `$title`
 
-##### <a name="admin_user"></a>`admin_user`
+##### <a name="-sqlserver--config--admin_user"></a>`admin_user`
 
 Data type: `Variant[Sensitive[String], String]`
 
@@ -81,7 +81,7 @@ Can be passed as a sensitive value
 
 Default value: `''`
 
-##### <a name="admin_pass"></a>`admin_pass`
+##### <a name="-sqlserver--config--admin_pass"></a>`admin_pass`
 
 Data type: `Variant[Sensitive[String], String]`
 
@@ -90,7 +90,7 @@ Can be passed as a sensitive value
 
 Default value: `''`
 
-##### <a name="admin_login_type"></a>`admin_login_type`
+##### <a name="-sqlserver--config--admin_login_type"></a>`admin_login_type`
 
 Data type: `Enum['SQL_LOGIN', 'WINDOWS_LOGIN']`
 
@@ -100,7 +100,7 @@ The WINDOWS_LOGIN requires the adm_user and admin_pass to be empty or undefined
 
 Default value: `'SQL_LOGIN'`
 
-### <a name="sqlserverdatabase"></a>`sqlserver::database`
+### <a name="sqlserver--database"></a>`sqlserver::database`
 
 Requirement/Dependencies:
 Requires defined type {sqlserver::config} in order to execute against the SQL Server instance
@@ -119,33 +119,33 @@ Requires defined type {sqlserver::config} in order to execute against the SQL Se
 
 The following parameters are available in the `sqlserver::database` defined type:
 
-* [`db_name`](#db_name)
-* [`instance`](#instance)
-* [`ensure`](#ensure)
-* [`compatibility`](#compatibility)
-* [`collation_name`](#collation_name)
-* [`filestream_non_transacted_access`](#filestream_non_transacted_access)
-* [`filestream_directory_name`](#filestream_directory_name)
-* [`filespec_name`](#filespec_name)
-* [`filespec_filename`](#filespec_filename)
-* [`filespec_size`](#filespec_size)
-* [`filespec_maxsize`](#filespec_maxsize)
-* [`filespec_filegrowth`](#filespec_filegrowth)
-* [`log_name`](#log_name)
-* [`log_filename`](#log_filename)
-* [`log_size`](#log_size)
-* [`log_maxsize`](#log_maxsize)
-* [`log_filegrowth`](#log_filegrowth)
-* [`containment`](#containment)
-* [`default_fulltext_language`](#default_fulltext_language)
-* [`default_language`](#default_language)
-* [`nested_triggers`](#nested_triggers)
-* [`transform_noise_words`](#transform_noise_words)
-* [`two_digit_year_cutoff`](#two_digit_year_cutoff)
-* [`db_chaining`](#db_chaining)
-* [`trustworthy`](#trustworthy)
+* [`db_name`](#-sqlserver--database--db_name)
+* [`instance`](#-sqlserver--database--instance)
+* [`ensure`](#-sqlserver--database--ensure)
+* [`compatibility`](#-sqlserver--database--compatibility)
+* [`collation_name`](#-sqlserver--database--collation_name)
+* [`filestream_non_transacted_access`](#-sqlserver--database--filestream_non_transacted_access)
+* [`filestream_directory_name`](#-sqlserver--database--filestream_directory_name)
+* [`filespec_name`](#-sqlserver--database--filespec_name)
+* [`filespec_filename`](#-sqlserver--database--filespec_filename)
+* [`filespec_size`](#-sqlserver--database--filespec_size)
+* [`filespec_maxsize`](#-sqlserver--database--filespec_maxsize)
+* [`filespec_filegrowth`](#-sqlserver--database--filespec_filegrowth)
+* [`log_name`](#-sqlserver--database--log_name)
+* [`log_filename`](#-sqlserver--database--log_filename)
+* [`log_size`](#-sqlserver--database--log_size)
+* [`log_maxsize`](#-sqlserver--database--log_maxsize)
+* [`log_filegrowth`](#-sqlserver--database--log_filegrowth)
+* [`containment`](#-sqlserver--database--containment)
+* [`default_fulltext_language`](#-sqlserver--database--default_fulltext_language)
+* [`default_language`](#-sqlserver--database--default_language)
+* [`nested_triggers`](#-sqlserver--database--nested_triggers)
+* [`transform_noise_words`](#-sqlserver--database--transform_noise_words)
+* [`two_digit_year_cutoff`](#-sqlserver--database--two_digit_year_cutoff)
+* [`db_chaining`](#-sqlserver--database--db_chaining)
+* [`trustworthy`](#-sqlserver--database--trustworthy)
 
-##### <a name="db_name"></a>`db_name`
+##### <a name="-sqlserver--database--db_name"></a>`db_name`
 
 Data type: `String[1,128]`
 
@@ -153,7 +153,7 @@ The database you would like to manage
 
 Default value: `$title`
 
-##### <a name="instance"></a>`instance`
+##### <a name="-sqlserver--database--instance"></a>`instance`
 
 Data type: `String[1,16]`
 
@@ -161,7 +161,7 @@ The name of the instance which to connect to, instance names can not be longer t
 
 Default value: `'MSSQLSERVER'`
 
-##### <a name="ensure"></a>`ensure`
+##### <a name="-sqlserver--database--ensure"></a>`ensure`
 
 Data type: `Enum['present', 'absent']`
 
@@ -169,7 +169,7 @@ Defaults to 'present', valid values are 'present' | 'absent'
 
 Default value: `'present'`
 
-##### <a name="compatibility"></a>`compatibility`
+##### <a name="-sqlserver--database--compatibility"></a>`compatibility`
 
 Data type: `Integer`
 
@@ -177,24 +177,24 @@ Numberic representation of what SQL Server version you want the database to be c
 
 Default value: `100`
 
-##### <a name="collation_name"></a>`collation_name`
+##### <a name="-sqlserver--database--collation_name"></a>`collation_name`
 
 Data type: `Optional[String[1]]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="filestream_non_transacted_access"></a>`filestream_non_transacted_access`
+##### <a name="-sqlserver--database--filestream_non_transacted_access"></a>`filestream_non_transacted_access`
 
 Data type: `Optional[Enum['OFF', 'READ_ONLY', 'FULL']]`
 
 Value should be { OFF | READ_ONLY | FULL }
 Specifies the level of non-transactional FILESTREAM access to the database.
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="filestream_directory_name"></a>`filestream_directory_name`
+##### <a name="-sqlserver--database--filestream_directory_name"></a>`filestream_directory_name`
 
 Data type: `Optional[Pattern[/^[\w|\s]+$/]]`
 
@@ -203,9 +203,9 @@ This name should be unique among all the Database_Directory names in the SQL Ser
 Uniqueness comparison is case-insensitive, regardless of SQL Server collation settings.
 This option should be set before creating a FileTable in this database.
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="filespec_name"></a>`filespec_name`
+##### <a name="-sqlserver--database--filespec_name"></a>`filespec_name`
 
 Data type: `Optional[String[1,128]]`
 
@@ -213,17 +213,17 @@ Specifies the logical name for the file.
 NAME is required when FILENAME is specified, except when specifying one of the FOR ATTACH clauses.
 A FILESTREAM filegroup cannot be named PRIMARY.
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="filespec_filename"></a>`filespec_filename`
+##### <a name="-sqlserver--database--filespec_filename"></a>`filespec_filename`
 
 Data type: `Optional[Stdlib::Absolutepath]`
 
 Specifies the operating system (physical) file name.
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="filespec_size"></a>`filespec_size`
+##### <a name="-sqlserver--database--filespec_size"></a>`filespec_size`
 
 Data type: `Optional[String[1]]`
 
@@ -231,17 +231,17 @@ Specifies the size of the file. The kilobyte (KB), megabyte (MB), gigabyte (GB),
 The default is MB.
 Values can not be greater than 2147483647
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="filespec_maxsize"></a>`filespec_maxsize`
+##### <a name="-sqlserver--database--filespec_maxsize"></a>`filespec_maxsize`
 
 Data type: `Optional[String[1]]`
 
 Specifies the maximum size to which the file can grow. MAXSIZE cannot be specified when the os_file_name is specified as a UNC path
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="filespec_filegrowth"></a>`filespec_filegrowth`
+##### <a name="-sqlserver--database--filespec_filegrowth"></a>`filespec_filegrowth`
 
 Data type: `Optional[String[1]]`
 
@@ -250,9 +250,9 @@ The FILEGROWTH setting for a file cannot exceed the MAXSIZE setting.
 FILEGROWTH cannot be specified when the os_file_name is specified as a UNC path.
 FILEGROWTH does not apply to a FILESTREAM filegroup.
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="log_name"></a>`log_name`
+##### <a name="-sqlserver--database--log_name"></a>`log_name`
 
 Data type: `Optional[String[1,128]]`
 
@@ -260,17 +260,17 @@ Specifies the logical name for the file.
 NAME is required when FILENAME is specified, except when specifying one of the FOR ATTACH clauses.
 A FILESTREAM filegroup cannot be named PRIMARY.
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="log_filename"></a>`log_filename`
+##### <a name="-sqlserver--database--log_filename"></a>`log_filename`
 
 Data type: `Optional[Stdlib::Absolutepath]`
 
 Specifies the operating system (physical) file name.
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="log_size"></a>`log_size`
+##### <a name="-sqlserver--database--log_size"></a>`log_size`
 
 Data type: `Optional[String[1]]`
 
@@ -278,17 +278,17 @@ Specifies the size of the file.
 The kilobyte (KB), megabyte (MB), gigabyte (GB), or terabyte (TB) suffixes can be used.
 The default is MB.  Values can not be greater than 2147483647
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="log_maxsize"></a>`log_maxsize`
+##### <a name="-sqlserver--database--log_maxsize"></a>`log_maxsize`
 
 Data type: `Optional[String[1]]`
 
 Specifies the maximum size to which the file can grow. MAXSIZE cannot be specified when the os_file_name is specified as a UNC path
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="log_filegrowth"></a>`log_filegrowth`
+##### <a name="-sqlserver--database--log_filegrowth"></a>`log_filegrowth`
 
 Data type: `Optional[String[1]]`
 
@@ -297,9 +297,9 @@ The FILEGROWTH setting for a file cannot exceed the MAXSIZE setting.
 FILEGROWTH cannot be specified when the os_file_name is specified as a UNC path.
 FILEGROWTH does not apply to a FILESTREAM filegroup.
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="containment"></a>`containment`
+##### <a name="-sqlserver--database--containment"></a>`containment`
 
 Data type: `Enum['PARTIAL', 'NONE']`
 
@@ -308,7 +308,7 @@ Other possible values are 'PARTIAL', see http://msdn.microsoft.com/en-us/library
 
 Default value: `'NONE'`
 
-##### <a name="default_fulltext_language"></a>`default_fulltext_language`
+##### <a name="-sqlserver--database--default_fulltext_language"></a>`default_fulltext_language`
 
 Data type: `String[1]`
 
@@ -316,7 +316,7 @@ Language name i.e. us_english which are documented at http://msdn.microsoft.com/
 
 Default value: `'English'`
 
-##### <a name="default_language"></a>`default_language`
+##### <a name="-sqlserver--database--default_language"></a>`default_language`
 
 Data type: `String[1]`
 
@@ -324,23 +324,23 @@ Language name i.e. us_english which are documented at http://msdn.microsoft.com/
 
 Default value: `'us_english'`
 
-##### <a name="nested_triggers"></a>`nested_triggers`
+##### <a name="-sqlserver--database--nested_triggers"></a>`nested_triggers`
 
 Data type: `Optional[Enum['ON', 'OFF']]`
 
 On | Off  see http://msdn.microsoft.com/en-us/library/ms178101.aspx
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="transform_noise_words"></a>`transform_noise_words`
+##### <a name="-sqlserver--database--transform_noise_words"></a>`transform_noise_words`
 
 Data type: `Optional[Enum['ON', 'OFF']]`
 
 ON | OFF
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="two_digit_year_cutoff"></a>`two_digit_year_cutoff`
+##### <a name="-sqlserver--database--two_digit_year_cutoff"></a>`two_digit_year_cutoff`
 
 Data type: `Integer[1753, 9999]`
 
@@ -348,7 +348,7 @@ Defaults to 2049 | <any year between 1753 and 9999>
 
 Default value: `2049`
 
-##### <a name="db_chaining"></a>`db_chaining`
+##### <a name="-sqlserver--database--db_chaining"></a>`db_chaining`
 
 Data type: `Enum['ON', 'OFF']`
 
@@ -358,7 +358,7 @@ When OFF, the database cannot participate in cross-database ownership chaining. 
 
 Default value: `'OFF'`
 
-##### <a name="trustworthy"></a>`trustworthy`
+##### <a name="-sqlserver--database--trustworthy"></a>`trustworthy`
 
 Data type: `Enum['ON', 'OFF']`
 
@@ -368,7 +368,7 @@ When OFF, database modules in an impersonation context cannot access resources o
 
 Default value: `'OFF'`
 
-### <a name="sqlserverlogin"></a>`sqlserver::login`
+### <a name="sqlserver--login"></a>`sqlserver::login`
 
 Requirement/Dependencies:
 Requires defined type {sqlserver::config} in order to execute against the SQL Server instance
@@ -386,20 +386,20 @@ Requires defined type {sqlserver::config} in order to execute against the SQL Se
 
 The following parameters are available in the `sqlserver::login` defined type:
 
-* [`login`](#login)
-* [`instance`](#instance)
-* [`ensure`](#ensure)
-* [`password`](#password)
-* [`svrroles`](#svrroles)
-* [`login_type`](#login_type)
-* [`default_database`](#default_database)
-* [`default_language`](#default_language)
-* [`check_expiration`](#check_expiration)
-* [`check_policy`](#check_policy)
-* [`disabled`](#disabled)
-* [`permissions`](#permissions)
+* [`login`](#-sqlserver--login--login)
+* [`instance`](#-sqlserver--login--instance)
+* [`ensure`](#-sqlserver--login--ensure)
+* [`password`](#-sqlserver--login--password)
+* [`svrroles`](#-sqlserver--login--svrroles)
+* [`login_type`](#-sqlserver--login--login_type)
+* [`default_database`](#-sqlserver--login--default_database)
+* [`default_language`](#-sqlserver--login--default_language)
+* [`check_expiration`](#-sqlserver--login--check_expiration)
+* [`check_policy`](#-sqlserver--login--check_policy)
+* [`disabled`](#-sqlserver--login--disabled)
+* [`permissions`](#-sqlserver--login--permissions)
 
-##### <a name="login"></a>`login`
+##### <a name="-sqlserver--login--login"></a>`login`
 
 Data type: `Any`
 
@@ -407,7 +407,7 @@ The SQL or Windows login you would like to manage
 
 Default value: `$title`
 
-##### <a name="instance"></a>`instance`
+##### <a name="-sqlserver--login--instance"></a>`instance`
 
 Data type: `String[1,16]`
 
@@ -415,7 +415,7 @@ The name of the instance which to connect to, instance names can not be longer t
 
 Default value: `'MSSQLSERVER'`
 
-##### <a name="ensure"></a>`ensure`
+##### <a name="-sqlserver--login--ensure"></a>`ensure`
 
 Data type: `Enum['present', 'absent']`
 
@@ -423,16 +423,16 @@ Defaults to 'present', valid values are 'present' | 'absent'
 
 Default value: `'present'`
 
-##### <a name="password"></a>`password`
+##### <a name="-sqlserver--login--password"></a>`password`
 
 Data type: `Optional[Variant[Sensitive[String], String]]`
 
 Plain text password. Only applicable when Login_Type = 'SQL_LOGIN'.
 Can be passed through as a sensitive value.
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="svrroles"></a>`svrroles`
+##### <a name="-sqlserver--login--svrroles"></a>`svrroles`
 
 Data type: `Hash`
 
@@ -441,7 +441,7 @@ sample usage would be  { 'diskadmin' => 1, 'dbcreator' => 1, 'sysadmin' => 0,  }
 
 Default value: `{}`
 
-##### <a name="login_type"></a>`login_type`
+##### <a name="-sqlserver--login--login_type"></a>`login_type`
 
 Data type: `Enum['SQL_LOGIN', 'WINDOWS_LOGIN']`
 
@@ -449,7 +449,7 @@ Defaults to 'SQL_LOGIN', possible values are 'SQL_LOGIN' or 'WINDOWS_LOGIN'
 
 Default value: `'SQL_LOGIN'`
 
-##### <a name="default_database"></a>`default_database`
+##### <a name="-sqlserver--login--default_database"></a>`default_database`
 
 Data type: `String`
 
@@ -457,7 +457,7 @@ The database that when connecting the login should default to, the default value
 
 Default value: `'master'`
 
-##### <a name="default_language"></a>`default_language`
+##### <a name="-sqlserver--login--default_language"></a>`default_language`
 
 Data type: `String`
 
@@ -465,31 +465,31 @@ The default language is 'us_english', a list of possible
 
 Default value: `'us_english'`
 
-##### <a name="check_expiration"></a>`check_expiration`
+##### <a name="-sqlserver--login--check_expiration"></a>`check_expiration`
 
 Data type: `Boolean`
 
 Default value is false, possible values of true | false. Only applicable when Login_Type = 'SQL_LOGIN'.
 
-Default value: ``false``
+Default value: `false`
 
-##### <a name="check_policy"></a>`check_policy`
+##### <a name="-sqlserver--login--check_policy"></a>`check_policy`
 
 Data type: `Boolean`
 
 Default value is false, possible values are true | false. Only applicable when Login_Type = 'SQL_LOGIN'.
 
-Default value: ``true``
+Default value: `true`
 
-##### <a name="disabled"></a>`disabled`
+##### <a name="-sqlserver--login--disabled"></a>`disabled`
 
 Data type: `Boolean`
 
 Default value is false.  Accepts [Boolean] values of true or false.
 
-Default value: ``false``
+Default value: `false`
 
-##### <a name="permissions"></a>`permissions`
+##### <a name="-sqlserver--login--permissions"></a>`permissions`
 
 Data type: `Hash`
 
@@ -499,7 +499,7 @@ Valid values must be an array of Strings i.e. {'GRANT' => ['CONNECT SQL', 'CREAT
 
 Default value: `{}`
 
-### <a name="sqlserverloginpermissions"></a>`sqlserver::login::permissions`
+### <a name="sqlserver--login--permissions"></a>`sqlserver::login::permissions`
 
 Requirement/Dependencies:
 Requires defined type {sqlserver::config} in order to execute against the SQL Server instance
@@ -508,25 +508,25 @@ Requires defined type {sqlserver::config} in order to execute against the SQL Se
 
 The following parameters are available in the `sqlserver::login::permissions` defined type:
 
-* [`login`](#login)
-* [`permissions`](#permissions)
-* [`state`](#state)
-* [`instance`](#instance)
-* [`with_grant_option`](#with_grant_option)
+* [`login`](#-sqlserver--login--permissions--login)
+* [`permissions`](#-sqlserver--login--permissions--permissions)
+* [`state`](#-sqlserver--login--permissions--state)
+* [`instance`](#-sqlserver--login--permissions--instance)
+* [`with_grant_option`](#-sqlserver--login--permissions--with_grant_option)
 
-##### <a name="login"></a>`login`
+##### <a name="-sqlserver--login--permissions--login"></a>`login`
 
 Data type: `String[1,128]`
 
 The login for which the permission will be manage.
 
-##### <a name="permissions"></a>`permissions`
+##### <a name="-sqlserver--login--permissions--permissions"></a>`permissions`
 
 Data type: `Array[String[4,128]]`
 
 An array of permissions you would like managed. i.e. ['SELECT', 'INSERT', 'UPDATE', 'DELETE']
 
-##### <a name="state"></a>`state`
+##### <a name="-sqlserver--login--permissions--state"></a>`state`
 
 Data type: `Pattern[/(?i)^(GRANT|REVOKE|DENY)$/]`
 
@@ -536,7 +536,7 @@ Please note that REVOKE equates to absent and will default to database and syste
 
 Default value: `'GRANT'`
 
-##### <a name="instance"></a>`instance`
+##### <a name="-sqlserver--login--permissions--instance"></a>`instance`
 
 Data type: `String[1,16]`
 
@@ -544,15 +544,15 @@ The name of the instance where the user and database exists. Defaults to 'MSSQLS
 
 Default value: `'MSSQLSERVER'`
 
-##### <a name="with_grant_option"></a>`with_grant_option`
+##### <a name="-sqlserver--login--permissions--with_grant_option"></a>`with_grant_option`
 
 Data type: `Boolean`
 
 Bolean value that allows user to grant options.
 
-Default value: ``false``
+Default value: `false`
 
-### <a name="sqlserverrole"></a>`sqlserver::role`
+### <a name="sqlserver--role"></a>`sqlserver::role`
 
 Requirement/Dependencies:
 Requires defined type {sqlserver::config} in order to execute against the SQL Server instance
@@ -561,17 +561,17 @@ Requires defined type {sqlserver::config} in order to execute against the SQL Se
 
 The following parameters are available in the `sqlserver::role` defined type:
 
-* [`ensure`](#ensure)
-* [`role`](#role)
-* [`instance`](#instance)
-* [`authorization`](#authorization)
-* [`type`](#type)
-* [`database`](#database)
-* [`permissions`](#permissions)
-* [`members`](#members)
-* [`members_purge`](#members_purge)
+* [`ensure`](#-sqlserver--role--ensure)
+* [`role`](#-sqlserver--role--role)
+* [`instance`](#-sqlserver--role--instance)
+* [`authorization`](#-sqlserver--role--authorization)
+* [`type`](#-sqlserver--role--type)
+* [`database`](#-sqlserver--role--database)
+* [`permissions`](#-sqlserver--role--permissions)
+* [`members`](#-sqlserver--role--members)
+* [`members_purge`](#-sqlserver--role--members_purge)
 
-##### <a name="ensure"></a>`ensure`
+##### <a name="-sqlserver--role--ensure"></a>`ensure`
 
 Data type: `Enum['present', 'absent']`
 
@@ -579,7 +579,7 @@ Whether the role should be absent or present
 
 Default value: `'present'`
 
-##### <a name="role"></a>`role`
+##### <a name="-sqlserver--role--role"></a>`role`
 
 Data type: `String[1,128]`
 
@@ -587,7 +587,7 @@ The name of the role for which the permissions will be manage.
 
 Default value: `$title`
 
-##### <a name="instance"></a>`instance`
+##### <a name="-sqlserver--role--instance"></a>`instance`
 
 Data type: `String[1,16]`
 
@@ -595,15 +595,15 @@ The name of the instance where the role and database exists. Defaults to 'MSSQLS
 
 Default value: `'MSSQLSERVER'`
 
-##### <a name="authorization"></a>`authorization`
+##### <a name="-sqlserver--role--authorization"></a>`authorization`
 
 Data type: `Optional[String]`
 
 The database principal that should own the role
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="type"></a>`type`
+##### <a name="-sqlserver--role--type"></a>`type`
 
 Data type: `Enum['SERVER', 'DATABASE']`
 
@@ -611,7 +611,7 @@ Whether the Role is `SERVER` or `DATABASE`
 
 Default value: `'SERVER'`
 
-##### <a name="database"></a>`database`
+##### <a name="-sqlserver--role--database"></a>`database`
 
 Data type: `String[1,128]`
 
@@ -619,7 +619,7 @@ The name of the database the role exists on when specifying `type => 'DATABASE'`
 
 Default value: `'master'`
 
-##### <a name="permissions"></a>`permissions`
+##### <a name="-sqlserver--role--permissions"></a>`permissions`
 
 Data type: `Hash`
 
@@ -629,7 +629,7 @@ Valid values must be an array of Strings i.e. {'GRANT' => ['CONNECT', 'CREATE AN
 
 Default value: `{}`
 
-##### <a name="members"></a>`members`
+##### <a name="-sqlserver--role--members"></a>`members`
 
 Data type: `Array[String]`
 
@@ -637,15 +637,15 @@ An array of users/logins that should be a member of the role
 
 Default value: `[]`
 
-##### <a name="members_purge"></a>`members_purge`
+##### <a name="-sqlserver--role--members_purge"></a>`members_purge`
 
 Data type: `Boolean`
 
 Whether we should purge any members not listed in the members parameter. Default: false
 
-Default value: ``false``
+Default value: `false`
 
-### <a name="sqlserverrolepermissions"></a>`sqlserver::role::permissions`
+### <a name="sqlserver--role--permissions"></a>`sqlserver::role::permissions`
 
 Requirement/Dependencies:
 Requires defined type {sqlserver::config} in order to execute against the SQL Server instance
@@ -654,27 +654,27 @@ Requires defined type {sqlserver::config} in order to execute against the SQL Se
 
 The following parameters are available in the `sqlserver::role::permissions` defined type:
 
-* [`role`](#role)
-* [`permissions`](#permissions)
-* [`state`](#state)
-* [`with_grant_option`](#with_grant_option)
-* [`type`](#type)
-* [`database`](#database)
-* [`instance`](#instance)
+* [`role`](#-sqlserver--role--permissions--role)
+* [`permissions`](#-sqlserver--role--permissions--permissions)
+* [`state`](#-sqlserver--role--permissions--state)
+* [`with_grant_option`](#-sqlserver--role--permissions--with_grant_option)
+* [`type`](#-sqlserver--role--permissions--type)
+* [`database`](#-sqlserver--role--permissions--database)
+* [`instance`](#-sqlserver--role--permissions--instance)
 
-##### <a name="role"></a>`role`
+##### <a name="-sqlserver--role--permissions--role"></a>`role`
 
 Data type: `String[1,128]`
 
 The name of the role for which the permissions will be manage.
 
-##### <a name="permissions"></a>`permissions`
+##### <a name="-sqlserver--role--permissions--permissions"></a>`permissions`
 
 Data type: `Array[String[4,128]]`
 
 An array of permissions you want manged for the given role
 
-##### <a name="state"></a>`state`
+##### <a name="-sqlserver--role--permissions--state"></a>`state`
 
 Data type: `Pattern[/(?i)^(GRANT|REVOKE|DENY)$/]`
 
@@ -684,15 +684,15 @@ Please note that REVOKE equates to absent and will default to database and syste
 
 Default value: `'GRANT'`
 
-##### <a name="with_grant_option"></a>`with_grant_option`
+##### <a name="-sqlserver--role--permissions--with_grant_option"></a>`with_grant_option`
 
 Data type: `Boolean`
 
 Whether to give the role the option to grant this permission to other principal objects, accepts true or false, defaults to false
 
-Default value: ``false``
+Default value: `false`
 
-##### <a name="type"></a>`type`
+##### <a name="-sqlserver--role--permissions--type"></a>`type`
 
 Data type: `Enum['SERVER','DATABASE']`
 
@@ -700,7 +700,7 @@ Whether the Role is `SERVER` or `DATABASE`
 
 Default value: `'SERVER'`
 
-##### <a name="database"></a>`database`
+##### <a name="-sqlserver--role--permissions--database"></a>`database`
 
 Data type: `String[1,128]`
 
@@ -708,7 +708,7 @@ The name of the database the role exists on when specifying `type => 'DATABASE'`
 
 Default value: `'master'`
 
-##### <a name="instance"></a>`instance`
+##### <a name="-sqlserver--role--permissions--instance"></a>`instance`
 
 Data type: `String[1,16]`
 
@@ -716,7 +716,7 @@ The name of the instance where the role and database exists. Defaults to 'MSSQLS
 
 Default value: `'MSSQLSERVER'`
 
-### <a name="sqlserversp_configure"></a>`sqlserver::sp_configure`
+### <a name="sqlserver--sp_configure"></a>`sqlserver::sp_configure`
 
 Required Dependencies:
 Requires defined type {sqlserver::config} in order to execute against the SQL Server instance
@@ -728,14 +728,14 @@ Requires defined type {sqlserver::config} in order to execute against the SQL Se
 
 The following parameters are available in the `sqlserver::sp_configure` defined type:
 
-* [`config_name`](#config_name)
-* [`value`](#value)
-* [`instance`](#instance)
-* [`reconfigure`](#reconfigure)
-* [`with_override`](#with_override)
-* [`restart`](#restart)
+* [`config_name`](#-sqlserver--sp_configure--config_name)
+* [`value`](#-sqlserver--sp_configure--value)
+* [`instance`](#-sqlserver--sp_configure--instance)
+* [`reconfigure`](#-sqlserver--sp_configure--reconfigure)
+* [`with_override`](#-sqlserver--sp_configure--with_override)
+* [`restart`](#-sqlserver--sp_configure--restart)
 
-##### <a name="config_name"></a>`config_name`
+##### <a name="-sqlserver--sp_configure--config_name"></a>`config_name`
 
 Data type: `Pattern['^\w+']`
 
@@ -743,13 +743,13 @@ The config name found within sys.configurations that you would like to update
 
 Default value: `$title`
 
-##### <a name="value"></a>`value`
+##### <a name="-sqlserver--sp_configure--value"></a>`value`
 
 Data type: `Integer`
 
 The value you would like to change to for the given `config_name`, must be an integer value
 
-##### <a name="instance"></a>`instance`
+##### <a name="-sqlserver--sp_configure--instance"></a>`instance`
 
 Data type: `String[1,16]`
 
@@ -757,31 +757,31 @@ The name of the instance you would like to manage against
 
 Default value: `'MSSQLSERVER'`
 
-##### <a name="reconfigure"></a>`reconfigure`
+##### <a name="-sqlserver--sp_configure--reconfigure"></a>`reconfigure`
 
 Data type: `Boolean`
 
 If you would like to run RECONFIGURE against the server after updating the value, defaults to true
 
-Default value: ``true``
+Default value: `true`
 
-##### <a name="with_override"></a>`with_override`
+##### <a name="-sqlserver--sp_configure--with_override"></a>`with_override`
 
 Data type: `Boolean`
 
 This pertains tot he `reconfigure` in which you would want to override or force the reconfigure, defaults to false
 
-Default value: ``false``
+Default value: `false`
 
-##### <a name="restart"></a>`restart`
+##### <a name="-sqlserver--sp_configure--restart"></a>`restart`
 
 Data type: `Boolean`
 
 Will ensure service resource and notify if changes occur for a restart
 
-Default value: ``false``
+Default value: `false`
 
-### <a name="sqlserveruser"></a>`sqlserver::user`
+### <a name="sqlserver--user"></a>`sqlserver::user`
 
 Requirement/Dependencies:
 Requires defined type {sqlserver::config} in order to execute against the SQL Server instance
@@ -801,16 +801,16 @@ sqlserver::user{'myUser':
 
 The following parameters are available in the `sqlserver::user` defined type:
 
-* [`user`](#user)
-* [`database`](#database)
-* [`ensure`](#ensure)
-* [`default_schema`](#default_schema)
-* [`instance`](#instance)
-* [`login`](#login)
-* [`password`](#password)
-* [`permissions`](#permissions)
+* [`user`](#-sqlserver--user--user)
+* [`database`](#-sqlserver--user--database)
+* [`ensure`](#-sqlserver--user--ensure)
+* [`default_schema`](#-sqlserver--user--default_schema)
+* [`instance`](#-sqlserver--user--instance)
+* [`login`](#-sqlserver--user--login)
+* [`password`](#-sqlserver--user--password)
+* [`permissions`](#-sqlserver--user--permissions)
 
-##### <a name="user"></a>`user`
+##### <a name="-sqlserver--user--user"></a>`user`
 
 Data type: `String[1]`
 
@@ -818,13 +818,13 @@ The username you want to manage, defaults to the title
 
 Default value: `$title`
 
-##### <a name="database"></a>`database`
+##### <a name="-sqlserver--user--database"></a>`database`
 
 Data type: `String[1,128]`
 
 The database you want the user to be created as
 
-##### <a name="ensure"></a>`ensure`
+##### <a name="-sqlserver--user--ensure"></a>`ensure`
 
 Data type: `Enum['present', 'absent']`
 
@@ -832,15 +832,15 @@ Ensure present or absent
 
 Default value: `'present'`
 
-##### <a name="default_schema"></a>`default_schema`
+##### <a name="-sqlserver--user--default_schema"></a>`default_schema`
 
 Data type: `Optional[String]`
 
 SQL schema you would like to default to, typically 'dbo'
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="instance"></a>`instance`
+##### <a name="-sqlserver--user--instance"></a>`instance`
 
 Data type: `String[1,16]`
 
@@ -848,23 +848,23 @@ The named instance you want to manage against
 
 Default value: `'MSSQLSERVER'`
 
-##### <a name="login"></a>`login`
+##### <a name="-sqlserver--user--login"></a>`login`
 
 Data type: `Optional[String[1]]`
 
 The login to associate the user with, by default SQL Server will assume user and login match if left empty
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="password"></a>`password`
+##### <a name="-sqlserver--user--password"></a>`password`
 
 Data type: `Optional[String[1,128]]`
 
 The password for the user, can only be used when the database is a contained database.
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="permissions"></a>`permissions`
+##### <a name="-sqlserver--user--permissions"></a>`permissions`
 
 Data type: `Hash`
 
@@ -874,7 +874,7 @@ Valid values must be an array of Strings i.e. {'GRANT' => ['SELECT', 'INSERT'] }
 
 Default value: `{}`
 
-### <a name="sqlserveruserpermissions"></a>`sqlserver::user::permissions`
+### <a name="sqlserver--user--permissions"></a>`sqlserver::user::permissions`
 
 Requirement/Dependencies:
 Requires defined type {sqlserver::config} in order to execute against the SQL Server instance
@@ -883,20 +883,20 @@ Requires defined type {sqlserver::config} in order to execute against the SQL Se
 
 The following parameters are available in the `sqlserver::user::permissions` defined type:
 
-* [`user`](#user)
-* [`database`](#database)
-* [`permissions`](#permissions)
-* [`state`](#state)
-* [`with_grant_option`](#with_grant_option)
-* [`instance`](#instance)
+* [`user`](#-sqlserver--user--permissions--user)
+* [`database`](#-sqlserver--user--permissions--database)
+* [`permissions`](#-sqlserver--user--permissions--permissions)
+* [`state`](#-sqlserver--user--permissions--state)
+* [`with_grant_option`](#-sqlserver--user--permissions--with_grant_option)
+* [`instance`](#-sqlserver--user--permissions--instance)
 
-##### <a name="user"></a>`user`
+##### <a name="-sqlserver--user--permissions--user"></a>`user`
 
 Data type: `String[1,128]`
 
 The username for which the permission will be manage.
 
-##### <a name="database"></a>`database`
+##### <a name="-sqlserver--user--permissions--database"></a>`database`
 
 Data type: `String[1,128]`
 
@@ -904,13 +904,13 @@ The databaser you would like the permission managed on.
 
 Default value: `'master'`
 
-##### <a name="permissions"></a>`permissions`
+##### <a name="-sqlserver--user--permissions--permissions"></a>`permissions`
 
 Data type: `Array[String[4,128]]`
 
 An array of permissions you would like managed. i.e. ['SELECT', 'INSERT', 'UPDATE', 'DELETE']
 
-##### <a name="state"></a>`state`
+##### <a name="-sqlserver--user--permissions--state"></a>`state`
 
 Data type: `Pattern[/(?i)^(GRANT|REVOKE|DENY)$/]`
 
@@ -920,15 +920,15 @@ Please note that REVOKE equates to absent and will default to database and syste
 
 Default value: `'GRANT'`
 
-##### <a name="with_grant_option"></a>`with_grant_option`
+##### <a name="-sqlserver--user--permissions--with_grant_option"></a>`with_grant_option`
 
 Data type: `Boolean`
 
 Whether to give the user the option to grant this permission to other users, accepts true or false, defaults to false
 
-Default value: ``false``
+Default value: `false`
 
-##### <a name="instance"></a>`instance`
+##### <a name="-sqlserver--user--permissions--instance"></a>`instance`
 
 Data type: `String[1,16]`
 
@@ -961,51 +961,53 @@ Valid values: `Tools`, `BC`, `Conn`, `SSMS`, `ADV_SSMS`, `SDK`, `IS`, `MDS`, `BO
 Specifies features to install, uninstall, or upgrade. The list of top-level features include
 BC, Conn, SSMS, ADV_SSMS, SDK, IS and MDS.
 
+The 'Tools' feature is deprecated.  Instead specify 'BC', 'SSMS', 'ADV_SSMS', 'Conn', and 'SDK' explicitly.
+
 #### Parameters
 
 The following parameters are available in the `sqlserver_features` type.
 
-* [`install_switches`](#install_switches)
-* [`is_svc_account`](#is_svc_account)
-* [`is_svc_password`](#is_svc_password)
-* [`name`](#name)
-* [`pid`](#pid)
-* [`provider`](#provider)
-* [`source`](#source)
-* [`windows_feature_source`](#windows_feature_source)
+* [`install_switches`](#-sqlserver_features--install_switches)
+* [`is_svc_account`](#-sqlserver_features--is_svc_account)
+* [`is_svc_password`](#-sqlserver_features--is_svc_password)
+* [`name`](#-sqlserver_features--name)
+* [`pid`](#-sqlserver_features--pid)
+* [`provider`](#-sqlserver_features--provider)
+* [`source`](#-sqlserver_features--source)
+* [`windows_feature_source`](#-sqlserver_features--windows_feature_source)
 
-##### <a name="install_switches"></a>`install_switches`
+##### <a name="-sqlserver_features--install_switches"></a>`install_switches`
 
 A hash of switches you want to pass to the installer
 
-##### <a name="is_svc_account"></a>`is_svc_account`
+##### <a name="-sqlserver_features--is_svc_account"></a>`is_svc_account`
 
 Either domain user name or system account. Defaults to "NT AUTHORITY\NETWORK SERVICE"
 
-##### <a name="is_svc_password"></a>`is_svc_password`
+##### <a name="-sqlserver_features--is_svc_password"></a>`is_svc_password`
 
 Password for domain user.
 
-##### <a name="name"></a>`name`
+##### <a name="-sqlserver_features--name"></a>`name`
 
 namevar
 
 Due to our prefetch and unaware of what name the user will provide we munge the value to meet our expecations.
 
-##### <a name="pid"></a>`pid`
+##### <a name="-sqlserver_features--pid"></a>`pid`
 
 Specify the SQL Server product key to configure which edition you would like to use.
 
-##### <a name="provider"></a>`provider`
+##### <a name="-sqlserver_features--provider"></a>`provider`
 
 The specific backend to use for this `sqlserver_features` resource. You will seldom need to specify this --- Puppet will
 usually discover the appropriate provider for your platform.
 
-##### <a name="source"></a>`source`
+##### <a name="-sqlserver_features--source"></a>`source`
 
 Location of the source files.
 
-##### <a name="windows_feature_source"></a>`windows_feature_source`
+##### <a name="-sqlserver_features--windows_feature_source"></a>`windows_feature_source`
 
 Specify the location of the Windows Feature source files.  This may be needed to install the .Net Framework.
 See https://support.microsoft.com/en-us/kb/2734782 for more information.
@@ -1033,79 +1035,81 @@ Valid values: `SQL`, `SQLEngine`, `Replication`, `FullText`, `DQ`, `AS`, `RS`, `
 Specifies features to install, uninstall, or upgrade. The list of top-level features include
 SQLEngine, Replication, FullText, DQ AS, and RS.
 
+The 'SQL' feature is deprecated.  Instead specify 'DQ', 'FullText', 'Replication', and 'SQLEngine' explicitly.
+
 #### Parameters
 
 The following parameters are available in the `sqlserver_instance` type.
 
-* [`agt_svc_account`](#agt_svc_account)
-* [`agt_svc_password`](#agt_svc_password)
-* [`as_svc_account`](#as_svc_account)
-* [`as_svc_password`](#as_svc_password)
-* [`as_sysadmin_accounts`](#as_sysadmin_accounts)
-* [`install_switches`](#install_switches)
-* [`name`](#name)
-* [`pid`](#pid)
-* [`polybase_svc_account`](#polybase_svc_account)
-* [`polybase_svc_password`](#polybase_svc_password)
-* [`provider`](#provider)
-* [`rs_svc_account`](#rs_svc_account)
-* [`rs_svc_password`](#rs_svc_password)
-* [`sa_pwd`](#sa_pwd)
-* [`security_mode`](#security_mode)
-* [`source`](#source)
-* [`sql_svc_account`](#sql_svc_account)
-* [`sql_svc_password`](#sql_svc_password)
-* [`sql_sysadmin_accounts`](#sql_sysadmin_accounts)
-* [`windows_feature_source`](#windows_feature_source)
+* [`agt_svc_account`](#-sqlserver_instance--agt_svc_account)
+* [`agt_svc_password`](#-sqlserver_instance--agt_svc_password)
+* [`as_svc_account`](#-sqlserver_instance--as_svc_account)
+* [`as_svc_password`](#-sqlserver_instance--as_svc_password)
+* [`as_sysadmin_accounts`](#-sqlserver_instance--as_sysadmin_accounts)
+* [`install_switches`](#-sqlserver_instance--install_switches)
+* [`name`](#-sqlserver_instance--name)
+* [`pid`](#-sqlserver_instance--pid)
+* [`polybase_svc_account`](#-sqlserver_instance--polybase_svc_account)
+* [`polybase_svc_password`](#-sqlserver_instance--polybase_svc_password)
+* [`provider`](#-sqlserver_instance--provider)
+* [`rs_svc_account`](#-sqlserver_instance--rs_svc_account)
+* [`rs_svc_password`](#-sqlserver_instance--rs_svc_password)
+* [`sa_pwd`](#-sqlserver_instance--sa_pwd)
+* [`security_mode`](#-sqlserver_instance--security_mode)
+* [`source`](#-sqlserver_instance--source)
+* [`sql_svc_account`](#-sqlserver_instance--sql_svc_account)
+* [`sql_svc_password`](#-sqlserver_instance--sql_svc_password)
+* [`sql_sysadmin_accounts`](#-sqlserver_instance--sql_sysadmin_accounts)
+* [`windows_feature_source`](#-sqlserver_instance--windows_feature_source)
 
-##### <a name="agt_svc_account"></a>`agt_svc_account`
+##### <a name="-sqlserver_instance--agt_svc_account"></a>`agt_svc_account`
 
 Either domain user name or system account
 
-##### <a name="agt_svc_password"></a>`agt_svc_password`
+##### <a name="-sqlserver_instance--agt_svc_password"></a>`agt_svc_password`
 
 Password for domain user name. Not required for system account
 
-##### <a name="as_svc_account"></a>`as_svc_account`
+##### <a name="-sqlserver_instance--as_svc_account"></a>`as_svc_account`
 
 The account used by the Analysis Services service.
 
-##### <a name="as_svc_password"></a>`as_svc_password`
+##### <a name="-sqlserver_instance--as_svc_password"></a>`as_svc_password`
 
 The password for the Analysis Services service account.
 
-##### <a name="as_sysadmin_accounts"></a>`as_sysadmin_accounts`
+##### <a name="-sqlserver_instance--as_sysadmin_accounts"></a>`as_sysadmin_accounts`
 
 Specifies the list of administrator accounts to provision.
 
-##### <a name="install_switches"></a>`install_switches`
+##### <a name="-sqlserver_instance--install_switches"></a>`install_switches`
 
 A hash of switches you want to pass to the installer
 
-##### <a name="name"></a>`name`
+##### <a name="-sqlserver_instance--name"></a>`name`
 
 namevar
 
 Namevar
 
-##### <a name="pid"></a>`pid`
+##### <a name="-sqlserver_instance--pid"></a>`pid`
 
 Specify the SQL Server product key to configure which edition you would like to use.
 
-##### <a name="polybase_svc_account"></a>`polybase_svc_account`
+##### <a name="-sqlserver_instance--polybase_svc_account"></a>`polybase_svc_account`
 
 The account used by the Polybase Engine service. Only applicable for SQL Server 2016+.
 
-##### <a name="polybase_svc_password"></a>`polybase_svc_password`
+##### <a name="-sqlserver_instance--polybase_svc_password"></a>`polybase_svc_password`
 
 The password for the Polybase Engine service account. Only applicable for SQL Server 2016+.
 
-##### <a name="provider"></a>`provider`
+##### <a name="-sqlserver_instance--provider"></a>`provider`
 
 The specific backend to use for this `sqlserver_instance` resource. You will seldom need to specify this --- Puppet will
 usually discover the appropriate provider for your platform.
 
-##### <a name="rs_svc_account"></a>`rs_svc_account`
+##### <a name="-sqlserver_instance--rs_svc_account"></a>`rs_svc_account`
 
 Specify the service account of the report server. This value is required.
 If you omit this value, Setup will use the default built-in account for
@@ -1114,17 +1118,17 @@ If you specify a domain user account, the domain must be under 254 characters
 and the user name must be under 20 characters. The account name cannot contain the
 following characters: " / \ [ ] : ; | = , + * ? < >
 
-##### <a name="rs_svc_password"></a>`rs_svc_password`
+##### <a name="-sqlserver_instance--rs_svc_password"></a>`rs_svc_password`
 
 Specify a strong password for the account. A strong password is at least 8 characters and
 includes a combination of upper and lower case alphanumeric characters and at least one symbol
 character. Avoid spelling an actual word or name that might be listed in a dictionary.
 
-##### <a name="sa_pwd"></a>`sa_pwd`
+##### <a name="-sqlserver_instance--sa_pwd"></a>`sa_pwd`
 
 Required when :security_mode => "SQL"
 
-##### <a name="security_mode"></a>`security_mode`
+##### <a name="-sqlserver_instance--security_mode"></a>`security_mode`
 
 Valid values: `SQL`
 
@@ -1132,23 +1136,23 @@ Specifies the security mode for SQL Server.
 If this parameter is not supplied, then Windows-only authentication mode is supported.
 Supported value: SQL
 
-##### <a name="source"></a>`source`
+##### <a name="-sqlserver_instance--source"></a>`source`
 
 Location of source files.
 
-##### <a name="sql_svc_account"></a>`sql_svc_account`
+##### <a name="-sqlserver_instance--sql_svc_account"></a>`sql_svc_account`
 
 Account for SQL Server service: Domain\User or system account.
 
-##### <a name="sql_svc_password"></a>`sql_svc_password`
+##### <a name="-sqlserver_instance--sql_svc_password"></a>`sql_svc_password`
 
 A SQL Server service password is required only for a domain account.
 
-##### <a name="sql_sysadmin_accounts"></a>`sql_sysadmin_accounts`
+##### <a name="-sqlserver_instance--sql_sysadmin_accounts"></a>`sql_sysadmin_accounts`
 
 Windows account(s) to provision as SQL Server system administrators.
 
-##### <a name="windows_feature_source"></a>`windows_feature_source`
+##### <a name="-sqlserver_instance--windows_feature_source"></a>`windows_feature_source`
 
 Specify the location of the Windows Feature source files.  This may be needed to install the .Net Framework.
 See https://support.microsoft.com/en-us/kb/2734782 for more information.
@@ -1175,33 +1179,33 @@ Default value: `0`
 
 The following parameters are available in the `sqlserver_tsql` type.
 
-* [`command`](#command)
-* [`database`](#database)
-* [`instance`](#instance)
-* [`name`](#name)
-* [`provider`](#provider)
+* [`command`](#-sqlserver_tsql--command)
+* [`database`](#-sqlserver_tsql--database)
+* [`instance`](#-sqlserver_tsql--instance)
+* [`name`](#-sqlserver_tsql--name)
+* [`provider`](#-sqlserver_tsql--provider)
 
-##### <a name="command"></a>`command`
+##### <a name="-sqlserver_tsql--command"></a>`command`
 
 command to run against an instance with the authenticated credentials used in sqlserver::config
 
-##### <a name="database"></a>`database`
+##### <a name="-sqlserver_tsql--database"></a>`database`
 
 initial database to connect to during query execution
 
 Default value: `master`
 
-##### <a name="instance"></a>`instance`
+##### <a name="-sqlserver_tsql--instance"></a>`instance`
 
 requires the usage of sqlserver::config with the user and password
 
-##### <a name="name"></a>`name`
+##### <a name="-sqlserver_tsql--name"></a>`name`
 
 namevar
 
 Namevar
 
-##### <a name="provider"></a>`provider`
+##### <a name="-sqlserver_tsql--provider"></a>`provider`
 
 The specific backend to use for this `sqlserver_tsql` resource. You will seldom need to specify this --- Puppet will
 usually discover the appropriate provider for your platform.
