@@ -959,9 +959,7 @@ Default value: `present`
 Valid values: `Tools`, `BC`, `Conn`, `SSMS`, `ADV_SSMS`, `SDK`, `IS`, `MDS`, `BOL`, `DREPLAY_CTLR`, `DREPLAY_CLT`, `DQC`
 
 Specifies features to install, uninstall, or upgrade. The list of top-level features include
-BC, Conn, SSMS, ADV_SSMS, SDK, IS and MDS.
-
-The 'Tools' feature is deprecated.  Instead specify 'BC', 'SSMS', 'ADV_SSMS', 'Conn', and 'SDK' explicitly.
+BC, Conn, SSMS, ADV_SSMS, SDK, IS and MDS. The 'Tools' feature is deprecated.  Instead specify 'BC', 'SSMS', 'ADV_SSMS', 'Conn', and 'SDK' explicitly.
 
 #### Parameters
 
@@ -1033,9 +1031,7 @@ Default value: `present`
 Valid values: `SQL`, `SQLEngine`, `Replication`, `FullText`, `DQ`, `AS`, `RS`, `POLYBASE`, `ADVANCEDANALYTICS`
 
 Specifies features to install, uninstall, or upgrade. The list of top-level features include
-SQLEngine, Replication, FullText, DQ AS, and RS.
-
-The 'SQL' feature is deprecated.  Instead specify 'DQ', 'FullText', 'Replication', and 'SQLEngine' explicitly.
+SQLEngine, Replication, FullText, DQ AS, and RS. The 'SQL' feature is deprecated.  Instead specify 'DQ', 'FullText', 'Replication', and 'SQLEngine' explicitly.
 
 #### Parameters
 
