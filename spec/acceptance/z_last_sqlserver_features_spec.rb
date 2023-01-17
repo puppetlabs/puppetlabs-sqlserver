@@ -8,16 +8,17 @@ version = sql_version?
 
 describe 'sqlserver_features', if: version.to_i != 2012 do
   def ensure_sql_features(features, ensure_val = 'present')
+    hostname = Helper.instance.run_shell('hostname').stdout.upcase.strip
     pp = <<-MANIFEST
     sqlserver::config{ 'MSSQLSERVER':
-      admin_pass        => '<%= SQL_ADMIN_PASS %>',
-      admin_user        => '<%= SQL_ADMIN_USER %>',
+      admin_pass        => '#{SQL_ADMIN_USER}',
+      admin_user        => '#{SQL_ADMIN_PASS}',
     }
     sqlserver_features{ 'MSSQLSERVER':
       ensure            => #{ensure_val},
       source            => 'H:',
-      is_svc_account    => "$::hostname\\\\Administrator",
-      is_svc_password   => 'Qu@lity!',
+      is_svc_account    => "#{hostname}\\\\vagrant",
+      is_svc_password   => 'vagrant',
       features          => #{features},
       windows_feature_source => 'I:\\sources\\sxs',
     }
@@ -27,15 +28,17 @@ describe 'sqlserver_features', if: version.to_i != 2012 do
   end
 
   def bind_and_apply_failing_manifest(features, ensure_val = 'present')
+    hostname = Helper.instance.run_shell('hostname').stdout.upcase.strip
     pp = <<-MANIFEST
     sqlserver::config{ 'MSSQLSERVER':
-      admin_pass        => '<%= SQL_ADMIN_PASS %>',
-      admin_user        => '<%= SQL_ADMIN_USER %>',
+      admin_pass        => '#{SQL_ADMIN_USER}',
+      admin_user        => '#{SQL_ADMIN_PASS}',
     }
     sqlserver_features{ 'MSSQLSERVER':
       ensure            => #{ensure_val},
       source            => 'H:',
-      is_svc_account    => "$::hostname\\\\Administrator",
+      is_svc_account    => "#{hostname}\\\\vagrant",
+      is_svc_password   => 'vagrant',
       features          => #{features},
     }
     MANIFEST
@@ -136,7 +139,7 @@ describe 'sqlserver_features', if: version.to_i != 2012 do
       bind_and_apply_failing_manifest(features)
     end
 
-    it 'fails when ADV_SSMS is supplied but SSMS is not - FM-2712' do
+    it 'fails when ADV_SSMS is supplied but SSMS is not - FM-2712', unless: version.to_i >= 2016 do
       pending('error not shown on Sql Server 2014') if version .to_i == 2014
       features = ['BC', 'Conn', 'ADV_SSMS', 'SDK']
       bind_and_apply_failing_manifest(features)
@@ -153,7 +156,7 @@ describe 'sqlserver_features', if: version.to_i != 2012 do
             sqlserver_instance{'MSSQLSERVER':
             ensure                => absent,
             source                => 'H:',
-            sql_sysadmin_accounts => ['Administrator'],
+            sql_sysadmin_accounts => ['vagrant'],
             }
             MANIFEST
         idempotent_apply(pp)
@@ -171,7 +174,7 @@ describe 'sqlserver_features', if: version.to_i != 2012 do
         ensure_sql_features(features)
 
         validate_sql_install(version: version) do |r|
-          # SQL Server 2016 will not install the client tools features.
+          # SQL Server 2016+ will not install the client tools features.
           expect(r.stdout).not_to match(%r{MSSQLSERVER\s+Database Engine Services})
           expect(r.stdout).not_to match(%r{MSSQLSERVER\s+SQL Server Replication})
           expect(r.stdout).not_to match(%r{MSSQLSERVER\s+Data Quality Services})

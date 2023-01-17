@@ -16,13 +16,12 @@ describe 'sqlserver::config test' do
       ensure                => '#{ensure_val}',
       source                => 'H:',
       features              => ['DQ', 'FullText', 'Replication', 'SQLEngine'],
-      sql_sysadmin_accounts => ['Administrator'],
+      sql_sysadmin_accounts => ['vagrant'],
       security_mode         => 'SQL',
       sa_pwd                => 'Pupp3t1@',
       windows_feature_source => 'I:\\sources\\sxs',
     }
     MANIFEST
-
     apply_manifest(pp, catch_failures: true)
   end
 
@@ -32,7 +31,7 @@ describe 'sqlserver::config test' do
       ensure_sqlserver_instance(inst_name)
 
       # get credentials for new config
-      @admin_user = 'admin' + SecureRandom.hex(2)
+      @admin_user = 'test_user' + SecureRandom.hex(2)
       @admin_pass = 'Pupp3t1@'
 
       # get database user
@@ -62,7 +61,7 @@ describe 'sqlserver::config test' do
       apply_manifest(pp, catch_failures: true)
     end
 
-    it 'Validate New Config WITH using instance_name in sqlserver::config' do
+    it 'Validate New Config WITH instance_name in sqlserver::config' do
       pp = <<-MANIFEST
       sqlserver::config{'#{inst_name}':
         admin_user    => Sensitive('#{@admin_user}'),
@@ -77,11 +76,11 @@ describe 'sqlserver::config test' do
     end
 
     it 'Validate new login and database actualy created' do
-      hostname = ENV['TARGET_HOST']
+      hostname = Helper.instance.run_shell('hostname').stdout.upcase.strip
       query = "USE #{db_name}; SELECT * from master..sysdatabases WHERE name = '#{db_name}'"
 
       run_sql_query(query: query, server: hostname, instance: inst_name, \
-                    sql_admin_user: @admin_user, sql_admin_pass: @admin_pass, expected_row_count: 1)
+        sql_admin_user: @admin_user, sql_admin_pass: @admin_pass, expected_row_count: 1)
     end
 
     it 'Validate New Config WITHOUT using instance_name in sqlserver::config' do

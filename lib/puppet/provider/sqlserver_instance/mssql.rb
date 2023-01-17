@@ -68,6 +68,7 @@ Puppet::Type.type(:sqlserver_instance).provide(:mssql, parent: Puppet::Provider:
     begin
       config_file = create_temp_for_install_switch unless action == 'uninstall'
       cmd_args << "/ConfigurationFile=\"#{config_file.path}\"" unless config_file.nil?
+      cmd_args << '/UPDATEENABLED=False' if action == 'install'
       res = try_execute(cmd_args, "Error trying to #{action} features (#{features.join(', ')}", obfuscated_strings, [0, 1641, 3010])
 
       warn("#{action} of features (#{features.join(', ')}) returned exit code 3010 - reboot required")  if res.exitstatus == 3010
@@ -142,6 +143,8 @@ Puppet::Type.type(:sqlserver_instance).provide(:mssql, parent: Puppet::Provider:
                 '/IACCEPTSQLSERVERLICENSETERMS',
                 "/INSTANCENAME=#{@resource[:name]}"]
     cmd_args << "/FEATURES=#{features.join(',')}" unless features.empty?
+    cmd_args << '/UPDATEENABLED=False' if action == 'install'
+    cmd_args
   end
 
   def build_cmd_args(features, action = 'install')

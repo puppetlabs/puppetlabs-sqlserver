@@ -11,7 +11,7 @@ end
 describe 'sqlserver_instance' do
   version = sql_version?
 
-  def ensure_sqlserver_instance(features, inst_name, ensure_val = 'present', sysadmin_accounts = "['Administrator']")
+  def ensure_sqlserver_instance(features, inst_name, ensure_val = 'present', sysadmin_accounts = "['vagrant']")
     pp = <<-MANIFEST
     sqlserver_instance{'#{inst_name}':
       name                  => '#{inst_name}',
@@ -21,8 +21,8 @@ describe 'sqlserver_instance' do
       sa_pwd                => 'Pupp3t1@',
       features              => #{features},
       sql_sysadmin_accounts => #{sysadmin_accounts},
-      agt_svc_account       => 'Administrator',
-      agt_svc_password      => 'Qu@lity!',
+      agt_svc_account       => 'vagrant',
+      agt_svc_password      => 'vagrant',
       windows_feature_source => 'I:\\sources\\sxs',
     }
     MANIFEST
@@ -54,7 +54,7 @@ describe 'sqlserver_instance' do
   context 'Create an instance' do
     before(:context) do
       # Use a username with a space to test argument parsing works correctly
-      @extra_admin_user = 'Extra SQLAdmin'
+      @extra_admin_user = 'ExtraSQLAdmin'
       pp = <<-MANIFEST
       user { '#{@extra_admin_user}':
         ensure => present,
@@ -78,7 +78,7 @@ describe 'sqlserver_instance' do
 
     it "create #{inst_name} instance" do
       host_computer_name = run_shell('CMD /C ECHO %COMPUTERNAME%').stdout.chomp
-      ensure_sqlserver_instance(features, inst_name, 'present', "['Administrator','#{host_computer_name}\\#{@extra_admin_user}']")
+      ensure_sqlserver_instance(features, inst_name, 'present', "['vagrant','#{host_computer_name}\\#{@extra_admin_user}']")
 
       validate_sql_install(version: version) do |r|
         expect(r.stdout).to match(%r{#{Regexp.new(inst_name)}})
