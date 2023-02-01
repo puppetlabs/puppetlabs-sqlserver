@@ -14,11 +14,6 @@ jobs:
       matrix: ${{ steps.get-matrix.outputs.matrix }}
 
     steps:
-    
-    - name: "Connect to twingate"
-      uses: twingate/github-action@v1
-      with:
-        service-key: ${{ secrets.TWINGATE_PUBLIC_REPO_KEY }}
 
     - name: "Honeycomb: Start recording"
       uses: puppetlabs/kvrhdn-gha-buildevents@pdk-templates-v1
@@ -157,6 +152,20 @@ jobs:
       run: |
         buildevents cmd $TRACE_ID $STEP_ID 'rake litmus:install_module' -- bundle exec rake 'litmus:install_module'
 
+    - name: Authenitcate with GCP
+      run: |
+        bundle exec bolt command run 'cd C:\\; Set-Content -Path .\creds.json -Value @"
+        ${{ secrets.GCP_CONNECTION }}
+        "@; gcloud auth activate-service-account --key-file "creds.json"' --targets winrm_nodes --inventoryfile spec/fixtures/litmus_inventory.yaml
+    
+    - name: Download OS ISO
+      run: |
+        bundle exec bolt command run 'Start-Process -FilePath "powershell" -Wait -ArgumentList "cd C://; gsutil cp gs://artifactory-modules/windows/en_windows_server_2019_updated_july_2020_x64_dvd_94453821.iso .\"' --targets winrm_nodes --inventoryfile spec/fixtures/litmus_inventory.yaml 
+
+    - name: Download SQLServer ISO
+      run: |
+        bundle exec bolt command run 'Start-Process -FilePath "powershell" -Wait -ArgumentList "cd C://; gsutil cp gs://artifactory-modules/puppetlabs-sqlserver/SQLServer2019CTP2.4-x64-ENU.iso .\"' --targets winrm_nodes --inventoryfile spec/fixtures/litmus_inventory.yaml
+    
     - name: "Honeycomb: Record deployment times"
       if: ${{ always() }}
       run: |
@@ -169,7 +178,7 @@ jobs:
     - name: Run acceptance tests
       run: |
         buildevents cmd $TRACE_ID $STEP_ID 'rake litmus:acceptance:parallel' -- bundle exec rake 'litmus:acceptance:parallel'
-
+   
     - name: "Honeycomb: Record acceptance testing times"
       if: ${{ always() }}
       run: |

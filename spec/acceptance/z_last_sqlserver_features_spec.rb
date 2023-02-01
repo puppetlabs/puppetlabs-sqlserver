@@ -9,6 +9,7 @@ version = sql_version?
 describe 'sqlserver_features', if: version.to_i != 2012 do
   def ensure_sql_features(features, ensure_val = 'present')
     hostname = Helper.instance.run_shell('hostname').stdout.upcase.strip
+    user = Helper.instance.run_shell('$env:UserName').stdout.chomp
     pp = <<-MANIFEST
     sqlserver::config{ 'MSSQLSERVER':
       admin_pass        => '#{SQL_ADMIN_USER}',
@@ -29,6 +30,7 @@ describe 'sqlserver_features', if: version.to_i != 2012 do
 
   def bind_and_apply_failing_manifest(features, ensure_val = 'present')
     hostname = Helper.instance.run_shell('hostname').stdout.upcase.strip
+    user = Helper.instance.run_shell('$env:UserName').stdout.chomp
     pp = <<-MANIFEST
     sqlserver::config{ 'MSSQLSERVER':
       admin_pass        => '#{SQL_ADMIN_USER}',
@@ -38,7 +40,6 @@ describe 'sqlserver_features', if: version.to_i != 2012 do
       ensure            => #{ensure_val},
       source            => 'H:',
       is_svc_account    => "#{hostname}\\\\vagrant",
-      is_svc_password   => 'vagrant',
       features          => #{features},
     }
     MANIFEST
@@ -152,6 +153,7 @@ describe 'sqlserver_features', if: version.to_i != 2012 do
       features = ['BC', 'Conn', 'SDK', 'IS', 'MDS', 'DQC']
 
       def remove_sql_instance
+        user = Helper.instance.run_shell('$env:UserName').stdout.chomp
         pp = <<-MANIFEST
             sqlserver_instance{'MSSQLSERVER':
             ensure                => absent,

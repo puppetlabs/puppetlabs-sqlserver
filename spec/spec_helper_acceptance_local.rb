@@ -29,6 +29,7 @@ RSpec.configure do |c|
       file: WIN_2019_ISO,
       drive_letter: 'I',
     }
+
     mount_iso(iso_opts)
 
     base_install(sql_version?)
@@ -124,6 +125,7 @@ def base_install(sql_version)
 end
 
 def install_sqlserver(features)
+  user = Helper.instance.run_shell('$env:UserName').stdout.chomp
   # this method installs SQl server on a given host
   pp = <<-MANIFEST
     sqlserver_instance{'MSSQLSERVER':
@@ -145,7 +147,9 @@ def install_sqlserver(features)
       windows_feature_source => 'I:\\sources\\sxs',
     }
     MANIFEST
-  Helper.instance.apply_manifest(pp)
+  p pp
+  p Helper.instance.apply_manifest(pp)
+  pp Helper.instance.run_shell('more "C:\Program Files\Microsoft SQL Server\150\Setup Bootstrap\Log\Summary.txt"')
 end
 
 def run_sql_query(opts = {}, &block)

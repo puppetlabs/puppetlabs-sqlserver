@@ -22,6 +22,7 @@ def mount_iso(host, opts = {})
 end
 
 def install_sqlserver(host, opts = {})
+  user = Helper.instance.run_shell('$env:UserName').stdout.chomp
   # this method installs SQl server on a given host
   features = opts[:features].map { |x| "'#{x}'" }.join(', ')
   pp = <<-MANIFEST

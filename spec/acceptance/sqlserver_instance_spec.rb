@@ -12,6 +12,8 @@ describe 'sqlserver_instance' do
   version = sql_version?
 
   def ensure_sqlserver_instance(features, inst_name, ensure_val = 'present', sysadmin_accounts = "['vagrant']")
+    user = Helper.instance.run_shell('$env:UserName').stdout.chomp
+    password = Helper.instance.run_shell('[System.Net.CredentialCache]::DefaultNetworkCredentials.Password').stdout.chomp
     pp = <<-MANIFEST
     sqlserver_instance{'#{inst_name}':
       name                  => '#{inst_name}',
@@ -20,7 +22,7 @@ describe 'sqlserver_instance' do
       security_mode         => 'SQL',
       sa_pwd                => 'Pupp3t1@',
       features              => #{features},
-      sql_sysadmin_accounts => #{sysadmin_accounts},
+      sql_sysadmin_accounts => ['vagrant'],
       agt_svc_account       => 'vagrant',
       agt_svc_password      => 'vagrant',
       windows_feature_source => 'I:\\sources\\sxs',
@@ -78,6 +80,7 @@ describe 'sqlserver_instance' do
 
     it "create #{inst_name} instance" do
       host_computer_name = run_shell('CMD /C ECHO %COMPUTERNAME%').stdout.chomp
+      user = Helper.instance.run_shell('$env:UserName').stdout.chomp
       ensure_sqlserver_instance(features, inst_name, 'present', "['vagrant','#{host_computer_name}\\#{@extra_admin_user}']")
 
       validate_sql_install(version: version) do |r|
@@ -85,8 +88,9 @@ describe 'sqlserver_instance' do
       end
     end
 
-    it "#{inst_name} instance has Administrator as a sysadmin" do
-      run_sql_query(run_sql_query_opts(inst_name, sql_query_is_user_sysadmin('Administrator'), 1))
+    it "#{inst_name} instance has vagrant as an Administrator" do
+      user = Helper.instance.run_shell('$env:UserName').stdout.chomp
+      run_sql_query(run_sql_query_opts(inst_name, sql_query_is_user_sysadmin(user), 1))
     end
 
     it "#{inst_name} instance has ExtraSQLAdmin as a sysadmin" do

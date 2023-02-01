@@ -11,6 +11,7 @@ db_name   = ('DB' + SecureRandom.hex(4)).upcase
 
 describe 'sqlserver::config test' do
   def ensure_sqlserver_instance(inst_name, ensure_val = 'present')
+    user = Helper.instance.run_shell('$env:UserName').stdout.chomp
     pp = <<-MANIFEST
       sqlserver_instance{'#{inst_name}':
       ensure                => '#{ensure_val}',
@@ -54,7 +55,7 @@ describe 'sqlserver::config test' do
         instance    => '#{inst_name}',
         login_type  => 'SQL_LOGIN',
         login       => '#{@admin_user}',
-        password    => Sensitive('#{@admin_pass}'),
+        password    => '#{@admin_pass}',
         svrroles    => {'sysadmin' => 1},
       }
       MANIFEST

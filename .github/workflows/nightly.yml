@@ -11,18 +11,12 @@ env:
 
 jobs:
   setup_matrix:
-    if: ${{ github.repository_owner == 'puppetlabs' }}
     name: "Setup Test Matrix"
     runs-on: ubuntu-20.04
     outputs:
       matrix: ${{ steps.get-matrix.outputs.matrix }}
 
     steps:
-
-    - name: "Connect to twingate"
-      uses: twingate/github-action@v1
-      with:
-        service-key: ${{ secrets.TWINGATE_PUBLIC_REPO_KEY }}
 
     - name: "Honeycomb: Start recording"
       uses: puppetlabs/kvrhdn-gha-buildevents@pdk-templates-v1
@@ -35,6 +29,7 @@ jobs:
       run: |
         echo STEP_ID=setup-environment >> $GITHUB_ENV
         echo STEP_START=$(date +%s) >> $GITHUB_ENV
+
     - name: Checkout Source
       uses: actions/checkout@v2
       if: ${{ github.repository_owner == 'puppetlabs' }}
@@ -52,31 +47,33 @@ jobs:
         echo ::group::bundler environment
         buildevents cmd $TRACE_ID $STEP_ID 'bundle env' -- bundle env
         echo ::endgroup::
-   
+
     - name: "Honeycomb: Record Setup Environment time"
       if: ${{ github.repository_owner == 'puppetlabs' }}
       run: |
         buildevents step $TRACE_ID $STEP_ID $STEP_START 'Setup Environment'
         echo STEP_ID=Setup-Acceptance-Test-Matrix >> $GITHUB_ENV
         echo STEP_START=$(date +%s) >> $GITHUB_ENV
+
     - name: Setup Acceptance Test Matrix
       id: get-matrix
-      if: ${{ github.repository_owner == 'puppetlabs' }}
       run: |
         if [ '${{ github.repository_owner }}' == 'puppetlabs' ]; then
-          buildevents cmd $TRACE_ID $STEP_ID matrix_from_metadata -- bundle exec matrix_from_metadata_v2 
+          buildevents cmd $TRACE_ID $STEP_ID matrix_from_metadata -- bundle exec matrix_from_metadata_v2
         else
           echo  "::set-output name=matrix::{}"
         fi
-  
+
     - name: "Honeycomb: Record Setup Test Matrix time"
       if: ${{ always() }}
       run: |
         buildevents step $TRACE_ID $STEP_ID $STEP_START 'Setup Test Matrix'
+
   Acceptance:
     name: "${{matrix.platforms.label}}, ${{matrix.collection}}"
     needs:
       - setup_matrix
+    if: ${{ needs.setup_matrix.outputs.matrix != '{}' }}
 
     runs-on: ubuntu-20.04
     strategy:
@@ -91,7 +88,6 @@ jobs:
         echo 'platform=${{ matrix.platforms.image }}' >> $BUILDEVENT_FILE
         echo 'collection=${{ matrix.collection }}' >> $BUILDEVENT_FILE
         echo 'label=${{ matrix.platforms.label }}' >> $BUILDEVENT_FILE
-
 
     - name: "Honeycomb: Start recording"
       uses: puppetlabs/kvrhdn-gha-buildevents@pdk-templates-v1
@@ -130,7 +126,12 @@ jobs:
 
     - name: Provision test environment
       run: |
-        buildevents cmd $TRACE_ID $STEP_ID 'rake litmus:provision ${{ matrix.platforms.image }}' -- bundle exec rake 'litmus:provision[${{matrix.platforms.provider}},${{ matrix.platforms.image }}]'
+        if [[ "${{matrix.platforms.provider}}" == "provision::docker" ]]; then
+          DOCKER_RUN_OPTS="docker_run_opts: {'--volume': '/lib/modules/$(uname -r):/lib/modules/$(uname -r)'}"
+        else
+          DOCKER_RUN_OPTS=''
+        fi
+        buildevents cmd $TRACE_ID $STEP_ID 'rake litmus:provision ${{ matrix.platforms.image }}' -- bundle exec rake "litmus:provision[${{matrix.platforms.provider}},${{ matrix.platforms.image }},$DOCKER_RUN_OPTS]"
         echo ::group::=== REQUEST ===
         cat request.json || true
         echo
@@ -153,6 +154,20 @@ jobs:
     - name: Install module
       run: |
         buildevents cmd $TRACE_ID $STEP_ID 'rake litmus:install_module' -- bundle exec rake 'litmus:install_module'
+
+    - name: Authenitcate with GCP
+      run: |
+        bundle exec bolt command run 'cd C:\\; Set-Content -Path .\creds.json -Value @"
+        ${{ secrets.GCP_CONNECTION }}
+        "@; gcloud auth activate-service-account --key-file "creds.json"' --targets winrm_nodes --inventoryfile spec/fixtures/litmus_inventory.yaml
+    
+    - name: Download OS ISO
+      run: |
+        bundle exec bolt command run 'Start-Process -FilePath "powershell" -Wait -ArgumentList "cd C://; gsutil cp gs://artifactory-modules/windows/en_windows_server_2019_updated_july_2020_x64_dvd_94453821.iso .\"' --targets winrm_nodes --inventoryfile spec/fixtures/litmus_inventory.yaml 
+
+    - name: Download SQLServer ISO
+      run: |
+        bundle exec bolt command run 'Start-Process -FilePath "powershell" -Wait -ArgumentList "cd C://; gsutil cp gs://artifactory-modules/puppetlabs-sqlserver/SQLServer2019CTP2.4-x64-ENU.iso .\"' --targets winrm_nodes --inventoryfile spec/fixtures/litmus_inventory.yaml
 
     - name: "Honeycomb: Record deployment times"
       if: ${{ always() }}
@@ -190,20 +205,3 @@ jobs:
       if: ${{ always() }}
       run: |
         buildevents step $TRACE_ID $STEP_ID $STEP_START 'Remove test environment'
-
-  slack-workflow-status:
-    if: ${{ github.repository_owner == 'puppetlabs' }}
-    name: Post Workflow Status To Slack
-    needs:
-      - Acceptance
-    runs-on: ubuntu-20.04
-    steps:
-      - name: Slack Workflow Notification
-        uses: puppetlabs/Gamesight-slack-workflow-status@pdk-templates-v1
-        with:
-          # Required Input
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          slack_webhook_url: ${{ secrets.SLACK_WEBHOOK }}
-          # Optional Input
-          channel: '#team-cat-bots'
-          name: 'GABot'
