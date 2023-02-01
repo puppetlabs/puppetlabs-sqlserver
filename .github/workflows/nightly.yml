@@ -18,7 +18,12 @@ jobs:
       matrix: ${{ steps.get-matrix.outputs.matrix }}
 
     steps:
-     
+
+    - name: "Connect to twingate"
+      uses: twingate/github-action@v1
+      with:
+        service-key: ${{ secrets.TWINGATE_PUBLIC_REPO_KEY }}
+
     - name: "Honeycomb: Start recording"
       uses: puppetlabs/kvrhdn-gha-buildevents@pdk-templates-v1
       with:
