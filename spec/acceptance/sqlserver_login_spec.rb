@@ -82,7 +82,7 @@ describe 'Test sqlserver::login' do
     @windows_user  = 'User' + SecureRandom.hex(4)
     @windows_group = 'Group' + SecureRandom.hex(4)
 
-    host_shortname = run_shell('hostname').stdout.upcase.strip # Require the NETBIOS name for later database searches
+    host_shortname = Helper.instance.run_shell('$env:computername').stdout.upcase.strip # Require the NETBIOS name for later database searches
     @login_windows_user  = host_shortname + '\\' + @windows_user
     @login_windows_group = host_shortname + '\\' + @windows_group
 

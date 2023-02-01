@@ -18,6 +18,7 @@ SQL_2014_ISO = 'SQLServer2014SP3-FullSlipstream-x64-ENU.iso'
 SQL_2012_ISO = 'SQLServer2012SP1-FullSlipstream-ENU-x64.iso'
 SQL_ADMIN_USER = 'sa'
 SQL_ADMIN_PASS = 'Pupp3t1@'
+USER = Helper.instance.run_shell('$env:UserName').stdout.chomp
 
 RSpec.configure do |c|
   c.before(:suite) do
@@ -29,6 +30,10 @@ RSpec.configure do |c|
       file: WIN_2019_ISO,
       drive_letter: 'I',
     }
+    # Allows litmus to use SSH, by explicitly setting specinfra
+    # os family to windows (would fail when using ssh on windows)
+    set :os, family: 'windows', release: nil, arch: nil
+
     mount_iso(iso_opts)
 
     base_install(sql_version?)
@@ -131,7 +136,7 @@ def install_sqlserver(features)
       features => #{features},
       security_mode => 'SQL',
       sa_pwd => 'Pupp3t1@',
-      sql_sysadmin_accounts => ['vagrant'],
+      sql_sysadmin_accounts => ['#{USER}'],
       install_switches => {
         'UPDATEENABLED'       => 'False',
         'TCPENABLED'          => 1,
@@ -172,11 +177,11 @@ def run_sql_query(opts = {}, &block)
 
   Tempfile.open 'tmp.ps1' do |tempfile|
     File.open(tempfile.path, 'w') { |file| file.puts powershell }
-    bolt_upload_file(tempfile.path, 'C:/cygwin64/home/Administrator/tmp.ps1')
+    bolt_upload_file(tempfile.path, "c:\\users\\#{USER}\\tmp.ps1")
   end
   # create_remote_file('tmp.ps1', powershell)
 
-  Helper.instance.run_shell('powershell -NonInteractive -NoLogo -File "C:\\cygwin64\\home\\Administrator\\tmp.ps1"') do |r|
+  Helper.instance.run_shell("powershell -NonInteractive -NoLogo -File  'c:\\users\\#{USER}\\tmp.ps1'") do |r|
     match = %r{(\d*) rows affected}.match(r.stdout)
     raise 'Could not match number of rows for SQL query' unless match
     rows_observed = match[1]

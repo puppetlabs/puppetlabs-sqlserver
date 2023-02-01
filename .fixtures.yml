@@ -4,5 +4,7 @@ fixtures:
     puppet_agent: 'https://github.com/puppetlabs/puppetlabs-puppet_agent.git'
     provision: 'https://github.com/puppetlabs/provision.git'
     stdlib: 'https://github.com/puppetlabs/puppetlabs-stdlib.git'
+    mount_iso: 'https://github.com/puppetlabs/puppetlabs-mount_iso.git'
+    archive: 'https://github.com/voxpupuli/puppet-archive.git'
   symlinks:
     sqlserver: "#{source_dir}"
