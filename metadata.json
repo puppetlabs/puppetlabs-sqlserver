@@ -2,7 +2,7 @@
   "name": "puppetlabs-sqlserver",
   "version": "3.2.1",
   "author": "puppetlabs",
-  "summary": "The `sqlserver` module installs and manages MS SQL Server 2012, 2014, 2016, 2017, and 2019 on Windows systems.",
+  "summary": "The `sqlserver` module installs and manages MS SQL Server 2012, 2014, 2016, 2017, 2019 and 2022 on Windows systems.",
   "license": "proprietary",
   "source": "https://github.com/puppetlabs/puppetlabs-sqlserver",
   "project_page": "https://github.com/puppetlabs/puppetlabs-sqlserver",
@@ -44,7 +44,8 @@
     "sql2014",
     "sql2016",
     "sql2017",
-    "sql2019",
+    "sql2019",   
+    "sql2022",
     "tsql",
     "database"
   ],

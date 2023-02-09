@@ -9,8 +9,9 @@ class Helper
 end
 
 WIN_ISO_ROOT = 'https://artifactory.delivery.puppetlabs.net/artifactory/generic__iso/iso/windows'
-WIN_2012R2_ISO = 'en_windows_server_2012_r2_with_update_x64_dvd_6052708.iso'
+WIN_2019_ISO = 'en_windows_server_2019_updated_july_2020_x64_dvd_94453821.iso'
 QA_RESOURCE_ROOT = 'https://artifactory.delivery.puppetlabs.net/artifactory/generic__iso/iso/SQLServer'
+SQL_2022_ISO = 'SQLServer2022-x64-ENU-Dev.iso'
 SQL_2019_ISO = 'SQLServer2019CTP2.4-x64-ENU.iso'
 SQL_2017_ISO = 'SQLServer2017-x64-ENU.iso'
 SQL_2016_ISO = 'en_sql_server_2016_enterprise_with_service_pack_1_x64_dvd_9542382.iso'
@@ -26,7 +27,7 @@ RSpec.configure do |c|
 
     iso_opts = {
       folder: WIN_ISO_ROOT,
-      file: WIN_2012R2_ISO,
+      file: WIN_2019_ISO,
       drive_letter: 'I',
     }
     mount_iso(iso_opts)
@@ -49,14 +50,18 @@ end
 
 def sql_version?
   vars = node_vars?
-
-  if vars['sqlversion']
-    return vars['sqlversion'].match(%r{sqlserver_(.*)})[1]
+  unless vars.nil?
+    if vars['sqlversion']
+      return vars['sqlversion'].match(%r{sqlserver_(.*)})[1]
+    end
   end
   # Return's a default version if none was given
-  '2016'
+  '2019'
 end
 
+# this mounts the OS and SQL iso
+# OS iso mounts to I drive
+# SQL iso mounts to H drive
 def mount_iso(opts = {})
   folder = opts[:folder]
   file = opts[:file]
@@ -110,6 +115,12 @@ def base_install(sql_version)
       folder: QA_RESOURCE_ROOT,
       file: SQL_2019_ISO,
       drive_letter: 'H',
+    }
+  when 2022
+    iso_opts = {
+      folder: QA_RESOURCE_ROOT,
+      file: SQL_2022_ISO,
+      drive_letter: 'H'
     }
   end
   # Mount the ISO on the agent
@@ -207,13 +218,21 @@ def validate_sql_install(opts = {}, &block)
 end
 
 def get_install_paths(version)
-  vers = { '2012' => '110', '2014' => '120', '2016' => '130', '2017' => '140', '2019' => '150' }
+  vers = { '2012' => '110', '2014' => '120', '2016' => '130', '2017' => '140', '2019' => '150', '2022' => '160' }
 
   raise _('Valid version must be specified') unless vers.keys.include?(version)
 
-  dir = "%ProgramFiles%/Microsoft SQL Server/#{vers[version]}/Setup Bootstrap"
-  sql_directory = 'SQL'
-  sql_directory += 'Server' if version != '2017'
+  dir = "C://Program Files/Microsoft SQL Server/#{vers[version]}/Setup Bootstrap"
+  sql_directory = case version
+                  when '2022'
+                    "SQL#{version}"
+                  when '2019'
+                    "SQL#{version}CTP2.4"
+                  when '2017'
+                    "SQL#{version}"
+                  else
+                    "SQLServer#{version}"
+                  end
 
-  [dir, "#{dir}\\#{sql_directory}#{version}"]
+  [dir, "#{dir}\\#{sql_directory}"]
 end

@@ -118,6 +118,12 @@ def base_install(sql_version)
       file: SQL_2019_ISO,
       drive_letter: 'H',
     }
+  when 2022
+    iso_opts = {
+      folder: QA_RESOURCE_ROOT,
+      file: SQL_2022_ISO,
+      drive_letter: 'H'
+    }
   end
   host = find_only_one('sql_host')
   # Mount the ISO on the agent
@@ -160,15 +166,23 @@ def remove_sql_instances(host, opts = {})
 end
 
 def get_install_paths(version)
-  vers = { '2012' => '110', '2014' => '120', '2016' => '130', '2017' => '140', '2019' => '150' }
+  vers = { '2012' => '110', '2014' => '120', '2016' => '130', '2017' => '140', '2019' => '150', '2022' => '160' }
 
   raise _('Valid version must be specified') unless vers.keys.include?(version)
 
-  dir = "%ProgramFiles%\\Microsoft SQL Server\\#{vers[version]}\\Setup Bootstrap"
-  sql_directory = 'SQL'
-  sql_directory += 'Server' if version != '2017'
+  dir = "C://Program Files/Microsoft SQL Server/#{vers[version]}/Setup Bootstrap"
+  sql_directory = case version
+                  when '2022'
+                    "SQL#{version}"
+                  when '2019'
+                    "SQL#{version}CTP2.4"
+                  when '2017'
+                    "SQL#{version}"
+                  else
+                    "SQLServer#{version}"
+                  end
 
-  [dir, "#{dir}\\#{sql_directory}#{version}"]
+  [dir, "#{dir}\\#{sql_directory}"]
 end
 
 def install_pe_license(host)

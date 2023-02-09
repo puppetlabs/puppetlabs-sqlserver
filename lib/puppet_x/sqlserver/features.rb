@@ -7,8 +7,9 @@ SQL_2014 ||= 'SQL_2014'
 SQL_2016 ||= 'SQL_2016'
 SQL_2017 ||= 'SQL_2017'
 SQL_2019 ||= 'SQL_2019'
+SQL_2022 ||= 'SQL_2022'
 
-ALL_SQL_VERSIONS ||= [SQL_2012, SQL_2014, SQL_2016, SQL_2017, SQL_2019].freeze
+ALL_SQL_VERSIONS ||= [SQL_2012, SQL_2014, SQL_2016, SQL_2017, SQL_2019, SQL_2022].freeze
 
 # rubocop:disable Style/ClassAndModuleChildren
 module PuppetX
@@ -38,6 +39,10 @@ module PuppetX
         SQL_2019 => {
           major_version: 15,
           registry_path: '150',
+        },
+        SQL_2022 => {
+          major_version: 16,
+          registry_path: '160',
         },
       }.freeze
 
@@ -145,6 +150,8 @@ module PuppetX
 
       def self.get_shared_features(version)
         shared_features = {
+          # Client tools support removed with SQLServer 2022
+          # (ref https://learn.microsoft.com/en-us/sql/database-engine/install-windows/install-sql-server-on-server-core?view=sql-server-ver16#BK_SupportedFeatures)
           'Connectivity_Full'      => 'Conn', # Client Tools Connectivity
           'SDK_Full'               => 'SDK', # Client Tools SDK
           'MDSCoreFeature'         => 'MDS', # Master Data Services
@@ -156,7 +163,7 @@ module PuppetX
           'SQL_DReplay_Controller' => 'DREPLAY_CTLR', # Distributed Replay Controller
           'SQL_DReplay_Client'     => 'DREPLAY_CLT', # Distributed Replay Client
           'sql_shared_mr'          => 'SQL_SHARED_MR', # R Server (Standalone)
-
+          # SQL Client Connectivity SDK (Installed by default)
           # also WMI: SqlService WHERE SQLServiceType = 4 # MsDtsServer
           'SQL_DTS_Full'           => 'IS', # Integration Services
           # currently ignoring Reporting Services Shared

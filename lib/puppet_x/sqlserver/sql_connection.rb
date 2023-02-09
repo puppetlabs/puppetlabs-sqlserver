@@ -31,7 +31,7 @@ module PuppetX # rubocop:disable Style/ClassAndModuleChildren
 
       def get_connection_string(config)
         params = {
-          'Provider'             => 'SQLNCLI11',
+          'Provider'             => 'MSOLEDBSQL',
           'Initial Catalog'      => config[:database] || 'master',
           'Application Name'     => 'Puppet',
           'Data Source'          => '.',
@@ -50,8 +50,8 @@ module PuppetX # rubocop:disable Style/ClassAndModuleChildren
           # SQL Server based authentication
           raise ArgumentError, _('admin_user must not be empty or nil') unless admin_user != ''
           raise ArgumentError, _('admin_pass must not be empty or nil') unless admin_pass != ''
-          params.store('User ID',  admin_user)
-          params.store('Password', admin_pass)
+          params.store('UID',  admin_user)
+          params.store('PWD', admin_pass)
         end
 
         if !config[:instance_name].nil? && config[:instance_name] !~ %r{^MSSQLSERVER$}
