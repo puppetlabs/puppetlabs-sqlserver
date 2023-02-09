@@ -133,7 +133,7 @@ def install_sqlserver(features)
       features => #{features},
       security_mode => 'SQL',
       sa_pwd => 'Pupp3t1@',
-      sql_sysadmin_accounts => ['vagrant'],
+      sql_sysadmin_accounts => ['#{user}'],
       install_switches => {
         'UPDATEENABLED'       => 'False',
         'TCPENABLED'          => 1,

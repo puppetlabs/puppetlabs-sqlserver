@@ -17,7 +17,7 @@ describe 'sqlserver::config test' do
       ensure                => '#{ensure_val}',
       source                => 'H:',
       features              => ['DQ', 'FullText', 'Replication', 'SQLEngine'],
-      sql_sysadmin_accounts => ['vagrant'],
+      sql_sysadmin_accounts => ['#{user}'],
       security_mode         => 'SQL',
       sa_pwd                => 'Pupp3t1@',
       windows_feature_source => 'I:\\sources\\sxs',
