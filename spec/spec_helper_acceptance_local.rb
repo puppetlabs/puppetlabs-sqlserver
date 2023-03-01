@@ -9,7 +9,7 @@ class Helper
 end
 
 WIN_ISO_ROOT = 'https://artifactory.delivery.puppetlabs.net/artifactory/generic__iso/iso/windows'
-WIN_2012R2_ISO = 'en_windows_server_2012_r2_with_update_x64_dvd_6052708.iso'
+WIN_2019_ISO = 'en_windows_server_2019_updated_july_2020_x64_dvd_94453821.iso'
 QA_RESOURCE_ROOT = 'https://artifactory.delivery.puppetlabs.net/artifactory/generic__iso/iso/SQLServer'
 SQL_2019_ISO = 'SQLServer2019CTP2.4-x64-ENU.iso'
 SQL_2017_ISO = 'SQLServer2017-x64-ENU.iso'
@@ -18,6 +18,7 @@ SQL_2014_ISO = 'SQLServer2014SP3-FullSlipstream-x64-ENU.iso'
 SQL_2012_ISO = 'SQLServer2012SP1-FullSlipstream-ENU-x64.iso'
 SQL_ADMIN_USER = 'sa'
 SQL_ADMIN_PASS = 'Pupp3t1@'
+USER = Helper.instance.run_shell('$env:UserName').stdout.chomp
 
 RSpec.configure do |c|
   c.before(:suite) do
@@ -26,9 +27,13 @@ RSpec.configure do |c|
 
     iso_opts = {
       folder: WIN_ISO_ROOT,
-      file: WIN_2012R2_ISO,
+      file: WIN_2019_ISO,
       drive_letter: 'I',
     }
+    # Allows litmus to use SSH, by explicitly setting specinfra
+    # os family to windows (would fail when using ssh on windows)
+    set :os, family: 'windows', release: nil, arch: nil
+
     mount_iso(iso_opts)
 
     base_install(sql_version?)
@@ -49,14 +54,18 @@ end
 
 def sql_version?
   vars = node_vars?
-
-  if vars['sqlversion']
-    return vars['sqlversion'].match(%r{sqlserver_(.*)})[1]
+  unless vars.nil?
+    if vars['sqlversion']
+      return vars['sqlversion'].match(%r{sqlserver_(.*)})[1]
+    end
   end
   # Return's a default version if none was given
-  '2016'
+  '2019'
 end
 
+# this mounts the OS and SQL iso
+# OS iso mounts to I drive
+# SQL iso mounts to H drive
 def mount_iso(opts = {})
   folder = opts[:folder]
   file = opts[:file]
@@ -127,8 +136,9 @@ def install_sqlserver(features)
       features => #{features},
       security_mode => 'SQL',
       sa_pwd => 'Pupp3t1@',
-      sql_sysadmin_accounts => ['Administrator'],
+      sql_sysadmin_accounts => ['#{USER}'],
       install_switches => {
+        'UPDATEENABLED'       => 'False',
         'TCPENABLED'          => 1,
         'SQLBACKUPDIR'        => 'C:\\MSSQLSERVER\\backupdir',
         'SQLTEMPDBDIR'        => 'C:\\MSSQLSERVER\\tempdbdir',
@@ -145,7 +155,7 @@ end
 
 def run_sql_query(opts = {}, &block)
   query = opts[:query]
-  server = opts[:server]
+  server = opts[:server] ||= '.'
   instance = opts[:instance]
   sql_admin_pass = opts[:sql_admin_pass] ||= SQL_ADMIN_PASS
   sql_admin_user = opts[:sql_admin_user] ||= SQL_ADMIN_USER
@@ -162,16 +172,16 @@ def run_sql_query(opts = {}, &block)
   # sqlcmd has problem authenticate to sqlserver if the instance is the default one MSSQLSERVER
   # Below is a work-around for it (remove "-S server\instance" from the connection string)
   if instance.nil? || instance == 'MSSQLSERVER'
-    powershell.gsub!("-S #{server}\\#{instance}", '')
+    powershell.dup.gsub!("-S #{server}\\#{instance}", '')
   end
 
   Tempfile.open 'tmp.ps1' do |tempfile|
     File.open(tempfile.path, 'w') { |file| file.puts powershell }
-    bolt_upload_file(tempfile.path, 'C:/cygwin64/home/Administrator/tmp.ps1')
+    bolt_upload_file(tempfile.path, "c:\\users\\#{USER}\\tmp.ps1")
   end
   # create_remote_file('tmp.ps1', powershell)
 
-  Helper.instance.run_shell('powershell -NonInteractive -NoLogo -File "C:\\cygwin64\\home\\Administrator\\tmp.ps1"') do |r|
+  Helper.instance.run_shell("powershell -NonInteractive -NoLogo -File  'c:\\users\\#{USER}\\tmp.ps1'") do |r|
     match = %r{(\d*) rows affected}.match(r.stdout)
     raise 'Could not match number of rows for SQL query' unless match
     rows_observed = match[1]
@@ -192,11 +202,11 @@ def validate_sql_install(opts = {}, &block)
 
   # NOTE: executing a fully qualified setup.exe quoted this way fails
   # but that can be circumvented by first changing directories
-  cmd = "cd \"#{setup_dir}\" && setup.exe /Action=RunDiscovery /q"
-  Helper.instance.run_shell("cmd.exe /c '#{cmd}'")
+  cmd = "cd \"#{setup_dir}\"; ./setup.exe /Action=RunDiscovery /q"
+  Helper.instance.run_shell(cmd)
 
   cmd = "type \"#{bootstrap_dir}\\Log\\Summary.txt\""
-  result = Helper.instance. run_shell("cmd.exe /c '#{cmd}'")
+  result = Helper.instance.run_shell(cmd)
   return unless block
   case block.arity
   when 0
@@ -211,9 +221,15 @@ def get_install_paths(version)
 
   raise _('Valid version must be specified') unless vers.keys.include?(version)
 
-  dir = "%ProgramFiles%/Microsoft SQL Server/#{vers[version]}/Setup Bootstrap"
-  sql_directory = 'SQL'
-  sql_directory += 'Server' if version != '2017'
+  dir = "C://Program Files/Microsoft SQL Server/#{vers[version]}/Setup Bootstrap"
+  sql_directory = case version
+                  when '2019'
+                    "SQL#{version}CTP2.4"
+                  when '2017'
+                    "SQL#{version}"
+                  else
+                    "SQLServer#{version}"
+                  end
 
-  [dir, "#{dir}\\#{sql_directory}#{version}"]
+  [dir, "#{dir}\\#{sql_directory}"]
 end

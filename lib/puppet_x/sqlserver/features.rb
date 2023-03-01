@@ -149,7 +149,7 @@ module PuppetX
           'SDK_Full'               => 'SDK', # Client Tools SDK
           'MDSCoreFeature'         => 'MDS', # Master Data Services
           'Tools_Legacy_Full'      => 'BC', # Client Tools Backwards Compatibility
-          'SQL_SSMS_Full'          => 'ADV_SSMS', # Management Tools - Complete (Does not exist in SQL 2016)
+          'SQL_SSMS_Full'          => 'ADV_SSMS', # Management Tools - Complete (Does not exist in SQL 2016+)
           'SQL_SSMS_Adv'           => 'SSMS', # Management Tools - Basic  (Does not exist in SQL 2016)
           'SQL_DQ_CLIENT_Full'     => 'DQC', # Data Quality Client
           'SQL_BOL_Components'     => 'BOL', # Documentation Components

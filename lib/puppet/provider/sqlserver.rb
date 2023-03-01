@@ -19,7 +19,8 @@ class Puppet::Provider::Sqlserver < Puppet::Provider # rubocop:disable Style/Doc
                                       end
 
   def try_execute(command, msg = nil, obfuscate_strings = nil, acceptable_exit_codes = [0])
-    res = execute(command.compact, failonfail: false)
+    command&.compact
+    res = execute(command, failonfail: false)
 
     unless acceptable_exit_codes.include?(res.exitstatus)
       msg = "Failure occured when trying to install SQL Server #{@resource[:name]}" if msg.nil?
