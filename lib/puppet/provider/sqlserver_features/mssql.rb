@@ -65,6 +65,7 @@ Puppet::Type.type(:sqlserver_features).provide(:mssql, parent: Puppet::Provider:
                 '/IACCEPTSQLSERVERLICENSETERMS',
                 "/FEATURES=#{features.join(',')}"]
     if action == 'install'
+      cmd_args << '/UPDATEENABLED=False'
       if not_nil_and_not_empty?(@resource[:is_svc_account])
         cmd_args << "/ISSVCACCOUNT=#{@resource[:is_svc_account]}"
       end

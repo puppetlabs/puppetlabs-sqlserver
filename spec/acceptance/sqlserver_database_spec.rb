@@ -47,8 +47,7 @@ describe 'Test sqlserver::database' do
         }
         sqlserver_tsql{'testsqlserver_tsql':
           instance => 'MSSQLSERVER',
-          database => '#{@db_name}',
-          command => "CREATE TABLE #{@table_name} (id INT, name VARCHAR(20), email VARCHAR(20));",
+          command => "use #{@db_name}; CREATE TABLE #{@table_name} (id INT, name VARCHAR(20), email VARCHAR(20));",
           require => Sqlserver::Database['#{@db_name}'],
         }
       MANIFEST
@@ -101,8 +100,7 @@ describe 'Test sqlserver::database' do
         }
         sqlserver_tsql{'testsqlserver_tsql':
           instance => 'MSSQLSERVER',
-          database => '#{@db_name}',
-          command => "CREATE TABLE #{@table_name} (id INT, name VARCHAR(20), email VARCHAR(20));",
+          command => "use #{@db_name};CREATE TABLE #{@table_name} (id INT, name VARCHAR(20), email VARCHAR(20));",
           require => Sqlserver::Database['#{@db_name}'],
         }
       MANIFEST
@@ -132,8 +130,7 @@ describe 'Test sqlserver::database' do
         }
         sqlserver_tsql{'testsqlserver_tsql':
           instance => 'MSSQLSERVER',
-          database => '#{@db_name}',
-          command => "CREATE TABLE #{@table_name} (id INT, name VARCHAR(20), email VARCHAR(20));",
+          command => "use #{@db_name};CREATE TABLE #{@table_name} (id INT, name VARCHAR(20), email VARCHAR(20));",
           require => Sqlserver::Database['#{@db_name}'],
         }
       MANIFEST
@@ -170,8 +167,7 @@ describe 'Test sqlserver::database' do
         }
         sqlserver_tsql{'testsqlserver_tsql':
             instance => 'MSSQLSERVER',
-            database => '#{@db_name}',
-            command => "CREATE TABLE #{@table_name} (id INT, name VARCHAR(20), email VARCHAR(20));",
+            command => "use #{@db_name};CREATE TABLE #{@table_name} (id INT, name VARCHAR(20), email VARCHAR(20));",
             require => Sqlserver::Database['#{@db_name}'],
         }
       MANIFEST
@@ -209,8 +205,7 @@ describe 'Test sqlserver::database' do
         }
         sqlserver_tsql{'testsqlserver_tsql':
             instance => 'MSSQLSERVER',
-            database => '#{@db_name}',
-            command => "CREATE TABLE #{@table_name} (id INT, name VARCHAR(20), email VARCHAR(20));",
+            command => "use #{@db_name};CREATE TABLE #{@table_name} (id INT, name VARCHAR(20), email VARCHAR(20));",
             require => Sqlserver::Database['#{@db_name}'],
         }
       MANIFEST
@@ -248,8 +243,7 @@ describe 'Test sqlserver::database' do
         }
         sqlserver_tsql{'testsqlserver_tsql':
             instance => 'MSSQLSERVER',
-            database => '#{@db_name}',
-            command => "CREATE TABLE #{@table_name} (id INT, name VARCHAR(20), email VARCHAR(20));",
+            command => "use #{@db_name};CREATE TABLE #{@table_name} (id INT, name VARCHAR(20), email VARCHAR(20));",
             require => Sqlserver::Database['#{@db_name}'],
         }
       MANIFEST
@@ -287,8 +281,7 @@ describe 'Test sqlserver::database' do
         }
         sqlserver_tsql{'testsqlserver_tsql':
             instance => 'MSSQLSERVER',
-            database => '#{@db_name}',
-            command => "CREATE TABLE #{@table_name} (id INT, name VARCHAR(20), email VARCHAR(20));",
+            command => "use #{@db_name};CREATE TABLE #{@table_name} (id INT, name VARCHAR(20), email VARCHAR(20));",
             require => Sqlserver::Database['#{@db_name}'],
         }
       MANIFEST

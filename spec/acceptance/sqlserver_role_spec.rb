@@ -4,7 +4,7 @@ require 'spec_helper_acceptance'
 require 'securerandom'
 require 'erb'
 
-hostname = ENV['TARGET_HOST']
+hostname = Helper.instance.run_shell('hostname').stdout.upcase.strip
 
 # database name
 db_name   = ('DB' + SecureRandom.hex(4)).upcase

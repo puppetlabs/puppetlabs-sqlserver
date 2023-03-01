@@ -8,6 +8,11 @@ version = sql_version?
 
 describe 'sqlserver_features', if: version.to_i != 2012 do
   def ensure_sql_features(features, ensure_val = 'present')
+    user = Helper.instance.run_shell('$env:UserName').stdout.chomp
+    # If no password env variable set (by CI), then default to vagrant
+    password = Helper.instance.run_shell('$env:pass').stdout.chomp
+    password = password.empty? ? 'vagrant' : password
+
     pp = <<-MANIFEST
     sqlserver::config{ 'MSSQLSERVER':
     admin_pass        => '<%= SQL_ADMIN_PASS %>',
@@ -16,8 +21,8 @@ describe 'sqlserver_features', if: version.to_i != 2012 do
     sqlserver_features{ 'MSSQLSERVER':
       ensure            => #{ensure_val},
       source            => 'H:',
-      is_svc_account    => "$::hostname\\\\Administrator",
-      is_svc_password   => 'Qu@lity!',
+      is_svc_account    => "#{user}",
+      is_svc_password   => '#{password}',
       features          => #{features},
       windows_feature_source => 'I:\\sources\\sxs',
     }
@@ -27,6 +32,7 @@ describe 'sqlserver_features', if: version.to_i != 2012 do
   end
 
   def bind_and_apply_failing_manifest(features, ensure_val = 'present')
+    user = Helper.instance.run_shell('$env:UserName').stdout.chomp
     pp = <<-MANIFEST
     sqlserver::config{ 'MSSQLSERVER':
     admin_pass        => '<%= SQL_ADMIN_PASS %>',
@@ -35,7 +41,7 @@ describe 'sqlserver_features', if: version.to_i != 2012 do
     sqlserver_features{ 'MSSQLSERVER':
       ensure            => #{ensure_val},
       source            => 'H:',
-      is_svc_account    => "$::hostname\\\\Administrator",
+      is_svc_account    => "#{user}",
       features          => #{features},
     }
     MANIFEST
@@ -168,11 +174,12 @@ describe 'sqlserver_features', if: version.to_i != 2012 do
                  end
 
       def remove_sql_instance
+        user = Helper.instance.run_shell('$env:UserName').stdout.chomp
         pp = <<-MANIFEST
             sqlserver_instance{'MSSQLSERVER':
             ensure                => absent,
             source                => 'H:',
-            sql_sysadmin_accounts => ['Administrator'],
+            sql_sysadmin_accounts => ['#{user}'],
             }
             MANIFEST
         idempotent_apply(pp)
