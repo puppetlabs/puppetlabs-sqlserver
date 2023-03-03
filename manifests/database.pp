@@ -175,8 +175,8 @@ define sqlserver::database (
   sqlserver_validate_instance_name($instance)
 
   $create_delete = $ensure ? {
-    present => 'create',
-    absent  => 'delete',
+    'present' => 'create',
+    'absent'  => 'delete',
   }
 
   sqlserver_tsql { "database-${instance}-${db_name}":

@@ -53,8 +53,8 @@ define sqlserver::role (
   }
 
   $_create_delete = $ensure ? {
-    present => 'create',
-    absent  => 'delete',
+    'present' => 'create',
+    'absent'  => 'delete',
   }
 
   # the title has to be unique to prevent collisions when multiple declarations

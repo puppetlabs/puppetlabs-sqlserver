@@ -22,22 +22,22 @@
 #   }
 #
 define sqlserver::config (
-  Variant[Sensitive[String], String] $admin_user = '',
-  Variant[Sensitive[String], String] $admin_pass = '',
-  Enum['SQL_LOGIN', 'WINDOWS_LOGIN'] $admin_login_type = 'SQL_LOGIN',
-  String[1,16] $instance_name = $title,
+  Optional[Variant[Sensitive[String], String]] $admin_user       = undef,
+  Optional[Variant[Sensitive[String], String]] $admin_pass       = undef,
+  Enum['SQL_LOGIN', 'WINDOWS_LOGIN']           $admin_login_type = 'SQL_LOGIN',
+  String[1,16]                                 $instance_name    = $title,
 ) {
   ##This config is a catalog requirement for sqlserver_tsql and is looked up to retrieve the admin_user,
   ## admin_pass and admin_login_type for a given instance_name
 
   case $admin_login_type {
     'SQL_LOGIN': {
-      if ($admin_user == '') { fail 'sqlserver::config expects admin_user to be set for a admin_login_type of SQL_LOGIN' }
-      if ($admin_pass == '') { fail 'sqlserver::config expects admin_pass to be set for a admin_login_type of SQL_LOGIN' }
+      if (!$admin_user) { fail 'sqlserver::config expects admin_user to be set for a admin_login_type of SQL_LOGIN' }
+      if (!$admin_pass) { fail 'sqlserver::config expects admin_pass to be set for a admin_login_type of SQL_LOGIN' }
     }
     'WINDOWS_LOGIN': {
-      if ($admin_user != '') { fail 'sqlserver::config expects admin_user to be empty for a admin_login_type of WINDOWS_LOGIN' }
-      if ($admin_pass != '') { fail 'sqlserver::config expects admin_pass to be empty for a admin_login_type of WINDOWS_LOGIN' }
+      if ($admin_user) { fail 'sqlserver::config expects admin_user to be empty for a admin_login_type of WINDOWS_LOGIN' }
+      if ($admin_pass) { fail 'sqlserver::config expects admin_pass to be empty for a admin_login_type of WINDOWS_LOGIN' }
     }
     default: { fail "sqlserver::config expects a admin_login_type of SQL_LOGIN or WINDOWS_LOGIN but found ${admin_login_type}" }
   }
