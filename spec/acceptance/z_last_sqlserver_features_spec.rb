@@ -15,8 +15,8 @@ describe 'sqlserver_features', if: version.to_i != 2012 do
 
     pp = <<-MANIFEST
     sqlserver::config{ 'MSSQLSERVER':
-      admin_pass        => '<%= SQL_ADMIN_PASS %>',
-      admin_user        => '<%= SQL_ADMIN_USER %>',
+    admin_pass        => '<%= SQL_ADMIN_PASS %>',
+    admin_user        => '<%= SQL_ADMIN_USER %>',
     }
     sqlserver_features{ 'MSSQLSERVER':
       ensure            => #{ensure_val},
@@ -35,8 +35,8 @@ describe 'sqlserver_features', if: version.to_i != 2012 do
     user = Helper.instance.run_shell('$env:UserName').stdout.chomp
     pp = <<-MANIFEST
     sqlserver::config{ 'MSSQLSERVER':
-      admin_pass        => '<%= SQL_ADMIN_PASS %>',
-      admin_user        => '<%= SQL_ADMIN_USER %>',
+    admin_pass        => '<%= SQL_ADMIN_PASS %>',
+    admin_user        => '<%= SQL_ADMIN_USER %>',
     }
     sqlserver_features{ 'MSSQLSERVER':
       ensure            => #{ensure_val},
@@ -50,7 +50,10 @@ describe 'sqlserver_features', if: version.to_i != 2012 do
   end
 
   context 'can install' do
-    features = if version.to_i >= 2016
+    # Client Tools removed in Server2022 (Backwards Compatibility, Connectivity, SDK)
+    features = if version.to_i == 2022
+                 ['IS', 'MDS', 'DQC']
+               elsif version.to_i >= 2016 && version.to_i < 2022
                  ['BC', 'Conn', 'SDK', 'IS', 'MDS', 'DQC']
                else
                  ['BC', 'Conn', 'SSMS', 'ADV_SSMS', 'SDK', 'IS', 'MDS', 'DQC']
@@ -64,9 +67,12 @@ describe 'sqlserver_features', if: version.to_i != 2012 do
       ensure_sql_features(features)
 
       validate_sql_install(version: version) do |r|
-        expect(r.stdout).to match(%r{Client Tools Connectivity})
-        expect(r.stdout).to match(%r{Client Tools Backwards Compatibility})
-        expect(r.stdout).to match(%r{Client Tools SDK})
+        # Client Tools removed in Server2022
+        unless version.to_i == 2022
+          expect(r.stdout).to match(%r{Client Tools Connectivity})
+          expect(r.stdout).to match(%r{Client Tools Backwards Compatibility})
+          expect(r.stdout).to match(%r{Client Tools SDK})
+        end
         expect(r.stdout).to match(%r{Integration Services})
         expect(r.stdout).to match(%r{Master Data Services})
       end
@@ -74,7 +80,9 @@ describe 'sqlserver_features', if: version.to_i != 2012 do
   end
 
   context 'can remove' do
-    features = if version.to_i >= 2016
+    features = if version.to_i == 2022
+                 ['IS', 'MDS', 'DQC']
+               elsif version.to_i >= 2016 && version.to_i < 2022
                  ['BC', 'Conn', 'SDK', 'IS', 'MDS', 'DQC']
                else
                  ['BC', 'Conn', 'SSMS', 'ADV_SSMS', 'SDK', 'IS', 'MDS', 'DQC']
@@ -84,9 +92,12 @@ describe 'sqlserver_features', if: version.to_i != 2012 do
       ensure_sql_features(features, 'absent')
 
       validate_sql_install(version: version) do |r|
-        expect(r.stdout).not_to match(%r{Client Tools Connectivity})
-        expect(r.stdout).not_to match(%r{Client Tools Backwards Compatibility})
-        expect(r.stdout).not_to match(%r{Client Tools SDK})
+        # Client Tools removed in Server2022
+        unless version.to_i == 2022
+          expect(r.stdout).not_to match(%r{Client Tools Connectivity})
+          expect(r.stdout).not_to match(%r{Client Tools Backwards Compatibility})
+          expect(r.stdout).not_to match(%r{Client Tools SDK})
+        end
         expect(r.stdout).not_to match(%r{Integration Services})
         expect(r.stdout).not_to match(%r{Master Data Services})
       end
@@ -94,7 +105,9 @@ describe 'sqlserver_features', if: version.to_i != 2012 do
   end
 
   context 'can remove independent feature' do
-    features = if version.to_i >= 2016
+    features = if version.to_i == 2022
+                 ['IS', 'MDS', 'DQC']
+               elsif version.to_i >= 2016 && version.to_i < 2022
                  ['BC', 'Conn', 'SDK', 'IS', 'MDS', 'DQC']
                else
                  ['BC', 'Conn', 'SSMS', 'ADV_SSMS', 'SDK', 'IS', 'MDS', 'DQC']
@@ -108,7 +121,7 @@ describe 'sqlserver_features', if: version.to_i != 2012 do
       ensure_sql_features(features, 'absent')
     end
 
-    it "'BC'" do
+    it "'BC'", unless: version.to_i == 2022 do
       ensure_sql_features(features - ['BC'])
 
       validate_sql_install(version: version) do |r|
@@ -127,7 +140,7 @@ describe 'sqlserver_features', if: version.to_i != 2012 do
       end
     end
 
-    it "'SDK' + 'IS" do
+    it "'SDK' + 'IS", unless: version.to_i == 2022 do
       ensure_sql_features(features - ['SDK', 'IS'])
 
       validate_sql_install(version: version) do |r|
@@ -152,7 +165,13 @@ describe 'sqlserver_features', if: version.to_i != 2012 do
   context 'with no installed instances' do
     # Currently this test can only be run on a machine once and will error if run a second time
     context 'can install' do
-      features = ['BC', 'Conn', 'SDK', 'IS', 'MDS', 'DQC']
+      features = if version.to_i == 2022
+                   ['IS', 'MDS', 'DQC']
+                 elsif version.to_i >= 2016 && version.to_i < 2022
+                   ['BC', 'Conn', 'SDK', 'IS', 'MDS', 'DQC']
+                 else
+                   ['BC', 'Conn', 'SSMS', 'ADV_SSMS', 'SDK', 'IS', 'MDS', 'DQC']
+                 end
 
       def remove_sql_instance
         user = Helper.instance.run_shell('$env:UserName').stdout.chomp

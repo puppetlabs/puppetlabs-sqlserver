@@ -20,7 +20,7 @@
 
 ## Overview
 
-The sqlserver module installs and manages Microsoft SQL Server 2012, 2014, 2016, 2017, 2019 on Windows systems.
+The sqlserver module installs and manages Microsoft SQL Server 2012, 2014, 2016, 2017, 2019 and 2022 on Windows systems.
 
 ## Module Description
 
@@ -272,9 +272,9 @@ For information on the classes and types, see the [REFERENCE.md](https://github.
 
 ## Limitations
 
-SQL 2017 and 2019 detection support has been added. This support is limited to functionality already present for other versions. No new SQL 2017 or above specific functionality has been added in this release.
+SQL 2017, 2019 and 2022 detection support has been added. This support is limited to functionality already present for other versions.
 
-This module can manage only a single version of SQL Server on a given host (one and only one of SQL Server 2012, 2014, 2016, 2017, or 2019). The module is able to manage multiple SQL Server instances of the same version.
+This module can manage only a single version of SQL Server on a given host (one and only one of SQL Server 2012, 2014, 2016, 2017, 2019 or 2022). The module is able to manage multiple SQL Server instances of the same version.
 
 This module cannot manage the SQL Server Native Client SDK (also known as SNAC_SDK). The SQL Server installation media can install the SDK, but it is not able to uninstall the SDK. Note that the 'sqlserver_features' fact detects the presence of the SDK.
 

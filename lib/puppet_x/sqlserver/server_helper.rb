@@ -44,6 +44,7 @@ module PuppetX # rubocop:disable Style/ClassAndModuleChildren
         ver = content.match('"(.+)"')
         return nil if ver.nil?
 
+        return SQL_2022 if ver[1].start_with?('16.')
         return SQL_2019 if ver[1].start_with?('15.')
         return SQL_2017 if ver[1].start_with?('14.')
         return SQL_2016 if ver[1].start_with?('13.')
