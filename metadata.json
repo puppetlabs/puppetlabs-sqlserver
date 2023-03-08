@@ -1,6 +1,6 @@
 {
   "name": "puppetlabs-sqlserver",
-  "version": "3.2.1",
+  "version": "3.3.0",
   "author": "puppetlabs",
   "summary": "The `sqlserver` module installs and manages MS SQL Server 2012, 2014, 2016, 2017, 2019 and 2022 on Windows systems.",
   "license": "proprietary",
@@ -44,12 +44,12 @@
     "sql2014",
     "sql2016",
     "sql2017",
-    "sql2019",   
+    "sql2019",
     "sql2022",
     "tsql",
     "database"
   ],
-  "pdk-version": "2.5.0",
+  "pdk-version": "2.6.1",
   "template-url": "https://github.com/puppetlabs/pdk-templates.git#main",
-  "template-ref": "2.7.1-0-g9a16c87"
+  "template-ref": "heads/main-0-g6e2b72d"
 }

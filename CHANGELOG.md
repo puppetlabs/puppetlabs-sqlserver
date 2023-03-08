@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
+## [v3.3.0](https://github.com/puppetlabs/puppetlabs-sqlserver/tree/v3.3.0) (2023-03-07)
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-sqlserver/compare/v3.2.1...v3.3.0)
+
+### Added
+
+- \(CONT-490\) - Add support for SQL Server 2022 [\#420](https://github.com/puppetlabs/puppetlabs-sqlserver/pull/420) ([jordanbreen28](https://github.com/jordanbreen28))
+
+### Fixed
+
+- Fix puppet strings formatting [\#414](https://github.com/puppetlabs/puppetlabs-sqlserver/pull/414) ([GSPatton](https://github.com/GSPatton))
+
 ## [v3.2.1](https://github.com/puppetlabs/puppetlabs-sqlserver/tree/v3.2.1) (2022-12-13)
 
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-sqlserver/compare/v3.2.0...v3.2.1)
