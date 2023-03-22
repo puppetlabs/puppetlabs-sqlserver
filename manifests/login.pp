@@ -52,7 +52,7 @@
 #
 ##
 define sqlserver::login (
-  $login = $title,
+  String[1, 128] $login = $title,
   String[1,16] $instance = 'MSSQLSERVER',
   Enum['SQL_LOGIN', 'WINDOWS_LOGIN'] $login_type = 'SQL_LOGIN',
   Enum['present', 'absent'] $ensure = 'present',
@@ -72,8 +72,8 @@ define sqlserver::login (
   }
 
   $_create_delete = $ensure ? {
-    present => 'create',
-    absent  => 'delete',
+    'present' => 'create',
+    'absent'  => 'delete',
   }
 
   sqlserver_tsql { "login-${instance}-${login}":

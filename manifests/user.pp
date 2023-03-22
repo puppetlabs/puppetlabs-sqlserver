@@ -58,8 +58,8 @@ define sqlserver::user (
   }
 
   $create_delete = $ensure ? {
-    present => 'create',
-    absent  => 'delete',
+    'present' => 'create',
+    'absent'  => 'delete',
   }
 
   sqlserver_tsql { "user-${instance}-${database}-${user}":
