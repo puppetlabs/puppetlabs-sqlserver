@@ -1,13 +1,22 @@
-name: "PR Testing"
+name: "ci"
 
-on: [pull_request]
+on:
+  pull_request:
+    branches:
+      - "main"
+  workflow_dispatch:
 
 env:
   SERVICE_URL: https://facade-maint-config-windows-use-ssh-6f3kfepqcq-ew.a.run.app/v1/provision
-
+    
 jobs:
+  Spec:
+    uses: "puppetlabs/cat-github-actions/.github/workflows/module_ci.yml@main"
+    secrets: "inherit"
+
   setup_matrix:
     name: "Setup Test Matrix"
+    needs: "Spec"
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.get-matrix.outputs.matrix }}
@@ -36,7 +45,6 @@ jobs:
       id: get-matrix
       run: |
         bundle exec matrix_from_metadata_v2
-        bundle exec matrix_from_metadata_v2
 
   Acceptance:
     name: "${{matrix.platforms.label}}, ${{matrix.collection}}"
@@ -49,9 +57,7 @@ jobs:
       fail-fast: false
       matrix: ${{fromJson(needs.setup_matrix.outputs.matrix)}}
 
-
     steps:
-
     - name: Checkout Source
       uses: actions/checkout@v2
 
