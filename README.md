@@ -34,7 +34,7 @@ The sqlserver module requires the following:
 
 * .NET 3.5. (Installed automatically if not present. This might require an internet connection.)
 * The contents of the SQL Server ISO file, mounted or extracted either locally or on a network share.
-* Windows Server 2012, 2012 R2, or 2016.
+* Windows Server 2012+.
 
 ### Beginning with sqlserver
 
@@ -273,6 +273,8 @@ For information on the classes and types, see the [REFERENCE.md](https://github.
 ## Limitations
 
 SQL 2017, 2019 and 2022 detection support has been added. This support is limited to functionality already present for other versions.
+
+The MSOLEDBSQL driver is now required to use this module. You can use this chocolatey [package](https://community.chocolatey.org/packages/msoledbsql) for installation. but it must version 18.x or earlier. (v19+ is not currently supported)
 
 This module can manage only a single version of SQL Server on a given host (one and only one of SQL Server 2012, 2014, 2016, 2017, 2019 or 2022). The module is able to manage multiple SQL Server instances of the same version.
 
