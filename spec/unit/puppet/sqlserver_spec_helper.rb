@@ -34,5 +34,5 @@ def stub_modify_features(action, args, features, additional_switches = [], exit_
 
   result = Puppet::Util::Execution::ProcessOutput.new('', exit_code)
 
-  allow(Puppet::Util::Execution).to receive(:execute).with(cmds, failonfail: false).and_return(result)
+  allow(Puppet::Util::Execution).to receive(:execute).with(cmds, { failonfail: false }).and_return(result)
 end

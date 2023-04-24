@@ -126,7 +126,7 @@ RSpec.describe PuppetX::Sqlserver::SqlConnection do
         allow(@connection.Errors).to receive(:count).and_return(1)
         allow(@connection.Errors).to receive(:Description).and_return('SQL Error in Connection')
         allow(@connection).to receive(:Execute).and_raise(Exception)
-        expect(subject).to receive(:open).with(admin_user: 'sa', admin_pass: 'Pupp3t1@', instance_name: 'MSSQLSERVER')
+        expect(subject).to receive(:open).with({ admin_user: 'sa', admin_pass: 'Pupp3t1@', instance_name: 'MSSQLSERVER' })
         expect(subject).to receive(:close).once
 
         result = subject.open_and_run_command('SELECT * FROM sys.databases', config)

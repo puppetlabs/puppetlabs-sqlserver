@@ -157,7 +157,7 @@ RSpec.describe provider_class do
          '/ACTION=uninstall',
          '/Q',
          '/IACCEPTSQLSERVERLICENSETERMS',
-         "/FEATURES=#{['SSMS', 'ADV_SSMS', 'Conn'].join(',')}"], failonfail: false
+         "/FEATURES=#{['SSMS', 'ADV_SSMS', 'Conn'].join(',')}"], { failonfail: false }
       ).and_return(result)
       @provider.create
     }

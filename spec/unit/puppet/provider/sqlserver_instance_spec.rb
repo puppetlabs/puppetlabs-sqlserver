@@ -40,7 +40,7 @@ RSpec.describe provider_class do
                 "/FEATURES=#{installed_features.join(',')}"]
 
     result = Puppet::Util::Execution::ProcessOutput.new('', exit_code)
-    allow(Puppet::Util::Execution).to receive(:execute).with(cmd_args.compact, failonfail: false).and_return(result)
+    allow(Puppet::Util::Execution).to receive(:execute).with(cmd_args.compact, { failonfail: false }).and_return(result)
   end
 
   shared_examples 'create' do |exit_code, warning_matcher|
@@ -78,7 +78,7 @@ RSpec.describe provider_class do
       allow(@provider).to receive(:warn).with(anything) unless warning_matcher
 
       result = Puppet::Util::Execution::ProcessOutput.new('', exit_code || 0)
-      allow(Puppet::Util::Execution).to receive(:execute).with(cmd_args.compact, failonfail: false).and_return(result)
+      allow(Puppet::Util::Execution).to receive(:execute).with(cmd_args.compact, { failonfail: false }).and_return(result)
       @provider.create
     }
   end
@@ -117,7 +117,7 @@ RSpec.describe provider_class do
       allow(@provider).to receive(:warn).with(anything)
 
       result = Puppet::Util::Execution::ProcessOutput.new('', exit_code || 0)
-      allow(Puppet::Util::Execution).to receive(:execute).with(cmd_args.compact, failonfail: false).and_return(result)
+      allow(Puppet::Util::Execution).to receive(:execute).with(cmd_args.compact, { failonfail: false }).and_return(result)
       expect { @provider.create }.to raise_error(error_matcher)
     }
   end
