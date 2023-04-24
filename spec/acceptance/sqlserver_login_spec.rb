@@ -351,7 +351,6 @@ describe 'Test sqlserver::login' do
           query = "SELECT principal_id FROM SYS.server_principals WHERE name = '#{@login_under_test}' AND [type] = '#{@sql_principal_type}'"
           run_sql_query(run_sql_query_opts_as_sa(query, 0))
         end
-        # rubocop:enable RSpec/InstanceVariable
       end
     end
   end

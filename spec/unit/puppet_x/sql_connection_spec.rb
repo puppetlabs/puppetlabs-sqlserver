@@ -139,10 +139,8 @@ RSpec.describe PuppetX::Sqlserver::SqlConnection do
         stub_connection
         err_message = 'ConnectionFailed'
         allow(@connection).to receive(:Open).and_raise(Exception.new(err_message))
-        # rubocop:enable RSpec/InstanceVariable
         expect {
           result = subject.open_and_run_command('whacka whacka whacka', config)
-          # rubocop:enable RSpec/NamedSubject
           expect(result.exitstatus).to eq(1)
           expect(result.error_message).to eq 'ConnectionFailed'
         }.not_to raise_error(Exception)

@@ -81,7 +81,6 @@ END CATCH
         stub_get_instance_config(config)
         stub_open_and_run('fozy wozy', config.merge(database: 'myDb'))
         @provider.run(gen_query('fozy wozy'))
-        # rubocop:enable RSpec/InstanceVariable
       }
     end
   end

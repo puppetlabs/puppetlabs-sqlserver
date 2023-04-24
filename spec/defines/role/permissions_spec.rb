@@ -61,7 +61,6 @@ RSpec.describe 'sqlserver::role::permissions' do
         'GRANT DELETE TO [myCustomRole];',
         'GRANT SELECT TO [myCustomRole];',
       ]
-      # rubocop:enable Layout/IndentArray
       let(:should_contain_command) { base_commands + should_commands }
       let(:should_contain_onlyif) { base_commands }
 

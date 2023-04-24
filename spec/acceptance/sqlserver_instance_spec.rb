@@ -99,7 +99,6 @@ describe 'sqlserver_instance' do
     it "#{inst_name} instance has ExtraSQLAdmin as a sysadmin" do
       run_sql_query(run_sql_query_opts(inst_name, sql_query_is_user_sysadmin(@extra_admin_user), 1))
     end
-    # rubocop:enable RSpec/InstanceVariable
     it "remove #{inst_name} instance" do
       ensure_sqlserver_instance(features, inst_name, 'absent')
 

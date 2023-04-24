@@ -225,7 +225,6 @@ describe 'sqlserver_tsql test' do
         command => "CREATE TABLE #{@table_name} (id INT, name VARCHAR(20), email VARCHAR(20));",
       }
       MANIFEST
-      # rubocop:enable RSpec/InstanceVariable
       apply_manifest(pp, expect_failures: true)
     end
   end

@@ -298,7 +298,6 @@ describe 'Test sqlserver::database' do
                 AND default_language_lcid = '1028';"
 
       run_sql_query(run_sql_query_opts(query, 1))
-      # rubocop:enable RSpec/InstanceVariable
     end
   end
 end

@@ -171,6 +171,5 @@ RSpec.describe provider_class do
     let(:feature_add) { ['BC', 'IS', 'SSMS'] }
 
     it_behaves_like 'features=', @feature_params
-    # rubocop:enable RSpec/InstanceVariable
   end
 end

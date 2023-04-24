@@ -255,7 +255,6 @@ describe 'Test sqlserver::role' do
         OR spr.name = '#{LOGIN3}';"
 
       run_sql_query(query: query, server: hostname, expected_row_count: 1)
-      # rubocop:enable RSpec/InstanceVariable
     end
   end
 end

@@ -261,11 +261,8 @@ END",
         ]
       end
 
-      # rubocop:enable Style/RegexpLiteral
       it_behaves_like 'sqlserver_tsql command'
       it_behaves_like 'sqlserver_tsql onlyif'
     end
   end
-  # rubocop:enable RSpec/EmptyLineAfterFinalLet
-  # rubocop:enable Layout/IndentArray
 end

@@ -310,7 +310,6 @@ RSpec.describe provider_class do
       args = basic_args
       args[:install_switches] = { 'ERRORREPORTING' => 1, 'SQLBACKUPDIR' => 'I:\DBbackup' }
       let(:additional_install_switches) { ["/ConfigurationFile=\"#{@file_double.path}\""] }
-      # rubocop:enable RSpec/InstanceVariable
       let(:args) { args }
       munged = { features: Array.new(args[:features]) }
       munged[:features].delete('SQL')
