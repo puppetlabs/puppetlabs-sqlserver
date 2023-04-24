@@ -49,7 +49,7 @@
     "tsql",
     "database"
   ],
-  "pdk-version": "2.6.1",
+  "pdk-version": "2.7.1",
   "template-url": "https://github.com/puppetlabs/pdk-templates.git#main",
-  "template-ref": "heads/main-0-g6e2b72d"
+  "template-ref": "tags/2.7.5-0-ge5b0114"
 }
