@@ -7,11 +7,11 @@ require 'erb'
 hostname = Helper.instance.run_shell('hostname').stdout.upcase.strip
 
 # database name
-db_name   = ('DB' + SecureRandom.hex(4)).upcase
-LOGIN1    = 'Login1_' + SecureRandom.hex(2)
-LOGIN2    = 'Login2_' + SecureRandom.hex(2)
-LOGIN3    = 'Login3_' + SecureRandom.hex(2)
-USER1     = 'User1_' + SecureRandom.hex(2)
+db_name   = "DB#{SecureRandom.hex(4)}".upcase
+LOGIN1    = "Login1_#{SecureRandom.hex(2)}"
+LOGIN2    = "Login2_#{SecureRandom.hex(2)}"
+LOGIN3    = "Login3_#{SecureRandom.hex(2)}"
+USER1     = "User1_#{SecureRandom.hex(2)}"
 
 describe 'Test sqlserver::role' do
   def ensure_sqlserver_logins_users(db_name)
@@ -52,7 +52,7 @@ describe 'Test sqlserver::role' do
     end
 
     before(:each) do
-      @role = 'Role_' + SecureRandom.hex(2)
+      @role = "Role_#{SecureRandom.hex(2)}"
     end
 
     after(:each) do

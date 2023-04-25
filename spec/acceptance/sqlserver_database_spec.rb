@@ -16,8 +16,8 @@ describe 'Test sqlserver::database' do
 
   context 'Start testing...' do
     before(:each) do
-      @db_name = ('DB' + SecureRandom.hex(4)).upcase
-      @table_name = 'Tables_' + SecureRandom.hex(3)
+      @db_name = "DB#{SecureRandom.hex(4)}".upcase
+      @table_name = "Tables_#{SecureRandom.hex(3)}"
     end
 
     after(:each) do

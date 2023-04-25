@@ -231,20 +231,6 @@ Style/OptionalBooleanParameter:
     - 'spec/defines/manifest_shared_examples.rb'
 
 
-# Offense count: 34
-# This cop supports unsafe autocorrection (--autocorrect-all).
-# Configuration parameters: Mode.
-Style/StringConcatenation:
-  Exclude:
-    - 'spec/acceptance/sqlserver_config_spec.rb'
-    - 'spec/acceptance/sqlserver_database_spec.rb'
-    - 'spec/acceptance/sqlserver_instance_spec.rb'
-    - 'spec/acceptance/sqlserver_login_spec.rb'
-    - 'spec/acceptance/sqlserver_role_spec.rb'
-    - 'spec/acceptance/sqlserver_tsql_spec.rb'
-    - 'spec/acceptance/sqlserver_user_spec.rb'
-    - 'spec/unit/puppet/provider/sqlserver_instance_spec.rb'
-
 # Offense count: 1
 # This cop supports safe autocorrection (--autocorrect).
 # Configuration parameters: EnforcedStyle, AllowSafeAssignment.

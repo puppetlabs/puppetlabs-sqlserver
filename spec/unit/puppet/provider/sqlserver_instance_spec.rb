@@ -67,7 +67,7 @@ RSpec.describe provider_class do
       # Extrace the SQL Sysadmins
       admin_args = execute_args[:sql_sysadmin_accounts].map(&:to_s)
       # prepend first arg only with CLI switch
-      admin_args[0] = '/SQLSYSADMINACCOUNTS=' + admin_args[0]
+      admin_args[0] = "/SQLSYSADMINACCOUNTS=#{admin_args[0]}"
       cmd_args += admin_args
 
       additional_install_switches.each do |switch|
@@ -107,7 +107,7 @@ RSpec.describe provider_class do
       # wrap each arg in doublequotes
       admin_args = execute_args[:sql_sysadmin_accounts].map { |a| "\"#{a}\"" }
       # prepend first arg only with CLI switch
-      admin_args[0] = '/SQLSYSADMINACCOUNTS=' + admin_args[0]
+      admin_args[0] = "/SQLSYSADMINACCOUNTS=#{admin_args[0]}"
       cmd_args += admin_args
 
       additional_install_switches.each do |switch|

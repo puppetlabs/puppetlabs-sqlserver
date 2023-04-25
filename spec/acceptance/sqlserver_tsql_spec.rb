@@ -7,10 +7,10 @@ require 'erb'
 version = sql_version?
 
 # database name
-db_name = ('DB' + SecureRandom.hex(4)).upcase
+db_name = "DB#{SecureRandom.hex(4)}".upcase
 
 # database user:
-DB_LOGIN_USER = 'loginuser' + SecureRandom.hex(2)
+DB_LOGIN_USER = "loginuser#{SecureRandom.hex(2)}"
 
 describe 'sqlserver_tsql test' do
   def ensure_sqlserver_database(db_name, _ensure_val = 'present')
@@ -29,7 +29,7 @@ describe 'sqlserver_tsql test' do
   context 'Test sqlserver_tsql with Windows based authentication' do
     before(:all) do
       # Create new database
-      @table_name = 'Tables_' + SecureRandom.hex(3)
+      @table_name = "Tables_#{SecureRandom.hex(3)}"
       @query = "USE #{db_name}; SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE table_name = '#{@table_name}';"
 
       ensure_sqlserver_database(db_name)
@@ -68,7 +68,7 @@ describe 'sqlserver_tsql test' do
   context 'Test sqlserver_tsql with default SQL Server based authentication' do
     before(:all) do
       # Create new database
-      @table_name = 'Tables_' + SecureRandom.hex(3)
+      @table_name = "Tables_#{SecureRandom.hex(3)}"
       @query = "USE #{db_name}; SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE table_name = '#{@table_name}';"
 
       ensure_sqlserver_database(db_name)
@@ -107,7 +107,7 @@ describe 'sqlserver_tsql test' do
     it 'Run sqlserver_tsql WITH onlyif is true:', if: version.to_i != 2016 do
       # Timeout issues with command run on Sql Server 2016. Functionality of test covered by test below.
       # Initilize a new table name:
-      @table_name = 'Table_' + SecureRandom.hex(3)
+      @table_name = "Table_#{SecureRandom.hex(3)}"
       @query = "USE #{db_name}; SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE table_name = '#{@table_name}';"
       pp = <<-MANIFEST
       sqlserver::config{'MSSQLSERVER':
@@ -136,7 +136,7 @@ describe 'sqlserver_tsql test' do
 
     it 'Run sqlserver_tsql WITH onlyif is false:' do
       # Initilize a new table name:
-      @table_name = 'Table_' + SecureRandom.hex(3)
+      @table_name = "Table_#{SecureRandom.hex(3)}"
       @query = "USE #{db_name}; SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE table_name = '#{@table_name}';"
       pp = <<-MANIFEST
       sqlserver::config{'MSSQLSERVER':
@@ -166,7 +166,7 @@ describe 'sqlserver_tsql test' do
 
     it 'Run sqlserver_tsql WITH onlyif that does a table insert:' do
       # Initilize a new table name:
-      @table_name = 'Table_' + SecureRandom.hex(3)
+      @table_name = "Table_#{SecureRandom.hex(3)}"
       @query = "USE #{db_name}; SELECT * FROM #{@table_name} WHERE id = 2;"
       pp = <<-MANIFEST
       sqlserver::config{'MSSQLSERVER':
@@ -212,7 +212,7 @@ describe 'sqlserver_tsql test' do
     end
 
     it 'Negative test: Run tsql with non-existing database:' do
-      @table_name = 'Table_' + SecureRandom.hex(3)
+      @table_name = "Table_#{SecureRandom.hex(3)}"
       pp = <<-MANIFEST
       sqlserver::config{'MSSQLSERVER':
         instance_name => 'MSSQLSERVER',

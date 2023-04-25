@@ -3,8 +3,8 @@
 require 'spec_helper_acceptance'
 require 'securerandom'
 
-db_name     = ('DB' + SecureRandom.hex(4)).upcase
-table_name  = 'Tables_' + SecureRandom.hex(3)
+db_name     = "DB#{SecureRandom.hex(4)}".upcase
+table_name  = "Tables_#{SecureRandom.hex(3)}"
 
 # Covers testrail => ['89118', '89119', '89120', '89121', '89122', '89123', '89124', '89125', '89540']
 describe 'Test sqlserver::login' do
@@ -75,14 +75,14 @@ describe 'Test sqlserver::login' do
   end
 
   before(:all) do
-    @login_user    = 'Login' + SecureRandom.hex(4)
-    @login_passwd  = 'Password1!' + SecureRandom.hex(5)
-    @windows_user  = 'User' + SecureRandom.hex(4)
-    @windows_group = 'Group' + SecureRandom.hex(4)
+    @login_user    = "Login#{SecureRandom.hex(4)}"
+    @login_passwd  = "Password1!#{SecureRandom.hex(5)}"
+    @windows_user  = "User#{SecureRandom.hex(4)}"
+    @windows_group = "Group#{SecureRandom.hex(4)}"
 
     host_shortname = Helper.instance.run_shell('$env:computername').stdout.upcase.strip # Require the NETBIOS name for later database searches
-    @login_windows_user  = host_shortname + '\\' + @windows_user
-    @login_windows_group = host_shortname + '\\' + @windows_group
+    @login_windows_user  = "#{host_shortname}\\#{@windows_user}"
+    @login_windows_group = "#{host_shortname}\\#{@windows_group}"
 
     # Create a database, a simple table and windows accounts fixtures
     pp = <<-MANIFEST

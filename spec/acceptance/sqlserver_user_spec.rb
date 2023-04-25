@@ -7,7 +7,7 @@ require 'erb'
 hostname = Helper.instance.run_shell('hostname').stdout.upcase.strip
 
 # database name
-db_name = ('DB' + SecureRandom.hex(4)).upcase
+db_name = "DB#{SecureRandom.hex(4)}".upcase
 
 describe 'sqlserver::user test' do
   def ensure_sqlserver_database(db_name, _ensure_val = 'present')
@@ -40,8 +40,8 @@ describe 'sqlserver::user test' do
     end
 
     before(:each) do
-      @new_sql_login = 'Login' + SecureRandom.hex(2)
-      @db_user = 'DBuser' + SecureRandom.hex(2)
+      @new_sql_login = "Login#{SecureRandom.hex(2)}"
+      @db_user = "DBuser#{SecureRandom.hex(2)}"
     end
 
     it 'Create database user with optional default_schema' do

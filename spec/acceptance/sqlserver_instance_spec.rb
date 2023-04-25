@@ -5,7 +5,7 @@ require 'securerandom'
 require 'erb'
 
 def new_random_instance_name
-  ('MSSQL' + SecureRandom.hex(4)).upcase.to_s
+  "MSSQL#{SecureRandom.hex(4)}".upcase.to_s
 end
 
 describe 'sqlserver_instance' do
