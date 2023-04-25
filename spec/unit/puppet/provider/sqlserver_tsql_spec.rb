@@ -25,17 +25,17 @@ RSpec.describe Puppet::Type.type(:sqlserver_tsql).provider(:mssql) do
 
   def gen_query(query)
     quoted_query = query.gsub('\'', '\'\'')
-    <<-PP
-BEGIN TRY
-    DECLARE @sql_text as NVARCHAR(max);
-    SET @sql_text = N'#{quoted_query}'
-    EXECUTE sp_executesql @sql_text;
-END TRY
-BEGIN CATCH
-    DECLARE @msg as VARCHAR(max);
-    SELECT @msg = 'THROW CAUGHT: ' + ERROR_MESSAGE();
-    THROW 51000, @msg, 10
-END CATCH
+    <<~PP
+      BEGIN TRY
+          DECLARE @sql_text as NVARCHAR(max);
+          SET @sql_text = N'#{quoted_query}'
+          EXECUTE sp_executesql @sql_text;
+      END TRY
+      BEGIN CATCH
+          DECLARE @msg as VARCHAR(max);
+          SELECT @msg = 'THROW CAUGHT: ' + ERROR_MESSAGE();
+          THROW 51000, @msg, 10
+      END CATCH
     PP
   end
 
