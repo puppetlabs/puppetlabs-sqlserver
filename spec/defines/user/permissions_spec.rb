@@ -90,7 +90,7 @@ describe 'sqlserver::user::permissions' do
       end
     end
 
-    context 'with_grant_option => ' do
+    context 'with_grant_option =>' do
       let(:params) do
         {
           permissions: ['SELECT'],

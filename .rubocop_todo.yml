@@ -84,12 +84,6 @@ RSpec/DescribeClass:
 RSpec/ExampleLength:
   Max: 59
 
-# Offense count: 1
-# This cop supports safe autocorrection (--autocorrect).
-RSpec/ExcessiveDocstringSpacing:
-  Exclude:
-    - 'spec/defines/user/permissions_spec.rb'
-
 # Offense count: 2
 # Configuration parameters: Include, CustomTransform, IgnoreMethods, SpecSuffixOnly.
 # Include: **/*_spec*rb*, **/spec/**/*
