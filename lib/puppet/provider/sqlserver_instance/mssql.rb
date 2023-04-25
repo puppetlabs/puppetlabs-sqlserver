@@ -82,7 +82,7 @@ Puppet::Type.type(:sqlserver_instance).provide(:mssql, parent: Puppet::Provider:
     end
   end
 
-  def install_net_35(source_location = nil)
+  def install_net35(source_location = nil)
     Puppet::Provider::Sqlserver.run_install_dot_net(source_location)
   end
 
@@ -107,7 +107,7 @@ Puppet::Type.type(:sqlserver_instance).provide(:mssql, parent: Puppet::Provider:
       instance_version = PuppetX::Sqlserver::ServerHelper.sql_version_from_install_source(@resource[:source])
       Puppet.debug("Installation source detected as version #{instance_version}") unless instance_version.nil?
 
-      install_net_35(@resource[:windows_feature_source]) if [SQL_2012, SQL_2014].include? instance_version
+      install_net35(@resource[:windows_feature_source]) if [SQL_2012, SQL_2014].include? instance_version
 
       add_features(@resource[:features])
     end
