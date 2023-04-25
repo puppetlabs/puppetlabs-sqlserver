@@ -67,12 +67,6 @@ Naming/HeredocDelimiterNaming:
     - 'spec/spec_helper_acceptance_local.rb'
     - 'spec/sql_testing_helpers.rb'
 
-# Offense count: 2
-# This cop supports unsafe autocorrection (--autocorrect-all).
-Performance/StringInclude:
-  Exclude:
-    - 'lib/puppet/parser/functions/sqlserver_validate_size.rb'
-    - 'lib/puppet/provider/sqlserver_tsql/mssql.rb'
 
 # Offense count: 66
 # Configuration parameters: Prefixes, AllowedPatterns.
