@@ -23,7 +23,7 @@ USER = Helper.instance.run_shell('$env:UserName').stdout.chomp
 
 RSpec.configure do |c|
   c.before(:suite) do
-    Helper.instance.run_shell('puppet module install puppetlabs/mount_iso')
+    Helper.instance.run_shell('puppet module install puppetlabs-mount_iso --version 4.0.0')
     Helper.instance.run_shell('puppet module install puppet/archive')
 
     iso_opts = {
