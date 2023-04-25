@@ -48,9 +48,7 @@ describe 'Test sqlserver::login' do
     case testcase
     when 'SQL_LOGIN user'
       login_type = 'SQL_LOGIN'
-    when 'WINDOWS_LOGIN user'
-      login_type = 'WINDOWS_LOGIN'
-    when 'WINDOWS_LOGIN group'
+    when 'WINDOWS_LOGIN user', 'WINDOWS_LOGIN group'
       login_type = 'WINDOWS_LOGIN'
     else
       raise "Unknown testcase name #{testcase}"

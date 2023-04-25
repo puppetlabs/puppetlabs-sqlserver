@@ -177,12 +177,10 @@ def get_install_paths(version)
 
   dir = "C://Program Files/Microsoft SQL Server/#{vers[version]}/Setup Bootstrap"
   sql_directory = case version
-                  when '2022'
+                  when '2022', '2017'
                     "SQL#{version}"
                   when '2019'
                     "SQL#{version}CTP2.4"
-                  when '2017'
-                    "SQL#{version}"
                   else
                     "SQLServer#{version}"
                   end
