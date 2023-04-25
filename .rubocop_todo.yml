@@ -14,13 +14,6 @@ Lint/EmptyBlock:
     - 'spec/defines/manifest_shared_examples.rb'
     - 'spec/functions/functions_shared_examples.rb'
 
-# Offense count: 1
-# This cop supports unsafe autocorrection (--autocorrect-all).
-# Configuration parameters: AllowComments.
-Lint/EmptyConditionalBody:
-  Exclude:
-    - 'lib/puppet/parser/functions/sqlserver_validate_range.rb'
-
 # Offense count: 10
 # This cop supports unsafe autocorrection (--autocorrect-all).
 Lint/OrAssignmentToConstant:
