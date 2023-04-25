@@ -15,7 +15,7 @@ Puppet::Type.type(:sqlserver_tsql).provide(:mssql, parent: Puppet::Provider::Sql
 
   def get_config(instance = resource[:instance])
     config_resc = resource.catalog.resources.find do |resc|
-      resc.title.include?('Sqlserver::Config') &&
+      resc.title.to_s.include?('Sqlserver::Config') &&
         resc.original_parameters[:instance_name] =~ %r{#{instance}}i
     end
     raise("Sqlserver_tsql[#{resource.title}] was unable to retrieve the config, please ensure the catalog contains sqlserver::config{'#{resource[:instance]}':}") if config_resc.nil?
