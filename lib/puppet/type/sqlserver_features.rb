@@ -60,6 +60,7 @@ Puppet::Type.newtype(:sqlserver_features) do
     # IS_SVC_ACCOUNT validation
     return unless set?(:features) && self[:features].include?('IS')
     return unless set?(:is_svc_account) || set?(:is_svc_password)
+
     validate_user_password_required(:is_svc_account, :is_svc_password)
   end
 
@@ -70,6 +71,7 @@ Puppet::Type.newtype(:sqlserver_features) do
   def validate_user_password_required(account, pass)
     raise("User #{account} is required") unless set?(account)
     return unless domain_or_local_user?(self[account]) && self[pass].nil?
+
     raise("#{pass} required when using domain account")
   end
 

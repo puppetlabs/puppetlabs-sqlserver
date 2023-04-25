@@ -62,6 +62,7 @@ Puppet::Type.type(:sqlserver_instance).provide(:mssql, parent: Puppet::Provider:
 
   def modify_features(features, action)
     return unless not_nil_and_not_empty? features
+
     debug "#{action.capitalize}ing features '#{features.join(',')}'"
     cmd_args, obfuscated_strings = build_cmd_args(features, action)
 
@@ -152,6 +153,7 @@ Puppet::Type.type(:sqlserver_instance).provide(:mssql, parent: Puppet::Provider:
     if action == 'install'
       RESOURCEKEY_TO_CMDARG.keys.sort.map do |key|
         next unless not_nil_and_not_empty? @resource[key]
+
         cmd_args << "/#{RESOURCEKEY_TO_CMDARG[key]}=\"#{@resource[key.to_sym]}\""
         if %r{(_pwd|_password)$}i.match?(key.to_s)
           obfuscated_strings.push(@resource[key])
@@ -166,6 +168,7 @@ Puppet::Type.type(:sqlserver_instance).provide(:mssql, parent: Puppet::Provider:
 
   def format_cmd_args_array(switch, arr, cmd_args, use_discrete = false)
     return unless not_nil_and_not_empty? arr
+
     arr = [arr] unless arr.is_a?(Array)
 
     # The default action is to join the array elements with a space ' ' so the cmd_args ends up like;

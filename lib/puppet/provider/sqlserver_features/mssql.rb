@@ -25,6 +25,7 @@ Puppet::Type.type(:sqlserver_features).provide(:mssql, parent: Puppet::Provider:
     featurelist = []
     ALL_SQL_VERSIONS.each do |sql_version|
       next if result[sql_version].empty?
+
       featurelist += result[sql_version]
     end
 
@@ -58,6 +59,7 @@ Puppet::Type.type(:sqlserver_features).provide(:mssql, parent: Puppet::Provider:
 
   def modify_features(action, features)
     return unless not_nil_and_not_empty? features
+
     debug "#{action.capitalize}ing features '#{features.join(',')}'"
     cmd_args = ["#{@resource[:source]}/setup.exe",
                 "/ACTION=#{action}",

@@ -45,11 +45,13 @@ module PuppetX # rubocop:disable Style/ClassAndModuleChildren
           # Windows based authentication
           raise ArgumentError, _('admin_user must be empty or nil') unless admin_user == ''
           raise ArgumentError, _('admin_pass must be empty or nil') unless admin_pass == ''
+
           params.store('Integrated Security', 'SSPI')
         else
           # SQL Server based authentication
           raise ArgumentError, _('admin_user must not be empty or nil') unless admin_user != ''
           raise ArgumentError, _('admin_pass must not be empty or nil') unless admin_pass != ''
+
           params.store('UID',  admin_user)
           params.store('PWD', admin_pass)
         end

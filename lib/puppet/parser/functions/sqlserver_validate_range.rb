@@ -5,6 +5,7 @@ module Puppet::Parser::Functions
     if (args.length < 3) || (args.length > 4)
       raise Puppet::ParseError, "validate_range(): wrong number of arguments (#{args.length}; must be 3)"
     end
+
     values, lower, upper, msg = args
 
     values = [] << values unless values.is_a?(Array)

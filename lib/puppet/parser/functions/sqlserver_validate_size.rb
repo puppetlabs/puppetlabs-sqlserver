@@ -5,6 +5,7 @@ module Puppet::Parser::Functions
     if args.length != 1
       raise(Puppet::ParseError, "mssql_validate_size(): requires exactly 1 argument, you provided #{args.length}")
     end
+
     value = args[0]
     match = %r{^(?<size>\d+)(?<measure>KB|MB|GB|TB)$}.match(value)
 

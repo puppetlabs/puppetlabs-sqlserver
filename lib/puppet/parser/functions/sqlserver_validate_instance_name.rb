@@ -19,6 +19,7 @@ module Puppet::Parser::Functions
     if args.length != 1
       raise Puppet::ParseError, "mssql_validate_instance_name(): requires exactly 1 argument, you provided #{args.length}"
     end
+
     value = args[0]
     errors = []
     if value.empty?

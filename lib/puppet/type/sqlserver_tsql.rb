@@ -116,6 +116,7 @@ Puppet::Type.newtype(:sqlserver_tsql) do
       unless @output.exitstatus.to_s == '0'
         raise("#{resource[:command]} returned #{@output.exitstatus} instead of one of [#{should.join(',')}]")
       end
+
       event
     end
   end

@@ -14,6 +14,7 @@ RSpec.shared_context 'manifests' do
 
   def convert_to_regexp(str)
     return str if str.is_a? Regexp
+
     Regexp.new(Regexp.escape(str))
   end
 

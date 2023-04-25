@@ -12,6 +12,7 @@ class Puppet::Property::SqlserverLogin < Puppet::Property # rubocop:disable Styl
     if %r{\\.*\\}.match?(value)
       raise 'More than one \ found, maximum of one for users is allowed'
     end
+
     if %r{@}.match?(value)
       raise ArgumentError,
             _('@ sybmol is not allowed in the username, please follow the pattern of domain\login if you are attempting to add domain user')

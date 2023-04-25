@@ -84,6 +84,7 @@ module PuppetX
       def self.get_reg_instance_info(friendly_version)
         instance_root = 'SOFTWARE\Microsoft\Microsoft SQL Server\Instance Names'
         return [] unless key_exists?(instance_root)
+
         discovered = {}
         open(HKLM, instance_root.to_s, KEY_READ | KEY64) do |registry|
           each_key(registry) do |instance_type, _|
@@ -91,6 +92,7 @@ module PuppetX
               each_value(instance) do |short_name, _, long_name|
                 root = "Software\\Microsoft\\Microsoft SQL Server\\#{long_name}"
                 next unless key_exists?("#{root}\\MSSQLServer\\CurrentVersion")
+
                 discovered[short_name] ||= {
                   'name' => short_name,
                   'reg_root' => [],
@@ -215,6 +217,7 @@ module PuppetX
           # by inspecting the major version of the instance_version
           instances.select! do |value|
             return true if value[1]['version'].nil?
+
             ver = Gem::Version.new(value[1]['version'])
             # Segment 0 is the major version number of the SQL Instance
             ver.segments[0] == major_version
@@ -260,6 +263,7 @@ module PuppetX
         # it's possible to request information for a valid instance_name but not for version.  In this case
         # we just return nil.
         return nil if sql_instance['reg_root'].nil?
+
         feats = []
         sql_instance['reg_root'].each do |reg_root|
           feats += get_instance_features(reg_root, sql_instance['name'])

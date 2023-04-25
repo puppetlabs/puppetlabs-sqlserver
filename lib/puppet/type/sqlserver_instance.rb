@@ -132,6 +132,7 @@ Puppet::Type.newtype(:sqlserver_instance) do
       strong_password?(:rs_svc_password)
     end
     return unless self[:security_mode] == 'SQL'
+
     strong_password?(:sa_pwd)
   end
 
@@ -143,6 +144,7 @@ Puppet::Type.newtype(:sqlserver_instance) do
     # rubocop:disable Style/SignalException
     fail("User #{account} is required") unless set?(account)
     return unless domain_or_local_user?(self[account]) && self[pass].nil?
+
     fail("#{pass} required when using domain account")
     # rubocop:enable Style/SignalException
   end
@@ -154,6 +156,7 @@ Puppet::Type.newtype(:sqlserver_instance) do
   def strong_password?(key)
     password = self[key]
     return unless password
+
     message_start = "Password for #{key} is not strong"
     failures = []
     failures << 'must be at least 8 characters long' unless password.length >= 8
@@ -162,6 +165,7 @@ Puppet::Type.newtype(:sqlserver_instance) do
     failures << 'must contain numbers' unless %r{\d}.match?(password)
     failures << 'must contain a special character' unless %r{}.match?(password)
     fail("#{message_start}:\n#{failures.join("\n")}") if failures.count > 0 # rubocop:disable Style/SignalException
+
     true
   end
 end

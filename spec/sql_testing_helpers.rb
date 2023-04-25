@@ -75,11 +75,13 @@ def run_sql_query(host, opts = {}, &block)
   on(host, 'powershell -NonInteractive -NoLogo -File "C:\\cygwin64\\home\\Administrator\\tmp.ps1"') do |r|
     match = %r{(\d*) rows affected}.match(r.stdout)
     raise 'Could not match number of rows for SQL query' unless match
+
     rows_observed = match[1]
     error_message = "Expected #{opts[:expected_row_count]} rows but observed #{rows_observed}"
     raise error_message unless opts[:expected_row_count] == rows_observed.to_i
   end
   return unless block
+
   case block.arity
   when 0
     yield self
@@ -145,6 +147,7 @@ def validate_sql_install(host, opts = {}, &block)
   cmd = "type \\\"#{bootstrap_dir}\\Log\\Summary.txt\\\""
   result = on(host, "cmd.exe /c \"#{cmd}\"")
   return unless block
+
   case block.arity
   when 0
     yield self

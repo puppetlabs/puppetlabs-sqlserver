@@ -7,6 +7,7 @@ module Puppet::Parser::Functions
     if args.length != 1
       raise Puppet::ParseError, "is_domain_or_local_user(): requires exactly 1 argument, you provided #{args.length}"
     end
+
     PuppetX::Sqlserver::ServerHelper.is_domain_or_local_user?(args[0], Facter.value(:hostname))
   end
 end
