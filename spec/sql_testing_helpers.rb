@@ -56,13 +56,13 @@ def run_sql_query(host, opts = {}, &block)
   sql_admin_user = opts[:sql_admin_user] ||= SQL_ADMIN_USER
 
   powershell = <<-EOS
-      $Env:Path +=\";C:\\Program Files\\Microsoft SQL Server\\Client SDK\\ODBC\\110\\Tools\\Binn;C:\\Program Files\\Microsoft SQL Server\\110\\Tools\\Binn\\"
-      $Env:Path +=\";C:\\Program Files\\Microsoft SQL Server\\Client SDK\\ODBC\\120\\Tools\\Binn;C:\\Program Files\\Microsoft SQL Server\\120\\Tools\\Binn\\"
-      $Env:Path +=\";C:\\Program Files\\Microsoft SQL Server\\Client SDK\\ODBC\\130\\Tools\\Binn;C:\\Program Files\\Microsoft SQL Server\\130\\Tools\\Binn\\"
-      $Env:Path +=\";C:\\Program Files\\Microsoft SQL Server\\Client SDK\\ODBC\\140\\Tools\\Binn;C:\\Program Files\\Microsoft SQL Server\\140\\Tools\\Binn\\"
-      $Env:Path +=\";C:\\Program Files\\Microsoft SQL Server\\Client SDK\\ODBC\\150\\Tools\\Binn;C:\\Program Files\\Microsoft SQL Server\\150\\Tools\\Binn\\"
-      $Env:Path +=\";C:\\Program Files\\Microsoft SQL Server\\Client SDK\\ODBC\\170\\Tools\\Binn;C:\\Program Files\\Microsoft SQL Server\\170\\Tools\\Binn\\"
-      sqlcmd.exe -S #{server}\\#{instance} -U #{sql_admin_user} -P #{sql_admin_pass} -Q \"#{query}\"
+      $Env:Path +=";C:\\Program Files\\Microsoft SQL Server\\Client SDK\\ODBC\\110\\Tools\\Binn;C:\\Program Files\\Microsoft SQL Server\\110\\Tools\\Binn\\"
+      $Env:Path +=";C:\\Program Files\\Microsoft SQL Server\\Client SDK\\ODBC\\120\\Tools\\Binn;C:\\Program Files\\Microsoft SQL Server\\120\\Tools\\Binn\\"
+      $Env:Path +=";C:\\Program Files\\Microsoft SQL Server\\Client SDK\\ODBC\\130\\Tools\\Binn;C:\\Program Files\\Microsoft SQL Server\\130\\Tools\\Binn\\"
+      $Env:Path +=";C:\\Program Files\\Microsoft SQL Server\\Client SDK\\ODBC\\140\\Tools\\Binn;C:\\Program Files\\Microsoft SQL Server\\140\\Tools\\Binn\\"
+      $Env:Path +=";C:\\Program Files\\Microsoft SQL Server\\Client SDK\\ODBC\\150\\Tools\\Binn;C:\\Program Files\\Microsoft SQL Server\\150\\Tools\\Binn\\"
+      $Env:Path +=";C:\\Program Files\\Microsoft SQL Server\\Client SDK\\ODBC\\170\\Tools\\Binn;C:\\Program Files\\Microsoft SQL Server\\170\\Tools\\Binn\\"
+      sqlcmd.exe -S #{server}\\#{instance} -U #{sql_admin_user} -P #{sql_admin_pass} -Q "#{query}"
   EOS
   # sqlcmd has problem authenticate to sqlserver if the instance is the default one MSSQLSERVER
   # Below is a work-around for it (remove "-S server\instance" from the connection string)
