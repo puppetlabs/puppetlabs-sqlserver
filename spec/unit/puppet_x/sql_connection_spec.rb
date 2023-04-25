@@ -61,7 +61,7 @@ RSpec.describe PuppetX::Sqlserver::SqlConnection do
 
       context 'SQL Server based authentication' do
         it 'results with error if set admin_user is not set' do
-          expect(@connection).to receive(:Open).never
+          expect(@connection).not_to receive(:Open)
           expect {
             result = subject.open_and_run_command('query', admin_pass: 'Pupp3t1@', admin_login_type: 'SQL_LOGIN')
             expect(result.exitstatus).to eq(1)
@@ -69,7 +69,7 @@ RSpec.describe PuppetX::Sqlserver::SqlConnection do
         end
 
         it 'results with error if set admin_pass is not set' do
-          expect(@connection).to receive(:Open).never
+          expect(@connection).not_to receive(:Open)
           expect {
             result = subject.open_and_run_command('query', admin_user: 'sa', admin_login_type: 'SQL_LOGIN')
             expect(result.exitstatus).to eq(1)
@@ -89,7 +89,7 @@ RSpec.describe PuppetX::Sqlserver::SqlConnection do
 
       context 'Windows based authentication' do
         it 'results with error if set admin_user is set' do
-          expect(@connection).to receive(:Open).never
+          expect(@connection).not_to receive(:Open)
           expect {
             result = subject.open_and_run_command('query', admin_user: 'sa', admin_pass: '', admin_login_type: 'WINDOWS_LOGIN')
             expect(result.exitstatus).to eq(1)
@@ -97,7 +97,7 @@ RSpec.describe PuppetX::Sqlserver::SqlConnection do
         end
 
         it 'results with error if set admin_pass is set' do
-          expect(@connection).to receive(:Open).never
+          expect(@connection).not_to receive(:Open)
           expect {
             result = subject.open_and_run_command('query', admin_user: '', admin_pass: 'Pupp3t1@', admin_login_type: 'WINDOWS_LOGIN')
             expect(result.exitstatus).to eq(1)
@@ -119,7 +119,7 @@ RSpec.describe PuppetX::Sqlserver::SqlConnection do
     context 'open connection' do
       it 'does not reopen an existing connection' do
         stub_connection
-        expect(@connection).to receive(:open).never
+        expect(@connection).not_to receive(:open)
         allow(@connection).to receive(:State).and_return(1) # any value other than CONNECTION_CLOSED
         expect(@connection).to receive(:Execute).with('query', nil, nil)
         subject.open_and_run_command('query', config)
