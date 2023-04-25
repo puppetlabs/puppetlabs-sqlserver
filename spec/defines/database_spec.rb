@@ -100,7 +100,7 @@ RSpec.describe 'sqlserver::database', type: :define do
     it 'does not compile' do
       params[:filestream_directory_name] = 'C:/TestDirectory'
       expect {
-        is_expected.to contain_sqlserver_tsql('database-MSSQLSERVER-myTestDb')
+        expect(subject).to contain_sqlserver_tsql('database-MSSQLSERVER-myTestDb')
       }.to raise_error(Puppet::Error)
     end
   end

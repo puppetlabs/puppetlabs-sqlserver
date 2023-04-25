@@ -17,8 +17,8 @@ RSpec.describe 'sqlserver::config', type: :define do
     end
 
     it {
-      is_expected.not_to contain_file('C:/ProgramData/PuppetLabs/puppet/var/cache/sqlserver/.MSSQLSERVER.cfg')
-      is_expected.not_to contain_file('C:/ProgramData/PuppetLabs/puppet/var/cache/sqlserver')
+      expect(subject).not_to contain_file('C:/ProgramData/PuppetLabs/puppet/var/cache/sqlserver/.MSSQLSERVER.cfg')
+      expect(subject).not_to contain_file('C:/ProgramData/PuppetLabs/puppet/var/cache/sqlserver')
     }
   end
 
@@ -35,7 +35,7 @@ RSpec.describe 'sqlserver::config', type: :define do
       let(:error_message) { %r{expects admin_pass to be set for a admin_login_type of SQL_LOGIN} }
 
       it {
-        is_expected.not_to compile
+        expect(subject).not_to compile
         expect { catalogue }.to raise_error(Puppet::Error, error_message)
       }
     end
@@ -52,7 +52,7 @@ RSpec.describe 'sqlserver::config', type: :define do
       let(:error_message) { %r{expects admin_user to be set for a admin_login_type of SQL_LOGIN} }
 
       it {
-        is_expected.not_to compile
+        expect(subject).not_to compile
         expect { catalogue }.to raise_error(Puppet::Error, error_message)
       }
     end
@@ -71,7 +71,7 @@ RSpec.describe 'sqlserver::config', type: :define do
       let(:error_message) { %r{expects admin_user to be empty for a admin_login_type of WINDOWS_LOGIN} }
 
       it {
-        is_expected.not_to compile
+        expect(subject).not_to compile
         expect { catalogue }.to raise_error(Puppet::Error, error_message)
       }
     end
@@ -88,7 +88,7 @@ RSpec.describe 'sqlserver::config', type: :define do
       let(:error_message) { %r{expects admin_pass to be empty for a admin_login_type of WINDOWS_LOGIN} }
 
       it {
-        is_expected.not_to compile
+        expect(subject).not_to compile
         expect { catalogue }.to raise_error(Puppet::Error, error_message)
       }
     end

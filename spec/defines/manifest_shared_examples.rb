@@ -22,7 +22,7 @@ RSpec.shared_context 'manifests' do
     it {
       params.merge!(additional_params)
       should_contain_onlyif.each do |check|
-        is_expected.to contain_sqlserver_tsql(sqlserver_tsql_title).with_onlyif(convert_to_regexp(check))
+        expect(subject).to contain_sqlserver_tsql(sqlserver_tsql_title).with_onlyif(convert_to_regexp(check))
       end
     }
   end
@@ -30,7 +30,7 @@ RSpec.shared_context 'manifests' do
     it {
       params.merge!(additional_params)
       should_not_contain_onlyif.each do |check|
-        is_expected.to contain_sqlserver_tsql(sqlserver_tsql_title).with_onlyif(convert_to_regexp(check))
+        expect(subject).to contain_sqlserver_tsql(sqlserver_tsql_title).with_onlyif(convert_to_regexp(check))
       end
     }
   end
@@ -39,7 +39,7 @@ RSpec.shared_context 'manifests' do
     it {
       params.merge!(additional_params)
       should_contain_command.each do |check|
-        is_expected.to contain_sqlserver_tsql(sqlserver_tsql_title).with_command(convert_to_regexp(check))
+        expect(subject).to contain_sqlserver_tsql(sqlserver_tsql_title).with_command(convert_to_regexp(check))
       end
     }
   end
@@ -48,7 +48,7 @@ RSpec.shared_context 'manifests' do
     it {
       params.merge!(additional_params)
       should_not_contain_command.each do |check|
-        is_expected.not_to contain_sqlserver_tsql(sqlserver_tsql_title).with_command(convert_to_regexp(check))
+        expect(subject).not_to contain_sqlserver_tsql(sqlserver_tsql_title).with_command(convert_to_regexp(check))
       end
     }
   end
@@ -56,7 +56,7 @@ RSpec.shared_context 'manifests' do
   shared_examples 'compile' do
     it {
       params.merge!(additional_params)
-      is_expected.to compile
+      expect(subject).to compile
     }
   end
 

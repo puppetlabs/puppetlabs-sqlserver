@@ -23,7 +23,7 @@ RSpec.describe 'sqlserver::login', type: :define do
 
   describe 'Minimal Params' do
     it 'compiles' do
-      is_expected.to contain_sqlserver_tsql('login-MSSQLSERVER-myTitle')
+      expect(subject).to contain_sqlserver_tsql('login-MSSQLSERVER-myTitle')
     end
   end
 
@@ -71,7 +71,7 @@ RSpec.describe 'sqlserver::login', type: :define do
       it {
         params[:permissions] = permissions
         type_title = ((type =~ %r{GRANT_WITH_OPTION}i) ? 'GRANT-WITH_GRANT_OPTION' : type.upcase)
-        is_expected.to contain_sqlserver__login__permissions("Sqlserver::Login[#{title}]-#{type_title}-myLogin").with(
+        expect(subject).to contain_sqlserver__login__permissions("Sqlserver::Login[#{title}]-#{type_title}-myLogin").with(
           'login' => 'myLogin',
           'state' => (type == 'GRANT_WITH_OPTION') ? 'GRANT' : type.upcase,
           'with_grant_option' => type == 'GRANT_WITH_OPTION',
@@ -85,7 +85,7 @@ RSpec.describe 'sqlserver::login', type: :define do
       it {
         params[:permissions] = permissions
         type_title = ((type =~ %r{GRANT_WITH_OPTION}i) ? 'GRANT-WITH_GRANT_OPTION' : type.upcase)
-        is_expected.not_to contain_sqlserver__login__permissions("Sqlserver::Login[#{title}]-#{type_title}-myLogin")
+        expect(subject).not_to contain_sqlserver__login__permissions("Sqlserver::Login[#{title}]-#{type_title}-myLogin")
       }
     end
 

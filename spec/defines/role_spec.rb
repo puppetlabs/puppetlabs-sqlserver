@@ -103,7 +103,7 @@ RSpec.describe 'sqlserver::role', type: :define do
       let(:params) { { instance: 'MYCUSTOM' } }
 
       it {
-        is_expected.to contain_sqlserver_tsql('role-MYCUSTOM-master-myCustomRole').with_instance('MYCUSTOM')
+        expect(subject).to contain_sqlserver_tsql('role-MYCUSTOM-master-myCustomRole').with_instance('MYCUSTOM')
       }
     end
 

@@ -122,8 +122,8 @@ RSpec.describe 'sqlserver::role::permissions' do
       end
 
       it {
-        is_expected.to compile
-        is_expected.not_to contain_sqlserver_tsql(sqlserver_tsql_title)
+        expect(subject).to compile
+        expect(subject).not_to contain_sqlserver_tsql(sqlserver_tsql_title)
       }
     end
   end
@@ -164,7 +164,7 @@ RSpec.describe 'sqlserver::role::permissions' do
         end
 
         it {
-          is_expected.to contain_sqlserver_tsql("role-permissions-myCustomRole-GRANT-#{instance}-master").with_instance(instance)
+          expect(subject).to contain_sqlserver_tsql("role-permissions-myCustomRole-GRANT-#{instance}-master").with_instance(instance)
         }
       end
     end
