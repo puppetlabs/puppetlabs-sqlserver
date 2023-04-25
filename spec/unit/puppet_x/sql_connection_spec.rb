@@ -26,6 +26,7 @@ RSpec.describe PuppetX::Sqlserver::SqlConnection do
         stub_connection
         allow(@connection).to receive(:Open).with('Provider=MSOLEDBSQL;Initial Catalog=master;Application Name=Puppet;Data Source=.;DataTypeComptibility=80;UID=sa;PWD=Pupp3t1@')
       end
+
       it 'does not raise an error but populate has_errors with message' do
         allow(@connection.Errors).to receive(:count).and_return(2)
         expect(@connection).to receive(:Errors).with(0).and_return(double(Description: 'SQL Error in Connection'))

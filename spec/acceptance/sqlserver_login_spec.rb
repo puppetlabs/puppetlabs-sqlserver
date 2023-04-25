@@ -177,6 +177,7 @@ describe 'Test sqlserver::login' do
         # check_expiration and check_policy are only applicable to SQL based logins
 
         before(:all) { remove_test_logins(host) }
+
         it "can create an #{testcase} with 'check_expiration','check_policy' set" do
           options = { 'check_expiration' => true, 'check_policy' => true }
           pp = create_login_manifest(testcase, @login_under_test, @login_passwd, options)

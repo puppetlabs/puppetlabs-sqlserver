@@ -50,9 +50,11 @@ describe 'Test sqlserver::role' do
       # Create database users
       ensure_sqlserver_logins_users(db_name)
     end
+
     before(:each) do
       @role = 'Role_' + SecureRandom.hex(2)
     end
+
     after(:each) do
       pp = <<-MANIFEST
       sqlserver::config{'MSSQLSERVER':

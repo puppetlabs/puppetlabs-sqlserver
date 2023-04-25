@@ -38,6 +38,7 @@ describe 'sqlserver::user test' do
       # Create new database
       ensure_sqlserver_database(db_name)
     end
+
     before(:each) do
       @new_sql_login = 'Login' + SecureRandom.hex(2)
       @db_user = 'DBuser' + SecureRandom.hex(2)

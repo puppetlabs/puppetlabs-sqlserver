@@ -60,6 +60,7 @@ RSpec.describe provider_class do
       allow(@file_double).to receive(:close)
       allow(Tempfile).to receive(:new).with(['sqlconfig', '.ini']).and_return(@file_double)
     end
+
     it_behaves_like 'create' do
       let(:additional_params) { { install_switches: { 'ERRORREPORTING' => 1, 'SQLBACKUPDIR' => 'I:\DBbackup' } } }
       let(:additional_switches) { ["/ConfigurationFile=\"#{@file_double.path}\""] }
