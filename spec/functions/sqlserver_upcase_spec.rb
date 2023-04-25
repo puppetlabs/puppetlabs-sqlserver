@@ -38,11 +38,13 @@ describe 'the sqlserver_upcase function' do
         scope.function_sqlserver_upcase([{ test: [:this, :that, :other] }]),
       ).to eq(TEST: [:THIS, :THAT, :OTHER])
     end
+
     it 'returns upcase symbol' do
       expect(
         scope.function_sqlserver_upcase([:test]),
       ).to eq(:TEST)
     end
+
     it 'returns mixed objects in upcease' do
       expect(
         scope.function_sqlserver_upcase([[:test, 'woot']]),

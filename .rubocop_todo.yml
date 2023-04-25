@@ -79,17 +79,6 @@ RSpec/ContextWording:
 RSpec/DescribeClass:
   Enabled: false
 
-# Offense count: 7
-# This cop supports safe autocorrection (--autocorrect).
-# Configuration parameters: AllowConsecutiveOneLiners.
-RSpec/EmptyLineAfterExample:
-  Exclude:
-    - 'spec/acceptance/sqlserver_instance_spec.rb'
-    - 'spec/acceptance/sqlserver_login_spec.rb'
-    - 'spec/functions/sqlserver_upcase_spec.rb'
-    - 'spec/unit/puppet/property/tsql_spec.rb'
-    - 'spec/unit/puppet_x/sql_connection_spec.rb'
-
 # Offense count: 56
 # This cop supports safe autocorrection (--autocorrect).
 RSpec/EmptyLineAfterExampleGroup:

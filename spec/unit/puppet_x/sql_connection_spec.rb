@@ -36,6 +36,7 @@ RSpec.describe PuppetX::Sqlserver::SqlConnection do
           expect(result.error_message).to eq("SQL Error in Connection\nRowdy Roddy Piper")
         }.not_to raise_error(Exception)
       end
+
       it 'yields when passed a block' do
         allow(subject).to receive(:execute).and_return('results')
         subject.open_and_run_command('myquery', config) do |r|
@@ -77,6 +78,7 @@ RSpec.describe PuppetX::Sqlserver::SqlConnection do
           expect(@connection).to receive(:Open).with('Provider=MSOLEDBSQL;Initial Catalog=master;Application Name=Puppet;Data Source=.;DataTypeComptibility=80;UID=sa;PWD=Pupp3t1@')
           subject.open_and_run_command('query', admin_user: 'sa', admin_pass: 'Pupp3t1@', instance_name: 'MSSQLSERVER')
         end
+
         it 'adds a non default instance to connection string' do
           expect(@connection).to receive(:Open).with('Provider=MSOLEDBSQL;Initial Catalog=master;Application Name=Puppet;Data Source=.\\LOGGING;DataTypeComptibility=80;UID=sa;PWD=Pupp3t1@')
           subject.open_and_run_command('query', admin_user: 'sa', admin_pass: 'Pupp3t1@', instance_name: 'LOGGING')

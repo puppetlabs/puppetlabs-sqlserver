@@ -290,6 +290,7 @@ describe 'Test sqlserver::login' do
                     AND pri.name = '#{@login_under_test}'"
           run_sql_query(run_sql_query_opts_as_sa(query, 1))
         end
+
         it 'has the specified serveradmin role' do
           # Note - IS_SRVROLEMEMBER always returns false for a disabled WINDOWS_LOGIN user login
           query = "SELECT pri.name from sys.server_role_members member
