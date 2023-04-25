@@ -220,12 +220,6 @@ Security/Open:
   Exclude:
     - 'lib/puppet_x/sqlserver/features.rb'
     - 'lib/puppet_x/sqlserver/sql_connection.rb'
-
-# Offense count: 1
-Style/MixinUsage:
-  Exclude:
-    - 'spec/spec_helper.rb'
-
 # Offense count: 1
 # This cop supports unsafe autocorrection (--autocorrect-all).
 # Configuration parameters: EnforcedStyle, AllowedMethods, AllowedPatterns.
