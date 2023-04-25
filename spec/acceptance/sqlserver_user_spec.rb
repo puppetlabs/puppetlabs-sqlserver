@@ -43,12 +43,6 @@ describe 'sqlserver::user test' do
       @db_user = 'DBuser' + SecureRandom.hex(2)
     end
 
-    after(:all) do
-      # remove the newly created database
-      # Temporarily skip delete database because of MODULES-2554
-      # ensure_sqlserver_database(host, 'absent')
-    end
-
     it 'Create database user with optional default_schema' do
       pp = <<-MANIFEST
       sqlserver::config{'MSSQLSERVER':

@@ -79,12 +79,6 @@ RSpec/ContextWording:
 RSpec/DescribeClass:
   Enabled: false
 
-# Offense count: 1
-# This cop supports safe autocorrection (--autocorrect).
-RSpec/EmptyHook:
-  Exclude:
-    - 'spec/acceptance/sqlserver_user_spec.rb'
-
 # Offense count: 7
 # This cop supports safe autocorrection (--autocorrect).
 # Configuration parameters: AllowConsecutiveOneLiners.
