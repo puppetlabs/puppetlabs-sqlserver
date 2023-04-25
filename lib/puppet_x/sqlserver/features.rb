@@ -22,28 +22,28 @@ module PuppetX
       SQL_CONFIGURATION = {
         SQL_2012 => {
           major_version: 11,
-          registry_path: '110',
+          registry_path: '110'
         },
         SQL_2014 => {
           major_version: 12,
-          registry_path: '120',
+          registry_path: '120'
         },
         SQL_2016 => {
           major_version: 13,
-          registry_path: '130',
+          registry_path: '130'
         },
         SQL_2017 => {
           major_version: 14,
-          registry_path: '140',
+          registry_path: '140'
         },
         SQL_2019 => {
           major_version: 15,
-          registry_path: '150',
+          registry_path: '150'
         },
         SQL_2022 => {
           major_version: 16,
-          registry_path: '160',
-        },
+          registry_path: '160'
+        }
       }.freeze
 
       SQL_REG_ROOT = 'Software\Microsoft\Microsoft SQL Server'
@@ -97,7 +97,7 @@ module PuppetX
                   'name' => short_name,
                   'reg_root' => [],
                   'version' => open(HKLM, "#{root}\\MSSQLServer\\CurrentVersion", KEY_READ | KEY64) { |r| values(r)['CurrentVersion'] },
-                  'version_friendly' => friendly_version,
+                  'version_friendly' => friendly_version
                 }
 
                 discovered[short_name]['reg_root'].push(root)
@@ -128,7 +128,7 @@ module PuppetX
           'SQL_FullText_Adv' => 'FullText', # Full-Text and Semantic Extractions for Search
           'SQL_DQ_Full' => 'DQ', # Data Quality Services
           'sql_inst_mr' => 'ADVANCEDANALYTICS', # R Services (In-Database)
-          'SQL_Polybase_Core_Inst' => 'POLYBASE', # PolyBase Query Service for External Data
+          'SQL_Polybase_Core_Inst' => 'POLYBASE' # PolyBase Query Service for External Data
         }
 
         feat_root = "#{reg_root}\\ConfigurationState"
@@ -167,7 +167,7 @@ module PuppetX
           'sql_shared_mr' => 'SQL_SHARED_MR', # R Server (Standalone)
           # SQL Client Connectivity SDK (Installed by default)
           # also WMI: SqlService WHERE SQLServiceType = 4 # MsDtsServer
-          'SQL_DTS_Full' => 'IS', # Integration Services
+          'SQL_DTS_Full' => 'IS' # Integration Services
           # currently ignoring Reporting Services Shared
           # currently ignoring R Server Standalone
         }

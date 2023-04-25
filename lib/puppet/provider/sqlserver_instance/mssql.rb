@@ -18,7 +18,7 @@ RESOURCEKEY_TO_CMDARG = {
   'sa_pwd' => 'SAPWD',
   'security_mode' => 'SECURITYMODE',
   'sql_svc_account' => 'SQLSVCACCOUNT',
-  'sql_svc_password' => 'SQLSVCPASSWORD',
+  'sql_svc_password' => 'SQLSVCPASSWORD'
 }.freeze
 
 Puppet::Type.type(:sqlserver_instance).provide(:mssql, parent: Puppet::Provider::Sqlserver) do

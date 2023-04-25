@@ -35,7 +35,7 @@ module PuppetX # rubocop:disable Style/ClassAndModuleChildren
           'Initial Catalog' => config[:database] || 'master',
           'Application Name' => 'Puppet',
           'Data Source' => '.',
-          'DataTypeComptibility' => 80,
+          'DataTypeComptibility' => 80
         }
 
         admin_user = config[:admin_user] || ''

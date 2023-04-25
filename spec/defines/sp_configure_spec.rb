@@ -10,7 +10,7 @@ RSpec.describe 'sqlserver::sp_configure', type: :define do
     let(:params) do
       {
         config_name: 'filestream access level',
-        value: 1,
+        value: 1
       }
     end
     let(:pre_condition) do
@@ -43,7 +43,7 @@ RSpec.describe 'sqlserver::sp_configure', type: :define do
   describe 'reconfigure => false' do
     let(:additional_params) do
       {
-        reconfigure: false,
+        reconfigure: false
       }
     end
     let(:should_not_contain_command) do
@@ -73,7 +73,7 @@ RSpec.describe 'sqlserver::sp_configure', type: :define do
   describe 'with_override => false' do
     let(:additional_params) do
       {
-        with_override: false,
+        with_override: false
       }
     end
     let(:should_not_contain_command) do

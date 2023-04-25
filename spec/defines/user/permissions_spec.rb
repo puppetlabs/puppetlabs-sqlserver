@@ -20,7 +20,7 @@ describe 'sqlserver::user::permissions' do
       let(:params) do
         {
           permissions: ['SELECT'],
-          database: 'loggingDb',
+          database: 'loggingDb'
         }
       end
       let(:raise_error_check) { "'user' expects a String[1, 128] value" }
@@ -48,7 +48,7 @@ describe 'sqlserver::user::permissions' do
       let(:params) do
         {
           user: 'loggingUser',
-          database: 'loggingDb',
+          database: 'loggingDb'
         }
       end
       let(:raise_error_check) { %r{'permissions' .+ expects a String.+ value} }
@@ -78,7 +78,7 @@ describe 'sqlserver::user::permissions' do
         {
           permissions: ['SELECT'],
           database: 'loggingDb',
-          user: 'loggingUser',
+          user: 'loggingUser'
         }
       end
 
@@ -95,7 +95,7 @@ describe 'sqlserver::user::permissions' do
         {
           permissions: ['SELECT'],
           database: 'loggingDb',
-          user: 'loggingUser',
+          user: 'loggingUser'
         }
       end
 
@@ -123,7 +123,7 @@ describe 'sqlserver::user::permissions' do
         {
           user: 'loggingUser',
           permissions: ['SELECT'],
-          database: 'loggingDb',
+          database: 'loggingDb'
         }
       end
     end
@@ -225,7 +225,7 @@ describe 'sqlserver::user::permissions' do
         {
           user: 'loggingUser',
           permissions: ['SELECT'],
-          database: 'loggingDb',
+          database: 'loggingDb'
         }
       end
 

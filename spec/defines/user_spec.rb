@@ -217,7 +217,7 @@ RSpec.describe 'sqlserver::user', type: :define do
     describe 'duplicate permissions' do
       let(:additional_params) do
         {
-          permissions: { 'GRANT' => ['CONNECT SQL'], 'REVOKE' => ['CONNECT SQL'] },
+          permissions: { 'GRANT' => ['CONNECT SQL'], 'REVOKE' => ['CONNECT SQL'] }
         }
       end
       let(:raise_error_check) { "Duplicate permissions found for sqlserver::user[#{title}" }

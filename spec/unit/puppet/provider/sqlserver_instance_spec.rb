@@ -27,7 +27,7 @@ RSpec.describe provider_class do
       'sa_pwd' => 'SAPWD',
       'security_mode' => 'SECURITYMODE',
       'sql_svc_account' => 'SQLSVCACCOUNT',
-      'sql_svc_password' => 'SQLSVCPASSWORD',
+      'sql_svc_password' => 'SQLSVCPASSWORD'
     }
   end
 
@@ -228,7 +228,7 @@ RSpec.describe provider_class do
         {
           name: 'MYSQLSERVER',
           source: 'C:\myinstallexecs',
-          features: [],
+          features: []
         }
       end
     end
@@ -240,7 +240,7 @@ RSpec.describe provider_class do
         {
           name: 'MYSQLSERVER',
           source: 'C:\myinstallexecs',
-          features: [],
+          features: []
         }
       end
       let(:installed_features) { ['SQLEngine', 'Replication'] }
@@ -253,7 +253,7 @@ RSpec.describe provider_class do
         {
           name: 'MYSQLSERVER',
           source: 'C:\myinstallexecs',
-          features: [],
+          features: []
         }
       end
       let(:installed_features) { ['SQLEngine', 'Replication'] }
@@ -266,7 +266,7 @@ RSpec.describe provider_class do
         {
           name: 'MYSQLSERVER',
           source: 'C:\myinstallexecs',
-          features: [],
+          features: []
         }
       end
       let(:installed_features) { ['SQLEngine', 'Replication'] }
@@ -279,7 +279,7 @@ RSpec.describe provider_class do
         {
           name: 'MYSQLSERVER',
           source: 'C:\myinstallexecs',
-          features: ['SQL'],
+          features: ['SQL']
         }
       end
       let(:installed_features) { ['SQLEngine', 'Replication'] }

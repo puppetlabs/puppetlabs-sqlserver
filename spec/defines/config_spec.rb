@@ -12,7 +12,7 @@ RSpec.describe 'sqlserver::config', type: :define do
       {
         instance_name: 'MSSQLSERVER',
         admin_user: 'sa',
-        admin_pass: 'Pupp3t1@',
+        admin_pass: 'Pupp3t1@'
       }
     end
 
@@ -28,7 +28,7 @@ RSpec.describe 'sqlserver::config', type: :define do
         {
           instance_name: 'MSSQLSERVER',
           admin_user: 'sa',
-          admin_login_type: 'SQL_LOGIN',
+          admin_login_type: 'SQL_LOGIN'
         }
       end
 
@@ -45,7 +45,7 @@ RSpec.describe 'sqlserver::config', type: :define do
         {
           instance_name: 'MSSQLSERVER',
           admin_pass: 'Pupp3t1@',
-          admin_login_type: 'SQL_LOGIN',
+          admin_login_type: 'SQL_LOGIN'
         }
       end
 
@@ -64,7 +64,7 @@ RSpec.describe 'sqlserver::config', type: :define do
         {
           instance_name: 'MSSQLSERVER',
           admin_user: 'sa',
-          admin_login_type: 'WINDOWS_LOGIN',
+          admin_login_type: 'WINDOWS_LOGIN'
         }
       end
 
@@ -81,7 +81,7 @@ RSpec.describe 'sqlserver::config', type: :define do
         {
           instance_name: 'MSSQLSERVER',
           admin_pass: 'Pupp3t1@',
-          admin_login_type: 'WINDOWS_LOGIN',
+          admin_login_type: 'WINDOWS_LOGIN'
         }
       end
 

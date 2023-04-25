@@ -39,7 +39,7 @@ RSpec.describe Puppet::Type.type(:sqlserver_instance) do
         args = {
           name: 'MSSQLSERVER',
           ensure: 'present',
-          features: [feature_name],
+          features: [feature_name]
         }
         expect(Puppet).to receive(:deprecation_warning).at_least(:once)
         Puppet::Type.type(:sqlserver_instance).new(args)

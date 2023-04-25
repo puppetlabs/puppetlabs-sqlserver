@@ -43,7 +43,7 @@ describe 'sqlserver_instance' do
       server: '.',
       sql_admin_user: 'sa',
       sql_admin_pass: 'Pupp3t1@',
-      expected_row_count: expected_row_count,
+      expected_row_count: expected_row_count
     }
   end
 

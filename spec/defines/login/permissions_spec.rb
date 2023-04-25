@@ -19,7 +19,7 @@ describe 'sqlserver::login::permissions' do
     context 'login =>' do
       let(:params) do
         {
-          permissions: ['SELECT'],
+          permissions: ['SELECT']
         }
       end
       let(:raise_error_check) { %r{'login' expects a String.+ value} }
@@ -49,7 +49,7 @@ describe 'sqlserver::login::permissions' do
     context 'permissions' do
       let(:params) do
         {
-          login: 'loggingUser',
+          login: 'loggingUser'
         }
       end
       let(:raise_error_check) { %r{'permissions' .+ expects a String.+ value} }
@@ -77,7 +77,7 @@ describe 'sqlserver::login::permissions' do
       let(:params) do
         {
           permissions: ['SELECT'],
-          login: 'loggingUser',
+          login: 'loggingUser'
         }
       end
 
@@ -97,7 +97,7 @@ describe 'sqlserver::login::permissions' do
       let(:params) do
         {
           login: 'loggingUser',
-          permissions: ['SELECT'],
+          permissions: ['SELECT']
         }
       end
     end
@@ -159,7 +159,7 @@ describe 'sqlserver::login::permissions' do
       let(:params) do
         {
           login: 'loggingUser',
-          permissions: ['SELECT'],
+          permissions: ['SELECT']
         }
       end
 

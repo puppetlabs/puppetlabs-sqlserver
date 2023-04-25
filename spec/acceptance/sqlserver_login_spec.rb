@@ -14,7 +14,7 @@ describe 'Test sqlserver::login' do
       query: query,
       sql_admin_user: user,
       sql_admin_pass: passwd,
-      expected_row_count: expected_row_count,
+      expected_row_count: expected_row_count
     }
   end
 

@@ -10,7 +10,7 @@ RSpec.describe 'sqlserver::database', type: :define do
     let(:params) do
       {
         db_name: 'myTestDb',
-        instance: 'MSSQLSERVER',
+        instance: 'MSSQLSERVER'
       }
     end
     let(:pre_condition) do
@@ -33,7 +33,7 @@ RSpec.describe 'sqlserver::database', type: :define do
     it_behaves_like 'validation error' do
       let(:additional_params) do
         {
-          filespec_filename: 'c:/test/test.mdf',
+          filespec_filename: 'c:/test/test.mdf'
         }
       end
       let(:raise_error_check) { %r{filespec_name must also be specified when specifying filespec_filename} }
@@ -43,7 +43,7 @@ RSpec.describe 'sqlserver::database', type: :define do
         let(:additional_params) do
           {
             filespec_filename: 'c:/test/test.mdf',
-            filespec_name: 'OMGthisISsoReallyLongAndBoringProcessImeanAReallyOMGthisISsoReallyLongAndBoringProcessMakeItOMGthisISsoReallyLongAndBoringProcess',
+            filespec_name: 'OMGthisISsoReallyLongAndBoringProcessImeanAReallyOMGthisISsoReallyLongAndBoringProcessMakeItOMGthisISsoReallyLongAndBoringProcess'
           }
         end
         let(:raise_error_check) { "'filespec_name' expects" }
@@ -93,7 +93,7 @@ RSpec.describe 'sqlserver::database', type: :define do
     let(:params) do
       {
         db_name: 'myTestDb',
-        instance: 'MSSQLSERVER',
+        instance: 'MSSQLSERVER'
       }
     end
 

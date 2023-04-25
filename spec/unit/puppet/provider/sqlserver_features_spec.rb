@@ -15,7 +15,7 @@ RSpec.describe provider_class do
     {
       name: 'Base features',
       source: 'C:\myinstallexecs',
-      features: ['BC', 'SSMS'],
+      features: ['BC', 'SSMS']
     }
   end
   let(:additional_params) { {} }
@@ -41,7 +41,7 @@ RSpec.describe provider_class do
     @feature_params = {
       name: 'Base features',
       source: 'C:\myinstallexecs',
-      features: ['BC', 'SSMS'],
+      features: ['BC', 'SSMS']
     }
     let(:feature_remove) { [] }
     let(:feature_add) { [] }
@@ -142,7 +142,7 @@ RSpec.describe provider_class do
       feature_params = {
         name: 'Base features',
         source: 'C:\myinstallexecs',
-        features: [],
+        features: []
       }
       @resource = Puppet::Type::Sqlserver_features.new(feature_params)
       @provider = provider_class.new(@resource)

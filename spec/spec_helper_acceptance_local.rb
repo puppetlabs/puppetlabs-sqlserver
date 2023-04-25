@@ -29,7 +29,7 @@ RSpec.configure do |c|
     iso_opts = {
       folder: WIN_ISO_ROOT,
       file: WIN_2019_ISO,
-      drive_letter: 'I',
+      drive_letter: 'I'
     }
     # Allows litmus to use SSH, by explicitly setting specinfra
     # os family to windows (would fail when using ssh on windows)
@@ -90,31 +90,31 @@ def base_install(sql_version)
     iso_opts = {
       folder: QA_RESOURCE_ROOT,
       file: SQL_2012_ISO,
-      drive_letter: 'H',
+      drive_letter: 'H'
     }
   when 2014
     iso_opts = {
       folder: QA_RESOURCE_ROOT,
       file: SQL_2014_ISO,
-      drive_letter: 'H',
+      drive_letter: 'H'
     }
   when 2016
     iso_opts = {
       folder: QA_RESOURCE_ROOT,
       file: SQL_2016_ISO,
-      drive_letter: 'H',
+      drive_letter: 'H'
     }
   when 2017
     iso_opts = {
       folder: QA_RESOURCE_ROOT,
       file: SQL_2017_ISO,
-      drive_letter: 'H',
+      drive_letter: 'H'
     }
   when 2019
     iso_opts = {
       folder: QA_RESOURCE_ROOT,
       file: SQL_2019_ISO,
-      drive_letter: 'H',
+      drive_letter: 'H'
     }
   when 2022
     iso_opts = {

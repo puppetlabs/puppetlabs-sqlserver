@@ -59,7 +59,7 @@ describe 'sqlserver_tsql test' do
         query: @query,
         sql_admin_user: @admin_user,
         sql_admin_pass: @admin_pass,
-        expected_row_count: 1,
+        expected_row_count: 1
       }
       run_sql_query(run_sql_query_opts)
     end
@@ -99,7 +99,7 @@ describe 'sqlserver_tsql test' do
         query: @query,
         sql_admin_user: @admin_user,
         sql_admin_pass: @admin_pass,
-        expected_row_count: 1,
+        expected_row_count: 1
       }
       run_sql_query(run_sql_query_opts)
     end
@@ -129,7 +129,7 @@ describe 'sqlserver_tsql test' do
         query: @query,
         sql_admin_user: @admin_user,
         sql_admin_pass: @admin_pass,
-        expected_row_count: 1,
+        expected_row_count: 1
       }
       run_sql_query(run_sql_query_opts)
     end
@@ -159,7 +159,7 @@ describe 'sqlserver_tsql test' do
         query: @query,
         sql_admin_user: @admin_user,
         sql_admin_pass: @admin_pass,
-        expected_row_count: 0,
+        expected_row_count: 0
       }
       run_sql_query(run_sql_query_opts)
     end
@@ -190,7 +190,7 @@ describe 'sqlserver_tsql test' do
         query: @query,
         sql_admin_user: @admin_user,
         sql_admin_pass: @admin_pass,
-        expected_row_count: 1,
+        expected_row_count: 1
       }
       run_sql_query(run_sql_query_opts)
     end

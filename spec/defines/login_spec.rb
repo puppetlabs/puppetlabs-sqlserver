@@ -10,7 +10,7 @@ RSpec.describe 'sqlserver::login', type: :define do
     let(:params) do
       {
         login: 'myTitle',
-        instance: 'MSSQLSERVER',
+        instance: 'MSSQLSERVER'
       }
     end
     let(:pre_condition) do
@@ -62,7 +62,7 @@ RSpec.describe 'sqlserver::login', type: :define do
     let(:title) { 'myTitle' }
     let(:params) do
       {
-        login: 'myLogin',
+        login: 'myLogin'
       }
     end
     let(:permissions) { {} }
@@ -131,7 +131,7 @@ RSpec.describe 'sqlserver::login', type: :define do
     describe 'duplicate permissions' do
       let(:additional_params) do
         {
-          permissions: { 'GRANT' => ['CONNECT SQL'], 'REVOKE' => ['CONNECT SQL'] },
+          permissions: { 'GRANT' => ['CONNECT SQL'], 'REVOKE' => ['CONNECT SQL'] }
         }
       end
       let(:raise_error_check) { "Duplicate permissions found for sqlserver::login[#{title}" }

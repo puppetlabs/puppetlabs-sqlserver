@@ -10,7 +10,7 @@ RSpec.describe 'sqlserver::role::permissions' do
     let(:params) do
       {
         role: 'myCustomRole',
-        permissions: ['INSERT', 'UPDATE', 'DELETE', 'SELECT'],
+        permissions: ['INSERT', 'UPDATE', 'DELETE', 'SELECT']
       }
     end
   end
@@ -33,7 +33,7 @@ RSpec.describe 'sqlserver::role::permissions' do
     let(:params) do
       {
         role: 'myCustomRole',
-        permissions: ['INSERT', 'UPDATE', 'DELETE', 'SELECT'],
+        permissions: ['INSERT', 'UPDATE', 'DELETE', 'SELECT']
       }
     end
 
@@ -72,7 +72,7 @@ RSpec.describe 'sqlserver::role::permissions' do
     describe 'DATABASE' do
       let(:additional_params) do
         {
-          type: 'DATABASE',
+          type: 'DATABASE'
         }
       end
 
@@ -82,7 +82,7 @@ RSpec.describe 'sqlserver::role::permissions' do
     describe 'SERVER' do
       let(:additional_params) do
         {
-          type: 'SERVER',
+          type: 'SERVER'
         }
       end
 
@@ -117,7 +117,7 @@ RSpec.describe 'sqlserver::role::permissions' do
       let(:params) do
         {
           role: 'myCustomRole',
-          permissions: [],
+          permissions: []
         }
       end
 
@@ -159,7 +159,7 @@ RSpec.describe 'sqlserver::role::permissions' do
           {
             role: 'myCustomRole',
             permissions: ['INSERT', 'UPDATE', 'DELETE', 'SELECT'],
-            instance: instance,
+            instance: instance
           }
         end
 

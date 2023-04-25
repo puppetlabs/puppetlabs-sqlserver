@@ -5,7 +5,7 @@ module PuppetX # rubocop:disable Style/ClassAndModuleChildren
     class ServerHelper # rubocop:disable Style/Documentation
       @super_feature_hash = {
         SQL: [:DQ, :FullText, :Replication, :SQLEngine],
-        Tools: [:BC, :SSMS, :ADV_SSMS, :Conn, :SDK],
+        Tools: [:BC, :SSMS, :ADV_SSMS, :Conn, :SDK]
       }
 
       def self.get_sub_features(super_feature)
