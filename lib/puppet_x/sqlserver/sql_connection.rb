@@ -31,10 +31,10 @@ module PuppetX # rubocop:disable Style/ClassAndModuleChildren
 
       def get_connection_string(config)
         params = {
-          'Provider'             => 'MSOLEDBSQL',
-          'Initial Catalog'      => config[:database] || 'master',
-          'Application Name'     => 'Puppet',
-          'Data Source'          => '.',
+          'Provider' => 'MSOLEDBSQL',
+          'Initial Catalog' => config[:database] || 'master',
+          'Application Name' => 'Puppet',
+          'Data Source' => '.',
           'DataTypeComptibility' => 80,
         }
 

@@ -16,18 +16,18 @@ RSpec.describe provider_class do
   let(:resourcekey_to_cmdarg) do
     {
       'agt_svc_account' => 'AGTSVCACCOUNT',
-      'agt_svc_password'      => 'AGTSVCPASSWORD',
-      'as_svc_account'        => 'ASSVCACCOUNT',
-      'as_svc_password'       => 'ASSVCPASSWORD',
-      'pid'                   => 'PID',
-      'rs_svc_account'        => 'RSSVCACCOUNT',
-      'rs_svc_password'       => 'RSSVCPASSWORD',
-      'polybase_svc_account'  => 'PBENGSVCACCOUNT',
+      'agt_svc_password' => 'AGTSVCPASSWORD',
+      'as_svc_account' => 'ASSVCACCOUNT',
+      'as_svc_password' => 'ASSVCPASSWORD',
+      'pid' => 'PID',
+      'rs_svc_account' => 'RSSVCACCOUNT',
+      'rs_svc_password' => 'RSSVCPASSWORD',
+      'polybase_svc_account' => 'PBENGSVCACCOUNT',
       'polybase_svc_password' => 'PBDMSSVCPASSWORD',
-      'sa_pwd'                => 'SAPWD',
-      'security_mode'         => 'SECURITYMODE',
-      'sql_svc_account'       => 'SQLSVCACCOUNT',
-      'sql_svc_password'      => 'SQLSVCPASSWORD',
+      'sa_pwd' => 'SAPWD',
+      'security_mode' => 'SECURITYMODE',
+      'sql_svc_account' => 'SQLSVCACCOUNT',
+      'sql_svc_password' => 'SQLSVCPASSWORD',
     }
   end
 

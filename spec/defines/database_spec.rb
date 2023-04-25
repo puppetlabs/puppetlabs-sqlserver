@@ -43,7 +43,7 @@ RSpec.describe 'sqlserver::database', type: :define do
         let(:additional_params) do
           {
             filespec_filename: 'c:/test/test.mdf',
-            filespec_name:                 'OMGthisISsoReallyLongAndBoringProcessImeanAReallyOMGthisISsoReallyLongAndBoringProcessMakeItOMGthisISsoReallyLongAndBoringProcess',
+            filespec_name: 'OMGthisISsoReallyLongAndBoringProcessImeanAReallyOMGthisISsoReallyLongAndBoringProcessMakeItOMGthisISsoReallyLongAndBoringProcess',
           }
         end
         let(:raise_error_check) { "'filespec_name' expects" }

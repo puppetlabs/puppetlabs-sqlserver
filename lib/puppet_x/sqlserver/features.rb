@@ -124,11 +124,11 @@ module PuppetX
           # also reg Replication/IsInstalled set to 1
           'SQL_Replication_Core_Inst' => 'Replication', # SQL Server Replication
           # also WMI: SqlService WHERE SQLServiceType = 1 # MSSQLSERVER
-          'SQL_Engine_Core_Inst'      => 'SQLEngine', # Database Engine Services
-          'SQL_FullText_Adv'          => 'FullText', # Full-Text and Semantic Extractions for Search
-          'SQL_DQ_Full'               => 'DQ', # Data Quality Services
-          'sql_inst_mr'               => 'ADVANCEDANALYTICS', # R Services (In-Database)
-          'SQL_Polybase_Core_Inst'    => 'POLYBASE', # PolyBase Query Service for External Data
+          'SQL_Engine_Core_Inst' => 'SQLEngine', # Database Engine Services
+          'SQL_FullText_Adv' => 'FullText', # Full-Text and Semantic Extractions for Search
+          'SQL_DQ_Full' => 'DQ', # Data Quality Services
+          'sql_inst_mr' => 'ADVANCEDANALYTICS', # R Services (In-Database)
+          'SQL_Polybase_Core_Inst' => 'POLYBASE', # PolyBase Query Service for External Data
         }
 
         feat_root = "#{reg_root}\\ConfigurationState"
@@ -154,20 +154,20 @@ module PuppetX
         shared_features = {
           # Client tools support removed with SQLServer 2022
           # (ref https://learn.microsoft.com/en-us/sql/database-engine/install-windows/install-sql-server-on-server-core?view=sql-server-ver16#BK_SupportedFeatures)
-          'Connectivity_Full'      => 'Conn', # Client Tools Connectivity
-          'SDK_Full'               => 'SDK', # Client Tools SDK
-          'MDSCoreFeature'         => 'MDS', # Master Data Services
-          'Tools_Legacy_Full'      => 'BC', # Client Tools Backwards Compatibility
-          'SQL_SSMS_Full'          => 'ADV_SSMS', # Management Tools - Complete (Does not exist in SQL 2016+)
-          'SQL_SSMS_Adv'           => 'SSMS', # Management Tools - Basic  (Does not exist in SQL 2016)
-          'SQL_DQ_CLIENT_Full'     => 'DQC', # Data Quality Client
-          'SQL_BOL_Components'     => 'BOL', # Documentation Components
+          'Connectivity_Full' => 'Conn', # Client Tools Connectivity
+          'SDK_Full' => 'SDK', # Client Tools SDK
+          'MDSCoreFeature' => 'MDS', # Master Data Services
+          'Tools_Legacy_Full' => 'BC', # Client Tools Backwards Compatibility
+          'SQL_SSMS_Full' => 'ADV_SSMS', # Management Tools - Complete (Does not exist in SQL 2016+)
+          'SQL_SSMS_Adv' => 'SSMS', # Management Tools - Basic  (Does not exist in SQL 2016)
+          'SQL_DQ_CLIENT_Full' => 'DQC', # Data Quality Client
+          'SQL_BOL_Components' => 'BOL', # Documentation Components
           'SQL_DReplay_Controller' => 'DREPLAY_CTLR', # Distributed Replay Controller
-          'SQL_DReplay_Client'     => 'DREPLAY_CLT', # Distributed Replay Client
-          'sql_shared_mr'          => 'SQL_SHARED_MR', # R Server (Standalone)
+          'SQL_DReplay_Client' => 'DREPLAY_CLT', # Distributed Replay Client
+          'sql_shared_mr' => 'SQL_SHARED_MR', # R Server (Standalone)
           # SQL Client Connectivity SDK (Installed by default)
           # also WMI: SqlService WHERE SQLServiceType = 4 # MsDtsServer
-          'SQL_DTS_Full'           => 'IS', # Integration Services
+          'SQL_DTS_Full' => 'IS', # Integration Services
           # currently ignoring Reporting Services Shared
           # currently ignoring R Server Standalone
         }
