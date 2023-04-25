@@ -223,10 +223,10 @@ module PuppetX
             ver.segments[0] == major_version
           end
 
-          [version, Hash[instances]]
+          [version, instances.to_h]
         end
 
-        Hash[version_instance_map]
+        version_instance_map.to_h
       end
 
       # return a hash of version => shared features array
