@@ -81,7 +81,7 @@ describe 'sqlserver::config test' do
       query = "USE #{db_name}; SELECT * from master..sysdatabases WHERE name = '#{db_name}'"
 
       run_sql_query(query: query, server: hostname, instance: inst_name, \
-        sql_admin_user: @admin_user, sql_admin_pass: @admin_pass, expected_row_count: 1)
+                    sql_admin_user: @admin_user, sql_admin_pass: @admin_pass, expected_row_count: 1)
     end
 
     it 'Validate New Config WITHOUT using instance_name in sqlserver::config' do
