@@ -51,9 +51,7 @@ class Puppet::Provider::Sqlserver < Puppet::Provider # rubocop:disable Style/Doc
 
   # @api private
   def self.run_install_dot_net(source_location = nil)
-    unless source_location.nil?
-      warn("The specified windows_source_location directory for sqlserver of \"#{source_location}\" does not exist") unless Puppet::FileSystem.directory?(source_location)
-    end
+    warn("The specified windows_source_location directory for sqlserver of \"#{source_location}\" does not exist") if !source_location.nil? && !Puppet::FileSystem.directory?(source_location)
 
     install_dot_net = <<~DOTNET
       $Result = Dism /online /Get-featureinfo /featurename:NetFx3

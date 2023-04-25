@@ -53,9 +53,8 @@ end
 
 def sql_version?
   vars = node_vars?
-  unless vars.nil?
-    return vars['sqlversion'].match(%r{sqlserver_(.*)})[1] if vars['sqlversion']
-  end
+  return vars['sqlversion'].match(%r{sqlserver_(.*)})[1] if !vars.nil? && (vars['sqlversion'])
+
   # Return's a default version if none was given
   '2019'
 end

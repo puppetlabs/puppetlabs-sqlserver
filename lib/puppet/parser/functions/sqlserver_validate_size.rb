@@ -7,9 +7,7 @@ module Puppet::Parser::Functions
     value = args[0]
     match = %r{^(?<size>\d+)(?<measure>KB|MB|GB|TB)$}.match(value)
 
-    if match
-      raise(Puppet::ParseError, "Please use larger measurement for values greater than 2147483647, you provided #{value}") if Integer(match[:size]) > 2_147_483_647
-    end
+    raise(Puppet::ParseError, "Please use larger measurement for values greater than 2147483647, you provided #{value}") if match && (Integer(match[:size]) > 2_147_483_647)
     raise(Puppet::ParseError, "Number must be an integer, you provided #{value}") if value.include?('.')
   end
 end

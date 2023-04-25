@@ -230,14 +230,6 @@ Style/OptionalBooleanParameter:
     - 'lib/puppet/type/sqlserver_tsql.rb'
     - 'spec/defines/manifest_shared_examples.rb'
 
-# Offense count: 3
-# This cop supports safe autocorrection (--autocorrect).
-# Configuration parameters: AllowModifier.
-Style/SoleNestedConditional:
-  Exclude:
-    - 'lib/puppet/parser/functions/sqlserver_validate_size.rb'
-    - 'lib/puppet/provider/sqlserver.rb'
-    - 'spec/spec_helper_acceptance_local.rb'
 
 # Offense count: 34
 # This cop supports unsafe autocorrection (--autocorrect-all).
