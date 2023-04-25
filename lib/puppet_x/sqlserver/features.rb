@@ -2,14 +2,14 @@
 
 require 'puppet/util/windows'
 
-SQL_2012 ||= 'SQL_2012'
-SQL_2014 ||= 'SQL_2014'
-SQL_2016 ||= 'SQL_2016'
-SQL_2017 ||= 'SQL_2017'
-SQL_2019 ||= 'SQL_2019'
-SQL_2022 ||= 'SQL_2022'
+SQL_2012 = 'SQL_2012'
+SQL_2014 = 'SQL_2014'
+SQL_2016 = 'SQL_2016'
+SQL_2017 = 'SQL_2017'
+SQL_2019 = 'SQL_2019'
+SQL_2022 = 'SQL_2022'
 
-ALL_SQL_VERSIONS ||= [SQL_2012, SQL_2014, SQL_2016, SQL_2017, SQL_2019, SQL_2022].freeze
+ALL_SQL_VERSIONS = [SQL_2012, SQL_2014, SQL_2016, SQL_2017, SQL_2019, SQL_2022].freeze
 
 # rubocop:disable Style/ClassAndModuleChildren
 module PuppetX
@@ -19,7 +19,7 @@ module PuppetX
       include Puppet::Util::Windows::Registry
       extend Puppet::Util::Windows::Registry
 
-      SQL_CONFIGURATION ||= {
+      SQL_CONFIGURATION = {
         SQL_2012 => {
           major_version: 11,
           registry_path: '110',
@@ -46,8 +46,8 @@ module PuppetX
         },
       }.freeze
 
-      SQL_REG_ROOT ||= 'Software\Microsoft\Microsoft SQL Server'
-      HKLM         ||= 'HKEY_LOCAL_MACHINE'
+      SQL_REG_ROOT = 'Software\Microsoft\Microsoft SQL Server'
+      HKLM         = 'HKEY_LOCAL_MACHINE'
 
       def self.get_parent_path(key_path)
         # should be the same as SQL_REG_ROOT
