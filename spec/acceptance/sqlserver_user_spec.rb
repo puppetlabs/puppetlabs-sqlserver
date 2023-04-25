@@ -96,7 +96,7 @@ describe 'sqlserver::user test' do
         user            => '#{@db_user}',
         require         => Sqlserver::Login['#{@db_user}'],
       }
-        MANIFEST
+      MANIFEST
       apply_manifest(pp, catch_failures: true)
 
       # validate that the database user '#{@db_user}' is successfully created:

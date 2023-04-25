@@ -17,7 +17,7 @@ RSpec.describe 'sqlserver::sp_configure', type: :define do
       <<-EOF
       define sqlserver::config{}
       sqlserver::config {'MSSQLSERVER': }
-    EOF
+      EOF
     end
   end
   describe 'basic usage' do

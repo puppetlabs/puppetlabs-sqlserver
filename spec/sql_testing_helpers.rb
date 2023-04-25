@@ -44,7 +44,7 @@ def install_sqlserver(host, opts = {})
       },
       windows_feature_source => 'I:\\sources\\sxs',
     }
-    MANIFEST
+  MANIFEST
   apply_manifest_on(host, pp)
 end
 
@@ -201,7 +201,7 @@ end: 2026-03-31
 #####################
 #  End License File #
 #####################
-EOF
+  EOF
 
   create_remote_file(host, '/etc/puppetlabs/license.key', license)
 end

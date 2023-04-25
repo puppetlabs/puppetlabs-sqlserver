@@ -156,7 +156,7 @@ def install_sqlserver(features)
       },
       windows_feature_source => 'I:\\sources\\sxs',
     }
-    MANIFEST
+  MANIFEST
   Helper.instance.apply_manifest(pp)
 end
 

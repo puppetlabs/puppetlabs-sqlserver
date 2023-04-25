@@ -8,7 +8,7 @@ describe 'sqlserver::login::permissions' do
     <<-EOF
     define sqlserver::config{}
     sqlserver::config {'MSSQLSERVER': }
-  EOF
+    EOF
   end
 
   context 'validation errors' do
@@ -137,7 +137,7 @@ describe 'sqlserver::login::permissions' do
         <<-EOF
       define sqlserver::config{}
       sqlserver::config {'MSSQLSERVER': }
-      EOF
+        EOF
       end
 
       it_behaves_like 'compile'

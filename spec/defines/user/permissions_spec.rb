@@ -8,7 +8,7 @@ describe 'sqlserver::user::permissions' do
     <<-EOF
     define sqlserver::config{}
     sqlserver::config {'MSSQLSERVER': }
-  EOF
+    EOF
   end
 
   context 'validation errors' do
@@ -161,7 +161,7 @@ describe 'sqlserver::user::permissions' do
         <<-EOF
       define sqlserver::config{}
       sqlserver::config {'MSSQLSERVER': }
-      EOF
+        EOF
       end
       let(:should_contain_command) { ['USE [loggingDb];'] }
 

@@ -12,7 +12,7 @@ RSpec.describe 'sqlserver::user', type: :define do
       <<-EOF
       define sqlserver::config{}
       sqlserver::config {'MSSQLSERVER': }
-    EOF
+      EOF
     end
   end
 

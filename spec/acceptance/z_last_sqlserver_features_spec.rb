@@ -181,7 +181,7 @@ describe 'sqlserver_features', if: version.to_i != 2012 do
             source                => 'H:',
             sql_sysadmin_accounts => ['#{user}'],
             }
-            MANIFEST
+        MANIFEST
         idempotent_apply(pp)
       end
 

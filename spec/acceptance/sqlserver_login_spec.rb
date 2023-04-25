@@ -73,7 +73,7 @@ describe 'Test sqlserver::login' do
             #{"disabled => #{options['disabled']}," unless options['disabled'].nil?}
             #{"ensure => '#{options['ensure']}'," unless options['ensure'].nil?}
           }
-        MANIFEST
+    MANIFEST
   end
 
   before(:all) do

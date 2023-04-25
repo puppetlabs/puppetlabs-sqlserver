@@ -17,7 +17,7 @@ RSpec.describe 'sqlserver::login', type: :define do
       <<-EOF
       define sqlserver::config{}
       sqlserver::config {'MSSQLSERVER': }
-    EOF
+      EOF
     end
   end
 

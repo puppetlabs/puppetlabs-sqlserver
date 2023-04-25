@@ -79,7 +79,7 @@ Else
       #exit 1
   }
 }
-DOTNET
+    DOTNET
     powershell([install_dot_net])
   end
 end
