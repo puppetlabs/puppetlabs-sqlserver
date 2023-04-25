@@ -158,7 +158,7 @@ Puppet::Type.newtype(:sqlserver_instance) do
     failures << 'must contain uppercase letters' unless %r{[A-Z]}.match?(password)
     failures << 'must contain numbers' unless %r{\d}.match?(password)
     failures << 'must contain a special character' unless %r{}.match?(password)
-    fail("#{message_start}:\n#{failures.join("\n")}") if failures.count > 0 # rubocop:disable Style/SignalException
+    fail("#{message_start}:\n#{failures.join("\n")}") if failures.count.positive? # rubocop:disable Style/SignalException
 
     true
   end
