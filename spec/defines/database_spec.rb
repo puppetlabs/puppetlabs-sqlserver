@@ -49,6 +49,7 @@ RSpec.describe 'sqlserver::database', type: :define do
         let(:raise_error_check) { "'filespec_name' expects" }
       end
     end
+
     it_behaves_like 'sqlserver_tsql command' do
       let(:additional_params) do
         {
@@ -67,6 +68,7 @@ RSpec.describe 'sqlserver::database', type: :define do
       end
     end
   end
+
   describe 'collation_name' do
     let(:additional_params) { { collation_name: 'SQL_Latin1_General_CP1_CI_AS' } }
     let(:should_contain_command) do
@@ -85,6 +87,7 @@ RSpec.describe 'sqlserver::database', type: :define do
     it_behaves_like 'sqlserver_tsql command'
     it_behaves_like 'sqlserver_tsql onlyif'
   end
+
   describe 'filestream failure' do
     let(:title) { 'myTitle' }
     let(:params) do
@@ -101,6 +104,7 @@ RSpec.describe 'sqlserver::database', type: :define do
       }.to raise_error(Puppet::Error)
     end
   end
+
   describe 'include filestream_non_transacted_access' do
     let(:additional_params) { { filestream_non_transacted_access: 'FULL' } }
     let(:should_contain_command) { [%r{FILESTREAM\s+\(\s+NON_TRANSACTED_ACCESS\s+=\s+FULL}] }
@@ -109,6 +113,7 @@ RSpec.describe 'sqlserver::database', type: :define do
     it_behaves_like 'sqlserver_tsql command'
     it_behaves_like 'sqlserver_tsql without_command'
   end
+
   describe 'should not contain filestream by default' do
     let(:should_not_contain_command) { [%r{FILESTREAM}] }
 
@@ -154,42 +159,49 @@ RSpec.describe 'sqlserver::database', type: :define do
       it_behaves_like 'sqlserver_tsql command'
       it_behaves_like 'sqlserver_tsql without_command'
     end
+
     describe 'default_fulltext_language' do
       let(:additional_params) { { containment: 'PARTIAL', default_fulltext_language: 'us_english' } }
       let(:should_contain_command) { [%r{CONTAINMENT\s=\sPARTIAL}, %r{SET DEFAULT_FULLTEXT_LANGUAGE = \[us_english\]}, %r{,\s*DEFAULT_FULLTEXT_LANGUAGE=\[us_english\]}m] }
 
       it_behaves_like 'sqlserver_tsql command'
     end
+
     describe 'transform_noise_words ON' do
       let(:additional_params) { { containment: 'PARTIAL', transform_noise_words: 'ON' } }
       let(:should_contain_command) { [%r{CONTAINMENT\s=\sPARTIAL}, %r{,\s*TRANSFORM_NOISE_WORDS = ON}, %r{SET TRANSFORM_NOISE_WORDS = ON}, %r{is_transform_noise_words_on = 1}] }
 
       it_behaves_like 'sqlserver_tsql command'
     end
+
     describe 'transform_noise_words OFF' do
       let(:additional_params) { { containment: 'PARTIAL', transform_noise_words: 'OFF' } }
       let(:should_contain_command) { [%r{CONTAINMENT\s=\sPARTIAL}, %r{,\s*TRANSFORM_NOISE_WORDS = OFF}, %r{SET TRANSFORM_NOISE_WORDS = OFF}, %r{is_transform_noise_words_on = 0}] }
 
       it_behaves_like 'sqlserver_tsql command'
     end
+
     describe 'nested_triggers OFF' do
       let(:additional_params) { { containment: 'PARTIAL', nested_triggers: 'OFF' } }
       let(:should_contain_command) { [%r{CONTAINMENT\s=\sPARTIAL}, %r{NESTED_TRIGGERS = OFF}, %r{is_nested_triggers_on = 0}] }
 
       it_behaves_like 'sqlserver_tsql command'
     end
+
     describe 'nested_triggers ON' do
       let(:additional_params) { { containment: 'PARTIAL', nested_triggers: 'ON' } }
       let(:should_contain_command) { [%r{CONTAINMENT\s=\sPARTIAL}, %r{NESTED_TRIGGERS = ON}, %r{is_nested_triggers_on = 1}] }
 
       it_behaves_like 'sqlserver_tsql command'
     end
+
     describe 'trustworthy OFF' do
       let(:additional_params) { { containment: 'PARTIAL', trustworthy: 'OFF' } }
       let(:should_contain_command) { [%r{CONTAINMENT\s=\sPARTIAL}, %r{,\s*TRUSTWORTHY OFF}, %r{SET TRUSTWORTHY OFF}, %r{is_trustworthy_on = 0}] }
 
       it_behaves_like 'sqlserver_tsql command'
     end
+
     describe 'trustwothy ON' do
       let(:additional_params) { { containment: 'PARTIAL', trustworthy: 'ON' } }
       let(:should_contain_command) do
@@ -211,6 +223,7 @@ RSpec.describe 'sqlserver::database', type: :define do
       it_behaves_like 'sqlserver_tsql command'
       it_behaves_like 'sqlserver_tsql onlyif'
     end
+
     describe 'db_chainging ON' do
       let(:additional_params) { { containment: 'PARTIAL', db_chaining: 'ON' } }
       let(:should_contain_command) do
@@ -233,6 +246,7 @@ RSpec.describe 'sqlserver::database', type: :define do
       it_behaves_like 'sqlserver_tsql command'
       it_behaves_like 'sqlserver_tsql onlyif'
     end
+
     describe 'db_chainging OFF' do
       let(:additional_params) { { containment: 'PARTIAL', db_chaining: 'OFF' } }
       let(:should_contain_command) do

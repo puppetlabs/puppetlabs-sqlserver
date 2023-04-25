@@ -49,6 +49,7 @@ RSpec.describe Puppet::Type.type(:sqlserver_tsql).provider(:mssql) do
         @provider.run(gen_query('whacka whacka'))
       }
     end
+
     describe 'against default database' do
       it {
         create_sqlserver_tsql(title: 'runme', command: 'whacka whacka', instance: 'MSSQLSERVER')
@@ -59,6 +60,7 @@ RSpec.describe Puppet::Type.type(:sqlserver_tsql).provider(:mssql) do
       }
     end
   end
+
   context 'run with onlyif' do
     describe 'against default database' do
       it {
@@ -69,6 +71,7 @@ RSpec.describe Puppet::Type.type(:sqlserver_tsql).provider(:mssql) do
         @provider.run(gen_query('fozy wozy'))
       }
     end
+
     describe 'against non master database' do
       it {
         create_sqlserver_tsql(

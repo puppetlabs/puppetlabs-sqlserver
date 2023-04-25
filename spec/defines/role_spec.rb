@@ -20,6 +20,7 @@ RSpec.describe 'sqlserver::role', type: :define do
 
       it_behaves_like 'validation error'
     end
+
     describe 'SERVER' do
       let(:should_contain_command) do
         [
@@ -39,6 +40,7 @@ RSpec.describe 'sqlserver::role', type: :define do
       it_behaves_like 'sqlserver_tsql command'
       it_behaves_like 'sqlserver_tsql onlyif'
     end
+
     describe 'DATABASE' do
       let(:additional_params) do
         {
@@ -78,6 +80,7 @@ RSpec.describe 'sqlserver::role', type: :define do
 
       it_behaves_like 'validation error'
     end
+
     describe 'with database role type' do
       let(:additional_params) do
         {
@@ -103,6 +106,7 @@ RSpec.describe 'sqlserver::role', type: :define do
         is_expected.to contain_sqlserver_tsql('role-MYCUSTOM-master-myCustomRole').with_instance('MYCUSTOM')
       }
     end
+
     describe 'empty instance' do
       let(:additional_params) { { 'instance' => '' } }
       let(:raise_error_check) { "instance' expects a String[1, 16]" }
@@ -122,6 +126,7 @@ RSpec.describe 'sqlserver::role', type: :define do
 
       it_behaves_like 'sqlserver_tsql without_command'
     end
+
     describe 'myUser' do
       let(:additional_params) do
         {
@@ -137,6 +142,7 @@ RSpec.describe 'sqlserver::role', type: :define do
 
       it_behaves_like 'sqlserver_tsql command'
     end
+
     describe 'myUser on Database' do
       let(:additional_params) do
         {
@@ -178,6 +184,7 @@ RSpec.describe 'sqlserver::role', type: :define do
       it_behaves_like 'sqlserver_tsql onlyif'
     end
   end
+
   context 'members_purge =>' do
     let(:sqlserver_tsql_title) { 'role-MSSQLSERVER-master-myCustomRole-members' }
 
@@ -241,6 +248,7 @@ END",
         it_behaves_like 'sqlserver_tsql onlyif'
       end
     end
+
     describe '[test these users]' do
       let(:additional_params) do
         {

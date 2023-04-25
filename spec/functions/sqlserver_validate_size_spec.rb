@@ -35,6 +35,7 @@ describe 'sqlserver_validate_size function' do
       describe 'when giving a decimal value' do
         it_behaves_like 'should raise error', "0.2#{measure}", %r{Number must be an integer}
       end
+
       describe 'when giving a value larger than 2147483647' do
         it_behaves_like 'should raise error', "2147483648#{measure}", %r{Please use larger measurement for values greater than 2147483647}
       end

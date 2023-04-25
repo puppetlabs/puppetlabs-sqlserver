@@ -146,6 +146,7 @@ RSpec.describe 'sqlserver::user', type: :define do
     it_behaves_like 'sqlserver_tsql command'
     it_behaves_like 'sqlserver_tsql onlyif'
   end
+
   context 'permissions =>' do
     let(:title) { 'myTitle' }
     let(:params) { { user: 'loggingUser', database: 'myDatabase' } }

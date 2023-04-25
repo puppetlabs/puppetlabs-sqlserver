@@ -26,6 +26,7 @@ RSpec.describe 'sqlserver::login', type: :define do
       is_expected.to contain_sqlserver_tsql('login-MSSQLSERVER-myTitle')
     end
   end
+
   describe 'parameter assignment' do
     let(:should_contain_command) do
       [
@@ -49,12 +50,14 @@ RSpec.describe 'sqlserver::login', type: :define do
     it_behaves_like 'sqlserver_tsql command'
     it_behaves_like 'sqlserver_tsql onlyif'
   end
+
   describe 'check_policy' do
     let(:additional_params) { { check_policy: false, check_expiration: true } }
     let(:raise_error_check) { 'Can not have check expiration enabled when check_policy is disabled' }
 
     it_behaves_like 'validation error'
   end
+
   context 'permissions =>' do
     let(:title) { 'myTitle' }
     let(:params) do

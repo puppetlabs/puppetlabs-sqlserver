@@ -79,20 +79,6 @@ RSpec/ContextWording:
 RSpec/DescribeClass:
   Enabled: false
 
-# Offense count: 56
-# This cop supports safe autocorrection (--autocorrect).
-RSpec/EmptyLineAfterExampleGroup:
-  Exclude:
-    - 'spec/defines/database_spec.rb'
-    - 'spec/defines/login/permissions_spec.rb'
-    - 'spec/defines/login_spec.rb'
-    - 'spec/defines/role/permissions_spec.rb'
-    - 'spec/defines/role_spec.rb'
-    - 'spec/defines/user/permissions_spec.rb'
-    - 'spec/defines/user_spec.rb'
-    - 'spec/functions/sqlserver_validate_size_spec.rb'
-    - 'spec/unit/puppet/provider/sqlserver_tsql_spec.rb'
-    - 'spec/unit/puppet_x/sql_connection_spec.rb'
 
 # Offense count: 6
 # This cop supports safe autocorrection (--autocorrect).

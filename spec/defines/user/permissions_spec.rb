@@ -30,17 +30,20 @@ describe 'sqlserver::user::permissions' do
 
         it_behaves_like 'validation error'
       end
+
       describe 'empty' do
         let(:additional_params) { { user: '' } }
 
         it_behaves_like 'validation error'
       end
+
       describe 'over limit' do
         let(:additional_params) { { user: random_string_of_size(129) } }
 
         it_behaves_like 'validation error'
       end
     end
+
     context 'permissions' do
       let(:params) do
         {
@@ -56,17 +59,20 @@ describe 'sqlserver::user::permissions' do
 
         it_behaves_like 'validation error'
       end
+
       describe 'under limit' do
         let(:additional_params) { { permissions: [random_string_of_size(3, false)] } }
 
         it_behaves_like 'validation error'
       end
+
       describe 'over limit' do
         let(:additional_params) { { permissions: [random_string_of_size(129, false)] } }
 
         it_behaves_like 'validation error'
       end
     end
+
     context 'state =>' do
       let(:params) do
         {
@@ -83,6 +89,7 @@ describe 'sqlserver::user::permissions' do
         it_behaves_like 'validation error'
       end
     end
+
     context 'with_grant_option => ' do
       let(:params) do
         {
@@ -98,6 +105,7 @@ describe 'sqlserver::user::permissions' do
 
         it_behaves_like 'validation error'
       end
+
       describe 'invalid' do
         let(:additional_params) { { with_grant_option: 'invalid' } }
         let(:raise_error_check) { "'with_grant_option' expects" }
@@ -106,6 +114,7 @@ describe 'sqlserver::user::permissions' do
       end
     end
   end
+
   context 'successfully' do
     include_context 'manifests' do
       let(:title) { 'myTitle' }
@@ -147,6 +156,7 @@ describe 'sqlserver::user::permissions' do
 
         it_behaves_like 'sqlserver_tsql command'
       end
+
       describe 'alter' do
         let(:additional_params) { { permissions: ['ALTER'] } }
         let(:should_contain_command) { ['USE [loggingDb];', 'GRANT ALTER TO [loggingUser];'] }
@@ -189,6 +199,7 @@ describe 'sqlserver::user::permissions' do
         it_behaves_like 'sqlserver_tsql without_command'
         it_behaves_like 'sqlserver_tsql onlyif'
       end
+
       describe 'false' do
         let(:should_contain_command) do
           [

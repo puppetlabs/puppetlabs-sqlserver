@@ -44,6 +44,7 @@ RSpec.describe PuppetX::Sqlserver::SqlConnection do
         end
       end
     end
+
     context 'closed connection' do
       before :each do
         stub_connection
@@ -113,6 +114,7 @@ RSpec.describe PuppetX::Sqlserver::SqlConnection do
         end
       end
     end
+
     context 'open connection' do
       it 'does not reopen an existing connection' do
         stub_connection
@@ -122,6 +124,7 @@ RSpec.describe PuppetX::Sqlserver::SqlConnection do
         subject.open_and_run_command('query', config)
       end
     end
+
     context 'return result with errors' do
       it {
         stub_connection
@@ -136,6 +139,7 @@ RSpec.describe PuppetX::Sqlserver::SqlConnection do
         expect(result.error_message).to eq('SQL Error in Connection')
       }
     end
+
     context 'open connection failure' do
       it {
         stub_connection

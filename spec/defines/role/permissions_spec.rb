@@ -40,6 +40,7 @@ RSpec.describe 'sqlserver::role::permissions' do
     it_behaves_like 'sqlserver_tsql command'
     it_behaves_like 'sqlserver_tsql onlyif'
   end
+
   context 'type =>' do
     shared_examples 'GRANT Permissions' do |type|
       base_commands = [
@@ -111,6 +112,7 @@ RSpec.describe 'sqlserver::role::permissions' do
       it_behaves_like 'sqlserver_tsql command'
       it_behaves_like 'sqlserver_tsql onlyif'
     end
+
     describe '[]' do
       let(:params) do
         {
@@ -134,6 +136,7 @@ RSpec.describe 'sqlserver::role::permissions' do
       it_behaves_like 'sqlserver_tsql command'
       it_behaves_like 'sqlserver_tsql onlyif'
     end
+
     describe 'customDatabase' do
       let(:additional_params) { { database: 'customDatabase' } }
       let(:should_contain_command) { ['USE [customDatabase];'] }
