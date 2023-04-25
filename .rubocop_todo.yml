@@ -5,20 +5,6 @@ Lint/ConstantDefinitionInBlock:
   Exclude:
     - 'spec/functions/sqlserver_upcase_spec.rb'
 
-# Offense count: 3
-# Configuration parameters: IgnoreLiteralBranches, IgnoreConstantBranches.
-Lint/DuplicateBranch:
-  Exclude:
-    - 'spec/acceptance/sqlserver_login_spec.rb'
-    - 'spec/spec_helper_acceptance_local.rb'
-    - 'spec/sql_testing_helpers.rb'
-
-# Offense count: 1
-# This cop supports safe autocorrection (--autocorrect).
-Lint/DuplicateRegexpCharacterClassElement:
-  Exclude:
-    - 'lib/puppet/type/sqlserver_tsql.rb'
-
 # Offense count: 7
 # Configuration parameters: AllowComments, AllowEmptyLambdas.
 Lint/EmptyBlock:
