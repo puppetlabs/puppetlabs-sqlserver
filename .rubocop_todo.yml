@@ -230,15 +230,6 @@ Style/OptionalBooleanParameter:
     - 'lib/puppet/type/sqlserver_tsql.rb'
     - 'spec/defines/manifest_shared_examples.rb'
 
-# Offense count: 28
-# This cop supports safe autocorrection (--autocorrect).
-Style/RedundantRegexpEscape:
-  Exclude:
-    - 'lib/puppet/parser/functions/sqlserver_validate_instance_name.rb'
-    - 'lib/puppet/type/sqlserver_instance.rb'
-    - 'spec/defines/database_spec.rb'
-    - 'spec/unit/puppet/property/tsql_spec.rb'
-
 # Offense count: 2
 # This cop supports safe autocorrection (--autocorrect).
 Style/RedundantSelfAssignmentBranch:

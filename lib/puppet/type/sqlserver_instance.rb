@@ -84,7 +84,7 @@ Puppet::Type.newtype(:sqlserver_instance) do
           following characters: " / \ [ ] : ; | = , + * ? < > '
     validate do |value|
       value.is_a? String
-      matches = value.scan(%r{(\/|\\|\[|\]|\:|\;|\||\=|\,|\+|\*|\?|\<|\>)})
+      matches = value.scan(%r{(/|\\|\[|\]|:|;|\||=|,|\+|\*|\?|<|>)})
       raise("rs_svc_account can not contain any of the special characters, / \\ [ ] : ; | = , + * ? < >, your entry contained #{matches}") unless matches.empty?
     end
   end

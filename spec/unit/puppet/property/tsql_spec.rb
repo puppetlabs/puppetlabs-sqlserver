@@ -22,6 +22,6 @@ describe 'tsql' do
 
   it 'properlies escape single quotes in queries' do
     @node[:command] = 'SELECT \'FOO\''
-    expect(@node[:command]).to match(%r{SET @sql_text = N'SELECT \'\'FOO\'\'})
+    expect(@node[:command]).to match(%r{SET @sql_text = N'SELECT ''FOO''})
   end
 end

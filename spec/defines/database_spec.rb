@@ -61,9 +61,9 @@ RSpec.describe 'sqlserver::database', type: :define do
       let(:should_contain_command) do
         [
           %r{NAME = N'myCre-Cre'},
-          %r{FILENAME = N'c\:/test/test\.mdf'},
+          %r{FILENAME = N'c:/test/test\.mdf'},
           %r{NAME = N'myCrazy_Log'},
-          %r{FILENAME = N'c\:/test/logfile\.ldf'},
+          %r{FILENAME = N'c:/test/logfile\.ldf'},
         ]
       end
     end
@@ -73,9 +73,9 @@ RSpec.describe 'sqlserver::database', type: :define do
     let(:additional_params) { { collation_name: 'SQL_Latin1_General_CP1_CI_AS' } }
     let(:should_contain_command) do
       [
-        %r{\-\-\s*UPDATE SECTION.*ALTER\sDATABASE\s\[myTestDb\]\sCOLLATE\sSQL_Latin1_General_CP1_CI_AS}m,
-        %r{\-\-\s*CREATE SECTION.*IF\ NOT\ EXISTS\(SELECT\ name\ FROM\ sys\.databases\ WHERE\ name\ =\ 'myTestDb'\ AND\ collation_name\ =\ 'SQL_Latin1_General_CP1_CI_AS'\)}m,
-        %r{\-\-\s*UPDATE SECTION.*IF\ NOT\ EXISTS\(SELECT\ name\ FROM\ sys\.databases\ WHERE\ name\ =\ 'myTestDb'\ AND\ collation_name\ =\ 'SQL_Latin1_General_CP1_CI_AS'\)}m,
+        %r{--\s*UPDATE SECTION.*ALTER\sDATABASE\s\[myTestDb\]\sCOLLATE\sSQL_Latin1_General_CP1_CI_AS}m,
+        %r{--\s*CREATE SECTION.*IF\ NOT\ EXISTS\(SELECT\ name\ FROM\ sys\.databases\ WHERE\ name\ =\ 'myTestDb'\ AND\ collation_name\ =\ 'SQL_Latin1_General_CP1_CI_AS'\)}m,
+        %r{--\s*UPDATE SECTION.*IF\ NOT\ EXISTS\(SELECT\ name\ FROM\ sys\.databases\ WHERE\ name\ =\ 'myTestDb'\ AND\ collation_name\ =\ 'SQL_Latin1_General_CP1_CI_AS'\)}m,
       ]
     end
     let(:should_contain_onlyif) do
@@ -143,7 +143,7 @@ RSpec.describe 'sqlserver::database', type: :define do
           %r{WITH\s*DB_CHAINING}m, # Should have no comma between, newlines are fine
           %r{DEFAULT_FULLTEXT_LANGUAGE=\[English\]\s*,}, # Should enclose default language of us_english in brackets
           %r{TRUSTWORTHY OFF\s*,},
-          %r{\-\- CREATE.*TWO_DIGIT_YEAR_CUTOFF = 2049.*\-\- UPDATE}m,
+          %r{-- CREATE.*TWO_DIGIT_YEAR_CUTOFF = 2049.*-- UPDATE}m,
         ]
       end
       let(:should_not_contain_command) do
