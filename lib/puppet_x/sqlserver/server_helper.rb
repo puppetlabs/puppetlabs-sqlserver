@@ -17,11 +17,7 @@ module PuppetX # rubocop:disable Style/ClassAndModuleChildren
       end
 
       def self.is_domain_or_local_user?(user, hostname) # rubocop:disable Naming/PredicateName
-        if %r{(^(((nt (authority|service))|#{hostname})\\\w+)$)|^(\w+)$}i.match?(user)
-          false
-        else
-          true
-        end
+        !%r{(^(((nt (authority|service))|#{hostname})\\\w+)$)|^(\w+)$}i.match?(user)
       end
 
       # Returns either SQL_2016, SQL_2014 or SQL_2012 if it can determine the SQL Version from the install source
