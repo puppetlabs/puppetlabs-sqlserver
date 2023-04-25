@@ -116,7 +116,7 @@ RSpec.describe 'sqlserver::user', type: :define do
     let(:should_contain_command) do
       [
         'USE [myDatabase]',
-        /CREATE USER \[myMachineName\/myUser\]\n\s+FROM LOGIN \[myMachineName\/myUser\]/,
+        %r{CREATE USER \[myMachineName/myUser\]\n\s+FROM LOGIN \[myMachineName/myUser\]},
       ]
     end
 
