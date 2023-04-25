@@ -85,9 +85,7 @@ Puppet::Type.newtype(:sqlserver_instance) do
     validate do |value|
       value.is_a? String
       matches = value.scan(%r{(\/|\\|\[|\]|\:|\;|\||\=|\,|\+|\*|\?|\<|\>)})
-      unless matches.empty?
-        raise("rs_svc_account can not contain any of the special characters, / \\ [ ] : ; | = , + * ? < >, your entry contained #{matches}")
-      end
+      raise("rs_svc_account can not contain any of the special characters, / \\ [ ] : ; | = , + * ? < >, your entry contained #{matches}") unless matches.empty?
     end
   end
 
@@ -122,15 +120,11 @@ Puppet::Type.newtype(:sqlserver_instance) do
   end
 
   def validate
-    if set?(:agt_svc_account)
-      validate_user_password_required(:agt_svc_account, :agt_svc_password)
-    end
+    validate_user_password_required(:agt_svc_account, :agt_svc_password) if set?(:agt_svc_account)
     self[:features] = self[:features].flatten.sort.uniq if set?(:features)
 
     # RS Must have Strong Password
-    if set?(:rs_svc_password) && self[:features].include?('RS')
-      strong_password?(:rs_svc_password)
-    end
+    strong_password?(:rs_svc_password) if set?(:rs_svc_password) && self[:features].include?('RS')
     return unless self[:security_mode] == 'SQL'
 
     strong_password?(:sa_pwd)

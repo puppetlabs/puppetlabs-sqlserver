@@ -220,25 +220,7 @@ Security/Open:
   Exclude:
     - 'lib/puppet_x/sqlserver/features.rb'
     - 'lib/puppet_x/sqlserver/sql_connection.rb'
-# Offense count: 30
-# This cop supports safe autocorrection (--autocorrect).
-Style/IfUnlessModifier:
-  Exclude:
-    - 'lib/puppet/parser/functions/sqlserver_is_domain_or_local_user.rb'
-    - 'lib/puppet/parser/functions/sqlserver_validate_instance_name.rb'
-    - 'lib/puppet/parser/functions/sqlserver_validate_range.rb'
-    - 'lib/puppet/parser/functions/sqlserver_validate_size.rb'
-    - 'lib/puppet/property/sqlserver_login.rb'
-    - 'lib/puppet/provider/sqlserver_features/mssql.rb'
-    - 'lib/puppet/provider/sqlserver_instance/mssql.rb'
-    - 'lib/puppet/provider/sqlserver_tsql/mssql.rb'
-    - 'lib/puppet/type/sqlserver_instance.rb'
-    - 'lib/puppet/type/sqlserver_tsql.rb'
-    - 'lib/puppet_x/sqlserver/sql_connection.rb'
-    - 'spec/spec_helper_acceptance_local.rb'
-    - 'spec/sql_testing_helpers.rb'
-    - 'spec/unit/puppet/provider/sqlserver_features_spec.rb'
-    - 'spec/unit/puppet/sqlserver_spec_helper.rb'
+
 
 # Offense count: 1
 # This cop supports unsafe autocorrection (--autocorrect-all).

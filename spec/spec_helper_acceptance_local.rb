@@ -46,9 +46,7 @@ def node_vars?
 
   hash['groups'].each do |group|
     group['targets'].each do |node|
-      if ENV['TARGET_HOST'] == node['uri']
-        return node['vars']
-      end
+      return node['vars'] if ENV['TARGET_HOST'] == node['uri']
     end
   end
 end
@@ -56,9 +54,7 @@ end
 def sql_version?
   vars = node_vars?
   unless vars.nil?
-    if vars['sqlversion']
-      return vars['sqlversion'].match(%r{sqlserver_(.*)})[1]
-    end
+    return vars['sqlversion'].match(%r{sqlserver_(.*)})[1] if vars['sqlversion']
   end
   # Return's a default version if none was given
   '2019'
@@ -178,9 +174,7 @@ def run_sql_query(opts = {}, &block)
   EOS
   # sqlcmd has problem authenticate to sqlserver if the instance is the default one MSSQLSERVER
   # Below is a work-around for it (remove "-S server\instance" from the connection string)
-  if instance.nil? || instance == 'MSSQLSERVER'
-    powershell.dup.gsub!("-S #{server}\\#{instance}", '')
-  end
+  powershell.dup.gsub!("-S #{server}\\#{instance}", '') if instance.nil? || instance == 'MSSQLSERVER'
 
   Tempfile.open 'tmp.ps1' do |tempfile|
     File.open(tempfile.path, 'w') { |file| file.puts powershell }

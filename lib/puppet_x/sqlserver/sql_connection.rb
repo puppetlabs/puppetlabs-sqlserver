@@ -56,9 +56,7 @@ module PuppetX # rubocop:disable Style/ClassAndModuleChildren
           params.store('PWD', admin_pass)
         end
 
-        if !config[:instance_name].nil? && config[:instance_name] !~ %r{^MSSQLSERVER$}
-          params['Data Source'] = ".\\#{config[:instance_name]}"
-        end
+        params['Data Source'] = ".\\#{config[:instance_name]}" if !config[:instance_name].nil? && config[:instance_name] !~ %r{^MSSQLSERVER$}
 
         params.map { |k, v| "#{k}=#{v}" }.join(';')
       end

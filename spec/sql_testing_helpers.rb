@@ -66,9 +66,7 @@ def run_sql_query(host, opts = {}, &block)
   EOS
   # sqlcmd has problem authenticate to sqlserver if the instance is the default one MSSQLSERVER
   # Below is a work-around for it (remove "-S server\instance" from the connection string)
-  if instance.nil? || instance == 'MSSQLSERVER'
-    powershell.gsub!("-S #{server}\\#{instance}", '')
-  end
+  powershell.gsub!("-S #{server}\\#{instance}", '') if instance.nil? || instance == 'MSSQLSERVER'
 
   create_remote_file(host, 'tmp.ps1', powershell)
 

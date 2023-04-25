@@ -68,15 +68,9 @@ Puppet::Type.type(:sqlserver_features).provide(:mssql, parent: Puppet::Provider:
                 "/FEATURES=#{features.join(',')}"]
     if action == 'install'
       cmd_args << '/UPDATEENABLED=False'
-      if not_nil_and_not_empty?(@resource[:is_svc_account])
-        cmd_args << "/ISSVCACCOUNT=#{@resource[:is_svc_account]}"
-      end
-      if not_nil_and_not_empty?(@resource[:is_svc_password])
-        cmd_args << "/ISSVCPASSWORD=#{@resource[:is_svc_password]}"
-      end
-      if not_nil_and_not_empty?(@resource[:pid])
-        cmd_args << "/PID=#{@resource[:pid]}"
-      end
+      cmd_args << "/ISSVCACCOUNT=#{@resource[:is_svc_account]}" if not_nil_and_not_empty?(@resource[:is_svc_account])
+      cmd_args << "/ISSVCPASSWORD=#{@resource[:is_svc_password]}" if not_nil_and_not_empty?(@resource[:is_svc_password])
+      cmd_args << "/PID=#{@resource[:pid]}" if not_nil_and_not_empty?(@resource[:pid])
     end
     begin
       config_file = create_temp_for_install_switch unless action == 'uninstall'
@@ -97,9 +91,7 @@ Puppet::Type.type(:sqlserver_features).provide(:mssql, parent: Puppet::Provider:
     if not_nil_and_not_empty? @resource[:install_switches]
       config_file = ['[OPTIONS]']
       @resource[:install_switches].each_pair do |k, v|
-        if FEATURE_RESERVED_SWITCHES.include? k
-          warn("Reserved switch [#{k}] found for `install_switches`, please know the provided value may be overridden by some command line arguments")
-        end
+        warn("Reserved switch [#{k}] found for `install_switches`, please know the provided value may be overridden by some command line arguments") if FEATURE_RESERVED_SWITCHES.include? k
         config_file << if v.is_a?(Numeric) || (v.is_a?(String) && v =~ %r{^(true|false|1|0)$}i)
                          "#{k}=#{v}"
                        elsif v.nil?

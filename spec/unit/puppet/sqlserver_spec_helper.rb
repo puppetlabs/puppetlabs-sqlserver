@@ -25,9 +25,7 @@ def stub_modify_features(action, args, features, additional_switches = [], exit_
           "/FEATURES=#{features.join(',')}"]
   cmds << '/UPDATEENABLED=False' if action == 'install'
   cmds << "/ISSVCACCOUNT=#{args[:is_svc_account]}" if args.key?(:is_svc_account)
-  if args.key?(:is_svc_password)
-    cmds << "/ISSVCPASSWORD=#{args[:is_svc_password]}"
-  end
+  cmds << "/ISSVCPASSWORD=#{args[:is_svc_password]}" if args.key?(:is_svc_password)
   additional_switches.each do |switch|
     cmds << switch
   end

@@ -81,12 +81,8 @@ RSpec.describe provider_class do
 
       stub_powershell_call(provider_class_ut)
       stub_source_which_call args
-      unless feature_remove.empty?
-        stub_remove_features(args, feature_remove, exit_code || 0)
-      end
-      unless feature_add.empty?
-        stub_add_features(args, feature_add, [], exit_code || 0)
-      end
+      stub_remove_features(args, feature_remove, exit_code || 0) unless feature_remove.empty?
+      stub_add_features(args, feature_add, [], exit_code || 0) unless feature_add.empty?
 
       # If warning_matcher supplied ensure warnings raised match, otherwise no warnings raised
       allow(@provider).to receive(:warn).with(match(warning_matcher)).and_return(nil) if warning_matcher

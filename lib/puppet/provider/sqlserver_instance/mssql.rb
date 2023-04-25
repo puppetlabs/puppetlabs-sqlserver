@@ -117,9 +117,7 @@ Puppet::Type.type(:sqlserver_instance).provide(:mssql, parent: Puppet::Provider:
     if not_nil_and_not_empty? @resource[:install_switches]
       config_file = ['[OPTIONS]']
       @resource[:install_switches].each_pair do |k, v|
-        if instance_reserved_switches.include? k
-          warn("Reserved switch [#{k}] found for `install_switches`, please know the provided value may be overridden by some command line arguments")
-        end
+        warn("Reserved switch [#{k}] found for `install_switches`, please know the provided value may be overridden by some command line arguments") if instance_reserved_switches.include? k
         config_file << if v.is_a?(Numeric) || (v.is_a?(String) && v =~ %r{^(true|false|1|0)$}i)
                          "#{k}=#{v}"
                        elsif v.nil?
@@ -156,9 +154,7 @@ Puppet::Type.type(:sqlserver_instance).provide(:mssql, parent: Puppet::Provider:
         next unless not_nil_and_not_empty? @resource[key]
 
         cmd_args << "/#{RESOURCEKEY_TO_CMDARG[key]}=\"#{@resource[key.to_sym]}\""
-        if %r{(_pwd|_password)$}i.match?(key.to_s)
-          obfuscated_strings.push(@resource[key])
-        end
+        obfuscated_strings.push(@resource[key]) if %r{(_pwd|_password)$}i.match?(key.to_s)
       end
 
       format_cmd_args_array('/SQLSYSADMINACCOUNTS', @resource[:sql_sysadmin_accounts], cmd_args, true)

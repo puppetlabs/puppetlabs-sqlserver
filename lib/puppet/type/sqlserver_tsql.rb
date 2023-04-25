@@ -109,13 +109,9 @@ Puppet::Type.newtype(:sqlserver_tsql) do
       event = :executed_command
 
       @output = provider.run(resource[:command])
-      if @output.has_errors
-        raise("Unable to apply changes, failed with error message #{@output.error_message}")
-      end
+      raise("Unable to apply changes, failed with error message #{@output.error_message}") if @output.has_errors
 
-      unless @output.exitstatus.to_s == '0'
-        raise("#{resource[:command]} returned #{@output.exitstatus} instead of one of [#{should.join(',')}]")
-      end
+      raise("#{resource[:command]} returned #{@output.exitstatus} instead of one of [#{should.join(',')}]") unless @output.exitstatus.to_s == '0'
 
       event
     end
