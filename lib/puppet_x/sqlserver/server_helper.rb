@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module PuppetX # rubocop:disable Style/ClassAndModuleChildren
-  module Sqlserver # rubocop:disable Style/ClassAndModuleChildren
+  module Sqlserver
     class ServerHelper # rubocop:disable Style/Documentation
       @super_feature_hash = {
         SQL: [:DQ, :FullText, :Replication, :SQLEngine],

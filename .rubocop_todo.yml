@@ -14,11 +14,6 @@ Lint/EmptyBlock:
     - 'spec/defines/manifest_shared_examples.rb'
     - 'spec/functions/functions_shared_examples.rb'
 
-# Offense count: 1
-# This cop supports safe autocorrection (--autocorrect).
-Lint/RedundantCopDisableDirective:
-  Exclude:
-    - 'lib/puppet_x/sqlserver/server_helper.rb'
 
 # Offense count: 3
 # Configuration parameters: AllowComments, AllowNil.
