@@ -67,22 +67,6 @@ Naming/HeredocDelimiterNaming:
     - 'spec/spec_helper_acceptance_local.rb'
     - 'spec/sql_testing_helpers.rb'
 
-# # Offense count: 2
-# # Configuration parameters: EnforcedStyle, CheckMethodNames, CheckSymbols, AllowedIdentifiers, AllowedPatterns.
-# # SupportedStyles: snake_case, normalcase, non_integer
-# # AllowedIdentifiers: capture3, iso8601, rfc1123_date, rfc822, rfc2822, rfc3339, x86_64
-# Naming/VariableNumber:
-#   Exclude:
-#     - 'lib/puppet/provider/sqlserver_features/mssql.rb'
-#     - 'lib/puppet/provider/sqlserver_instance/mssql.rb'
-
-# Offense count: 2
-# This cop supports unsafe autocorrection (--autocorrect-all).
-Performance/InefficientHashSearch:
-  Exclude:
-    - 'spec/spec_helper_acceptance_local.rb'
-    - 'spec/sql_testing_helpers.rb'
-
 # Offense count: 2
 # This cop supports unsafe autocorrection (--autocorrect-all).
 Performance/StringInclude:
