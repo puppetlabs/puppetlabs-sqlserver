@@ -232,15 +232,6 @@ Style/OptionalBooleanParameter:
 
 # Offense count: 3
 # This cop supports safe autocorrection (--autocorrect).
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: implicit, explicit
-Style/RescueStandardError:
-  Exclude:
-    - 'lib/puppet_x/sqlserver/features.rb'
-    - 'spec/spec_helper.rb'
-
-# Offense count: 3
-# This cop supports safe autocorrection (--autocorrect).
 # Configuration parameters: AllowModifier.
 Style/SoleNestedConditional:
   Exclude:

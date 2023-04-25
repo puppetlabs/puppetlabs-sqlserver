@@ -56,14 +56,14 @@ module PuppetX
 
       def self.get_reg_key_val(win32_reg_key, val_name, reg_type)
         win32_reg_key[val_name, reg_type]
-      rescue
+      rescue StandardError
         nil
       end
 
       def self.key_exists?(path)
         open(HKLM, path, KEY_READ | KEY64) {}
         true
-      rescue
+      rescue StandardError
         false
       end
 
