@@ -156,7 +156,7 @@ describe 'sqlserver_features', if: version.to_i != 2012 do
     end
 
     it 'fails when ADV_SSMS is supplied but SSMS is not - FM-2712', unless: version.to_i >= 2016 do
-      pending('error not shown on Sql Server 2014') if version .to_i == 2014
+      pending('error not shown on Sql Server 2014') if version.to_i == 2014
       features = ['BC', 'Conn', 'ADV_SSMS', 'SDK']
       bind_and_apply_failing_manifest(features)
     end
