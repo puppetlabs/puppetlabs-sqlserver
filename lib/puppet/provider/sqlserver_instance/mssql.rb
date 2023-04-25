@@ -5,23 +5,24 @@ require File.expand_path(File.join(File.dirname(__FILE__), '..', 'sqlserver'))
 require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', '..', 'puppet_x/sqlserver/server_helper'))
 require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', '..', 'puppet_x/sqlserver/features'))
 
+RESOURCEKEY_TO_CMDARG = {
+  'agt_svc_account' => 'AGTSVCACCOUNT',
+  'agt_svc_password' => 'AGTSVCPASSWORD',
+  'as_svc_account' => 'ASSVCACCOUNT',
+  'as_svc_password' => 'ASSVCPASSWORD',
+  'pid' => 'PID',
+  'rs_svc_account' => 'RSSVCACCOUNT',
+  'rs_svc_password' => 'RSSVCPASSWORD',
+  'polybase_svc_account' => 'PBENGSVCACCOUNT',
+  'polybase_svc_password' => 'PBDMSSVCPASSWORD',
+  'sa_pwd' => 'SAPWD',
+  'security_mode' => 'SECURITYMODE',
+  'sql_svc_account' => 'SQLSVCACCOUNT',
+  'sql_svc_password' => 'SQLSVCPASSWORD',
+}.freeze
+
 Puppet::Type.type(:sqlserver_instance).provide(:mssql, parent: Puppet::Provider::Sqlserver) do
   desc 'SQLServer instance provider'
-  RESOURCEKEY_TO_CMDARG = {
-    'agt_svc_account' => 'AGTSVCACCOUNT',
-    'agt_svc_password' => 'AGTSVCPASSWORD',
-    'as_svc_account' => 'ASSVCACCOUNT',
-    'as_svc_password' => 'ASSVCPASSWORD',
-    'pid' => 'PID',
-    'rs_svc_account' => 'RSSVCACCOUNT',
-    'rs_svc_password' => 'RSSVCPASSWORD',
-    'polybase_svc_account' => 'PBENGSVCACCOUNT',
-    'polybase_svc_password' => 'PBDMSSVCPASSWORD',
-    'sa_pwd' => 'SAPWD',
-    'security_mode' => 'SECURITYMODE',
-    'sql_svc_account' => 'SQLSVCACCOUNT',
-    'sql_svc_password' => 'SQLSVCPASSWORD',
-  }.freeze
 
   def instance_reserved_switches
     # List of all puppet managed install switches

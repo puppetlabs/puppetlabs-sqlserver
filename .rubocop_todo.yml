@@ -1,9 +1,8 @@
-# Offense count: 2
+# Offense count: 1
 # Configuration parameters: AllowedMethods.
 # AllowedMethods: enums
 Lint/ConstantDefinitionInBlock:
   Exclude:
-    - 'lib/puppet/provider/sqlserver_instance/mssql.rb'
     - 'spec/functions/sqlserver_upcase_spec.rb'
 
 # Offense count: 3
