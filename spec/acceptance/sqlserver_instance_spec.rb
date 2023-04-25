@@ -16,7 +16,7 @@ describe 'sqlserver_instance' do
     sysadmin_accounts << user
     # If no password env variable set (by CI), then default to vagrant
     password = Helper.instance.run_shell('$env:pass').stdout.chomp
-    password = password.empty? ? 'vagrant' : password
+    password = 'vagrant' if password.empty?
 
     pp = <<-MANIFEST
     sqlserver_instance{'#{inst_name}':

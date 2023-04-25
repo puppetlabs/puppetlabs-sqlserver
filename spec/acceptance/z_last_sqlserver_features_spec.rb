@@ -11,7 +11,7 @@ describe 'sqlserver_features', if: version.to_i != 2012 do
     user = Helper.instance.run_shell('$env:UserName').stdout.chomp
     # If no password env variable set (by CI), then default to vagrant
     password = Helper.instance.run_shell('$env:pass').stdout.chomp
-    password = password.empty? ? 'vagrant' : password
+    password = 'vagrant' if password.empty?
 
     pp = <<-MANIFEST
     sqlserver::config{ 'MSSQLSERVER':
