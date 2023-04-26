@@ -15,7 +15,7 @@ RSpec.describe provider_class do
     {
       name: 'Base features',
       source: 'C:\myinstallexecs',
-      features: ['BC', 'SSMS'],
+      features: ['BC', 'SSMS']
     }
   end
   let(:additional_params) { {} }
@@ -41,7 +41,7 @@ RSpec.describe provider_class do
     @feature_params = {
       name: 'Base features',
       source: 'C:\myinstallexecs',
-      features: ['BC', 'SSMS'],
+      features: ['BC', 'SSMS']
     }
     let(:feature_remove) { [] }
     let(:feature_add) { [] }
@@ -60,6 +60,7 @@ RSpec.describe provider_class do
       allow(@file_double).to receive(:close)
       allow(Tempfile).to receive(:new).with(['sqlconfig', '.ini']).and_return(@file_double)
     end
+
     it_behaves_like 'create' do
       let(:additional_params) { { install_switches: { 'ERRORREPORTING' => 1, 'SQLBACKUPDIR' => 'I:\DBbackup' } } }
       let(:additional_switches) { ["/ConfigurationFile=\"#{@file_double.path}\""] }
@@ -80,12 +81,8 @@ RSpec.describe provider_class do
 
       stub_powershell_call(provider_class_ut)
       stub_source_which_call args
-      unless feature_remove.empty?
-        stub_remove_features(args, feature_remove, exit_code || 0)
-      end
-      unless feature_add.empty?
-        stub_add_features(args, feature_add, [], exit_code || 0)
-      end
+      stub_remove_features(args, feature_remove, exit_code || 0) unless feature_remove.empty?
+      stub_add_features(args, feature_add, [], exit_code || 0) unless feature_add.empty?
 
       # If warning_matcher supplied ensure warnings raised match, otherwise no warnings raised
       allow(@provider).to receive(:warn).with(match(warning_matcher)).and_return(nil) if warning_matcher
@@ -145,7 +142,7 @@ RSpec.describe provider_class do
       feature_params = {
         name: 'Base features',
         source: 'C:\myinstallexecs',
-        features: [],
+        features: []
       }
       @resource = Puppet::Type::Sqlserver_features.new(feature_params)
       @provider = provider_class.new(@resource)
@@ -157,7 +154,7 @@ RSpec.describe provider_class do
          '/ACTION=uninstall',
          '/Q',
          '/IACCEPTSQLSERVERLICENSETERMS',
-         "/FEATURES=#{['SSMS', 'ADV_SSMS', 'Conn'].join(',')}"], failonfail: false
+         "/FEATURES=#{['SSMS', 'ADV_SSMS', 'Conn'].join(',')}"], { failonfail: false }
       ).and_return(result)
       @provider.create
     }
@@ -171,6 +168,5 @@ RSpec.describe provider_class do
     let(:feature_add) { ['BC', 'IS', 'SSMS'] }
 
     it_behaves_like 'features=', @feature_params
-    # rubocop:enable RSpec/InstanceVariable
   end
 end

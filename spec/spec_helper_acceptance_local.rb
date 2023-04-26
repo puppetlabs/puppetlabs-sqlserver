@@ -23,13 +23,13 @@ USER = Helper.instance.run_shell('$env:UserName').stdout.chomp
 
 RSpec.configure do |c|
   c.before(:suite) do
-    Helper.instance.run_shell('puppet module install puppetlabs/mount_iso')
+    Helper.instance.run_shell('puppet module install puppetlabs-mount_iso')
     Helper.instance.run_shell('puppet module install puppet/archive')
 
     iso_opts = {
       folder: WIN_ISO_ROOT,
       file: WIN_2019_ISO,
-      drive_letter: 'I',
+      drive_letter: 'I'
     }
     # Allows litmus to use SSH, by explicitly setting specinfra
     # os family to windows (would fail when using ssh on windows)
@@ -46,20 +46,15 @@ def node_vars?
 
   hash['groups'].each do |group|
     group['targets'].each do |node|
-      if ENV['TARGET_HOST'] == node['uri']
-        return node['vars']
-      end
+      return node['vars'] if ENV['TARGET_HOST'] == node['uri']
     end
   end
 end
 
 def sql_version?
   vars = node_vars?
-  unless vars.nil?
-    if vars['sqlversion']
-      return vars['sqlversion'].match(%r{sqlserver_(.*)})[1]
-    end
-  end
+  return vars['sqlversion'].match(%r{sqlserver_(.*)})[1] if !vars.nil? && (vars['sqlversion'])
+
   # Return's a default version if none was given
   '2019'
 end
@@ -95,31 +90,31 @@ def base_install(sql_version)
     iso_opts = {
       folder: QA_RESOURCE_ROOT,
       file: SQL_2012_ISO,
-      drive_letter: 'H',
+      drive_letter: 'H'
     }
   when 2014
     iso_opts = {
       folder: QA_RESOURCE_ROOT,
       file: SQL_2014_ISO,
-      drive_letter: 'H',
+      drive_letter: 'H'
     }
   when 2016
     iso_opts = {
       folder: QA_RESOURCE_ROOT,
       file: SQL_2016_ISO,
-      drive_letter: 'H',
+      drive_letter: 'H'
     }
   when 2017
     iso_opts = {
       folder: QA_RESOURCE_ROOT,
       file: SQL_2017_ISO,
-      drive_letter: 'H',
+      drive_letter: 'H'
     }
   when 2019
     iso_opts = {
       folder: QA_RESOURCE_ROOT,
       file: SQL_2019_ISO,
-      drive_letter: 'H',
+      drive_letter: 'H'
     }
   when 2022
     iso_opts = {
@@ -156,7 +151,7 @@ def install_sqlserver(features)
       },
       windows_feature_source => 'I:\\sources\\sxs',
     }
-    MANIFEST
+  MANIFEST
   Helper.instance.apply_manifest(pp)
 end
 
@@ -168,19 +163,17 @@ def run_sql_query(opts = {}, &block)
   sql_admin_user = opts[:sql_admin_user] ||= SQL_ADMIN_USER
 
   powershell = <<-EOS
-      $Env:Path +=\";C:\\Program Files\\Microsoft SQL Server\\Client SDK\\ODBC\\110\\Tools\\Binn;C:\\Program Files\\Microsoft SQL Server\\110\\Tools\\Binn\\"
-      $Env:Path +=\";C:\\Program Files\\Microsoft SQL Server\\Client SDK\\ODBC\\120\\Tools\\Binn;C:\\Program Files\\Microsoft SQL Server\\120\\Tools\\Binn\\"
-      $Env:Path +=\";C:\\Program Files\\Microsoft SQL Server\\Client SDK\\ODBC\\130\\Tools\\Binn;C:\\Program Files\\Microsoft SQL Server\\130\\Tools\\Binn\\"
-      $Env:Path +=\";C:\\Program Files\\Microsoft SQL Server\\Client SDK\\ODBC\\140\\Tools\\Binn;C:\\Program Files\\Microsoft SQL Server\\140\\Tools\\Binn\\"
-      $Env:Path +=\";C:\\Program Files\\Microsoft SQL Server\\Client SDK\\ODBC\\150\\Tools\\Binn;C:\\Program Files\\Microsoft SQL Server\\150\\Tools\\Binn\\"
-      $Env:Path +=\";C:\\Program Files\\Microsoft SQL Server\\Client SDK\\ODBC\\170\\Tools\\Binn;C:\\Program Files\\Microsoft SQL Server\\170\\Tools\\Binn\\"
-      sqlcmd.exe -S #{server}\\#{instance} -U #{sql_admin_user} -P #{sql_admin_pass} -Q \"#{query}\"
+      $Env:Path +=";C:\\Program Files\\Microsoft SQL Server\\Client SDK\\ODBC\\110\\Tools\\Binn;C:\\Program Files\\Microsoft SQL Server\\110\\Tools\\Binn\\"
+      $Env:Path +=";C:\\Program Files\\Microsoft SQL Server\\Client SDK\\ODBC\\120\\Tools\\Binn;C:\\Program Files\\Microsoft SQL Server\\120\\Tools\\Binn\\"
+      $Env:Path +=";C:\\Program Files\\Microsoft SQL Server\\Client SDK\\ODBC\\130\\Tools\\Binn;C:\\Program Files\\Microsoft SQL Server\\130\\Tools\\Binn\\"
+      $Env:Path +=";C:\\Program Files\\Microsoft SQL Server\\Client SDK\\ODBC\\140\\Tools\\Binn;C:\\Program Files\\Microsoft SQL Server\\140\\Tools\\Binn\\"
+      $Env:Path +=";C:\\Program Files\\Microsoft SQL Server\\Client SDK\\ODBC\\150\\Tools\\Binn;C:\\Program Files\\Microsoft SQL Server\\150\\Tools\\Binn\\"
+      $Env:Path +=";C:\\Program Files\\Microsoft SQL Server\\Client SDK\\ODBC\\170\\Tools\\Binn;C:\\Program Files\\Microsoft SQL Server\\170\\Tools\\Binn\\"
+      sqlcmd.exe -S #{server}\\#{instance} -U #{sql_admin_user} -P #{sql_admin_pass} -Q "#{query}"
   EOS
   # sqlcmd has problem authenticate to sqlserver if the instance is the default one MSSQLSERVER
   # Below is a work-around for it (remove "-S server\instance" from the connection string)
-  if instance.nil? || instance == 'MSSQLSERVER'
-    powershell.dup.gsub!("-S #{server}\\#{instance}", '')
-  end
+  powershell.dup.gsub!("-S #{server}\\#{instance}", '') if instance.nil? || instance == 'MSSQLSERVER'
 
   Tempfile.open 'tmp.ps1' do |tempfile|
     File.open(tempfile.path, 'w') { |file| file.puts powershell }
@@ -191,11 +184,13 @@ def run_sql_query(opts = {}, &block)
   Helper.instance.run_shell("powershell -NonInteractive -NoLogo -File  'c:\\users\\#{USER}\\tmp.ps1'") do |r|
     match = %r{(\d*) rows affected}.match(r.stdout)
     raise 'Could not match number of rows for SQL query' unless match
+
     rows_observed = match[1]
     error_message = "Expected #{opts[:expected_row_count]} rows but observed #{rows_observed}"
     raise error_message unless opts[:expected_row_count] == rows_observed.to_i
   end
   return unless block
+
   case block.arity
   when 0
     yield self
@@ -215,6 +210,7 @@ def validate_sql_install(opts = {}, &block)
   cmd = "type \"#{bootstrap_dir}\\Log\\Summary.txt\""
   result = Helper.instance.run_shell(cmd)
   return unless block
+
   case block.arity
   when 0
     yield self
@@ -226,16 +222,14 @@ end
 def get_install_paths(version)
   vers = { '2012' => '110', '2014' => '120', '2016' => '130', '2017' => '140', '2019' => '150', '2022' => '160' }
 
-  raise _('Valid version must be specified') unless vers.keys.include?(version)
+  raise _('Valid version must be specified') unless vers.key?(version)
 
   dir = "C://Program Files/Microsoft SQL Server/#{vers[version]}/Setup Bootstrap"
   sql_directory = case version
-                  when '2022'
+                  when '2022', '2017'
                     "SQL#{version}"
                   when '2019'
                     "SQL#{version}CTP2.4"
-                  when '2017'
-                    "SQL#{version}"
                   else
                     "SQLServer#{version}"
                   end

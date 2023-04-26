@@ -11,7 +11,7 @@ describe 'sqlserver_features', if: version.to_i != 2012 do
     user = Helper.instance.run_shell('$env:UserName').stdout.chomp
     # If no password env variable set (by CI), then default to vagrant
     password = Helper.instance.run_shell('$env:pass').stdout.chomp
-    password = password.empty? ? 'vagrant' : password
+    password = 'vagrant' if password.empty?
 
     pp = <<-MANIFEST
     sqlserver::config{ 'MSSQLSERVER':
@@ -156,7 +156,7 @@ describe 'sqlserver_features', if: version.to_i != 2012 do
     end
 
     it 'fails when ADV_SSMS is supplied but SSMS is not - FM-2712', unless: version.to_i >= 2016 do
-      pending('error not shown on Sql Server 2014') if version .to_i == 2014
+      pending('error not shown on Sql Server 2014') if version.to_i == 2014
       features = ['BC', 'Conn', 'ADV_SSMS', 'SDK']
       bind_and_apply_failing_manifest(features)
     end
@@ -181,7 +181,7 @@ describe 'sqlserver_features', if: version.to_i != 2012 do
             source                => 'H:',
             sql_sysadmin_accounts => ['#{user}'],
             }
-            MANIFEST
+        MANIFEST
         idempotent_apply(pp)
       end
 

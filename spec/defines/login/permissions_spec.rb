@@ -8,7 +8,7 @@ describe 'sqlserver::login::permissions' do
     <<-EOF
     define sqlserver::config{}
     sqlserver::config {'MSSQLSERVER': }
-  EOF
+    EOF
   end
 
   context 'validation errors' do
@@ -19,7 +19,7 @@ describe 'sqlserver::login::permissions' do
     context 'login =>' do
       let(:params) do
         {
-          permissions: ['SELECT'],
+          permissions: ['SELECT']
         }
       end
       let(:raise_error_check) { %r{'login' expects a String.+ value} }
@@ -32,21 +32,24 @@ describe 'sqlserver::login::permissions' do
         end
         it_behaves_like 'validation error'
       end
+
       describe 'empty' do
         let(:additional_params) { { login: '' } }
 
         it_behaves_like 'validation error'
       end
+
       describe 'over limit' do
         let(:additional_params) { { login: random_string_of_size(129) } }
 
         it_behaves_like 'validation error'
       end
     end
+
     context 'permissions' do
       let(:params) do
         {
-          login: 'loggingUser',
+          login: 'loggingUser'
         }
       end
       let(:raise_error_check) { %r{'permissions' .+ expects a String.+ value} }
@@ -56,22 +59,25 @@ describe 'sqlserver::login::permissions' do
 
         it_behaves_like 'validation error'
       end
+
       describe 'under limit' do
         let(:additional_params) { { permissions: [random_string_of_size(3, false)] } }
 
         it_behaves_like 'validation error'
       end
+
       describe 'over limit' do
         let(:additional_params) { { permissions: [random_string_of_size(129, false)] } }
 
         it_behaves_like 'validation error'
       end
     end
+
     context 'state =>' do
       let(:params) do
         {
           permissions: ['SELECT'],
-          login: 'loggingUser',
+          login: 'loggingUser'
         }
       end
 
@@ -83,6 +89,7 @@ describe 'sqlserver::login::permissions' do
       end
     end
   end
+
   context 'successfully' do
     include_context 'manifests' do
       let(:title) { 'myTitle' }
@@ -90,7 +97,7 @@ describe 'sqlserver::login::permissions' do
       let(:params) do
         {
           login: 'loggingUser',
-          permissions: ['SELECT'],
+          permissions: ['SELECT']
         }
       end
     end
@@ -123,6 +130,7 @@ describe 'sqlserver::login::permissions' do
 
         it_behaves_like 'sqlserver_tsql command'
       end
+
       describe 'alter' do
         let(:additional_params) { { permissions: ['ALTER'] } }
         let(:should_contain_command) { ['USE [master];', 'GRANT ALTER TO [loggingUser];'] }
@@ -137,7 +145,7 @@ describe 'sqlserver::login::permissions' do
         <<-EOF
       define sqlserver::config{}
       sqlserver::config {'MSSQLSERVER': }
-      EOF
+        EOF
       end
 
       it_behaves_like 'compile'
@@ -151,7 +159,7 @@ describe 'sqlserver::login::permissions' do
       let(:params) do
         {
           login: 'loggingUser',
-          permissions: ['SELECT'],
+          permissions: ['SELECT']
         }
       end
 

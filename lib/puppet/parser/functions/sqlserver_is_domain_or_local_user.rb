@@ -4,9 +4,8 @@ require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', '..', '..
 
 module Puppet::Parser::Functions
   newfunction(:sqlserver_is_domain_or_local_user, type: :rvalue, doc: '@return [Boolean] Returns true is the username is for local/domain.') do |args|
-    if args.length != 1
-      raise Puppet::ParseError, "is_domain_or_local_user(): requires exactly 1 argument, you provided #{args.length}"
-    end
+    raise Puppet::ParseError, "is_domain_or_local_user(): requires exactly 1 argument, you provided #{args.length}" if args.length != 1
+
     PuppetX::Sqlserver::ServerHelper.is_domain_or_local_user?(args[0], Facter.value(:hostname))
   end
 end

@@ -84,10 +84,8 @@ Puppet::Type.newtype(:sqlserver_instance) do
           following characters: " / \ [ ] : ; | = , + * ? < > '
     validate do |value|
       value.is_a? String
-      matches = value.scan(%r{(\/|\\|\[|\]|\:|\;|\||\=|\,|\+|\*|\?|\<|\>)})
-      unless matches.empty?
-        raise("rs_svc_account can not contain any of the special characters, / \\ [ ] : ; | = , + * ? < >, your entry contained #{matches}")
-      end
+      matches = value.scan(%r{(/|\\|\[|\]|:|;|\||=|,|\+|\*|\?|<|>)})
+      raise("rs_svc_account can not contain any of the special characters, / \\ [ ] : ; | = , + * ? < >, your entry contained #{matches}") unless matches.empty?
     end
   end
 
@@ -122,16 +120,13 @@ Puppet::Type.newtype(:sqlserver_instance) do
   end
 
   def validate
-    if set?(:agt_svc_account)
-      validate_user_password_required(:agt_svc_account, :agt_svc_password)
-    end
+    validate_user_password_required(:agt_svc_account, :agt_svc_password) if set?(:agt_svc_account)
     self[:features] = self[:features].flatten.sort.uniq if set?(:features)
 
     # RS Must have Strong Password
-    if set?(:rs_svc_password) && self[:features].include?('RS')
-      strong_password?(:rs_svc_password)
-    end
+    strong_password?(:rs_svc_password) if set?(:rs_svc_password) && self[:features].include?('RS')
     return unless self[:security_mode] == 'SQL'
+
     strong_password?(:sa_pwd)
   end
 
@@ -143,6 +138,7 @@ Puppet::Type.newtype(:sqlserver_instance) do
     # rubocop:disable Style/SignalException
     fail("User #{account} is required") unless set?(account)
     return unless domain_or_local_user?(self[account]) && self[pass].nil?
+
     fail("#{pass} required when using domain account")
     # rubocop:enable Style/SignalException
   end
@@ -154,6 +150,7 @@ Puppet::Type.newtype(:sqlserver_instance) do
   def strong_password?(key)
     password = self[key]
     return unless password
+
     message_start = "Password for #{key} is not strong"
     failures = []
     failures << 'must be at least 8 characters long' unless password.length >= 8
@@ -161,7 +158,8 @@ Puppet::Type.newtype(:sqlserver_instance) do
     failures << 'must contain uppercase letters' unless %r{[A-Z]}.match?(password)
     failures << 'must contain numbers' unless %r{\d}.match?(password)
     failures << 'must contain a special character' unless %r{}.match?(password)
-    fail("#{message_start}:\n#{failures.join("\n")}") if failures.count > 0 # rubocop:disable Style/SignalException
+    fail("#{message_start}:\n#{failures.join("\n")}") if failures.count.positive? # rubocop:disable Style/SignalException
+
     true
   end
 end

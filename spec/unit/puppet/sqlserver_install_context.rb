@@ -15,6 +15,6 @@ def basic_args
     polybase_svc_account: 'nexus\polyuser',
     polybase_svc_password: 'P@ssword1',
     sql_svc_account: 'NT Service\MSSQLSERVER',
-    sql_sysadmin_accounts: ['localAdminAccount', 'nexus\domainUser'],
+    sql_sysadmin_accounts: ['localAdminAccount', 'nexus\domainUser']
   }
 end

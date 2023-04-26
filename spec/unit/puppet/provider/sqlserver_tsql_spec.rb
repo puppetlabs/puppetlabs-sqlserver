@@ -25,17 +25,17 @@ RSpec.describe Puppet::Type.type(:sqlserver_tsql).provider(:mssql) do
 
   def gen_query(query)
     quoted_query = query.gsub('\'', '\'\'')
-    <<-PP
-BEGIN TRY
-    DECLARE @sql_text as NVARCHAR(max);
-    SET @sql_text = N'#{quoted_query}'
-    EXECUTE sp_executesql @sql_text;
-END TRY
-BEGIN CATCH
-    DECLARE @msg as VARCHAR(max);
-    SELECT @msg = 'THROW CAUGHT: ' + ERROR_MESSAGE();
-    THROW 51000, @msg, 10
-END CATCH
+    <<~PP
+      BEGIN TRY
+          DECLARE @sql_text as NVARCHAR(max);
+          SET @sql_text = N'#{quoted_query}'
+          EXECUTE sp_executesql @sql_text;
+      END TRY
+      BEGIN CATCH
+          DECLARE @msg as VARCHAR(max);
+          SELECT @msg = 'THROW CAUGHT: ' + ERROR_MESSAGE();
+          THROW 51000, @msg, 10
+      END CATCH
     PP
   end
 
@@ -49,6 +49,7 @@ END CATCH
         @provider.run(gen_query('whacka whacka'))
       }
     end
+
     describe 'against default database' do
       it {
         create_sqlserver_tsql(title: 'runme', command: 'whacka whacka', instance: 'MSSQLSERVER')
@@ -59,6 +60,7 @@ END CATCH
       }
     end
   end
+
   context 'run with onlyif' do
     describe 'against default database' do
       it {
@@ -69,6 +71,7 @@ END CATCH
         @provider.run(gen_query('fozy wozy'))
       }
     end
+
     describe 'against non master database' do
       it {
         create_sqlserver_tsql(
@@ -81,7 +84,6 @@ END CATCH
         stub_get_instance_config(config)
         stub_open_and_run('fozy wozy', config.merge(database: 'myDb'))
         @provider.run(gen_query('fozy wozy'))
-        # rubocop:enable RSpec/InstanceVariable
       }
     end
   end

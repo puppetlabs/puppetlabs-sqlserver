@@ -10,14 +10,14 @@ RSpec.describe 'sqlserver::sp_configure', type: :define do
     let(:params) do
       {
         config_name: 'filestream access level',
-        value: 1,
+        value: 1
       }
     end
     let(:pre_condition) do
       <<-EOF
       define sqlserver::config{}
       sqlserver::config {'MSSQLSERVER': }
-    EOF
+      EOF
     end
   end
   describe 'basic usage' do
@@ -43,7 +43,7 @@ RSpec.describe 'sqlserver::sp_configure', type: :define do
   describe 'reconfigure => false' do
     let(:additional_params) do
       {
-        reconfigure: false,
+        reconfigure: false
       }
     end
     let(:should_not_contain_command) do
@@ -73,7 +73,7 @@ RSpec.describe 'sqlserver::sp_configure', type: :define do
   describe 'with_override => false' do
     let(:additional_params) do
       {
-        with_override: false,
+        with_override: false
       }
     end
     let(:should_not_contain_command) do
@@ -96,7 +96,7 @@ RSpec.describe 'sqlserver::sp_configure', type: :define do
 
   describe 'service' do
     it 'is defined' do
-      is_expected.to contain_exec('restart-service-MSSQLSERVER-filestream access level').with_refreshonly(true)
+      expect(subject).to contain_exec('restart-service-MSSQLSERVER-filestream access level').with_refreshonly(true)
     end
   end
 end

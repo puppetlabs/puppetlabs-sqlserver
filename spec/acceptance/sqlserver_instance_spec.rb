@@ -5,7 +5,7 @@ require 'securerandom'
 require 'erb'
 
 def new_random_instance_name
-  ('MSSQL' + SecureRandom.hex(4)).upcase.to_s
+  "MSSQL#{SecureRandom.hex(4)}".upcase.to_s
 end
 
 describe 'sqlserver_instance' do
@@ -16,7 +16,7 @@ describe 'sqlserver_instance' do
     sysadmin_accounts << user
     # If no password env variable set (by CI), then default to vagrant
     password = Helper.instance.run_shell('$env:pass').stdout.chomp
-    password = password.empty? ? 'vagrant' : password
+    password = 'vagrant' if password.empty?
 
     pp = <<-MANIFEST
     sqlserver_instance{'#{inst_name}':
@@ -43,7 +43,7 @@ describe 'sqlserver_instance' do
       server: '.',
       sql_admin_user: 'sa',
       sql_admin_pass: 'Pupp3t1@',
-      expected_row_count: expected_row_count,
+      expected_row_count: expected_row_count
     }
   end
 
@@ -99,7 +99,7 @@ describe 'sqlserver_instance' do
     it "#{inst_name} instance has ExtraSQLAdmin as a sysadmin" do
       run_sql_query(run_sql_query_opts(inst_name, sql_query_is_user_sysadmin(@extra_admin_user), 1))
     end
-    # rubocop:enable RSpec/InstanceVariable
+
     it "remove #{inst_name} instance" do
       ensure_sqlserver_instance(features, inst_name, 'absent')
 

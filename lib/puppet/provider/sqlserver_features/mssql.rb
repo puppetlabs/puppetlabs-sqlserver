@@ -25,6 +25,7 @@ Puppet::Type.type(:sqlserver_features).provide(:mssql, parent: Puppet::Provider:
     featurelist = []
     ALL_SQL_VERSIONS.each do |sql_version|
       next if result[sql_version].empty?
+
       featurelist += result[sql_version]
     end
 
@@ -58,6 +59,7 @@ Puppet::Type.type(:sqlserver_features).provide(:mssql, parent: Puppet::Provider:
 
   def modify_features(action, features)
     return unless not_nil_and_not_empty? features
+
     debug "#{action.capitalize}ing features '#{features.join(',')}'"
     cmd_args = ["#{@resource[:source]}/setup.exe",
                 "/ACTION=#{action}",
@@ -66,15 +68,9 @@ Puppet::Type.type(:sqlserver_features).provide(:mssql, parent: Puppet::Provider:
                 "/FEATURES=#{features.join(',')}"]
     if action == 'install'
       cmd_args << '/UPDATEENABLED=False'
-      if not_nil_and_not_empty?(@resource[:is_svc_account])
-        cmd_args << "/ISSVCACCOUNT=#{@resource[:is_svc_account]}"
-      end
-      if not_nil_and_not_empty?(@resource[:is_svc_password])
-        cmd_args << "/ISSVCPASSWORD=#{@resource[:is_svc_password]}"
-      end
-      if not_nil_and_not_empty?(@resource[:pid])
-        cmd_args << "/PID=#{@resource[:pid]}"
-      end
+      cmd_args << "/ISSVCACCOUNT=#{@resource[:is_svc_account]}" if not_nil_and_not_empty?(@resource[:is_svc_account])
+      cmd_args << "/ISSVCPASSWORD=#{@resource[:is_svc_password]}" if not_nil_and_not_empty?(@resource[:is_svc_password])
+      cmd_args << "/PID=#{@resource[:pid]}" if not_nil_and_not_empty?(@resource[:pid])
     end
     begin
       config_file = create_temp_for_install_switch unless action == 'uninstall'
@@ -95,9 +91,7 @@ Puppet::Type.type(:sqlserver_features).provide(:mssql, parent: Puppet::Provider:
     if not_nil_and_not_empty? @resource[:install_switches]
       config_file = ['[OPTIONS]']
       @resource[:install_switches].each_pair do |k, v|
-        if FEATURE_RESERVED_SWITCHES.include? k
-          warn("Reserved switch [#{k}] found for `install_switches`, please know the provided value may be overridden by some command line arguments")
-        end
+        warn("Reserved switch [#{k}] found for `install_switches`, please know the provided value may be overridden by some command line arguments") if FEATURE_RESERVED_SWITCHES.include? k
         config_file << if v.is_a?(Numeric) || (v.is_a?(String) && v =~ %r{^(true|false|1|0)$}i)
                          "#{k}=#{v}"
                        elsif v.nil?
@@ -115,7 +109,7 @@ Puppet::Type.type(:sqlserver_features).provide(:mssql, parent: Puppet::Provider:
     nil
   end
 
-  def install_net_35(source_location = nil)
+  def install_net35(source_location = nil)
     Puppet::Provider::Sqlserver.run_install_dot_net(source_location)
   end
 
@@ -128,7 +122,7 @@ Puppet::Type.type(:sqlserver_features).provide(:mssql, parent: Puppet::Provider:
       instance_version = PuppetX::Sqlserver::ServerHelper.sql_version_from_install_source(@resource[:source])
       Puppet.debug("Installation source detected as version #{instance_version}") unless instance_version.nil?
 
-      install_net_35(@resource[:windows_feature_source]) if [SQL_2012, SQL_2014].include? instance_version
+      install_net35(@resource[:windows_feature_source]) if [SQL_2012, SQL_2014].include? instance_version
 
       debug "Installing features #{@resource[:features]}"
       add_features(@resource[:features])

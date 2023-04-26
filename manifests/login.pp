@@ -92,25 +92,25 @@ define sqlserver::login (
       instance  => $instance,
       require   => Sqlserver_tsql["login-${instance}-${login}"],
     }
-    if has_key($_upermissions, 'GRANT') and is_array($_upermissions['GRANT']) {
+    if has_key($_upermissions, 'GRANT') and $_upermissions['GRANT'] =~ Array {
       sqlserver::login::permissions { "Sqlserver::Login[${title}]-GRANT-${login}":
         state       => 'GRANT',
         permissions => $_upermissions['GRANT'],
       }
     }
-    if has_key($_upermissions, 'DENY') and is_array($_upermissions['DENY']) {
+    if has_key($_upermissions, 'DENY') and $_upermissions['DENY'] =~ Array {
       sqlserver::login::permissions { "Sqlserver::Login[${title}]-DENY-${login}":
         state       => 'DENY',
         permissions => $_upermissions['DENY'],
       }
     }
-    if has_key($_upermissions, 'REVOKE') and is_array($_upermissions['REVOKE']) {
+    if has_key($_upermissions, 'REVOKE') and $_upermissions['REVOKE'] =~ Array {
       sqlserver::login::permissions { "Sqlserver::Login[${title}]-REVOKE-${login}":
         state       => 'REVOKE',
         permissions => $_upermissions['REVOKE'],
       }
     }
-    if has_key($_upermissions, 'GRANT_WITH_OPTION') and is_array($_upermissions['GRANT_WITH_OPTION']) {
+    if has_key($_upermissions, 'GRANT_WITH_OPTION') and $_upermissions['GRANT_WITH_OPTION'] =~ Array {
       sqlserver::login::permissions { "Sqlserver::Login[${title}]-GRANT-WITH_GRANT_OPTION-${login}":
         state             => 'GRANT',
         with_grant_option => true,

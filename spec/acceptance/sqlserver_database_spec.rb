@@ -10,14 +10,14 @@ describe 'Test sqlserver::database' do
       query: query,
       sql_admin_user: 'sa',
       sql_admin_pass: 'Pupp3t1@',
-      expected_row_count: expected_row_count,
+      expected_row_count: expected_row_count
     }
   end
 
   context 'Start testing...' do
     before(:each) do
-      @db_name = ('DB' + SecureRandom.hex(4)).upcase
-      @table_name = 'Tables_' + SecureRandom.hex(3)
+      @db_name = "DB#{SecureRandom.hex(4)}".upcase
+      @table_name = "Tables_#{SecureRandom.hex(3)}"
     end
 
     after(:each) do
@@ -298,7 +298,6 @@ describe 'Test sqlserver::database' do
                 AND default_language_lcid = '1028';"
 
       run_sql_query(run_sql_query_opts(query, 1))
-      # rubocop:enable RSpec/InstanceVariable
     end
   end
 end

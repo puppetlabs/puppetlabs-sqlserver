@@ -7,7 +7,7 @@ require 'erb'
 hostname = Helper.instance.run_shell('hostname').stdout.upcase.strip
 
 # database name
-db_name = ('DB' + SecureRandom.hex(4)).upcase
+db_name = "DB#{SecureRandom.hex(4)}".upcase
 
 describe 'sqlserver::user test' do
   def ensure_sqlserver_database(db_name, _ensure_val = 'present')
@@ -38,15 +38,10 @@ describe 'sqlserver::user test' do
       # Create new database
       ensure_sqlserver_database(db_name)
     end
-    before(:each) do
-      @new_sql_login = 'Login' + SecureRandom.hex(2)
-      @db_user = 'DBuser' + SecureRandom.hex(2)
-    end
 
-    after(:all) do
-      # remove the newly created database
-      # Temporarily skip delete database because of MODULES-2554
-      # ensure_sqlserver_database(host, 'absent')
+    before(:each) do
+      @new_sql_login = "Login#{SecureRandom.hex(2)}"
+      @db_user = "DBuser#{SecureRandom.hex(2)}"
     end
 
     it 'Create database user with optional default_schema' do
@@ -96,7 +91,7 @@ describe 'sqlserver::user test' do
         user            => '#{@db_user}',
         require         => Sqlserver::Login['#{@db_user}'],
       }
-        MANIFEST
+      MANIFEST
       apply_manifest(pp, catch_failures: true)
 
       # validate that the database user '#{@db_user}' is successfully created:
@@ -200,7 +195,6 @@ describe 'sqlserver::user test' do
       # validate that the database user '#{@db_user}' should be deleted:
       query = "USE #{db_name}; SELECT * FROM SYS.DATABASE_PRINCIPALS WHERE name = '#{@db_user}';"
       run_sql_query(query: query, server: hostname, expected_row_count: 0)
-      # rubocop:enable RSpec/InstanceVariable
     end
   end
 end

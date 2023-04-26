@@ -13,13 +13,14 @@ RSpec.describe 'sqlserver::role', type: :define do
     describe 'invalid' do
       let(:additional_params) do
         {
-          type: 'invalid',
+          type: 'invalid'
         }
       end
       let(:raise_error_check) { "'type' expects" }
 
       it_behaves_like 'validation error'
     end
+
     describe 'SERVER' do
       let(:should_contain_command) do
         [
@@ -39,10 +40,11 @@ RSpec.describe 'sqlserver::role', type: :define do
       it_behaves_like 'sqlserver_tsql command'
       it_behaves_like 'sqlserver_tsql onlyif'
     end
+
     describe 'DATABASE' do
       let(:additional_params) do
         {
-          'type' => 'DATABASE',
+          'type' => 'DATABASE'
         }
       end
       let(:should_contain_command) do
@@ -68,7 +70,7 @@ RSpec.describe 'sqlserver::role', type: :define do
   context 'database =>' do
     let(:additional_params) do
       {
-        'database' => 'myCrazyDb',
+        'database' => 'myCrazyDb'
       }
     end
     let(:sqlserver_tsql_title) { 'role-MSSQLSERVER-myCrazyDb-myCustomRole' }
@@ -78,11 +80,12 @@ RSpec.describe 'sqlserver::role', type: :define do
 
       it_behaves_like 'validation error'
     end
+
     describe 'with database role type' do
       let(:additional_params) do
         {
           'database' => 'myCrazyDb',
-          'type' => 'DATABASE',
+          'type' => 'DATABASE'
         }
       end
       let(:should_contain_command) do
@@ -100,9 +103,10 @@ RSpec.describe 'sqlserver::role', type: :define do
       let(:params) { { instance: 'MYCUSTOM' } }
 
       it {
-        is_expected.to contain_sqlserver_tsql('role-MYCUSTOM-master-myCustomRole').with_instance('MYCUSTOM')
+        expect(subject).to contain_sqlserver_tsql('role-MYCUSTOM-master-myCustomRole').with_instance('MYCUSTOM')
       }
     end
+
     describe 'empty instance' do
       let(:additional_params) { { 'instance' => '' } }
       let(:raise_error_check) { "instance' expects a String[1, 16]" }
@@ -122,10 +126,11 @@ RSpec.describe 'sqlserver::role', type: :define do
 
       it_behaves_like 'sqlserver_tsql without_command'
     end
+
     describe 'myUser' do
       let(:additional_params) do
         {
-          authorization: 'myUser',
+          authorization: 'myUser'
         }
       end
       let(:should_contain_command) do
@@ -137,11 +142,12 @@ RSpec.describe 'sqlserver::role', type: :define do
 
       it_behaves_like 'sqlserver_tsql command'
     end
+
     describe 'myUser on Database' do
       let(:additional_params) do
         {
           authorization: 'myUser',
-          type: 'DATABASE',
+          type: 'DATABASE'
         }
       end
       let(:should_contain_command) do
@@ -159,7 +165,7 @@ RSpec.describe 'sqlserver::role', type: :define do
     describe 'absent' do
       let(:additional_params) do
         {
-          ensure: 'absent',
+          ensure: 'absent'
         }
       end
       let(:should_contain_command) do
@@ -178,6 +184,7 @@ RSpec.describe 'sqlserver::role', type: :define do
       it_behaves_like 'sqlserver_tsql onlyif'
     end
   end
+
   context 'members_purge =>' do
     let(:sqlserver_tsql_title) { 'role-MSSQLSERVER-master-myCustomRole-members' }
 
@@ -185,7 +192,7 @@ RSpec.describe 'sqlserver::role', type: :define do
       describe 'type => SERVER and members => []' do
         let(:additional_params) do
           {
-            members_purge: true,
+            members_purge: true
           }
         end
         let(:should_contain_command) do
@@ -215,7 +222,7 @@ END",
         let(:additional_params) do
           {
             type: 'DATABASE',
-            members_purge: true,
+            members_purge: true
           }
         end
         let(:should_contain_command) do
@@ -241,11 +248,12 @@ END",
         it_behaves_like 'sqlserver_tsql onlyif'
       end
     end
+
     describe '[test these users]' do
       let(:additional_params) do
         {
           members_purge: true,
-          members: ['test', 'these', 'users'],
+          members: ['test', 'these', 'users']
         }
       end
       let(:should_contain_command) do
@@ -261,11 +269,8 @@ END",
         ]
       end
 
-      # rubocop:enable Style/RegexpLiteral
       it_behaves_like 'sqlserver_tsql command'
       it_behaves_like 'sqlserver_tsql onlyif'
     end
   end
-  # rubocop:enable RSpec/EmptyLineAfterFinalLet
-  # rubocop:enable Layout/IndentArray
 end

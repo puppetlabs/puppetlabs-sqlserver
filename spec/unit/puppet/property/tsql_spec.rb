@@ -12,6 +12,7 @@ describe 'tsql' do
     expect(@node[:command]).to match(%r{BEGIN TRY})
     expect(@node[:command]).to include('UPDATE [my_login] SET PASSWORD = "MYSillyPassword"')
   }
+
   it 'munges value to have begin and end try' do
     @node[:command] = 'function foo'
     @node[:onlyif] = 'exec bar'
@@ -21,6 +22,6 @@ describe 'tsql' do
 
   it 'properlies escape single quotes in queries' do
     @node[:command] = 'SELECT \'FOO\''
-    expect(@node[:command]).to match(%r{SET @sql_text = N'SELECT \'\'FOO\'\'})
+    expect(@node[:command]).to match(%r{SET @sql_text = N'SELECT ''FOO''})
   end
 end

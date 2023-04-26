@@ -7,11 +7,11 @@ require 'erb'
 hostname = Helper.instance.run_shell('hostname').stdout.upcase.strip
 
 # database name
-db_name   = ('DB' + SecureRandom.hex(4)).upcase
-LOGIN1    = 'Login1_' + SecureRandom.hex(2)
-LOGIN2    = 'Login2_' + SecureRandom.hex(2)
-LOGIN3    = 'Login3_' + SecureRandom.hex(2)
-USER1     = 'User1_' + SecureRandom.hex(2)
+db_name   = "DB#{SecureRandom.hex(4)}".upcase
+LOGIN1    = "Login1_#{SecureRandom.hex(2)}"
+LOGIN2    = "Login2_#{SecureRandom.hex(2)}"
+LOGIN3    = "Login3_#{SecureRandom.hex(2)}"
+USER1     = "User1_#{SecureRandom.hex(2)}"
 
 describe 'Test sqlserver::role' do
   def ensure_sqlserver_logins_users(db_name)
@@ -50,9 +50,11 @@ describe 'Test sqlserver::role' do
       # Create database users
       ensure_sqlserver_logins_users(db_name)
     end
+
     before(:each) do
-      @role = 'Role_' + SecureRandom.hex(2)
+      @role = "Role_#{SecureRandom.hex(2)}"
     end
+
     after(:each) do
       pp = <<-MANIFEST
       sqlserver::config{'MSSQLSERVER':
@@ -255,7 +257,6 @@ describe 'Test sqlserver::role' do
         OR spr.name = '#{LOGIN3}';"
 
       run_sql_query(query: query, server: hostname, expected_row_count: 1)
-      # rubocop:enable RSpec/InstanceVariable
     end
   end
 end

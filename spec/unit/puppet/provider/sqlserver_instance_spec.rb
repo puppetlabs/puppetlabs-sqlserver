@@ -16,18 +16,18 @@ RSpec.describe provider_class do
   let(:resourcekey_to_cmdarg) do
     {
       'agt_svc_account' => 'AGTSVCACCOUNT',
-      'agt_svc_password'      => 'AGTSVCPASSWORD',
-      'as_svc_account'        => 'ASSVCACCOUNT',
-      'as_svc_password'       => 'ASSVCPASSWORD',
-      'pid'                   => 'PID',
-      'rs_svc_account'        => 'RSSVCACCOUNT',
-      'rs_svc_password'       => 'RSSVCPASSWORD',
-      'polybase_svc_account'  => 'PBENGSVCACCOUNT',
+      'agt_svc_password' => 'AGTSVCPASSWORD',
+      'as_svc_account' => 'ASSVCACCOUNT',
+      'as_svc_password' => 'ASSVCPASSWORD',
+      'pid' => 'PID',
+      'rs_svc_account' => 'RSSVCACCOUNT',
+      'rs_svc_password' => 'RSSVCPASSWORD',
+      'polybase_svc_account' => 'PBENGSVCACCOUNT',
       'polybase_svc_password' => 'PBDMSSVCPASSWORD',
-      'sa_pwd'                => 'SAPWD',
-      'security_mode'         => 'SECURITYMODE',
-      'sql_svc_account'       => 'SQLSVCACCOUNT',
-      'sql_svc_password'      => 'SQLSVCPASSWORD',
+      'sa_pwd' => 'SAPWD',
+      'security_mode' => 'SECURITYMODE',
+      'sql_svc_account' => 'SQLSVCACCOUNT',
+      'sql_svc_password' => 'SQLSVCPASSWORD'
     }
   end
 
@@ -40,7 +40,7 @@ RSpec.describe provider_class do
                 "/FEATURES=#{installed_features.join(',')}"]
 
     result = Puppet::Util::Execution::ProcessOutput.new('', exit_code)
-    allow(Puppet::Util::Execution).to receive(:execute).with(cmd_args.compact, failonfail: false).and_return(result)
+    allow(Puppet::Util::Execution).to receive(:execute).with(cmd_args.compact, { failonfail: false }).and_return(result)
   end
 
   shared_examples 'create' do |exit_code, warning_matcher|
@@ -67,7 +67,7 @@ RSpec.describe provider_class do
       # Extrace the SQL Sysadmins
       admin_args = execute_args[:sql_sysadmin_accounts].map(&:to_s)
       # prepend first arg only with CLI switch
-      admin_args[0] = '/SQLSYSADMINACCOUNTS=' + admin_args[0]
+      admin_args[0] = "/SQLSYSADMINACCOUNTS=#{admin_args[0]}"
       cmd_args += admin_args
 
       additional_install_switches.each do |switch|
@@ -78,7 +78,7 @@ RSpec.describe provider_class do
       allow(@provider).to receive(:warn).with(anything) unless warning_matcher
 
       result = Puppet::Util::Execution::ProcessOutput.new('', exit_code || 0)
-      allow(Puppet::Util::Execution).to receive(:execute).with(cmd_args.compact, failonfail: false).and_return(result)
+      allow(Puppet::Util::Execution).to receive(:execute).with(cmd_args.compact, { failonfail: false }).and_return(result)
       @provider.create
     }
   end
@@ -107,7 +107,7 @@ RSpec.describe provider_class do
       # wrap each arg in doublequotes
       admin_args = execute_args[:sql_sysadmin_accounts].map { |a| "\"#{a}\"" }
       # prepend first arg only with CLI switch
-      admin_args[0] = '/SQLSYSADMINACCOUNTS=' + admin_args[0]
+      admin_args[0] = "/SQLSYSADMINACCOUNTS=#{admin_args[0]}"
       cmd_args += admin_args
 
       additional_install_switches.each do |switch|
@@ -117,7 +117,7 @@ RSpec.describe provider_class do
       allow(@provider).to receive(:warn).with(anything)
 
       result = Puppet::Util::Execution::ProcessOutput.new('', exit_code || 0)
-      allow(Puppet::Util::Execution).to receive(:execute).with(cmd_args.compact, failonfail: false).and_return(result)
+      allow(Puppet::Util::Execution).to receive(:execute).with(cmd_args.compact, { failonfail: false }).and_return(result)
       expect { @provider.create }.to raise_error(error_matcher)
     }
   end
@@ -228,7 +228,7 @@ RSpec.describe provider_class do
         {
           name: 'MYSQLSERVER',
           source: 'C:\myinstallexecs',
-          features: [],
+          features: []
         }
       end
     end
@@ -240,7 +240,7 @@ RSpec.describe provider_class do
         {
           name: 'MYSQLSERVER',
           source: 'C:\myinstallexecs',
-          features: [],
+          features: []
         }
       end
       let(:installed_features) { ['SQLEngine', 'Replication'] }
@@ -253,7 +253,7 @@ RSpec.describe provider_class do
         {
           name: 'MYSQLSERVER',
           source: 'C:\myinstallexecs',
-          features: [],
+          features: []
         }
       end
       let(:installed_features) { ['SQLEngine', 'Replication'] }
@@ -266,7 +266,7 @@ RSpec.describe provider_class do
         {
           name: 'MYSQLSERVER',
           source: 'C:\myinstallexecs',
-          features: [],
+          features: []
         }
       end
       let(:installed_features) { ['SQLEngine', 'Replication'] }
@@ -279,7 +279,7 @@ RSpec.describe provider_class do
         {
           name: 'MYSQLSERVER',
           source: 'C:\myinstallexecs',
-          features: ['SQL'],
+          features: ['SQL']
         }
       end
       let(:installed_features) { ['SQLEngine', 'Replication'] }
@@ -310,7 +310,6 @@ RSpec.describe provider_class do
       args = basic_args
       args[:install_switches] = { 'ERRORREPORTING' => 1, 'SQLBACKUPDIR' => 'I:\DBbackup' }
       let(:additional_install_switches) { ["/ConfigurationFile=\"#{@file_double.path}\""] }
-      # rubocop:enable RSpec/InstanceVariable
       let(:args) { args }
       munged = { features: Array.new(args[:features]) }
       munged[:features].delete('SQL')

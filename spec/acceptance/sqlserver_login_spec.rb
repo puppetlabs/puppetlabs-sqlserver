@@ -3,8 +3,8 @@
 require 'spec_helper_acceptance'
 require 'securerandom'
 
-db_name     = ('DB' + SecureRandom.hex(4)).upcase
-table_name  = 'Tables_' + SecureRandom.hex(3)
+db_name     = "DB#{SecureRandom.hex(4)}".upcase
+table_name  = "Tables_#{SecureRandom.hex(3)}"
 
 # Covers testrail => ['89118', '89119', '89120', '89121', '89122', '89123', '89124', '89125', '89540']
 describe 'Test sqlserver::login' do
@@ -14,7 +14,7 @@ describe 'Test sqlserver::login' do
       query: query,
       sql_admin_user: user,
       sql_admin_pass: passwd,
-      expected_row_count: expected_row_count,
+      expected_row_count: expected_row_count
     }
   end
 
@@ -48,9 +48,7 @@ describe 'Test sqlserver::login' do
     case testcase
     when 'SQL_LOGIN user'
       login_type = 'SQL_LOGIN'
-    when 'WINDOWS_LOGIN user'
-      login_type = 'WINDOWS_LOGIN'
-    when 'WINDOWS_LOGIN group'
+    when 'WINDOWS_LOGIN user', 'WINDOWS_LOGIN group'
       login_type = 'WINDOWS_LOGIN'
     else
       raise "Unknown testcase name #{testcase}"
@@ -73,18 +71,18 @@ describe 'Test sqlserver::login' do
             #{"disabled => #{options['disabled']}," unless options['disabled'].nil?}
             #{"ensure => '#{options['ensure']}'," unless options['ensure'].nil?}
           }
-        MANIFEST
+    MANIFEST
   end
 
   before(:all) do
-    @login_user    = 'Login' + SecureRandom.hex(4)
-    @login_passwd  = 'Password1!' + SecureRandom.hex(5)
-    @windows_user  = 'User' + SecureRandom.hex(4)
-    @windows_group = 'Group' + SecureRandom.hex(4)
+    @login_user    = "Login#{SecureRandom.hex(4)}"
+    @login_passwd  = "Password1!#{SecureRandom.hex(5)}"
+    @windows_user  = "User#{SecureRandom.hex(4)}"
+    @windows_group = "Group#{SecureRandom.hex(4)}"
 
     host_shortname = Helper.instance.run_shell('$env:computername').stdout.upcase.strip # Require the NETBIOS name for later database searches
-    @login_windows_user  = host_shortname + '\\' + @windows_user
-    @login_windows_group = host_shortname + '\\' + @windows_group
+    @login_windows_user  = "#{host_shortname}\\#{@windows_user}"
+    @login_windows_group = "#{host_shortname}\\#{@windows_group}"
 
     # Create a database, a simple table and windows accounts fixtures
     pp = <<-MANIFEST
@@ -179,6 +177,7 @@ describe 'Test sqlserver::login' do
         # check_expiration and check_policy are only applicable to SQL based logins
 
         before(:all) { remove_test_logins(host) }
+
         it "can create an #{testcase} with 'check_expiration','check_policy' set" do
           options = { 'check_expiration' => true, 'check_policy' => true }
           pp = create_login_manifest(testcase, @login_under_test, @login_passwd, options)
@@ -292,6 +291,7 @@ describe 'Test sqlserver::login' do
                     AND pri.name = '#{@login_under_test}'"
           run_sql_query(run_sql_query_opts_as_sa(query, 1))
         end
+
         it 'has the specified serveradmin role' do
           # Note - IS_SRVROLEMEMBER always returns false for a disabled WINDOWS_LOGIN user login
           query = "SELECT pri.name from sys.server_role_members member
@@ -351,7 +351,6 @@ describe 'Test sqlserver::login' do
           query = "SELECT principal_id FROM SYS.server_principals WHERE name = '#{@login_under_test}' AND [type] = '#{@sql_principal_type}'"
           run_sql_query(run_sql_query_opts_as_sa(query, 0))
         end
-        # rubocop:enable RSpec/InstanceVariable
       end
     end
   end

@@ -10,22 +10,23 @@ RSpec.describe 'sqlserver::login', type: :define do
     let(:params) do
       {
         login: 'myTitle',
-        instance: 'MSSQLSERVER',
+        instance: 'MSSQLSERVER'
       }
     end
     let(:pre_condition) do
       <<-EOF
       define sqlserver::config{}
       sqlserver::config {'MSSQLSERVER': }
-    EOF
+      EOF
     end
   end
 
   describe 'Minimal Params' do
     it 'compiles' do
-      is_expected.to contain_sqlserver_tsql('login-MSSQLSERVER-myTitle')
+      expect(subject).to contain_sqlserver_tsql('login-MSSQLSERVER-myTitle')
     end
   end
+
   describe 'parameter assignment' do
     let(:should_contain_command) do
       [
@@ -49,17 +50,19 @@ RSpec.describe 'sqlserver::login', type: :define do
     it_behaves_like 'sqlserver_tsql command'
     it_behaves_like 'sqlserver_tsql onlyif'
   end
+
   describe 'check_policy' do
     let(:additional_params) { { check_policy: false, check_expiration: true } }
     let(:raise_error_check) { 'Can not have check expiration enabled when check_policy is disabled' }
 
     it_behaves_like 'validation error'
   end
+
   context 'permissions =>' do
     let(:title) { 'myTitle' }
     let(:params) do
       {
-        login: 'myLogin',
+        login: 'myLogin'
       }
     end
     let(:permissions) { {} }
@@ -68,7 +71,7 @@ RSpec.describe 'sqlserver::login', type: :define do
       it {
         params[:permissions] = permissions
         type_title = ((type =~ %r{GRANT_WITH_OPTION}i) ? 'GRANT-WITH_GRANT_OPTION' : type.upcase)
-        is_expected.to contain_sqlserver__login__permissions("Sqlserver::Login[#{title}]-#{type_title}-myLogin").with(
+        expect(subject).to contain_sqlserver__login__permissions("Sqlserver::Login[#{title}]-#{type_title}-myLogin").with(
           'login' => 'myLogin',
           'state' => (type == 'GRANT_WITH_OPTION') ? 'GRANT' : type.upcase,
           'with_grant_option' => type == 'GRANT_WITH_OPTION',
@@ -82,7 +85,7 @@ RSpec.describe 'sqlserver::login', type: :define do
       it {
         params[:permissions] = permissions
         type_title = ((type =~ %r{GRANT_WITH_OPTION}i) ? 'GRANT-WITH_GRANT_OPTION' : type.upcase)
-        is_expected.not_to contain_sqlserver__login__permissions("Sqlserver::Login[#{title}]-#{type_title}-myLogin")
+        expect(subject).not_to contain_sqlserver__login__permissions("Sqlserver::Login[#{title}]-#{type_title}-myLogin")
       }
     end
 
@@ -128,7 +131,7 @@ RSpec.describe 'sqlserver::login', type: :define do
     describe 'duplicate permissions' do
       let(:additional_params) do
         {
-          permissions: { 'GRANT' => ['CONNECT SQL'], 'REVOKE' => ['CONNECT SQL'] },
+          permissions: { 'GRANT' => ['CONNECT SQL'], 'REVOKE' => ['CONNECT SQL'] }
         }
       end
       let(:raise_error_check) { "Duplicate permissions found for sqlserver::login[#{title}" }

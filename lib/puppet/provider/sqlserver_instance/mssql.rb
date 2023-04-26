@@ -5,23 +5,24 @@ require File.expand_path(File.join(File.dirname(__FILE__), '..', 'sqlserver'))
 require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', '..', 'puppet_x/sqlserver/server_helper'))
 require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', '..', 'puppet_x/sqlserver/features'))
 
+RESOURCEKEY_TO_CMDARG = {
+  'agt_svc_account' => 'AGTSVCACCOUNT',
+  'agt_svc_password' => 'AGTSVCPASSWORD',
+  'as_svc_account' => 'ASSVCACCOUNT',
+  'as_svc_password' => 'ASSVCPASSWORD',
+  'pid' => 'PID',
+  'rs_svc_account' => 'RSSVCACCOUNT',
+  'rs_svc_password' => 'RSSVCPASSWORD',
+  'polybase_svc_account' => 'PBENGSVCACCOUNT',
+  'polybase_svc_password' => 'PBDMSSVCPASSWORD',
+  'sa_pwd' => 'SAPWD',
+  'security_mode' => 'SECURITYMODE',
+  'sql_svc_account' => 'SQLSVCACCOUNT',
+  'sql_svc_password' => 'SQLSVCPASSWORD'
+}.freeze
+
 Puppet::Type.type(:sqlserver_instance).provide(:mssql, parent: Puppet::Provider::Sqlserver) do
   desc 'SQLServer instance provider'
-  RESOURCEKEY_TO_CMDARG = {
-    'agt_svc_account'       => 'AGTSVCACCOUNT',
-    'agt_svc_password'      => 'AGTSVCPASSWORD',
-    'as_svc_account'        => 'ASSVCACCOUNT',
-    'as_svc_password'       => 'ASSVCPASSWORD',
-    'pid'                   => 'PID',
-    'rs_svc_account'        => 'RSSVCACCOUNT',
-    'rs_svc_password'       => 'RSSVCPASSWORD',
-    'polybase_svc_account'  => 'PBENGSVCACCOUNT',
-    'polybase_svc_password' => 'PBDMSSVCPASSWORD',
-    'sa_pwd'                => 'SAPWD',
-    'security_mode'         => 'SECURITYMODE',
-    'sql_svc_account'       => 'SQLSVCACCOUNT',
-    'sql_svc_password'      => 'SQLSVCPASSWORD',
-  }.freeze
 
   def instance_reserved_switches
     # List of all puppet managed install switches
@@ -62,6 +63,7 @@ Puppet::Type.type(:sqlserver_instance).provide(:mssql, parent: Puppet::Provider:
 
   def modify_features(features, action)
     return unless not_nil_and_not_empty? features
+
     debug "#{action.capitalize}ing features '#{features.join(',')}'"
     cmd_args, obfuscated_strings = build_cmd_args(features, action)
 
@@ -80,7 +82,7 @@ Puppet::Type.type(:sqlserver_instance).provide(:mssql, parent: Puppet::Provider:
     end
   end
 
-  def install_net_35(source_location = nil)
+  def install_net35(source_location = nil)
     Puppet::Provider::Sqlserver.run_install_dot_net(source_location)
   end
 
@@ -105,7 +107,7 @@ Puppet::Type.type(:sqlserver_instance).provide(:mssql, parent: Puppet::Provider:
       instance_version = PuppetX::Sqlserver::ServerHelper.sql_version_from_install_source(@resource[:source])
       Puppet.debug("Installation source detected as version #{instance_version}") unless instance_version.nil?
 
-      install_net_35(@resource[:windows_feature_source]) if [SQL_2012, SQL_2014].include? instance_version
+      install_net35(@resource[:windows_feature_source]) if [SQL_2012, SQL_2014].include? instance_version
 
       add_features(@resource[:features])
     end
@@ -115,9 +117,7 @@ Puppet::Type.type(:sqlserver_instance).provide(:mssql, parent: Puppet::Provider:
     if not_nil_and_not_empty? @resource[:install_switches]
       config_file = ['[OPTIONS]']
       @resource[:install_switches].each_pair do |k, v|
-        if instance_reserved_switches.include? k
-          warn("Reserved switch [#{k}] found for `install_switches`, please know the provided value may be overridden by some command line arguments")
-        end
+        warn("Reserved switch [#{k}] found for `install_switches`, please know the provided value may be overridden by some command line arguments") if instance_reserved_switches.include? k
         config_file << if v.is_a?(Numeric) || (v.is_a?(String) && v =~ %r{^(true|false|1|0)$}i)
                          "#{k}=#{v}"
                        elsif v.nil?
@@ -152,10 +152,9 @@ Puppet::Type.type(:sqlserver_instance).provide(:mssql, parent: Puppet::Provider:
     if action == 'install'
       RESOURCEKEY_TO_CMDARG.keys.sort.map do |key|
         next unless not_nil_and_not_empty? @resource[key]
+
         cmd_args << "/#{RESOURCEKEY_TO_CMDARG[key]}=\"#{@resource[key.to_sym]}\""
-        if %r{(_pwd|_password)$}i.match?(key.to_s)
-          obfuscated_strings.push(@resource[key])
-        end
+        obfuscated_strings.push(@resource[key]) if %r{(_pwd|_password)$}i.match?(key.to_s)
       end
 
       format_cmd_args_array('/SQLSYSADMINACCOUNTS', @resource[:sql_sysadmin_accounts], cmd_args, true)
@@ -166,6 +165,7 @@ Puppet::Type.type(:sqlserver_instance).provide(:mssql, parent: Puppet::Provider:
 
   def format_cmd_args_array(switch, arr, cmd_args, use_discrete = false)
     return unless not_nil_and_not_empty? arr
+
     arr = [arr] unless arr.is_a?(Array)
 
     # The default action is to join the array elements with a space ' ' so the cmd_args ends up like;

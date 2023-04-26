@@ -10,7 +10,7 @@ RSpec.describe 'sqlserver::role::permissions' do
     let(:params) do
       {
         role: 'myCustomRole',
-        permissions: ['INSERT', 'UPDATE', 'DELETE', 'SELECT'],
+        permissions: ['INSERT', 'UPDATE', 'DELETE', 'SELECT']
       }
     end
   end
@@ -33,13 +33,14 @@ RSpec.describe 'sqlserver::role::permissions' do
     let(:params) do
       {
         role: 'myCustomRole',
-        permissions: ['INSERT', 'UPDATE', 'DELETE', 'SELECT'],
+        permissions: ['INSERT', 'UPDATE', 'DELETE', 'SELECT']
       }
     end
 
     it_behaves_like 'sqlserver_tsql command'
     it_behaves_like 'sqlserver_tsql onlyif'
   end
+
   context 'type =>' do
     shared_examples 'GRANT Permissions' do |type|
       base_commands = [
@@ -61,7 +62,6 @@ RSpec.describe 'sqlserver::role::permissions' do
         'GRANT DELETE TO [myCustomRole];',
         'GRANT SELECT TO [myCustomRole];',
       ]
-      # rubocop:enable Layout/IndentArray
       let(:should_contain_command) { base_commands + should_commands }
       let(:should_contain_onlyif) { base_commands }
 
@@ -72,7 +72,7 @@ RSpec.describe 'sqlserver::role::permissions' do
     describe 'DATABASE' do
       let(:additional_params) do
         {
-          type: 'DATABASE',
+          type: 'DATABASE'
         }
       end
 
@@ -82,7 +82,7 @@ RSpec.describe 'sqlserver::role::permissions' do
     describe 'SERVER' do
       let(:additional_params) do
         {
-          type: 'SERVER',
+          type: 'SERVER'
         }
       end
 
@@ -112,17 +112,18 @@ RSpec.describe 'sqlserver::role::permissions' do
       it_behaves_like 'sqlserver_tsql command'
       it_behaves_like 'sqlserver_tsql onlyif'
     end
+
     describe '[]' do
       let(:params) do
         {
           role: 'myCustomRole',
-          permissions: [],
+          permissions: []
         }
       end
 
       it {
-        is_expected.to compile
-        is_expected.not_to contain_sqlserver_tsql(sqlserver_tsql_title)
+        expect(subject).to compile
+        expect(subject).not_to contain_sqlserver_tsql(sqlserver_tsql_title)
       }
     end
   end
@@ -135,6 +136,7 @@ RSpec.describe 'sqlserver::role::permissions' do
       it_behaves_like 'sqlserver_tsql command'
       it_behaves_like 'sqlserver_tsql onlyif'
     end
+
     describe 'customDatabase' do
       let(:additional_params) { { database: 'customDatabase' } }
       let(:should_contain_command) { ['USE [customDatabase];'] }
@@ -157,12 +159,12 @@ RSpec.describe 'sqlserver::role::permissions' do
           {
             role: 'myCustomRole',
             permissions: ['INSERT', 'UPDATE', 'DELETE', 'SELECT'],
-            instance: instance,
+            instance: instance
           }
         end
 
         it {
-          is_expected.to contain_sqlserver_tsql("role-permissions-myCustomRole-GRANT-#{instance}-master").with_instance(instance)
+          expect(subject).to contain_sqlserver_tsql("role-permissions-myCustomRole-GRANT-#{instance}-master").with_instance(instance)
         }
       end
     end

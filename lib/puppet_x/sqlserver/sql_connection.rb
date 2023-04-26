@@ -31,11 +31,11 @@ module PuppetX # rubocop:disable Style/ClassAndModuleChildren
 
       def get_connection_string(config)
         params = {
-          'Provider'             => 'MSOLEDBSQL',
-          'Initial Catalog'      => config[:database] || 'master',
-          'Application Name'     => 'Puppet',
-          'Data Source'          => '.',
-          'DataTypeComptibility' => 80,
+          'Provider' => 'MSOLEDBSQL',
+          'Initial Catalog' => config[:database] || 'master',
+          'Application Name' => 'Puppet',
+          'Data Source' => '.',
+          'DataTypeComptibility' => 80
         }
 
         admin_user = config[:admin_user] || ''
@@ -45,18 +45,18 @@ module PuppetX # rubocop:disable Style/ClassAndModuleChildren
           # Windows based authentication
           raise ArgumentError, _('admin_user must be empty or nil') unless admin_user == ''
           raise ArgumentError, _('admin_pass must be empty or nil') unless admin_pass == ''
+
           params.store('Integrated Security', 'SSPI')
         else
           # SQL Server based authentication
           raise ArgumentError, _('admin_user must not be empty or nil') unless admin_user != ''
           raise ArgumentError, _('admin_pass must not be empty or nil') unless admin_pass != ''
+
           params.store('UID',  admin_user)
           params.store('PWD', admin_pass)
         end
 
-        if !config[:instance_name].nil? && config[:instance_name] !~ %r{^MSSQLSERVER$}
-          params['Data Source'] = ".\\#{config[:instance_name]}"
-        end
+        params['Data Source'] = ".\\#{config[:instance_name]}" if !config[:instance_name].nil? && config[:instance_name] !~ %r{^MSSQLSERVER$}
 
         params.map { |k, v| "#{k}=#{v}" }.join(';')
       end

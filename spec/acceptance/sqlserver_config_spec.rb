@@ -5,9 +5,9 @@ require 'securerandom'
 require 'erb'
 
 # Get instance name
-inst_name = ('MSSQL' + SecureRandom.hex(4)).upcase
+inst_name = "MSSQL#{SecureRandom.hex(4)}".upcase
 # Get database name
-db_name   = ('DB' + SecureRandom.hex(4)).upcase
+db_name   = "DB#{SecureRandom.hex(4)}".upcase
 
 describe 'sqlserver::config test' do
   def ensure_sqlserver_instance(inst_name, ensure_val = 'present')
@@ -32,11 +32,11 @@ describe 'sqlserver::config test' do
       ensure_sqlserver_instance(inst_name)
 
       # get credentials for new config
-      @admin_user = 'test_user' + SecureRandom.hex(2)
+      @admin_user = "test_user#{SecureRandom.hex(2)}"
       @admin_pass = 'Pupp3t1@'
 
       # get database user
-      @db_user    = 'dbuser' + SecureRandom.hex(2)
+      @db_user    = "dbuser#{SecureRandom.hex(2)}"
     end
 
     after(:all) do
@@ -81,7 +81,7 @@ describe 'sqlserver::config test' do
       query = "USE #{db_name}; SELECT * from master..sysdatabases WHERE name = '#{db_name}'"
 
       run_sql_query(query: query, server: hostname, instance: inst_name, \
-        sql_admin_user: @admin_user, sql_admin_pass: @admin_pass, expected_row_count: 1)
+                    sql_admin_user: @admin_user, sql_admin_pass: @admin_pass, expected_row_count: 1)
     end
 
     it 'Validate New Config WITHOUT using instance_name in sqlserver::config' do

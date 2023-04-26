@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
 module PuppetX # rubocop:disable Style/ClassAndModuleChildren
-  module Sqlserver # rubocop:disable Style/ClassAndModuleChildren
+  module Sqlserver
     class ServerHelper # rubocop:disable Style/Documentation
       @super_feature_hash = {
         SQL: [:DQ, :FullText, :Replication, :SQLEngine],
-        Tools: [:BC, :SSMS, :ADV_SSMS, :Conn, :SDK],
+        Tools: [:BC, :SSMS, :ADV_SSMS, :Conn, :SDK]
       }
 
       def self.get_sub_features(super_feature)
@@ -17,11 +17,7 @@ module PuppetX # rubocop:disable Style/ClassAndModuleChildren
       end
 
       def self.is_domain_or_local_user?(user, hostname) # rubocop:disable Naming/PredicateName
-        if %r{(^(((nt (authority|service))|#{hostname})\\\w+)$)|^(\w+)$}i.match?(user)
-          false
-        else
-          true
-        end
+        !%r{(^(((nt (authority|service))|#{hostname})\\\w+)$)|^(\w+)$}i.match?(user)
       end
 
       # Returns either SQL_2016, SQL_2014 or SQL_2012 if it can determine the SQL Version from the install source
@@ -30,14 +26,17 @@ module PuppetX # rubocop:disable Style/ClassAndModuleChildren
         # Attempt to read the Mediainfo.xml file in the root of the install media
         media_file = File.expand_path("#{source_dir}/MediaInfo.xml")
         return nil unless File.exist?(media_file)
+
         # As we don't have a XML parser easily, just use simple text matching to find the following XML element. This
         # also means we can just ignore BOM markers etc.
         #     <Property Id="BaselineVersion" Value="xx.yyy.zz." />
         content = File.read(media_file)
         index1 = content.index('"BaselineVersion"')
         return nil if index1.nil?
+
         index2 = content.index('/>', index1)
         return nil if index2.nil?
+
         content = content.slice(index1 + 18, index2 - index1 - 18)
         # Extract the version number from the text snippet
         #     Value="xx.yyy.zz."
