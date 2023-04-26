@@ -74,21 +74,21 @@ Default value: `$title`
 
 ##### <a name="-sqlserver--config--admin_user"></a>`admin_user`
 
-Data type: `Variant[Sensitive[String], String]`
+Data type: `Optional[Variant[Sensitive[String], String]]`
 
 Only required for SQL_LOGIN type. A user/login who has sysadmin rights on the server
 Can be passed as a sensitive value
 
-Default value: `''`
+Default value: `undef`
 
 ##### <a name="-sqlserver--config--admin_pass"></a>`admin_pass`
 
-Data type: `Variant[Sensitive[String], String]`
+Data type: `Optional[Variant[Sensitive[String], String]]`
 
 Only required for SQL_LOGIN type. The password in order to access the server to be managed.
 Can be passed as a sensitive value
 
-Default value: `''`
+Default value: `undef`
 
 ##### <a name="-sqlserver--config--admin_login_type"></a>`admin_login_type`
 
@@ -401,7 +401,7 @@ The following parameters are available in the `sqlserver::login` defined type:
 
 ##### <a name="-sqlserver--login--login"></a>`login`
 
-Data type: `Any`
+Data type: `String[1, 128]`
 
 The SQL or Windows login you would like to manage
 
