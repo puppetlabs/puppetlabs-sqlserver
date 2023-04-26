@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
+## [v4.0.0](https://github.com/puppetlabs/puppetlabs-sqlserver/tree/v4.0.0) (2023-04-26)
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-sqlserver/compare/v3.3.0...v4.0.0)
+
+### Changed
+
+- \(CONT-800\) - Add Puppet 8/Drop Puppet 6 [\#430](https://github.com/puppetlabs/puppetlabs-sqlserver/pull/430) ([jordanbreen28](https://github.com/jordanbreen28))
+
 ## [v3.3.0](https://github.com/puppetlabs/puppetlabs-sqlserver/tree/v3.3.0) (2023-03-07)
 
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-sqlserver/compare/v3.2.1...v3.3.0)
@@ -9,10 +17,6 @@ All notable changes to this project will be documented in this file. The format 
 ### Added
 
 - \(CONT-490\) - Add support for SQL Server 2022 [\#420](https://github.com/puppetlabs/puppetlabs-sqlserver/pull/420) ([jordanbreen28](https://github.com/jordanbreen28))
-
-### Fixed
-
-- Fix puppet strings formatting [\#414](https://github.com/puppetlabs/puppetlabs-sqlserver/pull/414) ([GSPatton](https://github.com/GSPatton))
 
 ## [v3.2.1](https://github.com/puppetlabs/puppetlabs-sqlserver/tree/v3.2.1) (2022-12-13)
 
@@ -29,6 +33,10 @@ All notable changes to this project will be documented in this file. The format 
 ### Added
 
 - \(CAT-136\) Update dependencies [\#405](https://github.com/puppetlabs/puppetlabs-sqlserver/pull/405) ([LukasAud](https://github.com/LukasAud))
+
+### Fixed
+
+- Fix puppet strings formatting [\#414](https://github.com/puppetlabs/puppetlabs-sqlserver/pull/414) ([GSPatton](https://github.com/GSPatton))
 
 ## [v3.1.0](https://github.com/puppetlabs/puppetlabs-sqlserver/tree/v3.1.0) (2022-05-30)
 
