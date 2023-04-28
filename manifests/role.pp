@@ -79,25 +79,25 @@ define sqlserver::role (
       type     => $type,
       require  => Sqlserver_tsql[$sqlserver_tsql_title],
     }
-    if has_key($_upermissions, 'GRANT') and $_upermissions['GRANT'] =~ Array {
+    if 'GRANT' in $_upermissions and $_upermissions['GRANT'] =~ Array {
       sqlserver::role::permissions { "Sqlserver::Role[${title}]-GRANT-${role}":
         state       => 'GRANT',
         permissions => $_upermissions['GRANT'],
       }
     }
-    if has_key($_upermissions, 'DENY') and $_upermissions['DENY'] =~ Array {
+    if 'DENY' in $_upermissions and $_upermissions['DENY'] =~ Array {
       sqlserver::role::permissions { "Sqlserver::Role[${title}]-DENY-${role}":
         state       => 'DENY',
         permissions => $_upermissions['DENY'],
       }
     }
-    if has_key($_upermissions, 'REVOKE') and $_upermissions['REVOKE'] =~ Array {
+    if 'REVOKE' in $_upermissions and $_upermissions['REVOKE'] =~ Array {
       sqlserver::role::permissions { "Sqlserver::Role[${title}]-REVOKE-${role}":
         state       => 'REVOKE',
         permissions => $_upermissions['REVOKE'],
       }
     }
-    if has_key($_upermissions, 'GRANT_WITH_OPTION') and $_upermissions['GRANT_WITH_OPTION'] =~ Array {
+    if 'GRANT_WITH_OPTION' in $_upermissions and $_upermissions['GRANT_WITH_OPTION'] =~ Array {
       sqlserver::role::permissions { "Sqlserver::Role[${title}]-GRANT-WITH_GRANT_OPTION-${role}":
         state             => 'GRANT',
         with_grant_option => true,
