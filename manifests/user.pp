@@ -44,7 +44,7 @@ define sqlserver::user (
   Optional[String] $default_schema = undef,
   String[1,16] $instance = 'MSSQLSERVER',
   Optional[String[1]] $login = undef,
-  Optional[String[1,128]] $password = undef,
+  Optional[Variant[Sensitive[String[1,128]], String[1,128]]] $password = undef,
   Hash $permissions = {},
 ) {
   sqlserver_validate_instance_name($instance)
@@ -62,9 +62,17 @@ define sqlserver::user (
     'absent'  => 'delete',
   }
 
+  $parameters = {
+    'password' => Deferred('sqlserver::password', [$password]),
+    'database' => $database,
+    'user' => $user,
+    'login' => $login,
+    'default_schema' => $default_schema,
+  }
+
   sqlserver_tsql { "user-${instance}-${database}-${user}":
     instance => $instance,
-    command  => template("sqlserver/${create_delete}/user.sql.erb"),
+    command  => Deferred('inline_epp', [file("sqlserver/${create_delete}/user.sql.epp"), $parameters]),
     onlyif   => template('sqlserver/query/user_exists.sql.erb'),
     require  => Sqlserver::Config[$instance],
   }

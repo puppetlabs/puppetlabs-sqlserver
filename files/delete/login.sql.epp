@@ -1,7 +1,7 @@
 USE master;
-IF exists(select * from sys.server_principals where name = '<%= @login %>')
+IF exists(select * from sys.server_principals where name = '<%= $login %>')
 BEGIN
     -- need to add logic to kill all possible connections if any exists,
     -- possible force flag to prevent from happening during transaction if user would prefer to wait
-    DROP LOGIN [<%= @login %>]
+    DROP LOGIN [<%= $login %>]
 END
