@@ -76,9 +76,21 @@ define sqlserver::login (
     'absent'  => 'delete',
   }
 
+  $parameters = {
+    'password' => Deferred('sqlserver::password', [$password]),
+    'disabled' => $disabled,
+    'login_type' => $login_type,
+    'login' => $login,
+    'default_language' => $default_language,
+    'default_database' => $default_database,
+    'check_policy' => $check_policy,
+    'check_expiration' => $check_expiration,
+    'svrroles' => $svrroles,
+  }
+
   sqlserver_tsql { "login-${instance}-${login}":
     instance => $instance,
-    command  => template("sqlserver/${_create_delete}/login.sql.erb"),
+    command  => stdlib::deferrable_epp("sqlserver/${_create_delete}/login.sql.epp", $parameters),
     onlyif   => template('sqlserver/query/login_exists.sql.erb'),
     require  => Sqlserver::Config[$instance],
   }

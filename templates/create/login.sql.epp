@@ -1,0 +1,58 @@
+DECLARE
+	@is_disabled as tinyint = <%= if $disabled {1} else {0} %>,
+	@login_type as varchar(255) = NULL;
+
+SET @login_type = (SELECT [type] FROM sys.server_principals where name = '<%= $login %>')
+IF (@login_type IS NULL)
+BEGIN
+    -- Create the login
+	CREATE LOGIN [<%= $login %>]
+	 <% if $login_type !~ /WINDOWS_LOGIN/ { -%>
+	  WITH
+		PASSWORD = '<%= $password %>',
+		CHECK_EXPIRATION = <% if $check_expiration { %>ON<% } else { %>OFF<% } %>,
+		CHECK_POLICY	 = <% if $check_policy { %>ON<% } else { %>OFF<% } %>,
+	<% } else { -%>
+	    FROM WINDOWS WITH
+	<% } -%>
+	    DEFAULT_LANGUAGE = [<%= $default_language %>],
+		DEFAULT_DATABASE = [<%= $default_database %>];
+	-- Fetch the login type
+	SET @login_type = (SELECT [type] FROM sys.server_principals where name = '<%= $login %>')
+END
+
+IF (@login_type = 'G')
+BEGIN
+	-- Windows Group type logins can only be granted/denied connection
+	IF @is_disabled = 0	GRANT CONNECT SQL TO [<%= $login %>]
+	ELSE				DENY CONNECT SQL TO [<%= $login %>]
+END
+ELSE
+BEGIN
+	IF @is_disabled = 0	ALTER LOGIN [<%= $login %>] ENABLE
+	ELSE				ALTER LOGIN [<%= $login %>] DISABLE
+END
+
+ALTER LOGIN [<%= $login %>] WITH
+<% if $login_type != 'WINDOWS_LOGIN' { -%>
+	CHECK_EXPIRATION = <% if $check_expiration { %>ON<% } else { %>OFF<% } %>,
+	CHECK_POLICY	 = <% if $check_policy { %>ON<% } else { %>OFF<% } %>,
+<% } -%>
+	DEFAULT_LANGUAGE = [<%= $default_language %>],
+	DEFAULT_DATABASE = [<%= $default_database %>];
+
+<% $svrroles.each |String $role, Any $enable_bit| { -%>
+IF (SELECT COUNT(me.role_principal_id) from sys.server_role_members me
+	JOIN sys.server_principals rol ON me.role_principal_id = rol.principal_id
+	JOIN sys.server_principals pri ON me.member_principal_id = pri.principal_id
+	WHERE rol.type_desc = 'SERVER_ROLE'
+		AND rol.name = '<%= $role %>'
+		AND pri.name = '<%= $login %>') != <%= $enable_bit %>
+BEGIN
+	<% if ($enable_bit == '1') or ($enable_bit == 1) { -%>
+	ALTER SERVER ROLE [<%= $role %>] ADD MEMBER [<%= $login %>];
+	<% } else { -%>
+	ALTER SERVER ROLE [<%= $role %>] DROP MEMBER [<%= $login %>];
+	<% } -%>
+END
+<% } -%>
