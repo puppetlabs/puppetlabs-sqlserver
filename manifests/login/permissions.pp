@@ -49,7 +49,6 @@ define sqlserver::login::permissions (
   sqlserver_tsql { "login-permission-${instance}-${login}-${_state}${_grant_option}":
     instance => $instance,
     command  => epp('sqlserver/create/login/permission.sql.epp', $parameters),
-    templates/create/login/permission.sql.epp
     onlyif   => template('sqlserver/query/login/permission_exists.sql.erb'),
     require  => Sqlserver::Config[$instance],
   }
