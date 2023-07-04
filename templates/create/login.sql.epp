@@ -1,9 +1,9 @@
 DECLARE
-	$is_disabled as tinyint = <%= if $disabled {1} else {0} %>,
-	$login_type as varchar(255) = NULL;
+	@is_disabled as tinyint = <%= if $disabled {1} else {0} %>,
+	@login_type as varchar(255) = NULL;
 
-SET $login_type = (SELECT [type] FROM sys.server_principals where name = '<%= $login %>')
-IF ($login_type IS NULL)
+SET @login_type = (SELECT [type] FROM sys.server_principals where name = '<%= $login %>')
+IF (@login_type IS NULL)
 BEGIN
     -- Create the login
 	CREATE LOGIN [<%= $login %>]
@@ -18,18 +18,18 @@ BEGIN
 	    DEFAULT_LANGUAGE = [<%= $default_language %>],
 		DEFAULT_DATABASE = [<%= $default_database %>];
 	-- Fetch the login type
-	SET $login_type = (SELECT [type] FROM sys.server_principals where name = '<%= $login %>')
+	SET @login_type = (SELECT [type] FROM sys.server_principals where name = '<%= $login %>')
 END
 
-IF ($login_type = 'G')
+IF (@login_type = 'G')
 BEGIN
 	-- Windows Group type logins can only be granted/denied connection
-	IF $is_disabled = 0	GRANT CONNECT SQL TO [<%= $login %>]
+	IF @is_disabled = 0	GRANT CONNECT SQL TO [<%= $login %>]
 	ELSE				DENY CONNECT SQL TO [<%= $login %>]
 END
 ELSE
 BEGIN
-	IF $is_disabled = 0	ALTER LOGIN [<%= $login %>] ENABLE
+	IF @is_disabled = 0	ALTER LOGIN [<%= $login %>] ENABLE
 	ELSE				ALTER LOGIN [<%= $login %>] DISABLE
 END
 
