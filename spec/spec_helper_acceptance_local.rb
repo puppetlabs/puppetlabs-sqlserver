@@ -152,7 +152,9 @@ def install_sqlserver(features)
       windows_feature_source => 'I:\\sources\\sxs',
     }
   MANIFEST
-  Helper.instance.apply_manifest(pp)
+  retry_on_error_matching(3, 5, %r{apply manifest failed}) do
+    Helper.instance.apply_manifest(pp)
+  end
 end
 
 def run_sql_query(opts = {}, &block)
