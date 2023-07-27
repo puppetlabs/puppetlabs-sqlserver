@@ -7,6 +7,18 @@ class Helper
   include Singleton
   include PuppetLitmus
 end
+def retry_on_error_matching(max_retry_count = 3, retry_wait_interval_secs = 5, error_matcher = nil)
+  try = 0
+  begin
+    try += 1
+    yield
+  rescue StandardError => e
+    raise unless try < max_retry_count && (error_matcher.nil? || e.message =~ error_matcher)
+
+    sleep retry_wait_interval_secs
+    retry
+  end
+end
 
 WIN_ISO_ROOT = 'https://artifactory.delivery.puppetlabs.net/artifactory/generic__iso/iso/windows'
 WIN_2019_ISO = 'en_windows_server_2019_updated_july_2020_x64_dvd_94453821.iso'
@@ -81,7 +93,9 @@ def mount_iso(opts = {})
     drive_letter => '#{drive_letter}',
   }
   MANIFEST
-  Helper.instance.apply_manifest(pp)
+  retry_on_error_matching(10, 10, %r{apply manifest failed}) do
+    Helper.instance.apply_manifest(pp)
+  end
 end
 
 def base_install(sql_version)
@@ -152,7 +166,7 @@ def install_sqlserver(features)
       windows_feature_source => 'I:\\sources\\sxs',
     }
   MANIFEST
-  retry_on_error_matching(3, 5, %r{apply manifest failed}) do
+  retry_on_error_matching(10, 10, %r{apply manifest failed}) do
     Helper.instance.apply_manifest(pp)
   end
 end
