@@ -7,6 +7,7 @@ class Helper
   include Singleton
   include PuppetLitmus
 end
+
 def retry_on_error_matching(max_retry_count = 3, retry_wait_interval_secs = 5, error_matcher = nil)
   try = 0
   begin
