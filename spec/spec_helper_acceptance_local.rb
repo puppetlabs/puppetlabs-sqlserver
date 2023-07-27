@@ -7,7 +7,7 @@ class Helper
   include Singleton
   include PuppetLitmus
 end
-
+puts 'before fun'
 def retry_on_error_matching(max_retry_count = 3, retry_wait_interval_secs = 5, error_matcher = nil)
   try = 0
   begin
@@ -33,7 +33,7 @@ SQL_2012_ISO = 'SQLServer2012SP1-FullSlipstream-ENU-x64.iso'
 SQL_ADMIN_USER = 'sa'
 SQL_ADMIN_PASS = 'Pupp3t1@'
 USER = Helper.instance.run_shell('$env:UserName').stdout.chomp
-
+puts 'before RSpec'
 RSpec.configure do |c|
   c.before(:suite) do
     Helper.instance.run_shell('puppet module install puppetlabs-mount_iso')
@@ -53,7 +53,7 @@ RSpec.configure do |c|
     base_install(sql_version?)
   end
 end
-
+puts 'before node_vars'
 def node_vars?
   hash = Helper.instance.inventory_hash_from_inventory_file
 
@@ -72,10 +72,13 @@ def sql_version?
   '2019'
 end
 
+puts 'before mount_iso'
+
 # this mounts the OS and SQL iso
 # OS iso mounts to I drive
 # SQL iso mounts to H drive
 def mount_iso(opts = {})
+  puts 'inside mount_iso'
   folder = opts[:folder]
   file = opts[:file]
   drive_letter = opts[:drive_letter]
@@ -98,6 +101,8 @@ def mount_iso(opts = {})
     Helper.instance.apply_manifest(pp)
   end
 end
+
+puts 'before base_install'
 
 def base_install(sql_version)
   case sql_version.to_i
@@ -147,6 +152,7 @@ end
 
 def install_sqlserver(features)
   # this method installs SQl server on a given host
+  puts 'install_sqlserver'
   pp = <<-MANIFEST
     sqlserver_instance{'MSSQLSERVER':
       source => 'H:',
