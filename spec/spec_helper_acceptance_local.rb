@@ -35,10 +35,11 @@ SQL_ADMIN_PASS = 'Pupp3t1@'
 USER = Helper.instance.run_shell('$env:UserName').stdout.chomp
 puts 'before RSpec'
 RSpec.configure do |c|
-  c.before(:suite) do
-    Helper.instance.run_shell('puppet module install puppetlabs-mount_iso')
-    Helper.instance.run_shell('puppet module install puppet/archive')
-
+  c.before(:suite) doAn error occurred 
+    retry_on_error_matching(200, 10, %r{shell failed}) do
+      Helper.instance.run_shell('puppet module install puppetlabs-mount_iso')
+      Helper.instance.run_shell('puppet module install puppet/archive')
+    end
     iso_opts = {
       folder: WIN_ISO_ROOT,
       file: WIN_2019_ISO,
