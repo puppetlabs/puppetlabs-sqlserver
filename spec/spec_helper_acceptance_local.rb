@@ -147,7 +147,9 @@ def base_install(sql_version)
   mount_iso(iso_opts)
   # Install Microsoft SQL on the agent before running any tests
   features = ['DQ', 'FullText', 'Replication', 'SQLEngine']
-  install_sqlserver(features)
+  retry_on_error_matching(200, 10, %r{apply manifest failed}) do
+    install_sqlserver(features)
+  end
 end
 
 def install_sqlserver(features)
