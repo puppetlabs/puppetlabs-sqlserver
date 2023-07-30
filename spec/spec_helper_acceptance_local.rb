@@ -173,7 +173,7 @@ def install_sqlserver(features)
       windows_feature_source => 'I:\\sources\\sxs',
     }
   MANIFEST
-  retry_on_error_matching(200, 10, %r{apply manifest failed}) do
+  retry_on_error_matching(200, 10, %r{RuntimeError:}) do
     Helper.instance.apply_manifest(pp)
   end
 end
