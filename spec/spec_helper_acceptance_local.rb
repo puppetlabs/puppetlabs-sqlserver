@@ -97,14 +97,12 @@ def mount_iso(opts = {})
     drive_letter => '#{drive_letter}',
   }
   MANIFEST
-  retry_on_error_matching(10, 10, %r{apply manifest failed}) do
-    Helper.instance.apply_manifest(pp)
-  end
+  Helper.instance.apply_manifest(pp)
 end
 
 puts 'before base_install'
 
-def base_install(sql_version)
+def base_install(sql_version) # rubocop:disable Metrics/MethodLength
   case sql_version.to_i
   when 2012
     iso_opts = {
@@ -144,7 +142,9 @@ def base_install(sql_version)
     }
   end
   # Mount the ISO on the agent
-  mount_iso(iso_opts)
+  retry_on_error_matching(200, 10, %r{apply manifest failed}) do
+    mount_iso(iso_opts)
+  end
   # Install Microsoft SQL on the agent before running any tests
   features = ['DQ', 'FullText', 'Replication', 'SQLEngine']
   retry_on_error_matching(200, 10, %r{apply manifest failed}) do
