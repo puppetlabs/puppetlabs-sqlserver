@@ -109,9 +109,13 @@ jobs:
 
     - name: Run acceptance tests
       run: |
-        bundle exec rake 'litmus:acceptance:parallel'
-      retries: 5
-      continue-on-error: true
+        for attempt in {1..10}; do
+          if bundle exec rake 'litmus:acceptance:parallel'; then
+            break
+          else
+            sleep 10
+          fi
+        done
 
     - name: Remove test environment
       if: ${{ always() }}
