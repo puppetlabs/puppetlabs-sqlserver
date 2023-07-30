@@ -34,26 +34,29 @@ SQL_ADMIN_USER = 'sa'
 SQL_ADMIN_PASS = 'Pupp3t1@'
 USER = Helper.instance.run_shell('$env:UserName').stdout.chomp
 puts 'before RSpec'
-RSpec.configure do |c|
-  c.before(:suite) doAn error occurred 
-    retry_on_error_matching(200, 10, %r{shell failed}) do
-      Helper.instance.run_shell('puppet module install puppetlabs-mount_iso')
-      Helper.instance.run_shell('puppet module install puppet/archive')
+retry_on_error_matching(200, 10, %r{An error occurred}) do
+  RSpec.configure do |c|
+    c.before(:suite) do
+      retry_on_error_matching(200, 10, %r{shell failed}) do
+        Helper.instance.run_shell('puppet module install puppetlabs-mount_iso')
+        Helper.instance.run_shell('puppet module install puppet/archive')
+      end
+      iso_opts = {
+        folder: WIN_ISO_ROOT,
+        file: WIN_2019_ISO,
+        drive_letter: 'I'
+      }
+      # Allows litmus to use SSH, by explicitly setting specinfra
+      # os family to windows (would fail when using ssh on windows)
+      set :os, family: 'windows', release: nil, arch: nil
+
+      mount_iso(iso_opts)
+
+      base_install(sql_version?)
     end
-    iso_opts = {
-      folder: WIN_ISO_ROOT,
-      file: WIN_2019_ISO,
-      drive_letter: 'I'
-    }
-    # Allows litmus to use SSH, by explicitly setting specinfra
-    # os family to windows (would fail when using ssh on windows)
-    set :os, family: 'windows', release: nil, arch: nil
-
-    mount_iso(iso_opts)
-
-    base_install(sql_version?)
   end
 end
+
 puts 'before node_vars'
 def node_vars?
   hash = Helper.instance.inventory_hash_from_inventory_file
