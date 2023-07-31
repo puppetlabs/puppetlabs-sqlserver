@@ -37,7 +37,7 @@ RSpec.configure do |c|
 
     mount_iso(iso_opts)
 
-    base_install(sql_version?)
+    #base_install(sql_version?)
   end
 end
 
