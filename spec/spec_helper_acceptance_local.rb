@@ -150,7 +150,7 @@ def base_install(sql_version) # rubocop:disable Metrics/MethodLength
     mount_iso(iso_opts)
   end
   # Install Microsoft SQL on the agent before running any tests
-  features = ['DQ', 'FullText', 'Replication', 'SQLEngine']
+  features = ['DQ']
   retry_on_error_matching(200, 10, %r{apply manifest failed}) do
     install_sqlserver(features)
   end
