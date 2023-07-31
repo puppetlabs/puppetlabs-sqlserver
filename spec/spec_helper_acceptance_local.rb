@@ -101,7 +101,7 @@ def mount_iso(opts = {})
     drive_letter => '#{drive_letter}',
   }
   MANIFEST
-  Helper.instance.apply_manifest(pp)
+  Helper.instance.apply_manifest(pp, debug: true)
 end
 
 puts 'before base_install'
@@ -162,10 +162,22 @@ def install_sqlserver(features)
   pp = <<-MANIFEST
     sqlserver_instance{'MSSQLSERVER':
       source => 'H:',
+      notify { 'test1':
+        message => 'before feature',
+      }
       features => #{features},
+      notify { 'test2':
+        message => 'after feature',
+      }#{'      '}
       security_mode => 'SQL',
       sa_pwd => 'Pupp3t1@',
+      notify { 'test3':
+        message => 'before users',
+      }
       sql_sysadmin_accounts => ['#{USER}'],
+      notify { 'test4':
+        message => 'after users',
+      }#{'      '}
       install_switches => {
         'UPDATEENABLED'       => 'False',
         'TCPENABLED'          => 1,
@@ -176,10 +188,13 @@ def install_sqlserver(features)
         'INSTALLSHAREDDIR'    => 'C:\\Program Files\\Microsoft SQL Server',
         'INSTALLSHAREDWOWDIR' => 'C:\\Program Files (x86)\\Microsoft SQL Server',
       },
+      notify { 'test5':
+        message => 'after switches',
+      }#{'  '}
       windows_feature_source => 'I:\\sources\\sxs',
     }
   MANIFEST
-  Helper.instance.apply_manifest(pp, debug:true)
+  Helper.instance.apply_manifest(pp, debug: true)
 end
 
 def run_sql_query(opts = {}, &block)
