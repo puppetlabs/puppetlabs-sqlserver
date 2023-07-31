@@ -22,8 +22,10 @@ jobs:
 
     steps:
 
-    - name: Checkout Source
+    - name: Checkout
       uses: actions/checkout@v3
+      with:
+        ref: ${{ github.event.pull_request.head.sha }}
       if: ${{ github.repository_owner == 'puppetlabs' }}
 
     - name: Activate Ruby 2.7
@@ -61,8 +63,10 @@ jobs:
       FACTER_GEM_VERSION: 'https://github.com/puppetlabs/facter#main' 
 
     steps:
-    - name: Checkout Source
+    - name: Checkout
       uses: actions/checkout@v3
+      with:
+        ref: ${{ github.event.pull_request.head.sha }}
 
     - name: Activate Ruby 2.7
       uses: ruby/setup-ruby@v1
