@@ -179,7 +179,7 @@ def install_sqlserver(features)
       windows_feature_source => 'I:\\sources\\sxs',
     }
   MANIFEST
-  Helper.instance.apply_manifest(pp)
+  Helper.instance.apply_manifest(pp, debug:true)
 end
 
 def run_sql_query(opts = {}, &block)
