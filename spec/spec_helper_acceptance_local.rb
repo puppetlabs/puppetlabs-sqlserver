@@ -126,33 +126,6 @@ def base_install(sql_version)
   # Mount the ISO on the agent
   mount_iso(iso_opts)
   # Install Microsoft SQL on the agent before running any tests
-  features = ['DQ', 'FullText', 'Replication', 'SQLEngine']
-  install_sqlserver(features)
-end
-
-def install_sqlserver(features)
-  # this method installs SQl server on a given host
-  pp = <<-MANIFEST
-    sqlserver_instance{'MSSQLSERVER':
-      source => 'H:',
-      features => #{features},
-      security_mode => 'SQL',
-      sa_pwd => 'Pupp3t1@',
-      sql_sysadmin_accounts => ['#{USER}'],
-      install_switches => {
-        'UPDATEENABLED'       => 'False',
-        'TCPENABLED'          => 1,
-        'SQLBACKUPDIR'        => 'C:\\MSSQLSERVER\\backupdir',
-        'SQLTEMPDBDIR'        => 'C:\\MSSQLSERVER\\tempdbdir',
-        'INSTALLSQLDATADIR'   => 'C:\\MSSQLSERVER\\datadir',
-        'INSTANCEDIR'         => 'C:\\Program Files\\Microsoft SQL Server',
-        'INSTALLSHAREDDIR'    => 'C:\\Program Files\\Microsoft SQL Server',
-        'INSTALLSHAREDWOWDIR' => 'C:\\Program Files (x86)\\Microsoft SQL Server',
-      },
-      windows_feature_source => 'I:\\sources\\sxs',
-    }
-  MANIFEST
-  Helper.instance.apply_manifest(pp)
 end
 
 def run_sql_query(opts = {}, &block)
