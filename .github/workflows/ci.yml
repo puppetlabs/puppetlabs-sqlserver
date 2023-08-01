@@ -15,7 +15,7 @@ jobs:
 
   setup_matrix:
     name: "Setup Test Matrix"
-    needs: "Spec"
+    # needs: "Spec"
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.get-matrix.outputs.matrix }}

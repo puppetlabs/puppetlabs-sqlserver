@@ -41,6 +41,7 @@ def install_sqlserver(host, opts = {})
         'INSTANCEDIR'         => 'C:\\Program Files\\Microsoft SQL Server',
         'INSTALLSHAREDDIR'    => 'C:\\Program Files\\Microsoft SQL Server',
         'INSTALLSHAREDWOWDIR' => 'C:\\Program Files (x86)\\Microsoft SQL Server',
+        'SKIPINSTALLERRUNCHECK' => true
       },
       windows_feature_source => 'I:\\sources\\sxs',
     }
