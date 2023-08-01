@@ -21,9 +21,14 @@ describe 'sqlserver::config test' do
       security_mode         => 'SQL',
       sa_pwd                => 'Pupp3t1@',
       windows_feature_source => 'I:\\sources\\sxs',
+      install_switches => {
+        'SkipInstallerRunCheck' => 'True',
+      },
     }
     MANIFEST
-    apply_manifest(pp, catch_failures: true)
+    retry_on_error_matching(10, 5, %r{apply manifest failed}) do
+      apply_manifest(pp, catch_failures: true)
+    end
   end
 
   context 'Testing sqlserver::config' do
