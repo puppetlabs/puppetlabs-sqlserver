@@ -21,6 +21,19 @@ SQL_ADMIN_USER = 'sa'
 SQL_ADMIN_PASS = 'Pupp3t1@'
 USER = Helper.instance.run_shell('$env:UserName').stdout.chomp
 
+def retry_on_error_matching(max_retry_count = 3, retry_wait_interval_secs = 5, error_matcher = nil)
+  try = 0
+  begin
+    try += 1
+    yield
+  rescue StandardError => e
+    raise unless try < max_retry_count && (error_matcher.nil? || e.message =~ error_matcher)
+
+    sleep retry_wait_interval_secs
+    retry
+  end
+end
+
 RSpec.configure do |c|
   c.before(:suite) do
     Helper.instance.run_shell('puppet module install puppetlabs-mount_iso')
@@ -81,7 +94,9 @@ def mount_iso(opts = {})
     drive_letter => '#{drive_letter}',
   }
   MANIFEST
-  Helper.instance.apply_manifest(pp)
+  retry_on_error_matching(10, 5, %r{apply manifest failed}) do
+    Helper.instance.apply_manifest(pp)
+  end
 end
 
 def base_install(sql_version)
@@ -152,7 +167,9 @@ def install_sqlserver(features)
       windows_feature_source => 'I:\\sources\\sxs',
     }
   MANIFEST
-  Helper.instance.apply_manifest(pp)
+  retry_on_error_matching(10, 5, %r{apply manifest failed}) do
+    Helper.instance.apply_manifest(pp)
+  end
 end
 
 def run_sql_query(opts = {}, &block)
