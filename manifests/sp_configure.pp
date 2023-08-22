@@ -44,15 +44,22 @@ define sqlserver::sp_configure (
     Sqlserver_tsql["sp_configure-${instance}-${config_name}"] ~> Exec["restart-service-${service_name}-${config_name}"]
   }
 
+  $create_sp_configure_parameters = {
+    'config_name'   => $config_name,
+    'value'         => $value,
+    'reconfigure'   => $reconfigure,
+    'with_override' => $with_override,
+  }
+
   sqlserver_tsql { "sp_configure-${instance}-${config_name}":
     instance => $instance,
-    command  => template('sqlserver/create/sp_configure.sql.erb'),
-    onlyif   => template('sqlserver/query/sp_configure.sql.erb'),
+    command  => epp('sqlserver/create/sp_configure.sql.epp', $create_sp_configure_parameters),
+    onlyif   => epp('sqlserver/query/sp_configure.sql.epp', { 'config_name' => $config_name, 'value' => $value }),
     require  => Sqlserver::Config[$instance],
   }
 
   exec { "restart-service-${service_name}-${config_name}":
-    command     => template('sqlserver/restart_service.ps1.erb'),
+    command     => epp('sqlserver/restart_service.ps1.epp', { 'service_name' => $service_name }),
     provider    => powershell,
     logoutput   => true,
     refreshonly => true,

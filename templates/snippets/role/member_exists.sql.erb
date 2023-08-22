@@ -1,5 +1,0 @@
-IF NOT EXISTS (
-  SELECT r.name [Role], m.name [Member] FROM sys.<%= @type.downcase %>_role_members rm
-    JOIN sys.<%= @type.downcase %>_principals r ON rm.role_principal_id = r.principal_id
-	JOIN sys.<%= @type.downcase %>_principals m ON rm.member_principal_id = m.principal_id
-	WHERE r.name = @role AND m.name = @member)

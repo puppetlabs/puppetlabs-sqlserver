@@ -1,0 +1,5 @@
+<% if $admin_login_type == 'SQL_LOGIN' { %>
+{ "instance": "<%= $_instance %>","admin":"<%= $admin_user %>","pass":"<%= $admin_pass %>" }
+<% }else { %>
+{ "instance": "<%= $_instance %>","admin":"","pass":"" }
+<% } %>

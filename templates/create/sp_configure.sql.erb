@@ -1,8 +1,0 @@
-DECLARE @return_value INT
-EXECUTE @return_value = sp_configure @configname = N'<%= @config_name %>', @configvalue = <%= @value %>
-IF @return_value != 0
-	THROW 51000,'Unable to update `<%= @config_name %>`', 10
-<% if @reconfigure -%>
-ELSE
-    RECONFIGURE <% if @with_override %>WITH OVERRIDE<% end %>
-<% end -%>

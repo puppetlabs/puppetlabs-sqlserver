@@ -52,10 +52,34 @@ define sqlserver::role::permissions (
     ##
     # Parameters required in template are _state, role, _upermissions, database, type, with_grant_option
     ##
+    $role_declare_and_set_variables_parameters = {
+      'type'              => $type,
+      'role'              => $role,
+      'with_grant_option' => $with_grant_option,
+      '_state'            => $_state,
+    }
+
+    $create_role_permissions_parameters = {
+      'database'                                  => $database,
+      'role_declare_and_set_variables_parameters' => $role_declare_and_set_variables_parameters,
+      'permissions'                               => $permissions,
+      'with_grant_option'                         => $with_grant_option,
+      'role'                                      => $role,
+      '_state'                                    => $_state,
+      'type'                                      => $type,
+    }
+
+    $query_role_permission_exists_parameters = {
+      'database'                                  => $database,
+      'role_declare_and_set_variables_parameters' => $role_declare_and_set_variables_parameters,
+      'permissions'                               => $permissions,
+      'type'                                      => $type,
+    }
+
     sqlserver_tsql { "role-permissions-${role}-${_state}${_grant_option}-${instance}-${database}":
       instance => $instance,
-      command  => template('sqlserver/create/role/permissions.sql.erb'),
-      onlyif   => template('sqlserver/query/role/permission_exists.sql.erb'),
+      command  => epp('sqlserver/create/role/permissions.sql.epp', $create_role_permissions_parameters),
+      onlyif   => epp('sqlserver/query/role/permission_exists.sql.epp', $query_role_permission_exists_parameters),
     }
   }
 }

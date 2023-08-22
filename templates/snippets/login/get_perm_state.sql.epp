@@ -1,0 +1,7 @@
+ISNULL(
+    (SELECT perm.state_desc FROM sys.server_permissions perm
+	  JOIN sys.server_principals princ ON princ.principal_id = perm.grantee_principal_id
+	  WHERE princ.type IN ('U','S','G')
+	    AND princ.name = '<%= $login %>'
+        AND perm.permission_name = @permission),
+     'REVOKE')

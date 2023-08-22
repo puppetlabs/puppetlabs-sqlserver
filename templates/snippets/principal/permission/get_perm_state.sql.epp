@@ -1,0 +1,6 @@
+ISNULL(
+	(SELECT state_desc FROM sys.<%= $type.downcase %>_permissions prem
+		JOIN sys.<%= $type.downcase %>_principals r ON r.principal_id = prem.grantee_principal_id
+		WHERE r.name = @princ_name AND r.type_desc = @princ_type
+		AND prem.permission_name = @permission),
+	 'REVOKE')

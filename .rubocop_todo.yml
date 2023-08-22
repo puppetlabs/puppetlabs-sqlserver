@@ -144,6 +144,7 @@ RSpec/NamedSubject:
     - 'spec/defines/sp_configure_spec.rb'
     - 'spec/defines/user_spec.rb'
     - 'spec/unit/puppet_x/sql_connection_spec.rb'
+    - 'spec/functions/partial_params_args_spec.rb'
 
 # Offense count: 31
 # Configuration parameters: AllowedGroups.

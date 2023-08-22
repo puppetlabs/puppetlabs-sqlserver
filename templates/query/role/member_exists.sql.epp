@@ -1,0 +1,22 @@
+USE [<%= $database %>];
+DECLARE
+  @role varchar(128) = '<%= $role %>',
+  @member varchar(128),
+  @error_msg varchar(250);
+
+<% $members.each |$member| { -%>
+SET @member = '<%= $member %>';
+SET @error_msg = 'The member [<%= $member %>] is <% if $ensure == 'present' { %>not <% } %>a member of the role [<%=$role %>]';
+<%= epp('sqlserver/snippets/role/member_exists.sql.epp', { 'type' => $type }) -%>
+    THROW 51000, @error_msg, 10;
+<% } %>
+
+<% if $members_purge { %>
+IF EXISTS(
+SELECT m.name FROM sys.<%= $type.downcase %>_role_members rm
+    JOIN sys.<%= $type.downcase %>_principals r ON rm.role_principal_id = r.principal_id
+    JOIN sys.<%= $type.downcase %>_principals m ON rm.member_principal_id = m.principal_id
+    WHERE r.name = '<%= $role %>'
+    <% if !$members.empty { %>AND m.name NOT IN (<%= $members.map |$m| { "'${m}'" }.join(',') %>)<% } %>
+) THROW 51000, 'Unlisted Members in Role, will be purged', 10;
+<% } %>

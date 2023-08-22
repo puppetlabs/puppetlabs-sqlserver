@@ -1,3 +1,0 @@
-DECLARE @default_fulltext_lcid as INT
-SELECT @default_fulltext_lcid = CONVERT(INT, lcid) FROM sys.syslanguages WHERE name = N'<%= @default_fulltext_language %>' OR alias = N'<%= @default_fulltext_language %>'
-IF NOT EXISTS(SELECT name FROM sys.databases WHERE name = '<%= @db_name %>' AND default_fulltext_language_lcid = @default_fulltext_lcid)

@@ -1,0 +1,10 @@
+USE [<%= $database %>];
+BEGIN
+    <%= epp('sqlserver/snippets/role/exists.sql.epp', $role_exists_parameters) %>
+        CREATE <% if $type == 'SERVER' { %>SERVER <% } %>ROLE [<%= $role %>]<% if $authorization { %> AUTHORIZATION [<%= $authorization %>]<% } %>;
+    <% if $authorization { %>
+    <%= epp('sqlserver/snippets/role/owner_check.sql.epp', $role_owner_check_parameters) %>
+        ALTER AUTHORIZATION ON <% if $type =='SERVER' { %>SERVER <% } %>ROLE::[<%= $role %>] TO [<%= $authorization %>];
+    <% } %>
+END
+<%= epp('sqlserver/query/role_exists.sql.epp', $query_role_exists_parameters) %>

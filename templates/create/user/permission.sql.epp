@@ -1,0 +1,16 @@
+USE [<%= $database %>];
+DECLARE @perm_state varchar(250), @error_msg varchar(250), @permission varchar(250);
+<% $permissions.each |$requested_permission| { %>
+    <% $permission = $requested_permission.upcase %>
+SET @permission = '<%= $permission %>';
+BEGIN
+    <% if $with_grant_option == false { %>
+    IF 'GRANT_WITH_GRANT_OPTION' = <%= epp('sqlserver/snippets/user/permission/get_perm_state.sql.epp', { 'user' => $user }) %>
+        REVOKE GRANT OPTION FOR <%= $permission %> TO [<%= $user %>] CASCADE;
+    <% } %>
+    <%= $_state %> <%= $permission %> TO [<%= $user %>]<% if $with_grant_option == true { %> WITH GRANT OPTION<% } %>;
+END
+BEGIN
+    <%= epp('sqlserver/snippets/user/permission/exists.sql.epp', $user_permission_exists_parameters) %>
+END
+<% } %>

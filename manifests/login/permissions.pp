@@ -38,10 +38,29 @@ define sqlserver::login::permissions (
     true => '-WITH_GRANT_OPTION',
     default => ''
   }
+
+  $create_login_permission_parameters = {
+    'permissions'       => $permissions,
+    'with_grant_option' => $with_grant_option,
+    'login'             => $login,
+    '_state'            => $_state,
+  }
+
+  $login_permission_exists_parameters = {
+    'login' => $login,
+    '_state' => $_state,
+    'with_grant_option' => $with_grant_option,
+  }
+
+  $query_login_permission_exists_parameters = {
+    'permissions'                         => $permissions,
+    'login_permission_exists_parameters'  => $login_permission_exists_parameters,
+  }
+
   sqlserver_tsql { "login-permission-${instance}-${login}-${_state}${_grant_option}":
     instance => $instance,
-    command  => template('sqlserver/create/login/permission.sql.erb'),
-    onlyif   => template('sqlserver/query/login/permission_exists.sql.erb'),
+    command  => epp('sqlserver/create/login/permission.sql.epp', $create_login_permission_parameters),
+    onlyif   => epp('sqlserver/query/login/permission_exists.sql.epp', $query_login_permission_exists_parameters),
     require  => Sqlserver::Config[$instance],
   }
 }

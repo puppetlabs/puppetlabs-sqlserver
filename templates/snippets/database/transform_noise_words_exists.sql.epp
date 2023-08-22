@@ -1,0 +1,1 @@
+IF NOT EXISTS(SELECT name FROM sys.databases WHERE name = '<%= $db_name %>' AND is_transform_noise_words_on = <% if $transform_noise_words == 'ON' { %><%=1%><% }else { %><%=0%><% } %>)
