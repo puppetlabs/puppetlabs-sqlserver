@@ -179,10 +179,142 @@ define sqlserver::database (
     'absent'  => 'delete',
   }
 
+  $database_containment_exists_parameters = {
+    'db_name'     => $db_name,
+    'containment' => $containment,
+  }
+
+  $database_compatibility_exists_parameters = {
+    'db_name'       => $db_name,
+    'compatibility' => $compatibility,
+  }
+
+  $database_collation_exists_parameters = {
+    'db_name'         => $db_name,
+    'collation_name'  => $collation_name,
+  }
+
+  $database_db_chaining_exists_parameters = {
+    'db_name'     => $db_name,
+    'db_chaining' => $db_chaining,
+  }
+
+  $database_default_fulltext_language_exists_parameters = {
+    'default_fulltext_language' => $default_fulltext_language,
+    'db_name'                   => $db_name,
+  }
+
+  $database_default_language_exists_parameters = {
+    'default_language' => $default_language,
+    'db_name'          => $db_name,
+  }
+
+  $database_nested_triggers_exists_parameters = {
+    'db_name'         => $db_name,
+    'nested_triggers' => $nested_triggers,
+  }
+
+  $database_transform_noise_words_exists_parameters = {
+    'db_name'               => $db_name,
+    'transform_noise_words' => $transform_noise_words,
+  }
+
+  $database_trustworthy_exists_parameters = {
+    'db_name'     => $db_name,
+    'trustworthy' => $trustworthy,
+  }
+
+  $database_two_digit_year_cutoff_exists_parameters= {
+    'db_name'               => $db_name,
+    'two_digit_year_cutoff' => $two_digit_year_cutoff,
+  }
+
+  $partial_params_parameters = {
+    'db_chaining'               => $db_chaining,
+    'trustworthy'               => $trustworthy,
+    'default_fulltext_language' => $default_fulltext_language,
+    'default_language'          => $default_language,
+    'nested_triggers'           => $nested_triggers,
+    'transform_noise_words'     => $transform_noise_words,
+    'two_digit_year_cutoff'     => $two_digit_year_cutoff,
+  }
+
+  $partial_params = sqlserver::partial_params_args($partial_params_parameters)
+
+  if $create_delete == 'create' {
+    $database_create_delete_parameters = {
+      'db_name'                                               => $db_name,
+      'containment'                                           => $containment,
+      'filespec_name'                                         => $filespec_name,
+      'filespec_filename'                                     => $filespec_filename,
+      'filespec_size'                                         => $filespec_size,
+      'filespec_maxsize'                                      => $filespec_maxsize,
+      'filespec_filegrowth'                                   => $filespec_filegrowth,
+      'log_name'                                              => $log_name,
+      'log_filename'                                          => $log_filename,
+      'log_size'                                              => $log_size,
+      'log_maxsize'                                           => $log_maxsize,
+      'log_filegrowth'                                        => $log_filegrowth,
+      'filestream_directory_name'                             => $filestream_directory_name,
+      'filestream_non_transacted_access'                      => $filestream_non_transacted_access,
+      'db_chaining'                                           => $db_chaining,
+      'trustworthy'                                           => $trustworthy,
+      'default_fulltext_language'                             => $default_fulltext_language,
+      'default_language'                                      => $default_language,
+      'nested_triggers'                                       => $nested_triggers,
+      'transform_noise_words'                                 => $transform_noise_words,
+      'two_digit_year_cutoff'                                 => $two_digit_year_cutoff,
+      'database_compatibility_exists_parameters'              => $database_compatibility_exists_parameters,
+      'compatibility'                                         => $compatibility,
+      'collation_name'                                        => $collation_name,
+      'database_collation_exists_parameters'                  => $database_collation_exists_parameters,
+      'database_db_chaining_exists_parameters'                => $database_db_chaining_exists_parameters,
+      'database_default_fulltext_language_exists_parameters'  => $database_default_fulltext_language_exists_parameters,
+      'database_default_language_exists_parameters'           => $database_default_language_exists_parameters,
+      'database_nested_triggers_exists_parameters'            => $database_nested_triggers_exists_parameters,
+      'database_transform_noise_words_exists_parameters'      => $database_transform_noise_words_exists_parameters,
+      'database_trustworthy_exists_parameters'                => $database_trustworthy_exists_parameters,
+      'database_two_digit_year_cutoff_exists_parameters'      => $database_two_digit_year_cutoff_exists_parameters,
+      'partial_params'                                        => $partial_params,
+    }
+  } else {
+    $database_create_delete_parameters = {
+      'db_name' => $db_name,
+    }
+  }
+
+  $database_check_exists_parameters = {
+    'compatibility'             => $database_compatibility_exists_parameters,
+    'collation'                 => $database_collation_exists_parameters,
+    'containment'               => $database_containment_exists_parameters,
+    'db_chaining'               => $database_db_chaining_exists_parameters,
+    'default_fulltext_language' => $database_default_fulltext_language_exists_parameters,
+    'default_language'          => $database_default_language_exists_parameters,
+    'nested_triggers'           => $database_nested_triggers_exists_parameters,
+    'transform_noise_words'     => $database_transform_noise_words_exists_parameters,
+    'trustworthy'               => $database_trustworthy_exists_parameters,
+    'two_digit_year_cutoff'     => $database_two_digit_year_cutoff_exists_parameters,
+  }
+
+  $database_exists_parameters = {
+    'ensure'                            => $ensure,
+    'db_name'                           => $db_name,
+    'collation_name'                    => $collation_name,
+    'containment'                       => $containment,
+    'default_fulltext_language'         => $default_fulltext_language,
+    'default_language'                  => $default_language,
+    'db_chaining'                       => $db_chaining,
+    'nested_triggers'                   => $nested_triggers,
+    'transform_noise_words'             => $transform_noise_words,
+    'trustworthy'                       => $trustworthy,
+    'two_digit_year_cutoff'             => $two_digit_year_cutoff,
+    'database_check_exists_parameters'  => $database_check_exists_parameters,
+  }
+
   sqlserver_tsql { "database-${instance}-${db_name}":
     instance => $instance,
-    command  => template("sqlserver/${create_delete}/database.sql.erb"),
-    onlyif   => template('sqlserver/query/database_exists.sql.erb'),
+    command  => epp("sqlserver/${create_delete}/database.sql.epp", $database_create_delete_parameters),
+    onlyif   => epp('sqlserver/query/database_exists.sql.epp', $database_exists_parameters),
     require  => Sqlserver::Config[$instance],
   }
 }

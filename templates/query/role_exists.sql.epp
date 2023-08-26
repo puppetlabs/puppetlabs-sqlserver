@@ -1,0 +1,7 @@
+USE [<%= $database %>];
+<%= epp('sqlserver/snippets/role/exists.sql.epp', $role_exists_parameters) %>
+    THROW 51000, 'The <%= $type %> ROLE [<%= $role %>] does <% if $ensure == 'present' { %>not<% } %> exist', 10
+<% if $ensure == 'present' and $authorization { -%>
+    <%= epp('sqlserver/snippets/role/owner_check.sql.epp', $role_owner_check_parameters) %>
+    THROW 51000, 'The <%= $type %> ROLE [<%= $role %>] does not have the correct owner of [<%= $authorization %>]', 10
+<% } %>

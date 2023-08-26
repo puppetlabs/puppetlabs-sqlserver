@@ -1,0 +1,14 @@
+USE [<%= $database %>];
+<%= epp('sqlserver/snippets/role/declare_and_set_variables.sql.epp', $role_declare_and_set_variables_parameters) -%>
+
+<% $permissions.each |$requested_permission| { %>
+    <% $permission = $requested_permission.upcase %>
+SET @permission = '<%= $permission %>';
+<% if $with_grant_option == false { %>
+    IF 'GRANT_WITH_GRANT_OPTION' = <%= epp('sqlserver/snippets/principal/permission/get_perm_state.sql.epp', { 'type' => $type }) -%>
+    BEGIN
+        REVOKE GRANT OPTION FOR <%= $permission %> TO [<%= $role %>] CASCADE;
+    END
+    <% } -%>
+    <%= $_state %> <%= $permission %> TO [<%= $role %>]<% if $with_grant_option == true { %> WITH GRANT OPTION<% } %>;
+<% } %>

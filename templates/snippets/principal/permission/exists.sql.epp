@@ -1,0 +1,4 @@
+SET @perm_state = <%= epp('sqlserver/snippets/principal/permission/get_perm_state.sql.epp', { 'type' => $type }) -%>;
+SET @error_msg = 'EXPECTED [' + @princ_name + '] to have permission [' + @permission + '] with ' + @state_desc + ' but got ' + @perm_state;
+IF @perm_state != @state_desc
+	    THROW 51000, @error_msg, 10;

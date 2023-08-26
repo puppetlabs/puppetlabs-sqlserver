@@ -1,0 +1,7 @@
+USE [<%= $database %>];
+
+DECLARE @perm_state varchar(250), @error_msg varchar(250), @permission varchar(250);
+<% $permissions.each |$requested_permission| { %>
+    <% $permission = $requested_permission.upcase %>
+<%= epp('sqlserver/snippets/user/permission/exists.sql.epp', $user_permission_exists_parameters) %>
+<% } %>

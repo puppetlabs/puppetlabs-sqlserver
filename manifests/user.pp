@@ -62,18 +62,31 @@ define sqlserver::user (
     'absent'  => 'delete',
   }
 
-  $parameters = {
-    'password' => Deferred('sqlserver::password', [$password]),
-    'database' => $database,
-    'user' => $user,
-    'login' => $login,
-    'default_schema' => $default_schema,
+  if $create_delete == 'create' {
+    $create_delete_user_parameters = {
+      'database'        => $database,
+      'password'        => Deferred('sqlserver::password', [$password]),
+      'user'            => $user,
+      'login'           => $login,
+      'default_schema'  => $default_schema,
+    }
+  } else {
+    $create_delete_user_parameters = {
+      'database'  => $database,
+      'user'      => $user,
+    }
+  }
+
+  $query_user_exists_parameters = {
+    'database'  => $database,
+    'ensure'    => $ensure,
+    'user'      => $user,
   }
 
   sqlserver_tsql { "user-${instance}-${database}-${user}":
     instance => $instance,
-    command  => stdlib::deferrable_epp("sqlserver/${create_delete}/user.sql.epp", $parameters),
-    onlyif   => template('sqlserver/query/user_exists.sql.erb'),
+    command  => stdlib::deferrable_epp("sqlserver/${create_delete}/user.sql.epp", $create_delete_user_parameters),
+    onlyif   => epp('sqlserver/query/user_exists.sql.epp', $query_user_exists_parameters),
     require  => Sqlserver::Config[$instance],
   }
 

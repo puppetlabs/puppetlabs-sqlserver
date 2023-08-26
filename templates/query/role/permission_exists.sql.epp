@@ -1,0 +1,8 @@
+USE [<%= $database %>];
+<%= epp('sqlserver/snippets/role/declare_and_set_variables.sql.epp', $role_declare_and_set_variables_parameters) -%>
+
+<% $permissions.each |$requested_permission| { %>
+    <% $permission = $requested_permission.upcase %>
+SET @permission = '<%= $permission %>';
+<%= epp('sqlserver/snippets/principal/permission/exists.sql.epp', { 'type' => $type }) -%>
+<% } %>

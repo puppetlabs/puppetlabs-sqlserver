@@ -45,11 +45,33 @@ define sqlserver::user::permissions (
     true => '-WITH_GRANT_OPTION',
     default => ''
   }
+
+  $user_permission_exists_parameters = {
+    'user'              => $user,
+    '_state'            => $_state,
+    'with_grant_option' => $with_grant_option,
+  }
+
+  $user_permission_parameters = {
+    'database'                          => $database,
+    'permissions'                       => $permissions,
+    'with_grant_option'                 => $with_grant_option,
+    'user'                              => $user,
+    '_state'                            => $_state,
+    'user_permission_exists_parameters' => $user_permission_exists_parameters,
+  }
+
+  $query_user_permission_exists_parameters = {
+    'database'                          => $database,
+    'permissions'                       => $permissions,
+    'user_permission_exists_parameters' => $user_permission_exists_parameters,
+  }
+
   sqlserver_tsql {
     "user-permissions-${instance}-${database}-${user}-${_state}${_grant_option}":
       instance => $instance,
-      command  => template('sqlserver/create/user/permission.sql.erb'),
-      onlyif   => template('sqlserver/query/user/permission_exists.sql.erb'),
+      command  => epp('sqlserver/create/user/permission.sql.epp', $user_permission_parameters),
+      onlyif   => epp('sqlserver/query/user/permission_exists.sql.epp', $query_user_permission_exists_parameters),
       require  => Sqlserver::Config[$instance],
   }
 }

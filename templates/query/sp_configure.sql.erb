@@ -1,3 +1,0 @@
-USE master;
-IF EXISTS(SELECT * FROM sys.configurations WHERE name = '<%= @config_name %>' AND value_in_use != <%= @value %>)
-	THROW 51000, 'sp_configure `<%= @config_name %>` is not in the correct state', 10

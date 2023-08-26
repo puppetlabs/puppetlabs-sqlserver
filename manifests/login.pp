@@ -76,22 +76,40 @@ define sqlserver::login (
     'absent'  => 'delete',
   }
 
-  $parameters = {
-    'password' => Deferred('sqlserver::password', [$password]),
-    'disabled' => $disabled,
-    'login_type' => $login_type,
-    'login' => $login,
-    'default_language' => $default_language,
-    'default_database' => $default_database,
-    'check_policy' => $check_policy,
-    'check_expiration' => $check_expiration,
-    'svrroles' => $svrroles,
+  if $_create_delete == 'create' {
+    $create_delete_login_parameters = {
+      'disabled'          => $disabled,
+      'login'             => $login,
+      'password'          => Deferred('sqlserver::password', [$password]),
+      'check_expiration'  => $check_expiration,
+      'check_policy'      => $check_policy,
+      'default_language'  => $default_language,
+      'default_database'  => $default_database,
+      'login_type'        => $login_type,
+      'svrroles'          => $svrroles,
+    }
+  } else {
+    $create_delete_login_parameters = {
+      'login' => $login,
+    }
+  }
+
+  $query_login_exists_parameters = {
+    'login'             => $login,
+    'disabled'          => $disabled,
+    'check_expiration'  => $check_expiration,
+    'check_policy'      => $check_policy,
+    'login_type'        => $login_type,
+    'default_database'  => $default_database,
+    'default_language'  => $default_language,
+    'ensure'            => $ensure,
+    'svrroles'          => $svrroles,
   }
 
   sqlserver_tsql { "login-${instance}-${login}":
     instance => $instance,
-    command  => stdlib::deferrable_epp("sqlserver/${_create_delete}/login.sql.epp", $parameters),
-    onlyif   => template('sqlserver/query/login_exists.sql.erb'),
+    command  => stdlib::deferrable_epp("sqlserver/${_create_delete}/login.sql.epp", $create_delete_login_parameters),
+    onlyif   => epp('sqlserver/query/login_exists.sql.epp', $query_login_exists_parameters),
     require  => Sqlserver::Config[$instance],
   }
 

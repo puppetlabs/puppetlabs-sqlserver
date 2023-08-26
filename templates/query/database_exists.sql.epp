@@ -1,0 +1,43 @@
+-- QUICK CHECK before most costly query
+IF <% if $ensure == 'present' { %>NOT<% } %> EXISTS(SELECT name from sys.databases WHERE name = '<%= $db_name %>')
+    THROW 51000, 'The database does <% if $ensure == 'present' { %>not<% } %> exist', 10
+<% if $ensure == 'present' { %>
+    <%= epp("sqlserver/snippets/database/containment_exists.sql.epp", $database_check_exists_parameters['containment']) %>
+    THROW 51000, 'Database property containment not in correct state', 10
+    <%= epp("sqlserver/snippets/database/compatibility_exists.sql.epp", $database_check_exists_parameters['compatibility']) %>
+    THROW 51000, 'Database property compatibility not in correct state', 10
+    <% if $collation_name { %>
+       <%= epp("sqlserver/snippets/database/collation_exists.sql.epp", $database_check_exists_parameters['collation']) %>
+       THROW 51000, 'Database property collation not in correct state', 10
+    <% } %>
+    <%  if $containment == 'PARTIAL' { %>
+        <% if $default_fulltext_language { %>
+            <%= epp("sqlserver/snippets/database/default_fulltext_language_exists.sql.epp", $database_check_exists_parameters['default_fulltext_language']) %>
+            THROW 51000, 'Database property default_fulltext_language not in correct state', 10
+        <% } %>
+        <% if $default_language { %>
+            <%= epp("sqlserver/snippets/database/default_language_exists.sql.epp", $database_check_exists_parameters['default_language']) %>
+            THROW 51000, 'Database property default_language not in correct state', 10
+        <% } %>
+        <% if $db_chaining { %>
+            <%= epp("sqlserver/snippets/database/db_chaining_exists.sql.epp", $database_check_exists_parameters['db_chaining']) %>
+            THROW 51000, 'Database property db_chaining not in correct state', 10
+        <% } %>
+        <% if $nested_triggers { %>
+            <%= epp("sqlserver/snippets/database/nested_triggers_exists.sql.epp", $database_check_exists_parameters['nested_triggers']) %>
+            THROW 51000, 'Database property nested_triggers not in correct state', 10
+        <% } %>
+        <% if $transform_noise_words { %>
+            <%= epp("sqlserver/snippets/database/transform_noise_words_exists.sql.epp", $database_check_exists_parameters['transform_noise_words']) %>
+            THROW 51000, 'Database property transform_noise_words not in correct state', 10
+        <% } %>
+        <% if $trustworthy { %>
+            <%= epp("sqlserver/snippets/database/trustworthy_exists.sql.epp", $database_check_exists_parameters['trustworthy']) %>
+            THROW 51000, 'Database property trustworthy not in correct state', 10
+        <% } %>
+        <% if $two_digit_year_cutoff { %>
+            <%= epp("sqlserver/snippets/database/two_digit_year_cutoff_exists.sql.epp", $database_check_exists_parameters['two_digit_year_cutoff']) %>
+            THROW 51000, 'Database property two_digit_year_cutoff not in correct state', 10
+        <% } %>
+    <% } %> 
+<% } %>

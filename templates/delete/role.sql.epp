@@ -1,0 +1,18 @@
+USE [<%= $database %>];
+BEGIN
+    DECLARE @cmd AS NVARCHAR(MAX) = N'';
+
+    SELECT @cmd = @cmd + '
+    ALTER <% if $type == 'SERVER' { %>SERVER <% } %>ROLE [<%= $role %>] DROP MEMBER ' + QUOTENAME(members.[name]) + ';'
+    FROM sys.<%= $type.downcase %>_role_members AS rolemembers
+        JOIN sys.<%= $type.downcase %>_principals AS roles 
+            ON roles.[principal_id] = rolemembers.[role_principal_id]
+        JOIN sys.<%= $type.downcase %>_principals AS members 
+            ON members.[principal_id] = rolemembers.[member_principal_id]
+    WHERE roles.name = '<%= $role %>'
+
+    EXEC(@cmd);
+
+    DROP <% if $type == 'SERVER' { %>SERVER <% } %>ROLE [<%= $role %>];
+END
+<%= epp('sqlserver/query/role_exists.sql.epp', $query_role_exists_parameters) %>

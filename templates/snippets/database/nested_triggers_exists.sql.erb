@@ -1,1 +1,0 @@
-IF NOT EXISTS(SELECT name FROM sys.databases WHERE name = '<%= @db_name %>' AND is_nested_triggers_on = <%= @nested_triggers == 'ON' ? 1 : 0 %>)

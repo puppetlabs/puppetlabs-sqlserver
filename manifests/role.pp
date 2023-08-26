@@ -63,9 +63,50 @@ define sqlserver::role (
   # users. see MODULES-3355
   $sqlserver_tsql_title = "role-${instance}-${database}-${role}"
 
+  $role_exists_parameters = {
+    'ensure' => $ensure,
+    'type'   => $type,
+    'role'   => $role,
+  }
+
+  $role_owner_check_parameters = {
+    'type' => $type,
+    'authorization' => $authorization,
+    'role' => $role,
+  }
+
+  $query_role_exists_parameters = {
+    'database' => $database,
+    'role_exists_parameters' => $role_exists_parameters,
+    'type' => $type,
+    'role' => $role,
+    'ensure' => $ensure,
+    'authorization' => $authorization,
+    'role_owner_check_parameters' => $role_owner_check_parameters,
+  }
+
+  if $_create_delete == 'create' {
+    $role_create_delete_parameters = {
+      'database'                      => $database,
+      'role_exists_parameters'        => $role_exists_parameters,
+      'type'                          => $type,
+      'role'                          => $role,
+      'authorization'                 => $authorization,
+      'role_owner_check_parameters'   => $role_owner_check_parameters,
+      'query_role_exists_parameters'  => $query_role_exists_parameters,
+    }
+  } else {
+    $role_create_delete_parameters = {
+      'database' => $database,
+      'type' => $type,
+      'role' => $role,
+      'query_role_exists_parameters' => $query_role_exists_parameters,
+    }
+  }
+
   sqlserver_tsql { $sqlserver_tsql_title:
-    command  => template("sqlserver/${_create_delete}/role.sql.erb"),
-    onlyif   => template('sqlserver/query/role_exists.sql.erb'),
+    command  => epp("sqlserver/${_create_delete}/role.sql.epp", $role_create_delete_parameters),
+    onlyif   => epp('sqlserver/query/role_exists.sql.epp', $query_role_exists_parameters),
     instance => $instance,
   }
 
@@ -105,10 +146,27 @@ define sqlserver::role (
       }
     }
 
+    $role_members_parameters = {
+      'database'      => $database,
+      'role'          => $role,
+      'members'       => $members,
+      'type'          => $type,
+      'members_purge' => $members_purge,
+    }
+
+    $query_role_member_exists_parameters = {
+      'database'      => $database,
+      'role'          => $role,
+      'members'       => $members,
+      'ensure'        => $ensure,
+      'members_purge' => $members_purge,
+      'type'          => $type,
+    }
+
     if size($members) > 0 or $members_purge == true {
       sqlserver_tsql { "${sqlserver_tsql_title}-members":
-        command  => template('sqlserver/create/role/members.sql.erb'),
-        onlyif   => template('sqlserver/query/role/member_exists.sql.erb'),
+        command  => epp('sqlserver/create/role/members.sql.epp', $role_members_parameters),
+        onlyif   => epp('sqlserver/query/role/member_exists.sql.epp', $query_role_member_exists_parameters),
         instance => $instance,
       }
     }

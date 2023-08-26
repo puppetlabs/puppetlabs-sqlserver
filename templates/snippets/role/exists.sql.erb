@@ -1,3 +1,0 @@
-IF <% if @ensure == 'present' %>NOT <% end %>EXISTS(
-    SELECT name FROM sys.<%= @type.downcase %>_principals WHERE type_desc = '<%= @type %>_ROLE' AND name = '<%= @role %>'
-)
