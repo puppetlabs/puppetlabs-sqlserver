@@ -20,7 +20,7 @@ module PuppetX # rubocop:disable Style/ClassAndModuleChildren
         !%r{(^(((nt (authority|service))|#{hostname})\\\w+)$)|^(\w+)$}i.match?(user)
       end
 
-      # Returns either SQL_2016, SQL_2014 or SQL_2012 if it can determine the SQL Version from the install source
+      # Returns either SQL_2016 or SQL_2014 if it can determine the SQL Version from the install source
       # Returns nil if it can not be determined
       def self.sql_version_from_install_source(source_dir)
         # Attempt to read the Mediainfo.xml file in the root of the install media
@@ -48,7 +48,6 @@ module PuppetX # rubocop:disable Style/ClassAndModuleChildren
         return SQL_2017 if ver[1].start_with?('14.')
         return SQL_2016 if ver[1].start_with?('13.')
         return SQL_2014 if ver[1].start_with?('12.')
-        return SQL_2012 if ver[1].start_with?('11.')
 
         nil
       end

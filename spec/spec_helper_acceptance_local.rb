@@ -16,7 +16,6 @@ SQL_2019_ISO = 'SQLServer2019CTP2.4-x64-ENU.iso'
 SQL_2017_ISO = 'SQLServer2017-x64-ENU.iso'
 SQL_2016_ISO = 'en_sql_server_2016_enterprise_with_service_pack_1_x64_dvd_9542382.iso'
 SQL_2014_ISO = 'SQLServer2014SP3-FullSlipstream-x64-ENU.iso'
-SQL_2012_ISO = 'SQLServer2012SP1-FullSlipstream-ENU-x64.iso'
 SQL_ADMIN_USER = 'sa'
 SQL_ADMIN_PASS = 'Pupp3t1@'
 USER = Helper.instance.run_shell('$env:UserName').stdout.chomp
@@ -101,12 +100,6 @@ end
 
 def base_install(sql_version)
   case sql_version.to_i
-  when 2012
-    iso_opts = {
-      folder: QA_RESOURCE_ROOT,
-      file: SQL_2012_ISO,
-      drive_letter: 'H'
-    }
   when 2014
     iso_opts = {
       folder: QA_RESOURCE_ROOT,
@@ -237,7 +230,7 @@ def validate_sql_install(opts = {}, &block)
 end
 
 def get_install_paths(version)
-  vers = { '2012' => '110', '2014' => '120', '2016' => '130', '2017' => '140', '2019' => '150', '2022' => '160' }
+  vers = { '2014' => '120', '2016' => '130', '2017' => '140', '2019' => '150', '2022' => '160' }
 
   raise _('Valid version must be specified') unless vers.key?(version)
 

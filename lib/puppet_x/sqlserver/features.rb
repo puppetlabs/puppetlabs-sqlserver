@@ -2,14 +2,13 @@
 
 require 'puppet/util/windows'
 
-SQL_2012 = 'SQL_2012'
 SQL_2014 = 'SQL_2014'
 SQL_2016 = 'SQL_2016'
 SQL_2017 = 'SQL_2017'
 SQL_2019 = 'SQL_2019'
 SQL_2022 = 'SQL_2022'
 
-ALL_SQL_VERSIONS = [SQL_2012, SQL_2014, SQL_2016, SQL_2017, SQL_2019, SQL_2022].freeze
+ALL_SQL_VERSIONS = [SQL_2014, SQL_2016, SQL_2017, SQL_2019, SQL_2022].freeze
 
 # rubocop:disable Style/ClassAndModuleChildren
 module PuppetX
@@ -20,10 +19,6 @@ module PuppetX
       extend Puppet::Util::Windows::Registry
 
       SQL_CONFIGURATION = {
-        SQL_2012 => {
-          major_version: 11,
-          registry_path: '110'
-        },
         SQL_2014 => {
           major_version: 12,
           registry_path: '120'
@@ -181,7 +176,6 @@ module PuppetX
       # return a hash of version => instance info
       #
       # {
-      #   "SQL_2012" => {},
       #   "SQL_2014" => {
       #     "MSSQLSERVER" => {
       #       "name" => "MSSQLSERVER",
@@ -232,7 +226,6 @@ module PuppetX
       # return a hash of version => shared features array
       #
       # {
-      #   "SQL_2012" => ["Conn", "SDK", "MDS", "BC", "SSMS", "ADV_SSMS", "IS"],
       #   "SQL_2014" => []
       # }
       def self.features
