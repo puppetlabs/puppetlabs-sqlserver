@@ -6,7 +6,7 @@
   "license": "proprietary",
   "source": "https://github.com/puppetlabs/puppetlabs-sqlserver",
   "project_page": "https://github.com/puppetlabs/puppetlabs-sqlserver",
-  "issues_url": "https://tickets.puppet.com/browse/MODULES",
+  "issues_url": "https://github.com/puppetlabs/puppetlabs-sqlserver/issues",
   "dependencies": [
     {
       "name": "puppetlabs/stdlib",
