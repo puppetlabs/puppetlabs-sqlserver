@@ -90,12 +90,6 @@ end
 
 def base_install(sql_version)
   case sql_version.to_i
-  when 2012
-    iso_opts = {
-      folder: QA_RESOURCE_ROOT,
-      file: SQL_2012_ISO,
-      drive_letter: 'H'
-    }
   when 2014
     iso_opts = {
       folder: QA_RESOURCE_ROOT,
@@ -169,7 +163,7 @@ def remove_sql_instances(host, opts = {})
 end
 
 def get_install_paths(version)
-  vers = { '2012' => '110', '2014' => '120', '2016' => '130', '2017' => '140', '2019' => '150', '2022' => '160' }
+  vers = { '2014' => '120', '2016' => '130', '2017' => '140', '2019' => '150', '2022' => '160' }
 
   raise _('Valid version must be specified') unless vers.key?(version)
 

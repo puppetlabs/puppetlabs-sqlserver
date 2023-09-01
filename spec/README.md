@@ -42,7 +42,7 @@ The Acceptance tets run on either a master and agent system or just on a stand-a
 First use beaker-hostgenerator to set up a hosts.yml to feed to the acceptance tests by running:
 
 ```
-bundle exec beaker-hostgenerator windows2012r2-64sql_host%2Cdefault.a%7Bsql_version=2012%7D-redhat7-64mdca --hypervisor abs > spec/acceptance/nodesets/hosts.yml
+bundle exec beaker-hostgenerator windows2012r2-64sql_host%2Cdefault.a%7Bsql_version=2014%7D-redhat7-64mdca --hypervisor abs > spec/acceptance/nodesets/hosts.yml
 ```
 This command assumes you're running it from the root of the sqlserver module repo.
 
@@ -56,7 +56,7 @@ export ABS_RESOURCE_HOSTS="[{\"hostname\":\"<LOCATION OF WINDOWS HOST TO TEST>\"
 e.g. replace "<LOCATION OF WINDOWS HOST TO TEST>\" with "fyzskxlt6edanll.delivery.puppetlabs.net\"
 
 ```
-export ABS_RESOURCE_REQUESTS_beaker="[{\"windows2012r2-64sql_host.a%7Bsql_version=2012%7D-redhat7-64mdca\":{\"win-2012r2-x86_64\":1,\"redhat-7-x86_64\":1}, \"windows2012r2-64sql_host.a%7Bsql_version=2014%7D-redhat7-64mdca\":{\"win-2012r2-x86_64\":1,\"redhat-7-x86_64\":1}}]"
+export ABS_RESOURCE_REQUESTS_beaker="[{\"windows2012r2-64sql_host.a%7Bsql_version=2014%7D-redhat7-64mdca\":{\"win-2012r2-x86_64\":1,\"redhat-7-x86_64\":1}, \"windows2012r2-64sql_host.a%7Bsql_version=2016%7D-redhat7-64mdca\":{\"win-2012r2-x86_64\":1,\"redhat-7-x86_64\":1}}]"
 
 export BEAKER_setfile=spec/acceptance/nodesets/hosts.yml
 export BEAKER_keyfile=/var/lib/jenkins/.ssh/id_rsa-acceptance

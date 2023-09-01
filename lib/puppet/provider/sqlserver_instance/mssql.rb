@@ -107,7 +107,7 @@ Puppet::Type.type(:sqlserver_instance).provide(:mssql, parent: Puppet::Provider:
       instance_version = PuppetX::Sqlserver::ServerHelper.sql_version_from_install_source(@resource[:source])
       Puppet.debug("Installation source detected as version #{instance_version}") unless instance_version.nil?
 
-      install_net35(@resource[:windows_feature_source]) if [SQL_2012, SQL_2014].include? instance_version
+      install_net35(@resource[:windows_feature_source]) if instance_version == SQL_2014
 
       add_features(@resource[:features])
     end
