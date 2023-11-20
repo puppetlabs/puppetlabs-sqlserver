@@ -16,7 +16,8 @@
     * [Run custom TSQL statements](#run-custom-tsql-statements)
 5. [Reference - An under-the-hood peek at what the module is doing and how](#reference)
 6. [Limitations - OS compatibility, etc.](#limitations)
-7. [Development - Guide for contributing to the module](#development)
+7. [License](#license)
+8. [Development - Guide for contributing to the module](#development)
 
 ## Overview
 
@@ -281,6 +282,10 @@ This module can manage only a single version of SQL Server on a given host (one 
 This module cannot manage the SQL Server Native Client SDK (also known as SNAC_SDK). The SQL Server installation media can install the SDK, but it is not able to uninstall the SDK. Note that the 'sqlserver_features' fact detects the presence of the SDK.
 
 In SQL Server 2016 and newer, Microsoft separated the installation of SQL Server Management Studio (SSMS) from the installation of the SQL Server engine and other features. SSMS now has its own installer and can be [installed and managed via Chocolatey](https://chocolatey.org/packages/sql-server-management-studio). As such, specifying SSMS in the `sqlserver` as a feature to install no longer works with SQL Server 2016 and newer. Instead, use `package` resources with the [Chocolatey provider](https://forge.puppet.com/puppetlabs/chocolatey) to manage SSMS installation.
+
+## License
+
+This codebase is licensed under the Apache2.0 licensing, however due to the nature of the codebase the open source dependencies may also use a combination of [AGPL](https://www.gnu.org/licenses/agpl-3.0.en.html), [BSD-2](https://opensource.org/license/bsd-2-claus), [BSD-3](https://opensource.org/license/bsd-3-claus), [GPL2.0](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html), [LGPL](https://opensource.org/license/lgpl-3-0/), [MIT](https://opensource.org/license/mit/) and [MPL](https://opensource.org/license/mpl-2-0/) Licensing.
 
 ## Development
 
