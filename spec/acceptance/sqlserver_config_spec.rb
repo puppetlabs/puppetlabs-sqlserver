@@ -22,6 +22,7 @@ describe 'sqlserver::config test' do
       sa_pwd                => 'Pupp3t1@',
       windows_feature_source => 'I:\\sources\\sxs',
       install_switches => {
+        'UpdateEnabled'         => 'false',
         'SkipInstallerRunCheck' => 'True',
       },
     }

@@ -148,7 +148,7 @@ def install_sqlserver(features)
       sa_pwd => 'Pupp3t1@',
       sql_sysadmin_accounts => ['#{USER}'],
       install_switches => {
-        'UPDATEENABLED'       => 'False',
+        'UpdateEnabled'       => 'false',
         'TCPENABLED'          => 1,
         'SQLBACKUPDIR'        => 'C:\\MSSQLSERVER\\backupdir',
         'SQLTEMPDBDIR'        => 'C:\\MSSQLSERVER\\tempdbdir',
