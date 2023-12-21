@@ -57,8 +57,7 @@ RSpec.describe provider_class do
                   '/Q',
                   '/IACCEPTSQLSERVERLICENSETERMS',
                   "/INSTANCENAME=#{execute_args[:name]}",
-                  "/FEATURES=#{execute_args[:features].join(',')}",
-                  '/UPDATEENABLED=False']
+                  "/FEATURES=#{execute_args[:features].join(',')}"]
       (execute_args.keys - ['ensure', 'loglevel', 'features', 'name', 'source', 'sql_sysadmin_accounts', 'sql_security_mode', 'install_switches'].map(&:to_sym)).sort.map do |key|
         cmd_args << "/#{resourcekey_to_cmdarg[key.to_s]}=\"#{@resource[key]}\""
       end
@@ -96,7 +95,6 @@ RSpec.describe provider_class do
                   '/ACTION=install',
                   '/Q',
                   '/IACCEPTSQLSERVERLICENSETERMS',
-                  '/UPDATEENABLED=False',
                   "/INSTANCENAME=#{execute_args[:name]}",
                   "/FEATURES=#{execute_args[:features].join(',')}"]
       (execute_args.keys - ['ensure', 'loglevel', 'features', 'name', 'source', 'sql_sysadmin_accounts', 'sql_security_mode', 'install_switches'].map(&:to_sym)).sort.map do |key|

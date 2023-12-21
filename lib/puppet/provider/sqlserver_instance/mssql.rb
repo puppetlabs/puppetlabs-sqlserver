@@ -142,7 +142,6 @@ Puppet::Type.type(:sqlserver_instance).provide(:mssql, parent: Puppet::Provider:
                 '/IACCEPTSQLSERVERLICENSETERMS',
                 "/INSTANCENAME=#{@resource[:name]}"]
     cmd_args << "/FEATURES=#{features.join(',')}" unless features.empty?
-    cmd_args << '/UPDATEENABLED=False' if action == 'install'
     cmd_args
   end
 

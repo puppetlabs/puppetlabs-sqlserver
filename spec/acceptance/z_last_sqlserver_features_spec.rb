@@ -25,6 +25,9 @@ describe 'sqlserver_features', if: version.to_i != 2012 do
       is_svc_password   => '#{password}',
       features          => #{features},
       windows_feature_source => 'I:\\sources\\sxs',
+      install_switches => {
+        'UpdateEnabled' => 'false',
+      }
     }
     MANIFEST
 

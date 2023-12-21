@@ -30,6 +30,9 @@ describe 'sqlserver_instance' do
       agt_svc_account       => '#{user}',
       agt_svc_password      => '#{password}',
       windows_feature_source => 'I:\\sources\\sxs',
+      install_switches => {
+        'UpdateEnabled' => 'false',
+      },
     }
     MANIFEST
     idempotent_apply(pp)
