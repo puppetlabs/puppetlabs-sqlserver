@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
+## [v5.0.0](https://github.com/puppetlabs/puppetlabs-sqlserver/tree/v5.0.0) - 2024-02-16
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-sqlserver/compare/v4.1.0...v5.0.0)
+
+### Changed
+- [CAT-1065] : Removing support for SQL Server 2012 [#455](https://github.com/puppetlabs/puppetlabs-sqlserver/pull/455) ([rajat-puppet](https://github.com/rajat-puppet))
+
+### Added
+
+- (CAT-1148) Conversion of ERB to EPP [#454](https://github.com/puppetlabs/puppetlabs-sqlserver/pull/454) ([praj1001](https://github.com/praj1001))
+
+### Fixed
+
+- (Bug) - Remove default switch of UpdateEnabled=false when Action=Install [#466](https://github.com/puppetlabs/puppetlabs-sqlserver/pull/466) ([jordanbreen28](https://github.com/jordanbreen28))
+- (bugfix) Update Issues URL [#456](https://github.com/puppetlabs/puppetlabs-sqlserver/pull/456) ([pmcmaw](https://github.com/pmcmaw))
+
 ## [v4.1.0](https://github.com/puppetlabs/puppetlabs-sqlserver/tree/v4.1.0) - 2023-06-27
 
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-sqlserver/compare/v4.0.0...v4.1.0)
@@ -66,12 +82,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-sqlserver/compare/v2.6.2...v3.0.0)
 
+### Changed
+- pdksync - Remove Puppet 5 from testing and bump minimal version to 6.0.0 [#369](https://github.com/puppetlabs/puppetlabs-sqlserver/pull/369) ([carabasdaniel](https://github.com/carabasdaniel))
+
 ### Added
 
 - pdksync - (feat) - Add support for Puppet 7 [#363](https://github.com/puppetlabs/puppetlabs-sqlserver/pull/363) ([daianamezdrea](https://github.com/daianamezdrea))
-
-### Changed
-- pdksync - Remove Puppet 5 from testing and bump minimal version to 6.0.0 [#369](https://github.com/puppetlabs/puppetlabs-sqlserver/pull/369) ([carabasdaniel](https://github.com/carabasdaniel))
 
 ### Fixed
 
@@ -390,6 +406,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 - (MODULES-2430) Fix issue parsing facts with puppet 4 [#133](https://github.com/puppetlabs/puppetlabs-sqlserver/pull/133) ([cyberious](https://github.com/cyberious))
 - (FM-3252) CI Pipeline for sqlserver at step 7a [#132](https://github.com/puppetlabs/puppetlabs-sqlserver/pull/132) ([phongdly](https://github.com/phongdly))
 - (MODULES-2403) Improve error handling for sqlserver_tsql [#131](https://github.com/puppetlabs/puppetlabs-sqlserver/pull/131) ([cyberious](https://github.com/cyberious))
+- (MODULES-2377) Add validation for sp_configure bools [#130](https://github.com/puppetlabs/puppetlabs-sqlserver/pull/130) ([cyberious](https://github.com/cyberious))
 - (docs) Several docs updates [#129](https://github.com/puppetlabs/puppetlabs-sqlserver/pull/129) ([cyberious](https://github.com/cyberious))
 - (docs) MODULES-2325 update readme to reflect permissions [#128](https://github.com/puppetlabs/puppetlabs-sqlserver/pull/128) ([cyberious](https://github.com/cyberious))
 - (DO NOT MERGE)(MODULES-2312) Use sp_executesql to execute T-SQL [#127](https://github.com/puppetlabs/puppetlabs-sqlserver/pull/127) ([Iristyle](https://github.com/Iristyle))
