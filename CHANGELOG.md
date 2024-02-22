@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
+## [v5.0.1](https://github.com/puppetlabs/puppetlabs-sqlserver/tree/v5.0.1) - 2024-02-22
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-sqlserver/compare/v5.0.0...v5.0.1)
+
+### Fixed
+
+- (CAT-1728) - Unable to use password function as deferred function [#469](https://github.com/puppetlabs/puppetlabs-sqlserver/pull/469) ([Ramesh7](https://github.com/Ramesh7))
+
 ## [v5.0.0](https://github.com/puppetlabs/puppetlabs-sqlserver/tree/v5.0.0) - 2024-02-16
 
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-sqlserver/compare/v4.1.0...v5.0.0)
