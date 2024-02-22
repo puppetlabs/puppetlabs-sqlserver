@@ -25,7 +25,6 @@
 ### Functions
 
 * [`sqlserver::partial_params_args`](#sqlserver--partial_params_args): this function populates and returns the string of arguments which later gets injected in template.
-* [`sqlserver::password`](#sqlserver--password): This function exists for usage of a role password that is a deferred function
 * [`sqlserver_is_domain_or_local_user`](#sqlserver_is_domain_or_local_user)
 * [`sqlserver_upcase`](#sqlserver_upcase)
 * [`sqlserver_validate_hash_uniq_values`](#sqlserver_validate_hash_uniq_values)
@@ -1235,24 +1234,6 @@ String[1] $default_language
 Optional[Enum['ON', 'OFF']] $nested_triggers
 Optional[Enum['ON', 'OFF']] $transform_noise_words
 Integer[1753, 9999] $two_digit_year_cutoff
-
-### <a name="sqlserver--password"></a>`sqlserver::password`
-
-Type: Ruby 4.x API
-
-This function exists for usage of a role password that is a deferred function
-
-#### `sqlserver::password(Optional[Any] $pass)`
-
-This function exists for usage of a role password that is a deferred function
-
-Returns: `Any`
-
-##### `pass`
-
-Data type: `Optional[Any]`
-
-
 
 ### <a name="sqlserver_is_domain_or_local_user"></a>`sqlserver_is_domain_or_local_user`
 

@@ -65,7 +65,10 @@ define sqlserver::user (
   if $create_delete == 'create' {
     $create_delete_user_parameters = {
       'database'        => $database,
-      'password'        => Deferred('sqlserver::password', [$password]),
+      'password'        => $password ? {
+        undef => undef,
+        default => Deferred('sprintf', [$password]),
+      },
       'user'            => $user,
       'login'           => $login,
       'default_schema'  => $default_schema,

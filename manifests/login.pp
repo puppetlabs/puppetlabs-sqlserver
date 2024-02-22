@@ -80,7 +80,10 @@ define sqlserver::login (
     $create_delete_login_parameters = {
       'disabled'          => $disabled,
       'login'             => $login,
-      'password'          => Deferred('sqlserver::password', [$password]),
+      'password'          => $password ? {
+        undef => undef,
+        default => Deferred('sprintf', [$password]),
+      },
       'check_expiration'  => $check_expiration,
       'check_policy'      => $check_policy,
       'default_language'  => $default_language,
