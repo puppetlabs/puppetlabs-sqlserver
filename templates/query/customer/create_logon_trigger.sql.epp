@@ -1,0 +1,19 @@
+CREATE TRIGGER [connection_limit_trigger_test]
+ON ALL SERVER WITH EXECUTE AS 'logon_trigger_login'
+FOR LOGON
+AS
+BEGIN
+IF EXISTS (
+SELECT NULL 
+FROM sys.dm_exec_sessions s
+WHERE is_user_process = 1 AND
+s.original_login_name = ORIGINAL_LOGIN()
+HAVING COUNT(*) > 5000
+)
+	BEGIN
+	DECLARE @original_login SYSNAME = ORIGINAL_LOGIN();
+	RAISERROR ('Max concurrent logins exceeded for login ''%s''', 16, 1, @original_login) WITH LOG;
+	ROLLBACK;
+	END
+END;
+
