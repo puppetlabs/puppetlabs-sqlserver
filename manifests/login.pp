@@ -80,10 +80,7 @@ define sqlserver::login (
     $create_delete_login_parameters = {
       'disabled'          => $disabled,
       'login'             => $login,
-      'password'          => $password ? {
-        undef => undef,
-        default => Deferred('sprintf', [$password]),
-      },
+      'password'          => $password,
       'check_expiration'  => $check_expiration,
       'check_policy'      => $check_policy,
       'default_language'  => $default_language,
@@ -111,7 +108,7 @@ define sqlserver::login (
 
   sqlserver_tsql { "login-${instance}-${login}":
     instance => $instance,
-    command  => stdlib::deferrable_epp("sqlserver/${_create_delete}/login.sql.epp", $create_delete_login_parameters),
+    command  => epp("sqlserver/${_create_delete}/login.sql.epp", $create_delete_login_parameters),
     onlyif   => epp('sqlserver/query/login_exists.sql.epp', $query_login_exists_parameters),
     require  => Sqlserver::Config[$instance],
   }
