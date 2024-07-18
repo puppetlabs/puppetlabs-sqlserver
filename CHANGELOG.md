@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
+## [v5.0.2](https://github.com/puppetlabs/puppetlabs-sqlserver/tree/v5.0.2) - 2024-07-18
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-sqlserver/compare/v5.0.1...v5.0.2)
+
+### Fixed
+
+- (CAT-1939) Reverting deferred function changes [#477](https://github.com/puppetlabs/puppetlabs-sqlserver/pull/477) ([Ramesh7](https://github.com/Ramesh7))
+
 ## [v5.0.1](https://github.com/puppetlabs/puppetlabs-sqlserver/tree/v5.0.1) - 2024-02-22
 
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-sqlserver/compare/v5.0.0...v5.0.1)
@@ -18,6 +26,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-sqlserver/compare/v4.1.0...v5.0.0)
 
 ### Changed
+
 - [CAT-1065] : Removing support for SQL Server 2012 [#455](https://github.com/puppetlabs/puppetlabs-sqlserver/pull/455) ([rajat-puppet](https://github.com/rajat-puppet))
 
 ### Added
@@ -43,6 +52,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-sqlserver/compare/v3.3.0...v4.0.0)
 
 ### Changed
+
 - (CONT-800) - Add Puppet 8/Drop Puppet 6 [#430](https://github.com/puppetlabs/puppetlabs-sqlserver/pull/430) ([jordanbreen28](https://github.com/jordanbreen28))
 
 ## [v3.3.0](https://github.com/puppetlabs/puppetlabs-sqlserver/tree/v3.3.0) - 2023-03-07
@@ -91,6 +101,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-sqlserver/compare/v2.6.2...v3.0.0)
 
 ### Changed
+
 - pdksync - Remove Puppet 5 from testing and bump minimal version to 6.0.0 [#369](https://github.com/puppetlabs/puppetlabs-sqlserver/pull/369) ([carabasdaniel](https://github.com/carabasdaniel))
 
 ### Added
