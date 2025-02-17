@@ -6,7 +6,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), 'sqlserver'))
 require 'tempfile'
 
 class Puppet::Provider::Sqlserver < Puppet::Provider # rubocop:disable Style/Documentation
-  confine operatingsystem: :windows
+  confine 'os.name': :windows
 
   initvars
 
