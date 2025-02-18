@@ -5,7 +5,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), 'manifest_shared_exam
 
 RSpec.describe 'sqlserver::config', type: :define do
   let(:title) { 'MSSQLSERVER' }
-  let(:facts) { { osfamily: 'windows', platform: 'windows', puppet_vardir: 'C:/ProgramData/PuppetLabs/puppet/var' } }
+  let(:facts) { { 'os.family': 'windows', platform: 'windows', puppet_vardir: 'C:/ProgramData/PuppetLabs/puppet/var' } }
 
   describe 'compile' do
     let(:params) do
