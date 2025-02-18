@@ -5,9 +5,9 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
-## [v5.0.3](https://github.com/puppetlabs/puppetlabs-sqlserver/tree/v5.0.3) - 2025-02-18
+## [v5.0.4](https://github.com/puppetlabs/puppetlabs-sqlserver/tree/v5.0.4) - 2025-02-18
 
-[Full Changelog](https://github.com/puppetlabs/puppetlabs-sqlserver/compare/v5.0.2...v5.0.3)
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-sqlserver/compare/v5.0.2...v5.0.4)
 
 ### Fixed
 
