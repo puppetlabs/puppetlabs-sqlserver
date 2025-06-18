@@ -134,4 +134,73 @@ describe 'sqlserver_instance' do
       end
     end
   end
+
+  # Ensure that the instance can be created with deferred values
+  # for service account and password, which are resolved at the time of
+  # the instance creation.
+  # This is useful for scenarios where the values are not known at the time
+  # of the Puppet run, such as when using Hiera to fetch values from a
+  # secure vault or when the values are dynamically generated.
+  def ensure_sqlserver_instance_with_deferred_values(inst_name)
+    features = ['SQLEngine', 'Replication', 'FullText', 'DQ']
+    host_computer_name = run_shell('CMD /C ECHO %COMPUTERNAME%').stdout.chomp
+    sysadmin_accounts = ["#{host_computer_name}\\travis"]
+    user = Helper.instance.run_shell('$env:UserName').stdout.chomp
+    password = Helper.instance.run_shell('$env:pass').stdout.chomp
+    password = 'Hunter-2' if password.empty?
+
+    pp = <<-MANIFEST
+    sqlserver_instance{'#{inst_name}':
+      name                  => '#{inst_name}',
+      ensure                => 'present',
+      source                => 'H:',
+      security_mode         => 'SQL',
+      sa_pwd                => 'Pupp3t1@',
+      features              => #{features},
+      sql_sysadmin_accounts => #{sysadmin_accounts},
+      agt_svc_account       => Deferred('pick', ['#{user}']),
+      agt_svc_password      => Deferred('pick', ['#{password}']),
+      windows_feature_source => 'I:\\sources\\sxs',
+      install_switches => {
+        'UpdateEnabled' => 'false',
+      },
+    }
+    MANIFEST
+
+    idempotent_apply(pp)
+  end
+
+  context 'Deferred values' do
+    before(:context) do
+      @deferred_user = 'travis'
+      pp = <<-MANIFEST
+      user { '#{@deferred_user}':
+        ensure => present,
+        password => 'Puppet01!',
+      }
+      MANIFEST
+      apply_manifest(pp, catch_failures: true)
+    end
+
+    after(:context) do
+      pp = <<-MANIFEST
+      user { '#{@deferred_user}':
+        ensure => absent,
+      }
+      MANIFEST
+      apply_manifest(pp, catch_failures: true)
+    end
+
+    it 'validate deferred values' do
+      inst_name = new_random_instance_name
+      expect { ensure_sqlserver_instance_with_deferred_values(inst_name) }.not_to raise_error
+    end
+
+    it 'apply deferred values' do
+      inst_name = new_random_instance_name
+      ensure_sqlserver_instance_with_deferred_values(inst_name)
+
+      run_sql_query(run_sql_query_opts(inst_name, sql_query_is_user_sysadmin(@deferred_user), 1))
+    end
+  end
 end

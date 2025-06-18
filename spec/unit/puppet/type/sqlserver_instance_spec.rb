@@ -84,4 +84,28 @@ RSpec.describe Puppet::Type.type(:sqlserver_instance) do
       end
     end
   end
+
+  describe 'agt_svc_account' do
+    context 'when value is a deferred value' do
+      let(:args) do
+        basic_args.merge({ agt_svc_account: Puppet::Pops::Evaluator::DeferredValue.new(proc { 'nexus\\travis' }) })
+      end
+
+      it 'validate' do
+        subject = Puppet::Type.type(:sqlserver_instance).new(args)
+        expect(subject.resolve_deferred_value(subject[:agt_svc_account])).to eq('nexus\\travis')
+      end
+    end
+
+    context 'when value is not a deferred value' do
+      let(:args) do
+        basic_args.merge({ agt_svc_account: 'nexus\\travis' })
+      end
+
+      it 'validate' do
+        subject = Puppet::Type.type(:sqlserver_instance).new(args)
+        expect(subject.resolve_deferred_value(subject[:agt_svc_account])).to eq('nexus\\travis')
+      end
+    end
+  end
 end

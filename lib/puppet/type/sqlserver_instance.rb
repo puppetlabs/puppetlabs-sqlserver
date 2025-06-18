@@ -131,7 +131,8 @@ Puppet::Type.newtype(:sqlserver_instance) do
   end
 
   def set?(key)
-    !self[key].nil? && !self[key].empty?
+    self_key = resolve_deferred_value(self[key])
+    !self_key.nil? && !self_key.empty?
   end
 
   def validate_user_password_required(account, pass)
@@ -144,11 +145,11 @@ Puppet::Type.newtype(:sqlserver_instance) do
   end
 
   def domain_or_local_user?(user)
-    PuppetX::Sqlserver::ServerHelper.is_domain_or_local_user?(user, Facter.value(:hostname))
+    PuppetX::Sqlserver::ServerHelper.is_domain_or_local_user?(resolve_deferred_value(user), Facter.value(:hostname))
   end
 
   def strong_password?(key)
-    password = self[key]
+    password = resolve_deferred_value(self[key])
     return unless password
 
     message_start = "Password for #{key} is not strong"
@@ -161,5 +162,13 @@ Puppet::Type.newtype(:sqlserver_instance) do
     fail("#{message_start}:\n#{failures.join("\n")}") if failures.count.positive? # rubocop:disable Style/SignalException
 
     true
+  end
+
+  # When preprocess_deferred is false, deferred values remain unresolved at the time of validation, causing it to fail.
+  # To address this, following logic is added to explicitly resolve deferred values during validation
+  def resolve_deferred_value(value)
+    return value unless value.is_a?(Puppet::Pops::Evaluator::DeferredValue)
+
+    value.resolve
   end
 end
