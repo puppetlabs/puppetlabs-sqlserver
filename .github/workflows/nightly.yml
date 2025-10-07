@@ -15,7 +15,8 @@ jobs:
   setup_matrix:
     name: "Setup Test Matrix"
     needs: "Spec"
-    runs-on: ubuntu-latest
+    with:
+      flags: "--nightly"
     outputs:
       matrix: ${{ steps.get-matrix.outputs.matrix }}
 
@@ -52,7 +53,8 @@ jobs:
       - setup_matrix
     if: ${{ needs.setup_matrix.outputs.matrix != '{}' }}
 
-    runs-on: ubuntu-latest
+    with:
+      flags: "--nightly"
     strategy:
       fail-fast: false
       matrix: ${{fromJson(needs.setup_matrix.outputs.matrix)}}
