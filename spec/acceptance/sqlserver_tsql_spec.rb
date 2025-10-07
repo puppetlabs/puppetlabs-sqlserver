@@ -10,7 +10,7 @@ version = sql_version?
 db_name = "DB#{SecureRandom.hex(4)}".upcase
 
 # database user:
-DB_LOGIN_USER = "loginuser#{SecureRandom.hex(2)}"
+DB_LOGIN_USER = "loginuser#{SecureRandom.hex(2)}".freeze
 
 describe 'sqlserver_tsql test' do
   def ensure_sqlserver_database(db_name, _ensure_val = 'present')
