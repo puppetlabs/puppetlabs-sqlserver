@@ -48,7 +48,7 @@ jobs:
     - name: Setup Acceptance Test Matrix
       id: get-matrix
       run: |
-        bundle exec matrix_from_metadata_v3 --latest-agent
+        bundle exec matrix_from_metadata_v3 --nightly
 
   Acceptance:
     name: "${{ matrix.platforms.label }}, ${{ matrix.collection.collection || matrix.collection }}"
