@@ -61,7 +61,7 @@ RSpec.describe 'sqlserver::user', type: :define do
 
   describe 'when a password is specified' do
     password = 'Pupp3t1@'
-    let(:additional_params) { { password: password } }
+    let(:additional_params) { { password: } }
     let(:should_contain_command) do
       [
         'USE [myDatabase];',

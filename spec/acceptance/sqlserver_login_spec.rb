@@ -11,10 +11,10 @@ describe 'Test sqlserver::login' do
   # Return options for run_sql_query
   def run_sql_query_opts(user, passwd, query, expected_row_count)
     {
-      query: query,
+      query:,
       sql_admin_user: user,
       sql_admin_pass: passwd,
-      expected_row_count: expected_row_count
+      expected_row_count:
     }
   end
 

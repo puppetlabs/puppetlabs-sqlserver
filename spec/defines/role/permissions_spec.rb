@@ -159,7 +159,7 @@ RSpec.describe 'sqlserver::role::permissions' do
           {
             role: 'myCustomRole',
             permissions: ['INSERT', 'UPDATE', 'DELETE', 'SELECT'],
-            instance: instance
+            instance:
           }
         end
 

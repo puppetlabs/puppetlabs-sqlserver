@@ -41,12 +41,12 @@ describe 'sqlserver_instance' do
   # Return options for run_sql_query
   def run_sql_query_opts(inst_name, query, expected_row_count)
     {
-      query: query,
+      query:,
       instance: inst_name,
       server: '.',
       sql_admin_user: 'sa',
       sql_admin_pass: 'Pupp3t1@',
-      expected_row_count: expected_row_count
+      expected_row_count:
     }
   end
 
@@ -90,7 +90,7 @@ describe 'sqlserver_instance' do
       host_computer_name = run_shell('CMD /C ECHO %COMPUTERNAME%').stdout.chomp
       ensure_sqlserver_instance(features, inst_name, 'present', ["#{host_computer_name}\\#{@extra_admin_user}"])
 
-      validate_sql_install(version: version) do |r|
+      validate_sql_install(version:) do |r|
         expect(r.stdout).to match(%r{#{Regexp.new(inst_name)}})
       end
     end
@@ -107,7 +107,7 @@ describe 'sqlserver_instance' do
       ensure_sqlserver_instance(features, inst_name, 'absent')
 
       # Ensure all features for this instance are removed and the defaults are left alone
-      validate_sql_install(version: version) do |r|
+      validate_sql_install(version:) do |r|
         expect(r.stdout).to match(%r{MSSQLSERVER\s+Database Engine Services})
         expect(r.stdout).to match(%r{MSSQLSERVER\s+SQL Server Replication})
         expect(r.stdout).to match(%r{MSSQLSERVER\s+Data Quality Services})
@@ -129,7 +129,7 @@ describe 'sqlserver_instance' do
     it "create #{inst_name} instance with only one RS feature", unless: version.to_i >= 2017 do
       ensure_sqlserver_instance(features, inst_name)
 
-      validate_sql_install(version: version) do |r|
+      validate_sql_install(version:) do |r|
         expect(r.stdout).to match(%r{#{inst_name}\s+Reporting Services})
       end
     end

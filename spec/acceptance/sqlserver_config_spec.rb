@@ -86,7 +86,7 @@ describe 'sqlserver::config test' do
       hostname = Helper.instance.run_shell('hostname').stdout.upcase.strip
       query = "USE #{db_name}; SELECT * from master..sysdatabases WHERE name = '#{db_name}'"
 
-      run_sql_query(query: query, server: hostname, instance: inst_name, \
+      run_sql_query(query:, server: hostname, instance: inst_name, \
                     sql_admin_user: @admin_user, sql_admin_pass: @admin_pass, expected_row_count: 1)
     end
 
