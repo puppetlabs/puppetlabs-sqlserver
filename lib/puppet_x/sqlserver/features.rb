@@ -7,8 +7,9 @@ SQL_2016 = 'SQL_2016'
 SQL_2017 = 'SQL_2017'
 SQL_2019 = 'SQL_2019'
 SQL_2022 = 'SQL_2022'
+SQL_2025 = 'SQL_2025'
 
-ALL_SQL_VERSIONS = [SQL_2014, SQL_2016, SQL_2017, SQL_2019, SQL_2022].freeze
+ALL_SQL_VERSIONS = [SQL_2014, SQL_2016, SQL_2017, SQL_2019, SQL_2022, SQL_2025].freeze
 
 # rubocop:disable Style/ClassAndModuleChildren
 module PuppetX
@@ -35,12 +36,15 @@ module PuppetX
           major_version: 15,
           registry_path: '150'
         },
-        SQL_2022 => {
-          major_version: 16,
-          registry_path: '160'
-        }
+      SQL_2022 => {
+        major_version: 16,
+        registry_path: '160'
+      },
+      SQL_2025 => {
+        major_version: 17,
+        registry_path: '170'
+      }
       }.freeze
-
       SQL_REG_ROOT = 'Software\Microsoft\Microsoft SQL Server'
       HKLM         = 'HKEY_LOCAL_MACHINE'
 

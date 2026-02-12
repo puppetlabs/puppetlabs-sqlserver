@@ -5,7 +5,7 @@ on:
     - cron: '0 0 * * *'
 
 env:
-  SERVICE_URL: https://facade-maint-config-windows-use-ssh-6f3kfepqcq-ew.a.run.app/v1/provision
+  SERVICE_URL: https://facade-release-6f3kfepqcq-ew.a.run.app/v1/provision
   PUPPET_FORGE_TOKEN: ${{ secrets.PUPPET_FORGE_TOKEN || secrets.PUPPET_FORGE_TOKEN_PUBLIC }}
   BUNDLE_RUBYGEMS___PUPPETCORE__PUPPET__COM: "forge-key:${{ secrets.PUPPET_FORGE_TOKEN || secrets.PUPPET_FORGE_TOKEN_PUBLIC }}"
 
@@ -69,6 +69,24 @@ jobs:
       with:
         service-key: ${{ secrets.TWINGATE_PUBLIC_REPO_KEY }}
 
+    - name: Fix DNS
+      run: |
+        echo "=== Remove Azure DNS from eth0 interface ==="
+        sudo resolvectl dns eth0 ""
+
+        echo "=== Configure Twingate DNS properly ==="
+        sudo resolvectl dns sdwan0 100.95.0.251 100.95.0.252
+        sudo resolvectl domain sdwan0 delivery.puppetlabs.net
+
+        echo "=== Flush DNS cache ==="
+        sudo resolvectl flush-caches
+
+        echo "=== Check new configuration ==="
+        resolvectl status
+
+        echo "=== Test DNS resolution ==="
+        nslookup artifactory.delivery.puppetlabs.net
+
     - name: Checkout
       uses: actions/checkout@v3
       with:
@@ -103,24 +121,29 @@ jobs:
       run: |
         bundle exec rake 'litmus:install_module'
 
+    - name: Install Chocolatey and MSOLEDBSQL driver
+      run: |
+        bundle exec bolt command run "Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))" --targets all --inventoryfile spec/fixtures/litmus_inventory.yaml
+        bundle exec bolt command run "choco install msoledbsql -y --force" --targets all --inventoryfile spec/fixtures/litmus_inventory.yaml
+
     - name: Authenitcate with GCP
       run: |
         echo '${{ secrets.GCP_CONNECTION }}' >> creds.json
-        bundle exec bolt file upload creds.json C:\\creds.json --targets ssh_nodes --inventoryfile spec/fixtures/litmus_inventory.yaml
-        bundle exec bolt command run "gcloud auth activate-service-account --key-file C:\\creds.json" --targets ssh_nodes --inventoryfile spec/fixtures/litmus_inventory.yaml
+        bundle exec bolt file upload creds.json C:\\creds.json --targets all --inventoryfile spec/fixtures/litmus_inventory.yaml
+        bundle exec bolt command run "gcloud auth activate-service-account --key-file C:\\creds.json" --targets all --inventoryfile spec/fixtures/litmus_inventory.yaml
 
     - name: Download OS ISO
       run: |
-        bundle exec bolt command run 'gsutil -q cp gs://artifactory-modules/windows/en_windows_server_2019_updated_july_2020_x64_dvd_94453821.iso C:\\' --targets ssh_nodes --inventoryfile spec/fixtures/litmus_inventory.yaml
+        bundle exec bolt command run 'gsutil -q cp gs://artifactory-modules/windows/en_windows_server_2019_updated_july_2020_x64_dvd_94453821.iso C:\\' --targets all --inventoryfile spec/fixtures/litmus_inventory.yaml
 
     - name: Download SQLServer ISO
       run: |
-        bundle exec bolt command run 'gsutil -q cp gs://artifactory-modules/puppetlabs-sqlserver/SQLServer2019CTP2.4-x64-ENU.iso C:\\' --targets ssh_nodes --inventoryfile spec/fixtures/litmus_inventory.yaml
+        bundle exec bolt command run 'gsutil -q cp gs://artifactory-modules/puppetlabs-sqlserver/SQLServer2019CTP2.4-x64-ENU.iso C:\\' --targets all --inventoryfile spec/fixtures/litmus_inventory.yaml
 
     - name: Set Environment Variable 
       run: |
         pass=`grep -oP '(?<=password: ).*' spec/fixtures/litmus_inventory.yaml`
-        bundle exec bolt command run "[Environment]::SetEnvironmentVariable('pass', '$pass', 'Machine')" --targets ssh_nodes --inventoryfile spec/fixtures/litmus_inventory.yaml
+        bundle exec bolt command run "[Environment]::SetEnvironmentVariable('pass', '$pass', 'Machine')" --targets all --inventoryfile spec/fixtures/litmus_inventory.yaml
 
     - name: Run acceptance tests
       run: |
