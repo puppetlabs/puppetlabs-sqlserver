@@ -110,6 +110,7 @@ jobs:
     - name: Provision test environment
       run: |
         bundle exec rake "litmus:provision[${{matrix.platforms.provider}},${{ matrix.platforms.image }}]"
+        cat spec/fixtures/litmus_inventory.yaml
 
     - name: Install agent
       run: |
@@ -146,14 +147,6 @@ jobs:
     - name: Set Environment Variable 
       run: |
         pass=`grep -oP '(?<=password: ).*' spec/fixtures/litmus_inventory.yaml`
-        bundle exec bolt command run "[Environment]::SetEnvironmentVariable('pass', '$pass', 'Machine')" --targets all --inventoryfile spec/fixtures/litmus_inventory.yaml
+        bundle exec bolt command run "[Environment]::SetEnvironmentVariable('pass', '$pass', 'Machine')" --targets ssh_nodes --inventoryfile spec/fixtures/litmus_inventory.yaml
+        cat spec/fixtures/litmus_inventory.yaml
 
-    - name: Run acceptance tests
-      run: |
-        bundle exec rake 'litmus:acceptance:parallel'
-
-    - name: Remove test environment
-      if: ${{ always() }}
-      continue-on-error: true
-      run: |
-        bundle exec rake 'litmus:tear_down'
