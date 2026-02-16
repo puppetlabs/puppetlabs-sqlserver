@@ -150,3 +150,7 @@ jobs:
         bundle exec bolt command run "[Environment]::SetEnvironmentVariable('pass', '$pass', 'Machine')" --targets ssh_nodes --inventoryfile spec/fixtures/litmus_inventory.yaml
         cat spec/fixtures/litmus_inventory.yaml
 
+    - name: Run acceptance tests
+      run: |
+        bundle exec rake 'litmus:acceptance:parallel'
+
