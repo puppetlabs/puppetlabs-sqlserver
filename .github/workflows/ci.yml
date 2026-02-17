@@ -110,6 +110,7 @@ jobs:
     - name: Provision test environment
       run: |
         bundle exec rake "litmus:provision[${{matrix.platforms.provider}},${{ matrix.platforms.image }}]"
+        cat spec/fixtures/litmus_inventory.yaml
 
     - name: Install agent
       run: |
@@ -152,8 +153,3 @@ jobs:
       run: |
         bundle exec rake 'litmus:acceptance:parallel'
 
-    - name: Remove test environment
-      if: ${{ always() }}
-      continue-on-error: true
-      run: |
-        bundle exec rake 'litmus:tear_down'
