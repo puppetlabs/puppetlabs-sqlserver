@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
+## [v5.1.0](https://github.com/puppetlabs/puppetlabs-sqlserver/tree/v5.1.0) - 2026-02-26
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-sqlserver/compare/v5.0.5...v5.1.0)
+
+### Added
+
+- (MODULES-11615) Add support for SQL Server 2025 [#493](https://github.com/puppetlabs/puppetlabs-sqlserver/pull/493) ([amitkarsale](https://github.com/amitkarsale))
+
+### Other
+
+- (main) Update CI to consider latest URL and installation steps [#497](https://github.com/puppetlabs/puppetlabs-sqlserver/pull/497) ([amitkarsale](https://github.com/amitkarsale))
+- (CAT-2393) Puppetcore update  [#492](https://github.com/puppetlabs/puppetlabs-sqlserver/pull/492) ([SugatD](https://github.com/SugatD))
+- ci(MODULES-11557): add Twingate setup step to GitHub Actions workflow [#491](https://github.com/puppetlabs/puppetlabs-sqlserver/pull/491) ([imaqsood](https://github.com/imaqsood))
+
 ## [v5.0.5](https://github.com/puppetlabs/puppetlabs-sqlserver/tree/v5.0.5) - 2025-06-20
 
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-sqlserver/compare/v5.0.4...v5.0.5)
