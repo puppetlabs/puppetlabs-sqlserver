@@ -107,7 +107,7 @@ describe 'Test sqlserver::role' do
       ON spe.grantee_principal_id = spr.principal_id
       WHERE spr.name = '#{@role}';"
 
-      run_sql_query(query:, server: @hostname, expected_row_count: 2)
+      run_sql_query(query: query, server: @hostname, expected_row_count: 2)
 
       # validate that the database-specific role '#{@role}' has correct authorization #{LOGIN1}
       query = "USE #{@db_name};
@@ -117,7 +117,7 @@ describe 'Test sqlserver::role' do
         ON spr.owning_principal_id = sl.principal_id
       WHERE sl.name = '#{LOGIN1}';"
 
-      run_sql_query(query:, server: @hostname, expected_row_count: 1)
+      run_sql_query(query: query, server: @hostname, expected_row_count: 1)
     end
 
     it "Create database-specific role #{@role}" do
@@ -145,7 +145,7 @@ describe 'Test sqlserver::role' do
         ON pe.grantee_principal_id = pr.principal_id
       WHERE pr.name = '#{@role}';"
 
-      run_sql_query(query:, server: @hostname, expected_row_count: 6)
+      run_sql_query(query: query, server: @hostname, expected_row_count: 6)
     end
 
     it 'Create a database-specific role with the same name on two databases' do
@@ -183,7 +183,7 @@ describe 'Test sqlserver::role' do
         on pr.name = dbpr.name
       WHERE pr.name = '#{@role}';"
 
-      run_sql_query(query:, server: @hostname, expected_row_count: 6)
+      run_sql_query(query: query, server: @hostname, expected_row_count: 6)
     end
 
     it "Create server role #{@role} with optional members and optional members-purge" do
@@ -212,7 +212,7 @@ describe 'Test sqlserver::role' do
         ON spe.grantee_principal_id = spr.principal_id
       WHERE spr.name = '#{@role}';"
 
-      run_sql_query(query:, server: @hostname, expected_row_count: 2)
+      run_sql_query(query: query, server: @hostname, expected_row_count: 2)
 
       # validate that the t server role '#{@role}' has correct members (Login1, 2, 3)
       query = "USE #{@db_name};
@@ -225,7 +225,7 @@ describe 'Test sqlserver::role' do
         OR spr.name = '#{LOGIN3}'
         OR spr.name = 'LOGIN4';"
 
-      run_sql_query(query:, server: @hostname, expected_row_count: 3)
+      run_sql_query(query: query, server: @hostname, expected_row_count: 3)
 
       puts "Create server role #{@role} with optional members_purge:"
       pp = <<-MANIFEST
@@ -255,7 +255,7 @@ describe 'Test sqlserver::role' do
         OR spr.name = '#{LOGIN2}'
         OR spr.name = '#{LOGIN3}';"
 
-      run_sql_query(query:, server: @hostname, expected_row_count: 1)
+      run_sql_query(query: query, server: @hostname, expected_row_count: 1)
     end
   end
 end
