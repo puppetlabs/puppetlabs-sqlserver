@@ -208,9 +208,9 @@ describe 'sqlserver_features', if: version.to_i != 2012 do
             expect(r.stdout).to match(%r{Client Tools Connectivity})
             expect(r.stdout).to match(%r{Client Tools Backwards Compatibility})
             expect(r.stdout).to match(%r{Client Tools SDK})
-            expect(r.stdout).to match(%r{Integration Services})
-            expect(r.stdout).to match(%r{Master Data Services})
           end
+          expect(r.stdout).to match(%r{Integration Services})
+          expect(r.stdout).to match(%r{Master Data Services})
         end
       end
     end
