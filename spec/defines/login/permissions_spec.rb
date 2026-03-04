@@ -107,14 +107,14 @@ describe 'sqlserver::login::permissions' do
         let(:should_contain_command) { ["#{state.upcase} SELECT TO [loggingUser];", 'USE [master];'] }
 
         describe "lowercase #{state}" do
-          let(:additional_params) { { state: } }
+          let(:additional_params) { { state: state } }
 
           it_behaves_like 'sqlserver_tsql command'
         end
 
         state = state.capitalize
         describe "capitalized #{state}" do
-          let(:additional_params) { { state: } }
+          let(:additional_params) { { state: state } }
 
           it_behaves_like 'sqlserver_tsql command'
         end
