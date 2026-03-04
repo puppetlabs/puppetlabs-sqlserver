@@ -127,7 +127,7 @@ describe 'sqlserver_features', if: version.to_i != 2012 do
     it "'BC'", unless: version.to_i >= 2019 do
       ensure_sql_features(features - ['BC'])
 
-      validate_sql_install(version:) do |r|
+      validate_sql_install(version: version) do |r|
         expect(r.stdout).not_to match(%r{Client Tools Backwards Compatibility})
       end
     end
@@ -135,7 +135,7 @@ describe 'sqlserver_features', if: version.to_i != 2012 do
     it "'ADV_SSMS'", unless: version.to_i >= 2016 do
       ensure_sql_features(features - ['ADV_SSMS'])
 
-      validate_sql_install(version:) do |r|
+      validate_sql_install(version: version) do |r|
         expect(r.stdout).not_to match(%r{Management Tools - Complete})
 
         # also verify SSMS is still present
@@ -146,7 +146,7 @@ describe 'sqlserver_features', if: version.to_i != 2012 do
     it "'SDK' + 'IS", unless: version.to_i >= 2019 do
       ensure_sql_features(features - ['SDK', 'IS'])
 
-      validate_sql_install(version:) do |r|
+      validate_sql_install(version: version) do |r|
         expect(r.stdout).not_to match(%r{Client Tools SDK})
       end
     end
@@ -199,7 +199,7 @@ describe 'sqlserver_features', if: version.to_i != 2012 do
       it 'all possible features' do
         ensure_sql_features(features)
 
-        validate_sql_install(version:) do |r|
+        validate_sql_install(version: version) do |r|
           # SQL Server 2016+ will not install the client tools features.
           expect(r.stdout).not_to match(%r{MSSQLSERVER\s+Database Engine Services})
           expect(r.stdout).not_to match(%r{MSSQLSERVER\s+SQL Server Replication})

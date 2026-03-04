@@ -69,7 +69,7 @@ describe 'sqlserver::user test' do
               WHERE name = '#{@db_user}'
               AND
               default_schema_name = 'guest';"
-      run_sql_query(query:, server: @hostname, expected_row_count: 1)
+      run_sql_query(query: query, server: @hostname, expected_row_count: 1)
     end
 
     it 'Create database user with optional instance' do
@@ -97,7 +97,7 @@ describe 'sqlserver::user test' do
               SELECT name AS Database_User_Name
               FROM SYS.DATABASE_PRINCIPALS
               WHERE name = '#{@db_user}';"
-      run_sql_query(query:, server: @hostname, expected_row_count: 1)
+      run_sql_query(query: query, server: @hostname, expected_row_count: 1)
     end
 
     it 'Create database user with optional login' do
@@ -127,7 +127,7 @@ describe 'sqlserver::user test' do
               FROM SYS.DATABASE_PRINCIPALS d, MASTER.SYS.SQL_LOGINS l
               WHERE d.sid = l.sid
               AND d.name = '#{@db_user}';"
-      run_sql_query(query:, server: @hostname, expected_row_count: 1)
+      run_sql_query(query: query, server: @hostname, expected_row_count: 1)
     end
 
     it 'Create database user with optional password' do
@@ -153,8 +153,8 @@ describe 'sqlserver::user test' do
       apply_manifest(pp, catch_failures: true)
 
       puts "validate that the database user '#{@db_user}' is successfully created:"
-      query = "USE #{@db_name}; SELECT * FROM SYS.DATABASE_PRINCIPALS WHERE name = '#{@db_user}';"
-      run_sql_query(query:, server: @hostname, expected_row_count: 1)
+      query = "USE #{db_name}; SELECT * FROM SYS.DATABASE_PRINCIPALS WHERE name = '#{@db_user}';"
+      run_sql_query(query: query, server: @hostname, expected_row_count: 1)
     end
 
     it 'Delete database user' do
@@ -176,8 +176,8 @@ describe 'sqlserver::user test' do
       apply_manifest(pp, catch_failures: true)
 
       # validate that the database user '#{@db_user}' is successfully created:
-      query = "USE #{@db_name}; SELECT * FROM SYS.DATABASE_PRINCIPALS WHERE name = '#{@db_user}';"
-      run_sql_query(query:, server: @hostname, expected_row_count: 1)
+      query = "USE #{db_name}; SELECT * FROM SYS.DATABASE_PRINCIPALS WHERE name = '#{@db_user}';"
+      run_sql_query(query: query, server: @hostname, expected_row_count: 1)
 
       pp = <<-MANIFEST
       sqlserver::config{'MSSQLSERVER':
@@ -191,8 +191,8 @@ describe 'sqlserver::user test' do
       MANIFEST
       apply_manifest(pp, catch_failures: true)
       # validate that the database user '#{@db_user}' should be deleted:
-      query = "USE #{@db_name}; SELECT * FROM SYS.DATABASE_PRINCIPALS WHERE name = '#{@db_user}';"
-      run_sql_query(query:, server: @hostname, expected_row_count: 0)
+      query = "USE #{db_name}; SELECT * FROM SYS.DATABASE_PRINCIPALS WHERE name = '#{@db_user}';"
+      run_sql_query(query: query, server: @hostname, expected_row_count: 0)
     end
   end
 end
