@@ -1,6 +1,6 @@
 {
   "name": "puppetlabs-sqlserver",
-  "version": "5.1.0",
+  "version": "5.1.1",
   "author": "puppetlabs",
   "summary": "The `sqlserver` module installs and manages MS SQL Server 2014, 2016, 2017, 2019, 2022 and 2025 on Windows systems.",
   "license": "proprietary",
