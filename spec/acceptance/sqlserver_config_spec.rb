@@ -27,9 +27,7 @@ describe 'sqlserver::config test' do
       },
     }
     MANIFEST
-    retry_on_error_matching(10, 5, %r{apply manifest failed}) do
-      apply_manifest(pp, catch_failures: true)
-    end
+    apply_sqlserver_manifest(pp)
   end
 
   context 'Testing sqlserver::config' do

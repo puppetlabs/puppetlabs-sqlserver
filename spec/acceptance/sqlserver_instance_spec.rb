@@ -35,7 +35,7 @@ describe 'sqlserver_instance' do
       },
     }
     MANIFEST
-    idempotent_apply(pp)
+    idempotent_sqlserver_apply(pp)
   end
 
   # Return options for run_sql_query
@@ -167,7 +167,7 @@ describe 'sqlserver_instance' do
     }
     MANIFEST
 
-    idempotent_apply(pp)
+    idempotent_sqlserver_apply(pp)
   end
 
   context 'Deferred values' do
