@@ -39,9 +39,9 @@ RSpec.configure do |c|
   include PuppetLitmus
   c.before :suite do
     # Install archive module dependency first
-    run_shell('puppet module install puppet/archive')
+    run_shell('puppet module install puppet/archive --force')
     # Install stdlib, needed by many modules including puppet_agent
-    Helper.instance.run_shell('puppet module install puppetlabs-stdlib')
+    Helper.instance.run_shell('puppet module install puppetlabs-stdlib --force')
 
     # Install OLEDB driver (required for Puppet types to connect to SQL Server)
     puts 'Installing Microsoft OLE DB Driver for SQL Server via Puppet manifest...'
@@ -64,14 +64,13 @@ RSpec.configure do |c|
 
     # Pre-install Puppet agent dependencies and helper modules
     # We need mount_iso provider to work on Windows
-    Helper.instance.run_shell('puppet module install puppetlabs-mount_iso')
-
-    # Ensure puppetlabs-puppet_agent module is present before including class
-    # Use Ruby-side guard to avoid complex PowerShell quoting issues
-    modules_list = Helper.instance.run_shell('puppet module list')
-    unless modules_list.stdout.include?('puppetlabs-puppet_agent')
-      Helper.instance.run_shell('puppet module install puppetlabs-puppet_agent')
-    end
+    #
+    # These are force-(re)installed because the base VM image can ship with
+    # pre-baked copies of these modules that predate Puppet 8's removal of
+    # top-scope fact variables (e.g. $::osfamily), which breaks catalog
+    # compilation. Forcing ensures a compatible release is always used.
+    Helper.instance.run_shell('puppet module install puppetlabs-mount_iso --force')
+    Helper.instance.run_shell('puppet module install puppetlabs-puppet_agent --force')
 
     # Rerun the setup, but with the agent's path
     # This is a workaround for the module's helper not being in the load path
@@ -186,9 +185,7 @@ end
 
 def install_sqlserver(features)
   # this method installs SQl server on a given host
-  puts "[SQL Server Install] Starting installation with features: #{features}"
   user = Helper.instance.run_shell('$env:UserName').stdout.chomp
-  puts "[SQL Server Install] Installing for user: #{user}"
 
   pp = <<-MANIFEST
     sqlserver_instance{'MSSQLSERVER':
@@ -211,13 +208,110 @@ def install_sqlserver(features)
     }
   MANIFEST
 
-  puts '[SQL Server Install] Applying manifest with retry logic...'
-  retry_on_error_matching(10, 5, %r{apply manifest failed}) do
-    Helper.instance.apply_manifest(pp)
+  retry_on_error_matching(10, 5) do
+    apply_manifest_via_scheduled_task(pp)
   end
-  puts '[SQL Server Install] Installation completed successfully'
 rescue StandardError => e
   puts "[SQL Server Install] FAILED: #{e.message}"
+  print_sql_setup_log
+  raise e
+end
+
+def apply_manifest_via_scheduled_task(pp, timeout_minutes: 20)
+  # SQL Server's own setup chainer calls into Windows DPAPI
+  # (System.Security.Cryptography.ProtectedData.Protect) to serialize secure
+  # config values such as sa_pwd. DPAPI requires a loaded Windows user
+  # profile, which a WinRM session (how Litmus/Bolt normally run
+  # `puppet apply`) does not have, so setup fails with "Access is denied:
+  # There was an error generating the XML document." Running the apply from
+  # a password-based scheduled task performs a real logon that loads the
+  # profile, working around this.
+  require 'base64'
+  manifest_b64 = Base64.strict_encode64(pp)
+
+  ps_script = <<-POWERSHELL
+    $manifestPath = 'C:\\Windows\\Temp\\sqlserver_install.pp'
+    $outPath      = 'C:\\Windows\\Temp\\sqlserver_install.out.log'
+    $taskName     = 'PuppetSqlServerInstall'
+
+    try {
+      [IO.File]::WriteAllBytes($manifestPath, [Convert]::FromBase64String('#{manifest_b64}'))
+      if (Test-Path $outPath) { Remove-Item $outPath -Force }
+
+      $user     = "$env:COMPUTERNAME\\$env:USERNAME"
+      $password = $env:pass
+
+      Get-ScheduledTask -TaskName $taskName -ErrorAction SilentlyContinue | Unregister-ScheduledTask -Confirm:$false
+
+      # No -Trigger here: this task is started explicitly via Start-ScheduledTask
+      # below. Registering it with a time-based trigger too was racing with that
+      # explicit start, and once the trigger fired a few seconds later while the
+      # manually-started run was still installing SQL Server, Task Scheduler's
+      # default "do not start a new instance" policy rejected it and overwrote
+      # LastTaskResult with 0x800710E0 ("the operator or administrator has
+      # refused the request") -- clobbering the real result of the run.
+      $action = New-ScheduledTaskAction -Execute 'cmd.exe' -Argument "/c puppet apply --trace $manifestPath > $outPath 2>&1"
+      Register-ScheduledTask -TaskName $taskName -Action $action -User $user -Password $password -RunLevel Highest -Force | Out-Null
+
+      Start-ScheduledTask -TaskName $taskName
+
+      $limit = (Get-Date).AddMinutes(#{timeout_minutes})
+      do {
+        Start-Sleep -Seconds 10
+        $info = Get-ScheduledTaskInfo -TaskName $taskName
+      } while ($info.LastTaskResult -eq 267009 -and (Get-Date) -lt $limit)
+
+      $lastTaskResult = $info.LastTaskResult
+      Unregister-ScheduledTask -TaskName $taskName -Confirm:$false -ErrorAction SilentlyContinue
+
+      Write-Host '===== [Scheduled Task] puppet apply output ====='
+      if (Test-Path $outPath) { Get-Content $outPath | Write-Host } else { Write-Host '(no output captured)' }
+      Write-Host "===== [Scheduled Task] LastTaskResult: $lastTaskResult ====="
+      # LastTaskResult can be an arbitrary large HRESULT-like value, which
+      # overflows Int32 and corrupts the process exit code if passed to `exit`
+      # directly. Collapse it to a plain 0/1 here and let the diagnostics above
+      # carry the real value.
+      if ($lastTaskResult -eq 0) { exit 0 } else { exit 1 }
+    } catch {
+      Write-Host "[Scheduled Task] ERROR: $($_.Exception.Message)"
+      exit 1
+    }
+  POWERSHELL
+
+  encoded = Base64.strict_encode64(ps_script.encode('UTF-16LE'))
+  cmd = "powershell -NoProfile -NonInteractive -ExecutionPolicy Bypass -EncodedCommand #{encoded}"
+  r = Helper.instance.run_shell(cmd)
+  unless r.exit_code.zero?
+    puts r.stdout
+    raise "Scheduled-task puppet apply failed (exit code #{r.exit_code})\n#{r.stderr}"
+  end
+
+  r
+end
+
+# Any manifest that creates or adds features to a sqlserver_instance runs
+# setup.exe with SAPWD set, which hits the same DPAPI/WinRM profile
+# limitation apply_manifest_via_scheduled_task works around (see its
+# comment). Acceptance specs that install their own instances (beyond the
+# one from base_install) should apply through this instead of Litmus's
+# plain apply_manifest. Removing/uninstalling an instance never sets SAPWD,
+# so it doesn't need this and can use apply_manifest directly.
+def apply_sqlserver_manifest(pp)
+  retry_on_error_matching(10, 5) do
+    apply_manifest_via_scheduled_task(pp)
+  end
+end
+
+# Equivalent to Litmus's idempotent_apply, but routes the state-changing
+# first apply through apply_sqlserver_manifest. The second (idempotency
+# check) apply is a plain WinRM apply_manifest: an already-converged
+# sqlserver_instance is a no-op and never re-runs setup.exe.
+def idempotent_sqlserver_apply(pp)
+  apply_sqlserver_manifest(pp)
+  apply_manifest(pp, catch_changes: true)
+end
+
+def print_sql_setup_log
   puts '[SQL Server Install] Checking setup logs...'
   log_cmd = 'Get-ChildItem -Path "C:\\Program Files\\Microsoft SQL Server" -Recurse ' \
             '-Filter "Summary*.txt" -ErrorAction SilentlyContinue | ' \
@@ -225,10 +319,11 @@ rescue StandardError => e
   log_check = Helper.instance.run_shell(log_cmd)
   if log_check.exit_code == 0 && !log_check.stdout.strip.empty?
     puts "[SQL Server Install] Setup log found at: #{log_check.stdout.strip}"
-    log_content = Helper.instance.run_shell("Get-Content '#{log_check.stdout.strip}' -Tail 50")
-    puts "[SQL Server Install] Last 50 lines of setup log:\n#{log_content.stdout}"
+    log_content = Helper.instance.run_shell("Get-Content '#{log_check.stdout.strip}' -Tail 80")
+    puts "[SQL Server Install] Last 80 lines of setup log:\n#{log_content.stdout}"
+  else
+    puts '[SQL Server Install] No setup log found.'
   end
-  raise e
 end
 
 def ensure_oledb_installed
@@ -442,7 +537,14 @@ def validate_sql_install(opts = {}, &block)
     '  if ($s) { Get-Content $s.FullName }',
     '}',
   ].join("\n")
-  sum_cmd = "powershell -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command \"#{ps_summary}\""
+  # Base64-encoded (like the other dynamic PowerShell blocks in this file)
+  # rather than passed via -Command "...": the raw $s/$s.FullName variables
+  # were being stripped by the local shell that invokes Bolt before the
+  # command ever reached the Windows target, since it treats "$s" as its own
+  # (unset, empty) variable.
+  require 'base64'
+  encoded_summary = Base64.strict_encode64(ps_summary.encode('UTF-16LE'))
+  sum_cmd = "powershell -NoProfile -NonInteractive -ExecutionPolicy Bypass -EncodedCommand #{encoded_summary}"
   result = Helper.instance.run_shell(sum_cmd)
   return unless block
 

@@ -209,8 +209,12 @@ describe 'sqlserver_features', if: version.to_i != 2012 do
             expect(r.stdout).to match(%r{Client Tools Backwards Compatibility})
             expect(r.stdout).to match(%r{Client Tools SDK})
           end
-          expect(r.stdout).to match(%r{Integration Services})
-          expect(r.stdout).to match(%r{Master Data Services})
+          # IS/MDS are excluded from `features` for 2019+ (see above), so they
+          # were never installed here either; matches the 'can install' context.
+          unless version.to_i >= 2019
+            expect(r.stdout).to match(%r{Integration Services})
+            expect(r.stdout).to match(%r{Master Data Services})
+          end
         end
       end
     end

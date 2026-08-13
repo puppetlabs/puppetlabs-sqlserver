@@ -153,7 +153,7 @@ describe 'sqlserver::user test' do
       apply_manifest(pp, catch_failures: true)
 
       puts "validate that the database user '#{@db_user}' is successfully created:"
-      query = "USE #{db_name}; SELECT * FROM SYS.DATABASE_PRINCIPALS WHERE name = '#{@db_user}';"
+      query = "USE #{@db_name}; SELECT * FROM SYS.DATABASE_PRINCIPALS WHERE name = '#{@db_user}';"
       run_sql_query(query: query, server: @hostname, expected_row_count: 1)
     end
 
@@ -176,7 +176,7 @@ describe 'sqlserver::user test' do
       apply_manifest(pp, catch_failures: true)
 
       # validate that the database user '#{@db_user}' is successfully created:
-      query = "USE #{db_name}; SELECT * FROM SYS.DATABASE_PRINCIPALS WHERE name = '#{@db_user}';"
+      query = "USE #{@db_name}; SELECT * FROM SYS.DATABASE_PRINCIPALS WHERE name = '#{@db_user}';"
       run_sql_query(query: query, server: @hostname, expected_row_count: 1)
 
       pp = <<-MANIFEST
@@ -191,7 +191,7 @@ describe 'sqlserver::user test' do
       MANIFEST
       apply_manifest(pp, catch_failures: true)
       # validate that the database user '#{@db_user}' should be deleted:
-      query = "USE #{db_name}; SELECT * FROM SYS.DATABASE_PRINCIPALS WHERE name = '#{@db_user}';"
+      query = "USE #{@db_name}; SELECT * FROM SYS.DATABASE_PRINCIPALS WHERE name = '#{@db_user}';"
       run_sql_query(query: query, server: @hostname, expected_row_count: 0)
     end
   end
