@@ -15,6 +15,9 @@ jobs:
   Spec:
     uses: "puppetlabs/cat-github-actions/.github/workflows/module_ci.yml@main"
     secrets: "inherit"
+    with:
+      additional_packages: "libcurl4-openssl-dev"
+      ruby_version: "3.2"
 
   setup_matrix:
     name: "Setup Test Matrix"
@@ -31,11 +34,11 @@ jobs:
         ref: ${{ github.event.pull_request.head.sha }}
       if: ${{ github.repository_owner == 'puppetlabs' }}
 
-    - name: Activate Ruby 3.1
+    - name: Activate Ruby 3.2
       uses: ruby/setup-ruby@v1
       if: ${{ github.repository_owner == 'puppetlabs' }}
       with:
-        ruby-version: "3.1"
+        ruby-version: "3.2"
         bundler-cache: true
 
     - name: Print bundle environment
@@ -48,7 +51,7 @@ jobs:
     - name: Setup Acceptance Test Matrix
       id: get-matrix
       run: |
-        bundle exec matrix_from_metadata_v3 --nightly
+        bundle exec matrix_from_metadata_v3 --nightly --collection-platform-exclude 9:windows-2012r2-x86
 
   Acceptance:
     name: "${{ matrix.platforms.label }}, ${{ matrix.collection.collection || matrix.collection }}"
@@ -95,10 +98,10 @@ jobs:
       with:
         ref: ${{ github.event.pull_request.head.sha }}
 
-    - name: Activate Ruby 3.1
+    - name: Activate Ruby 3.2
       uses: ruby/setup-ruby@v1
       with:
-        ruby-version: "3.1"
+        ruby-version: "3.2"
         bundler-cache: true
 
     - name: Print bundle environment
