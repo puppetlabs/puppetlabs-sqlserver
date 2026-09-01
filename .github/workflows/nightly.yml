@@ -95,10 +95,10 @@ jobs:
       with:
         ref: ${{ github.event.pull_request.head.sha }}
 
-    - name: Activate Ruby 3.1
+    - name: Activate Ruby 3.2
       uses: ruby/setup-ruby@v1
       with:
-        ruby-version: "3.1"
+        ruby-version: "3.2"
         bundler-cache: true
 
     - name: Print bundle environment
