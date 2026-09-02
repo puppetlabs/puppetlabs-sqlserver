@@ -27,7 +27,7 @@ jobs:
     steps:
 
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         ref: ${{ github.event.pull_request.head.sha }}
       if: ${{ github.repository_owner == 'puppetlabs' }}
@@ -63,7 +63,7 @@ jobs:
       matrix: ${{fromJson(needs.setup_matrix.outputs.matrix)}}
 
     env:
-      PUPPET_GEM_VERSION: '~> 7.24'
+      PUPPET_GEM_VERSION: '~> 8.9'
       FACTER_GEM_VERSION: 'https://github.com/puppetlabs/facter#main' 
 
     steps:
@@ -91,7 +91,7 @@ jobs:
         nslookup artifactory.delivery.puppetlabs.net
 
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         ref: ${{ github.event.pull_request.head.sha }}
 
