@@ -5,6 +5,26 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org).
 
+## [v5.2.0](https://github.com/puppetlabs/puppetlabs-sqlserver/tree/v5.2.0) - 2026-09-02
+
+[Full Changelog](https://github.com/puppetlabs/puppetlabs-sqlserver/compare/v5.1.1...v5.2.0)
+
+### Added
+
+- (MODULES-11725) Add puppet 9 support in puppetlabs-sqlserver [#511](https://github.com/puppetlabs/puppetlabs-sqlserver/pull/511) ([imaqsood](https://github.com/imaqsood))
+
+### Fixed
+
+- (MODULES-11902) Force reinstall puppet_agent module in acceptance bootstrap [#507](https://github.com/puppetlabs/puppetlabs-sqlserver/pull/507) ([SugatD](https://github.com/SugatD))
+- (MODULES-11838) Update link to Puppet modules contributing documentation [#504](https://github.com/puppetlabs/puppetlabs-sqlserver/pull/504) ([imaqsood](https://github.com/imaqsood))
+
+### Other
+
+- (maint) Bump nightly ruby version to 3.2 [#513](https://github.com/puppetlabs/puppetlabs-sqlserver/pull/513) ([imaqsood](https://github.com/imaqsood))
+- (maint) Bump actions/checkout from v3 to v4 [#503](https://github.com/puppetlabs/puppetlabs-sqlserver/pull/503) ([imaqsood](https://github.com/imaqsood))
+- Release prep v5.1.1 [#502](https://github.com/puppetlabs/puppetlabs-sqlserver/pull/502) ([github-actions](https://github.com/github-actions))
+- Fix #464 [#494](https://github.com/puppetlabs/puppetlabs-sqlserver/pull/494) ([InsanesTheName](https://github.com/InsanesTheName))
+
 ## [v5.1.1](https://github.com/puppetlabs/puppetlabs-sqlserver/tree/v5.1.1) - 2026-03-04
 
 [Full Changelog](https://github.com/puppetlabs/puppetlabs-sqlserver/compare/v5.1.0...v5.1.1)
@@ -12,6 +32,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 ### Fixed
 
 - (MODULES-11613) Set permission variable in permission sql EPP [#500](https://github.com/puppetlabs/puppetlabs-sqlserver/pull/500) ([shubhamshinde360](https://github.com/shubhamshinde360))
+
+### Other
+
+- Release prep v5.1.1 [#502](https://github.com/puppetlabs/puppetlabs-sqlserver/pull/502) ([github-actions](https://github.com/github-actions))
 
 ## [v5.1.0](https://github.com/puppetlabs/puppetlabs-sqlserver/tree/v5.1.0) - 2026-02-26
 
