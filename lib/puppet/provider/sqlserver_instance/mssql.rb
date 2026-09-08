@@ -157,7 +157,7 @@ Puppet::Type.type(:sqlserver_instance).provide(:mssql, parent: Puppet::Provider:
       end
 
       format_cmd_args_array('/SQLSYSADMINACCOUNTS', @resource[:sql_sysadmin_accounts], cmd_args, true)
-      format_cmd_args_array('/ASSYSADMINACCOUNTS', @resource[:as_sysadmin_accounts], cmd_args)
+      format_cmd_args_array('/ASSYSADMINACCOUNTS', @resource[:as_sysadmin_accounts], cmd_args, true)
     end
     [cmd_args, obfuscated_strings]
   end
