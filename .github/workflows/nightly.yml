@@ -2,7 +2,7 @@ name: "nightly"
 
 on:
   schedule:
-    - cron: '0 0 * * *'
+    - cron: '5 1 * * *'
 
 env:
   SERVICE_URL: https://facade-release-6f3kfepqcq-ew.a.run.app/v1/provision
