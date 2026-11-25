@@ -245,6 +245,8 @@ module PuppetX
       #   "version_friendly" => "SQL_2014",
       #   "version" => "12.0.2000.8",
       #   "reg_root" => "Software\\Microsoft\\Microsoft SQL Server\\MSSQL12.MSSQLSERVER2",
+      #   "edition_type" => "Enterprise Edition",
+      #   "patch_level" => "12.0.2000.8",
       #   "features" =>[
       #     "Replication",
       #     "SQLEngine",
@@ -262,10 +264,20 @@ module PuppetX
         return nil if sql_instance['reg_root'].nil?
 
         feats = []
+        edition_type = nil
+        patch_level = nil
         sql_instance['reg_root'].each do |reg_root|
           feats += get_instance_features(reg_root, sql_instance['name'])
+          edition_type ||= get_setup_value(reg_root, 'EditionType')
+          patch_level ||= get_setup_value(reg_root, 'PatchLevel')
         end
-        sql_instance.merge('features' => feats.uniq)
+        sql_instance.merge('features' => feats.uniq, 'edition_type' => edition_type, 'patch_level' => patch_level)
+      end
+
+      def self.get_setup_value(reg_root, value_name)
+        open(HKLM, "#{reg_root}\\Setup", KEY_READ | KEY64) { |key| get_reg_key_val(key, value_name, Win32::Registry::REG_SZ) }
+      rescue Puppet::Util::Windows::Error
+        nil
       end
     end
   end
