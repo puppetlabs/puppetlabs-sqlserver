@@ -58,7 +58,9 @@ RSpec.describe provider_class do
                   '/IACCEPTSQLSERVERLICENSETERMS',
                   "/INSTANCENAME=#{execute_args[:name]}",
                   "/FEATURES=#{execute_args[:features].join(',')}"]
-      (execute_args.keys - ['ensure', 'loglevel', 'features', 'name', 'source', 'sql_sysadmin_accounts', 'sql_security_mode', 'install_switches'].map(&:to_sym)).sort.map do |key|
+      handled_keys = ['ensure', 'loglevel', 'features', 'name', 'source', 'sql_sysadmin_accounts',
+                      'as_sysadmin_accounts', 'sql_security_mode', 'install_switches']
+      (execute_args.keys - handled_keys.map(&:to_sym)).sort.map do |key|
         cmd_args << "/#{resourcekey_to_cmdarg[key.to_s]}=\"#{@resource[key]}\""
       end
       cmd_args << '/SECURITYMODE=SQL' if execute_args[:sql_security_mode]
@@ -68,6 +70,14 @@ RSpec.describe provider_class do
       # prepend first arg only with CLI switch
       admin_args[0] = "/SQLSYSADMINACCOUNTS=#{admin_args[0]}"
       cmd_args += admin_args
+
+      if execute_args[:as_sysadmin_accounts]
+        # Extract the AS Sysadmins
+        as_admin_args = Array(execute_args[:as_sysadmin_accounts]).map(&:to_s)
+        # prepend first arg only with CLI switch
+        as_admin_args[0] = "/ASSYSADMINACCOUNTS=#{as_admin_args[0]}"
+        cmd_args += as_admin_args
+      end
 
       additional_install_switches.each do |switch|
         cmd_args << switch
@@ -148,6 +158,20 @@ RSpec.describe provider_class do
   describe 'it should provide the correct command default command' do
     it_behaves_like 'create' do
       args = basic_args
+      let(:args) { args }
+      munged = { features: Array.new(args[:features]) }
+      munged[:features].delete('SQL')
+      munged[:features] += ['DQ', 'FullText', 'Replication', 'SQLEngine']
+      munged[:features].sort!
+      let(:munged_values) { munged }
+    end
+  end
+
+  describe 'it should provide the correct command when multiple as_sysadmin_accounts are given' do
+    it_behaves_like 'create' do
+      args = basic_args
+      args[:as_sysadmin_accounts] = ['localAdminAccount', 'nexus\domainUser']
+
       let(:args) { args }
       munged = { features: Array.new(args[:features]) }
       munged[:features].delete('SQL')
